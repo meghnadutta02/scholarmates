@@ -1,8 +1,14 @@
 "use client";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-
+import { useSession } from "next-auth/react";
 const PostPage = () => {
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/api/auth/signin?callbackUrl=/posts");
+    },
+  });
   const postId = 100;
 
   const [posts, setPosts] = useState([]);

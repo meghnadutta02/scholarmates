@@ -1,5 +1,8 @@
+// "use client"; for client-side components
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+
+//homepage
 
 export default function Home() {
   return (
