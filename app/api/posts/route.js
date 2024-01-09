@@ -1,11 +1,9 @@
-import { connection } from "@/app/config/db";
-import { Post } from "@/app/models/postModel";
-import mongoose from "mongoose";
+import { Post } from "@/app/(models)/postModel";
+import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  await mongoose.connect(connection);
-
+  await connect();
   const data = await Post.find({});
   // console.log(data);
   return NextResponse.json({ result: data });
