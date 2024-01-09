@@ -1,5 +1,3 @@
-import React from "react";
-
 // export const generateMetadata=async({params,searchParams})=>
 // {
 //   const post=await getPost(params.id)
