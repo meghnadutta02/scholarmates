@@ -67,5 +67,9 @@ export const options = {
       return session;
     },
   },
+  theme: {
+    colorScheme: "light",
+    logo: "/logo.png",
+  },
   // pages: { signIn: "/auth/signIn" },
 };
