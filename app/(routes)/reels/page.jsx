@@ -5,7 +5,7 @@ import redirect from "next/navigation";
 const ReelsPage = async () => {
   const session = await getServerSession(options);
   if (!session) {
-    redirect("/api/auth/signin?callbackUrl=/reels");
+    // redirect("/api/auth/signin?callbackUrl=/reels");
   }
   return (
     <div>
