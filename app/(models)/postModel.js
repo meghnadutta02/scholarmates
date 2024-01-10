@@ -1,8 +1,8 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
-  content: String,
-  likes: String,
+  content: { type: String, required: true },
+  likes: { type: Number, default: 0 },
 });
 
 export const Post =

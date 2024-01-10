@@ -1,16 +1,17 @@
 "use client";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { SessionProvider, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 const PostPage = () => {
+  const postId = 100;
   // const { data: session } = useSession({
   //   required: true,
   //   onUnauthenticated() {
   //     redirect("/api/auth/signin?callbackUrl=/posts");
   //   },
   // });
-  const postId = 100;
-
+  const { data: session } = useSession();
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +47,11 @@ const PostPage = () => {
           </div>
         ))}
       </div>
+      <p>
+        {session?.user?.email}
+        <br />
+        {session?.user?.role}
+      </p>
     </div>
   );
 };

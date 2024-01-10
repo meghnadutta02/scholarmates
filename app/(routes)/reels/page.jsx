@@ -1,7 +1,7 @@
 import React from "react";
 import { getServerSession } from "next-auth";
 import { options } from "../../api/auth/[...nextauth]/options";
-import redirect from "next/navigation";
+import { redirect } from "next/navigation";
 const ReelsPage = async () => {
   const session = await getServerSession(options);
   if (!session) {

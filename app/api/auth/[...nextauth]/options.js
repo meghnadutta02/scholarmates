@@ -1,18 +1,20 @@
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import connect from "@/app/config/db";
+import User from "@/app/(models)/userModel";
 
 export const options = {
   providers: [
     GitHubProvider({
       profile(profile) {
         console.log("Profile Github: ", profile);
-        let userRole = "user";
+        let isAdmin = false;
         if (profile?.email === "meghnakha18@gmail.com") {
-          userRole = "admin";
+          isAdmin = true;
         }
         return {
           ...profile,
-          role: userRole,
+          isAdmin,
         };
       },
       clientId: process.env.GITHUB_CLIENT_ID,
@@ -21,14 +23,14 @@ export const options = {
     GoogleProvider({
       profile(profile) {
         console.log("Profile Google: ", profile);
-        let userRole = "user";
+        let isAdmin = false;
         if (profile?.email === "meghnakha18@gmail.com") {
-          userRole = "admin";
+          isAdmin = true;
         }
         return {
           ...profile,
           id: profile.sub,
-          role: userRole,
+          isAdmin,
         };
       },
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -36,15 +38,38 @@ export const options = {
     }),
   ],
   callbacks: {
+    async signIn({ user, profile }) {
+      await connect();
+      const { name, email, isAdmin } = user || profile;
+
+      const userExists = await User.findOne({ email });
+
+      if (!userExists) {
+        const newUser = await User.create({
+          name,
+          email,
+          isAdmin,
+        });
+
+        return { result: newUser, status: 201 };
+      }
+
+      return true;
+    },
     // for server side
     async jwt({ token, user }) {
-      if (user) token.role = user.role;
+      if (user) token.isAdmin = user.isAdmin;
       return token;
     },
     // for client side
     async session({ session, token }) {
-      if (session?.user) session.user.role = token.role;
+      if (session?.user) session.user.isAdmin = token.isAdmin;
       return session;
     },
   },
+  theme: {
+    colorScheme: "light",
+    logo: "/logo.png",
+  },
+  // pages: { signIn: "/auth/signIn" },
 };
