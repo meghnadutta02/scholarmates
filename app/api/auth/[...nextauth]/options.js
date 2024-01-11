@@ -53,7 +53,8 @@ export const options = {
       }
 
       user.db_id = currentUser._id;
-
+      user.interests = currentUser.interests.length;
+      console.log("User: ", user.interests);
       return user;
     },
 

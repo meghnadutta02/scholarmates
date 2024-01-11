@@ -33,6 +33,7 @@ export const config = {
   matcher: [
     "/CreateUser",
     "/AdminRoute1",
+    "/api/users/profile",
     "/AdminRoute2",
     "/AdminRoute3",
     "/posts",

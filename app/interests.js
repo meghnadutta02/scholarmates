@@ -24,7 +24,6 @@ export const interests = [
       "MongoDB",
       "SQL",
       "Firebase",
-      "RESTful APIs",
       "GraphQL",
       "Git",
       "Data Structures",
@@ -222,6 +221,19 @@ export const interests = [
       "Business",
       "Science",
       "Travel",
+    ],
+  },
+  {
+    category: "Development",
+    subcategories: [
+      "Web Development",
+      "App Development",
+      "Game Development",
+      "Database Design & Development",
+      "Software Testing & QA",
+      "Software Engineering",
+      "Hardware Engineering",
+      "Network & Security",
     ],
   },
   {

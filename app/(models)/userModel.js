@@ -26,7 +26,29 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
-    interests: [interestSchema],
+    collegeName: {
+      type: String,
+      default: "",
+    },
+    yearInCollege: {
+      type: Number,
+      default: 1,
+    },
+    dob: {
+      type: Date,
+    },
+    department: {
+      type: String,
+      default: "",
+    },
+    degree: {
+      type: String,
+      default: "",
+    },
+    interests: {
+      type: [interestSchema],
+      default: [],
+    },
   },
   { timestamps: true }
 );
