@@ -24,17 +24,20 @@ export async function POST(req) {
   try {
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
-    const updatedUserData = JSON.parse(req.body);
+    const updatedData = await req.json();
+    const updatedUserData = updatedData.formData;
+    console.log(updatedUserData);
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      { $set: updatedUserData },
-      { new: true }
-    );
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-    return NextResponse.json({ result: user }, { status: 200 });
+    // const user = await User.findByIdAndUpdate(
+    //   id,
+    //   { $set: updatedUserData },
+    //   { new: true }
+    // );
+    // if (!user) {
+    //   return NextResponse.json({ error: "User not found" }, { status: 404 });
+    // }
+    // return NextResponse.json({ result: user }, { status: 200 });
+    return NextResponse.json({ result: updatedUserData }, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });
