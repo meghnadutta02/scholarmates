@@ -3,18 +3,20 @@ import { ObjectId } from "mongodb";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
+import connect from "@/app/config/db";
 export async function GET(req) {
   try {
+    await connect();
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
+
     const user = await User.findOne({ _id: id }).select("interests");
     if (user.interests.length > 0) {
-      const interests = user.interests.flatMap((i) => i.subcategories);
+      const interests = user.interests.map((i) => i.categories);
       const users = await User.aggregate([
         { $match: { _id: { $ne: new ObjectId(id) } } },
         // { $unwind: "$interests" },
-        // { $unwind: "$interests.subcategories" },
-        { $match: { "interests.subcategories": { $in: interests } } },
+        { $match: { "interests.categories": { $in: interests } } },
         // { $group: { _id: "$_id" } },
       ]);
       if (users.length > 0)

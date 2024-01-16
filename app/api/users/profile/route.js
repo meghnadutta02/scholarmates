@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
+import connect from "@/app/config/db";
 
 export async function GET(req) {
   try {
+    await connect();
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
     const user = await User.findOne({
@@ -22,6 +24,7 @@ export async function GET(req) {
 }
 export async function POST(req) {
   try {
+    await connect();
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
     const updatedUserData = JSON.parse(req.body);

@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema(
     },
     dob: {
       type: Date,
+      default: null,
     },
     department: {
       type: String,
@@ -52,7 +53,10 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// userSchema.index({ "interests.subcategories": 1 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
-
+// User.collection.getIndexes().then((indexes) => {
+//   console.log("Existing indexes for User model:", indexes);
+// });
 export default User;
