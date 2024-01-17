@@ -7,7 +7,7 @@ export const options = {
   providers: [
     GitHubProvider({
       profile(profile) {
-        console.log("Profile Github: ", profile);
+        //console.log("Profile Github: ", profile);
         let isAdmin = false;
         if (profile?.email === "meghnakha18@gmail.com") {
           isAdmin = true;
@@ -22,7 +22,7 @@ export const options = {
     }),
     GoogleProvider({
       profile(profile) {
-        console.log("Profile Google: ", profile);
+        //console.log("Profile Google: ", profile);
         let isAdmin = false;
         if (profile?.email === "meghnakha18@gmail.com") {
           isAdmin = true;
@@ -42,28 +42,36 @@ export const options = {
       await connect();
       const { name, email, isAdmin } = user || profile;
 
-      const userExists = await User.findOne({ email });
+      let currentUser = await User.findOne({ email });
 
-      if (!userExists) {
-        const newUser = await User.create({
+      if (!currentUser) {
+        currentUser = await User.create({
           name,
           email,
           isAdmin,
         });
-
-        return { result: newUser, status: 201 };
       }
 
-      return true;
+      user.db_id = currentUser._id;
+
+      return user;
     },
+
     // for server side
     async jwt({ token, user }) {
-      if (user) token.isAdmin = user.isAdmin;
+      if (user) {
+        token.isAdmin = user.isAdmin;
+
+        token.db_id = user.db_id;
+      }
       return token;
     },
     // for client side
     async session({ session, token }) {
-      if (session?.user) session.user.isAdmin = token.isAdmin;
+      if (session?.user) {
+        session.user.isAdmin = token.isAdmin;
+        session.user.db_id = token.db_id;
+      }
       return session;
     },
   },

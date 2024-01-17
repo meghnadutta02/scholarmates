@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 
+const interestSchema = new mongoose.Schema({
+  category: {
+    type: String,
+  },
+  subcategories: {
+    type: [String],
+    default: [],
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -22,6 +32,7 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    interests: [interestSchema],
   },
   { timestamps: true }
 );
