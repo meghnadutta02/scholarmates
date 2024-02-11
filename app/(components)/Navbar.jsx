@@ -12,7 +12,7 @@ const navLinks = [
 const Navbar = async () => {
   const session = await getServerSession(options);
   return (
-    <header className="flex text-white justify-between py-2 px-4 items-center left-0 right-0 top-0  bg-gray-600">
+    <header className="flex text-white justify-between py-2 px-4  fixed items-center left-0 right-0 top-0  bg-gray-600 z-50">
       MySite
       <div className="flex justify-between gap-9 font-semibold">
         {navLinks.map((link) => (
