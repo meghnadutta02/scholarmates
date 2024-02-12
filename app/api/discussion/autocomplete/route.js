@@ -1,9 +1,7 @@
 import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/app/config/db";
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
 
-import { options } from "@/app/api/auth/[...nextauth]/options";
+import { NextResponse } from "next/server";
 
 export async function GET(req) {
   try {

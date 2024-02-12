@@ -52,7 +52,7 @@ export async function GET(req) {
             path: {
               wildcard: "*",
             },
-            fuzzy: {},
+            // fuzzy: {},
           },
         },
       };
@@ -82,15 +82,17 @@ export async function GET(req) {
       const types = discussionType.split(",");
       aggregationPipeline.push({ $match: { type: { $in: types } } });
     }
-    if (category) {
-      const categories = category.split(",");
-      aggregationPipeline.push({ $match: { categories: { $in: categories } } });
-    }
-    if (subcategory) {
-      const subcategories = subcategory.split(",");
-      aggregationPipeline.push({
-        $match: { subcategories: { $in: subcategories } },
-      });
+    if (category || subcategory) {
+      let matchQuery = [];
+      if (category) {
+        const categories = category.split(",");
+        matchQuery.push({ categories: { $in: categories } });
+      }
+      if (subcategory) {
+        const subcategories = subcategory.split(",");
+        matchQuery.push({ subcategories: { $in: subcategories } });
+      }
+      aggregationPipeline.push({ $match: { $or: matchQuery } });
     }
     aggregationPipeline.push({ $match: { isActive: true } });
 

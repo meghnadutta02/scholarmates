@@ -3,10 +3,32 @@ import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { interests } from "@/app/interests";
 
-export default function DiscussionFilter() {
+export default function DiscussionFilter({ applyFilters }) {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [expandedCategory, setExpandedCategory] = useState(null);
+  const [college, setCollege] = useState(false);
   const [selectedType, setSelectedType] = useState([]);
+  const applyFilters1 = () => {
+    const filters = {
+      category: selectedCategories,
+      subcategory: selectedSubcategories,
+      college: college,
+      type: selectedType,
+    };
+    applyFilters(filters);
+  };
+  const resetFilters = () => {
+    setSelectedCategories([]);
+    setSelectedType([]);
+    setCollege(false);
+    setSelectedSubcategories([]);
+    applyFilters({
+      category: [],
+      subcategory: [],
+      college: false,
+      type: [],
+    });
+  };
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const handleCategoryChange = (event) => {
     const { value, checked } = event.target;
@@ -24,10 +46,20 @@ export default function DiscussionFilter() {
   };
   const handleTypeChange = (event) => {
     const { value, checked } = event.target;
+    if (checked) {
+      setSelectedType((prevSelectedType) => [...prevSelectedType, value]);
+    } else {
+      setSelectedType((prevSelectedType) =>
+        prevSelectedType.filter((type) => type !== value)
+      );
+    }
   };
-  const handleSubcategoryChange = (event) => {
+  const handleSubcategoryChange = (event, category) => {
     const { value, checked } = event.target;
     if (checked) {
+      setSelectedCategories((prev) =>
+        prev.filter((value) => value != category)
+      );
       setSelectedSubcategories((prevSelectedCategories) => [
         ...prevSelectedCategories,
         value,
@@ -45,7 +77,7 @@ export default function DiscussionFilter() {
 
   return (
     <section className="flex">
-      <aside className="px-2 pt-4 pb-12 z-46 h-screen overflow-y-auto fixed w-[23%] top-10 bg-gray-300 shadow-md">
+      <aside className="px-2 pt-4 pb-12 z-46 h-screen overflow-y-auto fixed w-[24%] top-10 bg-gray-300 shadow-md">
         <h2 className="font-bold">View Discussions from My College</h2>
         <ul>
           <li>
@@ -53,7 +85,8 @@ export default function DiscussionFilter() {
               type="checkbox"
               id="college"
               name="college"
-              value="college"
+              checked={college}
+              onChange={(e) => setCollege(true)}
             />
             <label className="ml-2" htmlFor="college">
               Yes
@@ -98,7 +131,10 @@ export default function DiscussionFilter() {
                           id={`${interest.category}-${subIndex}`}
                           name={subcategory}
                           value={subcategory}
-                          onChange={handleSubcategoryChange}
+                          checked={selectedSubcategories.includes(subcategory)}
+                          onChange={(e) =>
+                            handleSubcategoryChange(e, interest.category)
+                          }
                         />
                         <label
                           className="ml-2"
@@ -123,6 +159,7 @@ export default function DiscussionFilter() {
               id="general"
               name="type"
               value="general"
+              checked={selectedType.includes("general")}
               onChange={handleTypeChange}
             />
             <label className="ml-2" htmlFor="general">
@@ -135,6 +172,7 @@ export default function DiscussionFilter() {
               id="urgent"
               name="type"
               value="urgent"
+              checked={selectedType.includes("urgent")}
               onChange={handleTypeChange}
             />
             <label className="ml-2" htmlFor="urgent">
@@ -147,6 +185,7 @@ export default function DiscussionFilter() {
               id="announcement"
               name="type"
               value="announcement"
+              checked={selectedType.includes("announcement")}
               onChange={handleTypeChange}
             />
             <label className="ml-2" htmlFor="announcement">
@@ -159,6 +198,7 @@ export default function DiscussionFilter() {
               id="collaboration"
               name="type"
               value="collaboration"
+              checked={selectedType.includes("collaboration")}
               onChange={handleTypeChange}
             />
             <label className="ml-2" htmlFor="collaboration">
@@ -171,6 +211,7 @@ export default function DiscussionFilter() {
               id="event"
               name="type"
               value="event"
+              checked={selectedType.includes("event")}
               onChange={handleTypeChange}
             />
             <label className="ml-2" htmlFor="event">
@@ -183,6 +224,7 @@ export default function DiscussionFilter() {
               id="support"
               name="type"
               value="support"
+              checked={selectedType.includes("support")}
               onChange={handleTypeChange}
             />
             <label className="ml-2" htmlFor="support">
@@ -191,10 +233,16 @@ export default function DiscussionFilter() {
           </li>
         </ul>
         <div className="flex justify-end gap-4 mt-4">
-          <button className="bg-blue-400 hover:bg-blue-600 text-white transition ease-in-out font-bold py-1 px-4 rounded">
+          <button
+            className="bg-blue-400 hover:bg-blue-600 text-white transition ease-in-out font-bold py-1 px-4 rounded"
+            onClick={applyFilters1}
+          >
             Apply
           </button>
-          <button className="bg-red-400 hover:bg-red-600 text-white transition ease-in-out font-bold py-1 px-4 rounded">
+          <button
+            className="bg-red-400 hover:bg-red-600 text-white transition ease-in-out font-bold py-1 px-4 rounded"
+            onClick={resetFilters}
+          >
             Reset
           </button>
         </div>
