@@ -1,8 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-
 import DiscussionList from "@/app/(components)/DiscussionList";
 import DiscussionFilter from "@/app/(components)/DiscussionFilter";
 
@@ -23,9 +21,10 @@ const DiscussionsPage = () => {
     type: [],
   });
   const [reloadList, setReloadList] = useState(false);
-
   const [suggestions, setSuggestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false); // New state variable
+  const suggestionsRef = useRef(null);
 
   const handleFilterApplication = (filters) => {
     setSelectedFilters(filters);
@@ -33,8 +32,21 @@ const DiscussionsPage = () => {
   };
 
   const handleSearch = () => {
-    setSuggestions([]);
     setReloadList(true);
+  };
+
+  const handleClickOutside = (event) => {
+    if (
+      suggestionsRef.current &&
+      !suggestionsRef.current.contains(event.target)
+    ) {
+      setShowSuggestions(false); // Hide suggestions when clicked outside
+    } else if (
+      suggestionsRef.current &&
+      suggestionsRef.current.contains(event.target)
+    ) {
+      setShowSuggestions(true);
+    }
   };
 
   useEffect(() => {
@@ -44,14 +56,22 @@ const DiscussionsPage = () => {
   }, [reloadList]);
 
   useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         if (searchQuery && searchQuery.length > 1) {
           const { result } = await getSuggestions(searchQuery);
           setSuggestions(result);
-          console.log(result);
+          setShowSuggestions(true); // Show suggestions when available
         } else if (searchQuery.length === 0) {
           setReloadList(true);
+          setShowSuggestions(false); // Hide suggestions when search query is empty
         }
       } catch (error) {
         console.error("Error fetching discussions:", error);
@@ -77,13 +97,19 @@ const DiscussionsPage = () => {
                 placeholder="looking for a cloud engineer?"
                 className="w-full pl-10 pr-4 py-2 rounded border"
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  e.target.value.length > 3 && handleSearch();
+                }}
               />
               <div className="absolute top-3 left-1 flex items-center pointer-events-none">
                 <AiOutlineSearch className="h-5 w-5 text-gray-400" />{" "}
               </div>
               {/* search suggestions */}
-              {suggestions && suggestions.length > 0 && (
-                <div className="absolute top-11 w-full bg-gray-200 rounded shadow-lg ">
+              {showSuggestions && suggestions.length > 0 && (
+                <div
+                  ref={suggestionsRef}
+                  className="absolute top-11 w-full bg-gray-200 rounded shadow-lg "
+                >
                   {suggestions.map((suggestion, index) => (
                     <div key={index} className="p-2 truncate">
                       {suggestion.title}

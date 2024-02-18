@@ -52,7 +52,7 @@ export async function GET(req) {
             path: {
               wildcard: "*",
             },
-            // fuzzy: {},
+            fuzzy: {},
           },
         },
       };

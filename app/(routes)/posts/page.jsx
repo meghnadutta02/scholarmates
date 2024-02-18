@@ -2,6 +2,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import ServerSideComponent from "@/app/(components)/ServerSideComponent";
 import { redirect } from "next/navigation";
 const PostPage = () => {
   const postId = 100;
@@ -35,7 +36,7 @@ const PostPage = () => {
 
   return (
     <div>
-      PostPage
+      {/* PostPage
       <br />
       <Link href={`/posts/${postId}`}>Go to 100th Post</Link>
       <div>
@@ -46,7 +47,8 @@ const PostPage = () => {
             <p>{post.likes}</p>
           </div>
         ))}
-      </div>
+      </div> */}
+      <ServerSideComponent />
       <p>
         {session?.user?.email}
         <br />
