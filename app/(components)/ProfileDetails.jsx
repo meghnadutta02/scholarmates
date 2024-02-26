@@ -5,20 +5,9 @@ import Link from "next/link";
 import React from "react";
 
 const ProfileDetails = ({ user }) => {
-  // return (
-  //   <div>
-  //     ProfileDetails
-  //     {user.name}
-  //     {user.email}
-  //     {user.collegeName}
-  //     {user.department}
-  //     {user.yearInCollege}
-  //     {user.interests}
-  //     {new Date(user.dob).toLocaleDateString()}
-  //   </div>
-  // );
   return (
-    <div className=" bg-gray-100 p-8">
+    <div className="px-8 py-4">
+      <h2 className="font-bold text-3xl text-center mb-8">Profile</h2>
       <main className="flex flex-col lg:flex-row justify-evenly gap-4">
         <section className="bg-white rounded-lg shadow-lg p-6 w-full lg:w-1/4">
           <div className="flex flex-col items-center text-center">

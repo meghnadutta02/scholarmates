@@ -50,10 +50,6 @@ export default function DrawerDialogDemo() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (isDesktop) {
     return (
       <div className="flex flex-col">

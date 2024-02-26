@@ -73,7 +73,7 @@ const ProfileEdit = ({ user, fetchData }) => {
     console.log(formData);
 
     await fetch("/api/users/profile", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({ formData }),
       headers: { "Content-Type": "application/json" },
     });
@@ -180,6 +180,7 @@ const ProfileEdit = ({ user, fetchData }) => {
             defaultValue={userState.interests}
             value={selectedSubCategories}
             onChange={handleSubcategoryChange}
+            placeholder="Select a category first"
           />
         </div>
         <Button type="submit">Save changes</Button>

@@ -3,6 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import DiscussionList from "@/app/(components)/DiscussionList";
 import DiscussionFilter from "@/app/(components)/DiscussionFilter";
+import { Button } from "@/components/ui/button";
+import { FaFilter } from "react-icons/fa6";
 
 const getSuggestions = async (q) => {
   const response = await fetch(
@@ -24,13 +26,16 @@ const DiscussionsPage = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false); // New state variable
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const suggestionsRef = useRef(null);
 
   const handleFilterApplication = (filters) => {
     setSelectedFilters(filters);
     setReloadList(true);
   };
-
+  const toggleFilter = () => {
+    setIsFilterOpen((prevState) => !prevState);
+  };
   const handleSearch = () => {
     setReloadList(true);
   };
@@ -84,14 +89,14 @@ const DiscussionsPage = () => {
     <div>
       <div className="flex">
         {/* filter section */}
-        <div className="w-[24%]">
+        {isFilterOpen && (
           <DiscussionFilter applyFilters={handleFilterApplication} />
-        </div>
+        )}
         {/* discussion list */}
-        <div className="flex-1 pt-5 px-6">
+        <div className="flex-1 pt-5 px-6 ">
           {/* search button */}
-          <div className="flex mb-10">
-            <div className="relative w-[50%]">
+          <div className="flex mb-10 justify-center">
+            <div className=" relative w-[50%]">
               <input
                 type="text"
                 placeholder="looking for a cloud engineer?"
@@ -119,12 +124,13 @@ const DiscussionsPage = () => {
               )}
             </div>
 
-            <button
-              className="w-[70px] ml-4  bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors duration-300"
-              onClick={handleSearch}
-            >
+            <Button className="ml-4" onClick={handleSearch}>
               Search
-            </button>
+            </Button>
+            <Button className="ml-4" variant="secondary" onClick={toggleFilter}>
+              <FaFilter />
+              Filter
+            </Button>
           </div>
 
           <DiscussionList
