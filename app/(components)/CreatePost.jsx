@@ -31,7 +31,10 @@ function NewPost() {
       console.log(key, value);
     }
 
-    let result = await fetch("/api/posts", { method: "POST", body: formData });
+    let result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts`, {
+      method: "POST",
+      body: formData,
+    });
     result = await result.json();
     console.log(result);
     if (result.success) {

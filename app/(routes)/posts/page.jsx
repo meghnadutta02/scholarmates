@@ -17,7 +17,9 @@ const PostPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("api/posts");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/posts`
+        );
         const data = await response.json();
 
         if (data && data.result && data.result.length > 0) {

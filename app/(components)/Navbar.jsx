@@ -93,9 +93,17 @@ const Navbar = async () => {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               {session ? (
-                <Link href="/api/auth/signout?callbackUrl=/">Sign Out</Link>
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout?callbackUrl=/`}
+                >
+                  Sign Out
+                </Link>
               ) : (
-                <Link href="/api/auth/signin">Sign In</Link>
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signin`}
+                >
+                  Sign In
+                </Link>
               )}
             </DropdownMenuItem>
           </DropdownMenuContent>
