@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { interests } from "@/app/interests";
+import { Button } from "@/components/ui/button";
 
 export default function DiscussionFilter({ applyFilters }) {
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -77,7 +78,7 @@ export default function DiscussionFilter({ applyFilters }) {
 
   return (
     <section className="flex">
-      <aside className="px-2 pt-4 pb-12 z-46 h-screen overflow-y-auto fixed w-[24%] top-10 bg-gray-300 shadow-md">
+      <aside className=" pl-4 pt-4 pb-16 z-46 overflow-y-auto fixed w-[20%] top-0 right-0 bg-gray-300 shadow-md">
         <h2 className="font-bold">View Discussions from My College</h2>
         <ul>
           <li>
@@ -232,19 +233,21 @@ export default function DiscussionFilter({ applyFilters }) {
             </label>
           </li>
         </ul>
-        <div className="flex justify-end gap-4 mt-4">
-          <button
-            className="bg-blue-400 hover:bg-blue-600 text-white transition ease-in-out font-bold py-1 px-4 rounded"
+        <div className="flex justify-end gap-4 pr-4">
+          <Button
+            variant=""
+            className="font-bold py-1 px-4 "
             onClick={applyFilters1}
           >
             Apply
-          </button>
-          <button
-            className="bg-red-400 hover:bg-red-600 text-white transition ease-in-out font-bold py-1 px-4 rounded"
+          </Button>
+          <Button
+            variant="destructive"
+            className="font-bold py-1 px-4 rounded"
             onClick={resetFilters}
           >
             Reset
-          </button>
+          </Button>
         </div>
       </aside>
     </section>
