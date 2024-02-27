@@ -53,7 +53,9 @@ export const options = {
       }
 
       user.db_id = currentUser._id;
-
+      user.collegeName = currentUser.collegeName;
+      user.interests = currentUser.interests.length;
+      console.log("User: ", user.interests);
       return user;
     },
 
@@ -61,7 +63,8 @@ export const options = {
     async jwt({ token, user }) {
       if (user) {
         token.isAdmin = user.isAdmin;
-
+        token.interests = user.interests;
+        token.collegeName = user.collegeName;
         token.db_id = user.db_id;
       }
       return token;
@@ -71,6 +74,8 @@ export const options = {
       if (session?.user) {
         session.user.isAdmin = token.isAdmin;
         session.user.db_id = token.db_id;
+        session.user.interests = token.interests;
+        session.user.collegeName = token.collegeName;
       }
       return session;
     },
