@@ -26,6 +26,12 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
+    connection: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     collegeName: {
       type: String,
       default: "",
@@ -46,13 +52,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-
-    connection: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
     interests: {
       type: [interestSchema],
       default: [],

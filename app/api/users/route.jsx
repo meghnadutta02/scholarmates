@@ -5,9 +5,11 @@ import connect from "@/app/config/db";
 //get all users
 export async function GET(req) {
   try {
+    
     await connect();
 
     const users = await User.find({});
+   
 
     return NextResponse.json({ result: users }, { status: 200 });
   } catch (error) {
