@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useSession } from 'next-auth/react'
 import Image from "next/image";
 import {
   Carousel,
@@ -16,18 +17,35 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 
 export default function Component() {
+  // use session
+
+  const { data: session, status } = useSession();
+
+
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
+  const [userId,setUserId]=useState();
+
+  useEffect(() => {
+    if (session) {
+      const { user } = session;
+      console.log("User:", user);
+      setUserId(user.db_id);
+    }
+  }, [session]);
 
   const fetchData = async () => {
     try {
-      const res = await fetch("api/users/", { cache: "no-cache" });
-      if (!res.ok) {
-        throw new Error("Failed to fetch data");
+      if(userId){
+        
+        const res = await fetch(`/api/users/${userId}`, { cache: "no-cache" });
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await res.json();
+        console.log(data.result);
+        setProfiles(data.result);
       }
-      const data = await res.json();
-      console.log(data.result);
-      setProfiles(data.result);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     } finally {
@@ -36,7 +54,27 @@ export default function Component() {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [userId]);
+
+
+// connect user
+
+const handleConnectClick = async(profileId) => {
+  try{
+    if(profileId && userId){
+      const data=await fetch(`/api/connection/${userId}`,
+      {method:'POST' ,body: JSON.stringify({ recipientId:profileId }) },
+      {cache:"no-cache"})
+      if(data){
+        console.log(data);
+      }
+    }else{
+      console.log("not get profileid")
+    }
+  }catch(error){
+    console.log("error: =",error.message);
+  }
+};
 
   return (
     // <div className="w-full px-4 mx-auto grid grid-rows-[auto_1fr_auto] gap-4 md:gap-6 pb-10">
@@ -80,7 +118,7 @@ export default function Component() {
                       </div>
                     </div>
                     <div className="flex ml-auto gap-4">
-                      <Button>Connect</Button>
+                      <Button onClick={() => handleConnectClick(profile._id)}>Connect</Button>
                     </div>
                   </div>
                 </div>
