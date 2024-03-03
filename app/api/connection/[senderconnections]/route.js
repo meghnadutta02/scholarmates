@@ -2,12 +2,15 @@ import connect from "@/app/config/db";
 import User from "@/app/(models)/userModel";
 import request from "@/app/(models)/requestModel";
 import { NextResponse } from "next/server";
-
+import setupServer from "../../socket/route";
 
 
 export async function POST(req,res ,{ params }) {
   try {
     await connect();
+    
+    await setupServer();
+    
     const senderId = params.senderconnections;
     const { recipientId } = await req.json();
     console.log(senderId, recipientId);

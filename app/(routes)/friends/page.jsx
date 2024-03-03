@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
+import {io} from "socket.io-client";
 
 let socket;
 
@@ -9,7 +9,7 @@ const Page = () => {
     const [username, setUsername] = useState("");
 
     useEffect(()=>{
-     socket=io("http://localhost:5000",{transports:['websocket']});
+     socket=io({transports:['websocket']});
       socket.on('connect', () => {
         console.log('Successfully connected!');
       });
