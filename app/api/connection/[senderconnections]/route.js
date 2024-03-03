@@ -3,7 +3,9 @@ import User from "@/app/(models)/userModel";
 import request from "@/app/(models)/requestModel";
 import { NextResponse } from "next/server";
 
-export async function POST(req, { params }) {
+
+
+export async function POST(req,res ,{ params }) {
   try {
     await connect();
     const senderId = params.senderconnections;
@@ -34,6 +36,8 @@ export async function POST(req, { params }) {
 
     await friendshipRequest.save();
 
+    
+    
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
