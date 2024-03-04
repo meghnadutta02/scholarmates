@@ -6,17 +6,8 @@ import { toast } from "react-toastify";
 import io from "socket.io-client";
 
 const Page = () => {
-  const [socket, setSocket] = useState(null);
-  const [message, setMessage] = useState("");
-  const [roomID, setRoomID] = useState("");
-  const [isRoomSelected, setIsRoomSelected] = useState(false);
-  const [inboxMessages, setInboxMessages] = useState([]);
-
-  const sendMessageHandler = (e) => {
-    e.preventDefault();
-    socket.emit("send-message", { message: message, roomID: roomID });
-    setMessage("");
-  };
+    const [message, setMessage] = useState("");
+    const [username, setUsername] = useState("");
 
   const selectRoomHandler = (e) => {
     e.preventDefault();

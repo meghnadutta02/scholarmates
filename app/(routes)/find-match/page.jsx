@@ -5,6 +5,8 @@ import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import {io} from "socket.io-client";
+let socket;
 import {
   Carousel,
   CarouselContent,
@@ -24,6 +26,29 @@ export default function Component() {
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState();
+
+
+  useEffect(()=>{
+    socket=io({transports:['websocket']});
+     socket.on('connect', () => {
+       console.log('Successfully connected!');
+     });
+     socket.on("connect_error", (err) => {
+       // the reason of the error, for example "xhr poll error"
+       console.log(err.message);
+     
+       // some additional description, for example the status code of the initial HTTP response
+       console.log(err.description);
+     
+       // some additional context, for example the XMLHttpRequest object
+       console.log(err.context);
+     });
+
+     return () => {
+       socket.disconnect();
+     };
+   },[])
+
 
   useEffect(() => {
     if (session) {
