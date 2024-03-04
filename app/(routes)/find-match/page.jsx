@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useSession } from 'next-auth/react'
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import {
   Carousel,
@@ -21,10 +21,9 @@ export default function Component() {
 
   const { data: session, status } = useSession();
 
-
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
-  const [userId,setUserId]=useState();
+  const [userId, setUserId] = useState();
 
   useEffect(() => {
     if (session) {
@@ -34,47 +33,49 @@ export default function Component() {
     }
   }, [session]);
 
-  const fetchData = async () => {
-    try {
-      if(userId){
-        
-        const res = await fetch(`/api/users/${userId}`, { cache: "no-cache" });
-        if (!res.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const data = await res.json();
-        console.log(data.result);
-        setProfiles(data.result);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (userId) {
+          const res = await fetch(`/api/users/${userId}`, {
+            cache: "no-cache",
+          });
+          if (!res.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const data = await res.json();
+          console.log(data.result);
+          setProfiles(data.result);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchData();
   }, [userId]);
 
+  // connect user
 
-// connect user
-
-const handleConnectClick = async(profileId) => {
-  try{
-    if(profileId && userId){
-      const data=await fetch(`/api/connection/${userId}`,
-      {method:'POST' ,body: JSON.stringify({ recipientId:profileId }) },
-      {cache:"no-cache"})
-      if(data){
-        console.log(data);
+  const handleConnectClick = async (profileId) => {
+    try {
+      if (profileId && userId) {
+        const data = await fetch(
+          `/api/connection/${userId}`,
+          { method: "POST", body: JSON.stringify({ recipientId: profileId }) },
+          { cache: "no-cache" }
+        );
+        if (data) {
+          console.log(data);
+        }
+      } else {
+        console.log("not get profileid");
       }
-    }else{
-      console.log("not get profileid")
+    } catch (error) {
+      console.log("error: =", error.message);
     }
-  }catch(error){
-    console.log("error: =",error.message);
-  }
-};
+  };
 
   return (
     // <div className="w-full px-4 mx-auto grid grid-rows-[auto_1fr_auto] gap-4 md:gap-6 pb-10">
@@ -118,7 +119,9 @@ const handleConnectClick = async(profileId) => {
                       </div>
                     </div>
                     <div className="flex ml-auto gap-4">
-                      <Button onClick={() => handleConnectClick(profile._id)}>Connect</Button>
+                      <Button onClick={() => handleConnectClick(profile._id)}>
+                        Connect
+                      </Button>
                     </div>
                   </div>
                 </div>
