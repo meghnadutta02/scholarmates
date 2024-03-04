@@ -46,7 +46,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-
+    post: [
+    {  type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",}
+    ],
     connection: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -62,8 +65,8 @@ const userSchema = new mongoose.Schema(
 );
 // userSchema.index({ "interests.subcategories": 1 });
 
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+export const User = mongoose.models.User || mongoose.model("User", userSchema);
 // User.collection.getIndexes().then((indexes) => {
 //   console.log("Existing indexes for User model:", indexes);
 // });
-export default User;
+// export default User;
