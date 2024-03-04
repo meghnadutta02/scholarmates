@@ -1,6 +1,6 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
-import multer from 'multer';
+
 
 export default withAuth(
   function middleware(req,res) {
