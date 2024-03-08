@@ -3,10 +3,8 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
-import {io} from "socket.io-client";
-let socket;
+import { useSession } from '@/app/(components)/SessionProvider'
 import {
   Carousel,
   CarouselContent,
@@ -15,48 +13,25 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
-
 import { useState, useEffect } from "react";
-
 export default function Component() {
   // use session
-
-  const { data: session, status } = useSession();
+const {session,request}=useSession();
 
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState();
-
-
-  useEffect(()=>{
-    socket=io({transports:['websocket']});
-     socket.on('connect', () => {
-       console.log('Successfully connected!');
-     });
-     socket.on("connect_error", (err) => {
-       // the reason of the error, for example "xhr poll error"
-       console.log(err.message);
-     
-       // some additional description, for example the status code of the initial HTTP response
-       console.log(err.description);
-     
-       // some additional context, for example the XMLHttpRequest object
-       console.log(err.context);
-     });
-
-     return () => {
-       socket.disconnect();
-     };
-   },[])
-
+  
 
   useEffect(() => {
-    if (session) {
-      const { user } = session;
-      console.log("User:", user);
-      setUserId(user.db_id);
-    }
-  }, [session]);
+   if(session){
+    // console.log("this is lll:",session.db_id)
+    // console.log("request is:",request);
+    setUserId(session.db_id);
+   }
+
+  }, [userId]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,9 +62,13 @@ export default function Component() {
     try {
       if (profileId && userId) {
         const data = await fetch(
-          `/api/connection/${userId}`,
-          { method: "POST", body: JSON.stringify({ recipientId: profileId }) },
-          { cache: "no-cache" }
+          `http://localhost:5001/sendconnection/${userId}`,
+        {  method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ recipientId: profileId }),
+          cache: "no-cache"}
         );
         if (data) {
           console.log(data);

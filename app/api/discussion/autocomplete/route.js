@@ -1,5 +1,5 @@
 import Discussion from "@/app/(models)/discussionModel";
-import connect from "@/app/config/db";
+import connect from "@/socketServer/db";
 
 import { NextResponse } from "next/server";
 

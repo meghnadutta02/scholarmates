@@ -69,4 +69,4 @@ const User = mongoose.models.User || mongoose.model("User", userSchema);
 // User.collection.getIndexes().then((indexes) => {
 //   console.log("Existing indexes for User model:", indexes);
 // });
- export default User;
+export default User;
