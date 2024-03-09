@@ -4,16 +4,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+import { useSession } from '@/app/(components)/SessionProvider';
 import { toast } from "react-toastify";
 
 function NewPost() {
-  const [postContent, setPostContent] = useState("");
+  // const { data: session, status } = useSession();
+  const session=useSession();
+  const [description, setDescription] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageURL, setImageURL] = useState(null);
+  const [userId,setUserId]=useState();
+
+  useEffect(() => {
+if(session){
+  console.log("data",session)
+}
+    // if (session) {
+    //   const { user } = session;
+    //   console.log("User:", user);
+    //   setUserId(user.db_id);
+    // }
+  }, []);
 
   const handlePostContentChange = (event) => {
-    setPostContent(event.target.value);
+    setDescription(event.target.value);
   };
 
   const handleImageChange = (event) => {
@@ -24,14 +39,14 @@ function NewPost() {
   const handlePostSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("content", postContent);
+    formData.append("description", description);
     formData.append("image", selectedImage);
 
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
 
-    let result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts`, {
+    let result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${userId}`, {
       method: "POST",
       body: formData,
     });
@@ -41,7 +56,7 @@ function NewPost() {
       toast.success("Post uploaded");
     }
 
-    setPostContent("");
+    setDescription("");
     setSelectedImage(null);
   };
 
@@ -51,7 +66,7 @@ function NewPost() {
         <div>
           <Textarea
             placeholder="Post an update"
-            value={postContent}
+            value={description}
             name="content"
             onChange={handlePostContentChange}
           />

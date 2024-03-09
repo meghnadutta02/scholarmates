@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
-import connect from "@/app/config/db";
+import connect from "@/socketServer/db";
 export async function GET(req) {
   try {
     await connect();

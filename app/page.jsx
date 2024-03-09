@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import CreatePost from "@/app/(components)/CreatePost";
+import CreatePost from "@/app/(components)/NewPost";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
