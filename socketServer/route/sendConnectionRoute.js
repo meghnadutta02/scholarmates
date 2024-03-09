@@ -4,8 +4,9 @@ const router=express.Router();
 
 
 //ROUTER
-router.post("/:senderconnections",sendConnectionController);
-// router.post("/receive",receiveConnectionController);
+router.post("/receive",receiveConnectionController);
+ router.post("/:senderconnections",sendConnectionController);
+ 
 
 
 export default router;

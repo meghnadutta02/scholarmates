@@ -48,7 +48,7 @@ export const sendConnectionController=async (req,resp)=>{
         
       
           
-            io.to(senderId).emit("connectionRequest", { recipientId :recipientId,senderId:senderId,
+            io.to(recipientId).emit("connectionRequest", { recipientId :recipientId,senderId:senderId,
             sendername:senderUser.name,
             friendRequest:requestdata._id,
         interest:senderUser.interest});
@@ -77,7 +77,7 @@ export const receiveConnectionController=async(req,resp)=>{
         console.log(friendshipRequest)
 
         if (!friendshipRequest) {
-            return res.status(404).json({ message: 'Friendship request not found' });
+            return resp.status(404).json({ message: 'Friendship request not found' });
         }
 
         if (!userId || !friendshipRequest.participants.includes(userId)) {
