@@ -11,7 +11,7 @@ const Page = () => {
 
     const [userId, setUserId] = useState();
     const [requestdata, setRequestData] = useState([]);
-    const[data,setData]=useState([]);
+    const [data, setData] = useState([]);
 
     useEffect(() => {
 
@@ -23,46 +23,47 @@ const Page = () => {
 
     }, [userId]);
 
-    useEffect(() => {
-        socket = io("http://localhost:5001");
-        console.log(userId)
-        socket.emit("setup", userId);
+    // useEffect(() => {
+    //     socket = io("http://localhost:5001");
+    //     console.log(userId)
+    //     socket.emit("setup", userId);
 
-        socket.on('connectionRequest', (data) => {
-            console.log(data);
-            if(data!=null){
-                setRequestData(prevData => [...prevData, data]);
-            }
-            
-            setRequest(prevRequest => ({ ...prevRequest, ...data }));
-            console.log("data we have:", data);
-        });
+    //     socket.on('connectionRequest', (data) => {
+    //         console.log(data);
+    //         if (data != null) {
+    //             setRequestData(prevData => [...prevData, data]);
+    //         }
+
+    //         setRequest(prevRequest => ({ ...prevRequest, ...data }));
+    //         console.log("data we have:", data);
+    //     });
 
 
-        return () => {
-            socket.disconnect();
-        };
-    }, [userId])
-    useEffect(() => {
-        if (requestdata.length > 0) {
-            localStorage.setItem('request', JSON.stringify(requestdata));
-            console.log("dataaaaa:", requestdata);
-        }
-    }, [requestdata]);
+    //     return () => {
+    //         socket.disconnect();
+    //     };
+    // }, [userId])
+    // useEffect(() => {
+    //     if (requestdata.length > 0) {
+    //         localStorage.setItem('request', JSON.stringify(requestdata));
+    //         console.log("dataaaaa:", requestdata);
+    //     }
+    // }, [requestdata]);
     useEffect(() => {
         const storedData = localStorage.getItem('request');
         const parsedData = storedData ? JSON.parse(storedData) : null;
         setData(parsedData);
-        console.log("pasr:",parsedData);
+        console.log("pasr:", parsedData);
     }, []);
 
 
     return (
         <>
- <div>
+            <div>
                 {data?.map((item, index) => (
                     <Notification key={index} sender={item.senderId}
-                    receive={item.recipientId} name={item.sendername}/>
+                        receive={item.recipientId} name={item.sendername} frndId={item.friendRequest
+}/>
                 ))}
             </div>
         </>

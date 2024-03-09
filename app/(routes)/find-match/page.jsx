@@ -3,7 +3,9 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {io} from "socket.io-client";
 import Image from "next/image";
+var socket, selectedChatCompare;
 import { useSession } from '@/app/(components)/SessionProvider'
 import {
   Carousel,
@@ -21,7 +23,8 @@ const {session,request}=useSession();
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState();
-  
+  const [requestdata, setRequestData] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
    if(session){
@@ -32,6 +35,32 @@ const {session,request}=useSession();
 
   }, [userId]);
 
+  useEffect(() => {
+    socket = io("http://localhost:5001");
+    console.log(userId)
+    socket.emit("setup", userId);
+
+    socket.on('connectionRequest', (data) => {
+        console.log(data);
+        if (data != null) {
+            setRequestData(prevData => [...prevData, data]);
+        }
+
+        setRequest(prevRequest => ({ ...prevRequest, ...data }));
+        console.log("data we have:", data);
+    });
+
+
+    return () => {
+        socket.disconnect();
+    };
+}, [userId])
+useEffect(() => {
+    if (requestdata.length > 0) {
+        localStorage.setItem('request', JSON.stringify(requestdata));
+        console.log("dataaaaa:", requestdata);
+    }
+}, [requestdata]);
 
   useEffect(() => {
     const fetchData = async () => {
