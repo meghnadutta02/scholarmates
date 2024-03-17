@@ -6,6 +6,7 @@ import  colors  from 'colors';
 
 const connection = async() => {
    try{
+      
       console.log(process.env.MONGO_URL)
     const connection=await mongoose.connect("mongodb+srv://imankushroy:AjZSXKoTycBjn64U@alikeminds-cluster.8jbqt0y.mongodb.net/alikemindsDB?retryWrites=true&w=majority")
     console.log(`connected to MongoDB database ${connection.connection.host}`.bgGreen.white)
