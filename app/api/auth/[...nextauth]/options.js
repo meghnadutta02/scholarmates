@@ -22,7 +22,6 @@ export const options = {
     }),
     GoogleProvider({
       profile(profile) {
-        //console.log("Profile Google: ", profile);
         let isAdmin = false;
         if (profile?.email === "meghnakha18@gmail.com") {
           isAdmin = true;
@@ -30,6 +29,7 @@ export const options = {
         return {
           ...profile,
           id: profile.sub,
+
           isAdmin,
         };
       },
@@ -40,7 +40,9 @@ export const options = {
   callbacks: {
     async signIn({ user, profile }) {
       await connect();
-      const { name, email, isAdmin } = user || profile;
+      const { name, email, isAdmin, picture } = user || profile;
+
+      console.log("Profile picture:", picture);
 
       let currentUser = await User.findOne({ email });
 
@@ -49,13 +51,19 @@ export const options = {
           name,
           email,
           isAdmin,
+          profilePic: picture,
         });
       }
 
+      console.log("Current user:", currentUser);
+
       user.db_id = currentUser._id;
       user.collegeName = currentUser.collegeName;
-      user.interests = currentUser.interests.length;
-      console.log("User: ", user.interests);
+      user.isAdmin = currentUser.isAdmin;
+      user.profilePic = currentUser.profilePic;
+      user.interestCategories = currentUser.interestCategories;
+      user.interestSubcategories = currentUser.interestSubcategories;
+
       return user;
     },
 
@@ -63,7 +71,10 @@ export const options = {
     async jwt({ token, user }) {
       if (user) {
         token.isAdmin = user.isAdmin;
-        token.interests = user.interests;
+        token.interestCategories = user.interestCategories;
+        token.interestSubcategories = user.interestSubcategories;
+        token.profilePic = user.profilePic;
+        token.isAdmin = user.isAdmin;
         token.collegeName = user.collegeName;
         token.db_id = user.db_id;
       }
@@ -74,8 +85,11 @@ export const options = {
       if (session?.user) {
         session.user.isAdmin = token.isAdmin;
         session.user.db_id = token.db_id;
-        session.user.interests = token.interests;
+        session.interestCategories = token.interestCategories;
+        session.interestSubcategories = token.interestSubcategories;
         session.user.collegeName = token.collegeName;
+        session.user.profilePic = token.profilePic;
+        session.user.isAdmin = token.isAdmin;
       }
       return session;
     },

@@ -1,9 +1,11 @@
 "use client";
-
+import { MdEdit } from "react-icons/md";
 import React, { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-// import { useMediaQuery } from "@/hooks/use-media-query";
+
+import Spinnersvg from "@/public/Spinner.svg";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
@@ -49,15 +51,21 @@ export default function DrawerDialogDemo() {
   useEffect(() => {
     fetchData();
   }, []);
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center  z-50">
+        <Image src={Spinnersvg} alt="Loading..." className="h-28" />
+      </div>
+    );
+  }
   if (isDesktop) {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full relative">
         <ProfileDetails user={user} />
-        <div className="mt-8 mx-auto">
+        <div className="mt-8 mx-auto  ">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button>Edit Profile</Button>
+              <MdEdit className="h-10 w-10 text-gray-600 absolute top-6 right-7 shadow-xl rounded-full cursor-pointer p-2 text-center" />
             </DialogTrigger>
             <DialogContent className="sm:max-w-[720px]">
               <DialogHeader>
@@ -66,7 +74,7 @@ export default function DrawerDialogDemo() {
                   Make changes to your profile here. Click save when done.
                 </DialogDescription>
               </DialogHeader>
-              <ProfileEdit user={user} fetchData={fetchData} />
+              <ProfileEdit user={user} />
             </DialogContent>
           </Dialog>
         </div>
@@ -79,7 +87,9 @@ export default function DrawerDialogDemo() {
       <ProfileDetails user={user} />
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <Button variant="outline">Edit Profile</Button>
+          <Button variant="outline">
+            <MdEdit className="h-6 w-6 text-gray-600 absolute top-6 right-7 cursor-pointer" />
+          </Button>
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader className="text-left">
