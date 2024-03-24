@@ -85,8 +85,8 @@ export const options = {
       if (session?.user) {
         session.user.isAdmin = token.isAdmin;
         session.user.db_id = token.db_id;
-        session.interestCategories = token.interestCategories;
-        session.interestSubcategories = token.interestSubcategories;
+        session.user.interestCategories = token.interestCategories;
+        session.user.interestSubcategories = token.interestSubcategories;
         session.user.collegeName = token.collegeName;
         session.user.profilePic = token.profilePic;
         session.user.isAdmin = token.isAdmin;

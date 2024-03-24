@@ -16,7 +16,7 @@ export async function POST(req) {
       title,
       privacy,
       type,
-      creator: new ObjectId("65a00b05c4c6ed34bd3f9527"),
+      creator: new ObjectId(session?.user?.db_id),
       interestCategories,
       interestSubcategories,
     });
@@ -66,7 +66,24 @@ export async function GET(req) {
           as: "creatorData",
         },
       },
-      { $unwind: "$creatorData" }
+      { $unwind: "$creatorData" },
+      {
+        $project: {
+          "creatorData.interestCategories": 0,
+          "creatorData.interestSubcategories": 0,
+          "creatorData.email": 0,
+          "creatorData.createdAt": 0,
+          "creatorData.updatedAt": 0,
+          "creatorData.__v": 0,
+          "creatorData.dob": 0,
+          "creatorData.degree": 0,
+          "creatorData.department": 0,
+          "creatorData.yearInCollege": 0,
+          "creatorData.connection": 0,
+          "creatorData.bio": 0,
+          "creatorData.isAdmin": 0,
+        },
+      }
     );
 
     if (college) {
@@ -82,11 +99,11 @@ export async function GET(req) {
       let matchQuery = [];
       if (category) {
         const categories = category.split(",");
-        matchQuery.push({ interestCategories: { $in: categories } });
+        matchQuery.push({ categories: { $in: categories } });
       }
       if (subcategory) {
         const subcategories = subcategory.split(",");
-        matchQuery.push({ interestSubcategories: { $in: subcategories } });
+        matchQuery.push({ subcategories: { $in: subcategories } });
       }
       aggregationPipeline.push({ $match: { $or: matchQuery } });
     }
