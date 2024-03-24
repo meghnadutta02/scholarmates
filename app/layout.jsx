@@ -6,7 +6,7 @@ import { AuthProvider } from "./(components)/AuthProvider";
 import Sidebar from "./(components)/Sidebar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import {SessionProvider} from './(components)/SessionProvider'
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -14,23 +14,24 @@ export const metadata = {
   description: "By Half Prayash",
 };
 
-export default async function RootLayout({ children }) {
+export default async function RootLayout({ children}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          <div>
+      <div>
             <Navbar />
             <div className="flex justify-center">
               <Sidebar />
               <div className="flex justify-center min-h-screen md:w-[70%]">
+              
+              <SessionProvider>
                 {children}
+              </SessionProvider>
               </div>
               <Footer />
             </div>
             <ToastContainer />
           </div>
-        </AuthProvider>
       </body>
     </html>
   );

@@ -1,4 +1,4 @@
-import connect from "@/app/config/db";
+import connect from "@/socketServer/db";
 import User from "@/app/(models)/userModel";
 import { NextResponse } from "next/server";
 import request from "@/app/(models)/requestModel";

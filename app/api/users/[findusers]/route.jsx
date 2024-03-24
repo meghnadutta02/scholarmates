@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
-import connect from "@/app/config/db";
+import connect from "@/socketServer/db";
 
 //get all users
-export async function GET(req) {
+export async function GET(req,{params}) {
   try {
     await connect();
 
-    const users = await User.find({});
+    const users = await User.find({_id:{$ne:params.findusers}});
 
     return NextResponse.json({ result: users }, { status: 200 });
   } catch (error) {

@@ -1,8 +1,9 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+
 export default withAuth(
-  function middleware(req) {
+  function middleware(req,res) {
     // console.log("middleware", req.nextUrl.pathname);
     // console.log("middleware", req.nextauth.token);
 
@@ -40,3 +41,6 @@ export const config = {
     "/discussions",
   ],
 };
+
+
+
