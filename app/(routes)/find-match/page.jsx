@@ -3,10 +3,10 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
 import Image from "next/image";
 var socket, selectedChatCompare;
-import { useSession } from '@/app/(components)/SessionProvider'
+import { useSession } from "@/app/(components)/SessionProvider";
 import {
   Carousel,
   CarouselContent,
@@ -18,7 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 export default function Component() {
   // use session
-const {session,request}=useSession();
+  const { session, request } = useSession();
 
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
@@ -27,40 +27,38 @@ const {session,request}=useSession();
   const [data, setData] = useState([]);
 
   useEffect(() => {
-   if(session){
-    // console.log("this is lll:",session.db_id)
-    // console.log("request is:",request);
-    setUserId(session.db_id);
-   }
-
+    if (session) {
+      // console.log("this is lll:",session.db_id)
+      // console.log("request is:",request);
+      setUserId(session.db_id);
+    }
   }, [userId]);
 
   useEffect(() => {
     socket = io("http://localhost:5001");
-    console.log(userId)
+    console.log(userId);
     socket.emit("setup", userId);
 
-    socket.on('connectionRequest', (data) => {
-        console.log(data);
-        if (data != null) {
-            setRequestData(prevData => [...prevData, data]);
-        }
+    socket.on("connectionRequest", (data) => {
+      console.log(data);
+      if (data != null) {
+        setRequestData((prevData) => [...prevData, data]);
+      }
 
-        setRequest(prevRequest => ({ ...prevRequest, ...data }));
-        console.log("data we have:", data);
+      setRequest((prevRequest) => ({ ...prevRequest, ...data }));
+      console.log("data we have:", data);
     });
 
-
     return () => {
-        socket.disconnect();
+      socket.disconnect();
     };
-}, [userId])
-useEffect(() => {
+  }, [userId]);
+  useEffect(() => {
     if (requestdata.length > 0) {
-        localStorage.setItem('request', JSON.stringify(requestdata));
-        console.log("dataaaaa:", requestdata);
+      localStorage.setItem("request", JSON.stringify(requestdata));
+      console.log("dataaaaa:", requestdata);
     }
-}, [requestdata]);
+  }, [requestdata]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,12 +90,14 @@ useEffect(() => {
       if (profileId && userId) {
         const data = await fetch(
           `http://localhost:5001/sendconnection/${userId}`,
-        {  method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ recipientId: profileId }),
-          cache: "no-cache"}
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ recipientId: profileId }),
+            cache: "no-cache",
+          }
         );
         if (data) {
           console.log(data);
@@ -159,18 +159,14 @@ useEffect(() => {
                   </div>
                 </div>
                 <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
-                  <p>
-                    Im a full-stack developer with a passion for React and
-                    Node.js. In my free time, I love contributing to open-source
-                    projects and exploring new technologies.
-                  </p>
+                  <p>{profile.bio}</p>
                 </div>
                 <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
                   <h2 className="font-semibold text-lg">Interests</h2>
                   <ul className="list-disc list-inside">
-                    {profile.interests.map((interest) => (
-                      <div key={interest._id}>
-                        <li>{interest.category}</li>
+                    {profile.interestSubcategories.map((interest) => (
+                      <div key={interest}>
+                        <li>{interest}</li>
                       </div>
                     ))}
                   </ul>

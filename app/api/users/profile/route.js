@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
-import connect from "@/socketServer/db";
+import connect from "@/app/config/db";
 
 //get user profile
 export async function GET(req) {
@@ -10,9 +10,13 @@ export async function GET(req) {
     await connect();
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
+    console.log(id);
+
     const user = await User.findOne({
       _id: id,
     }).select("-createdAt -updatedAt -__v");
+    console.log(user);
+
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
