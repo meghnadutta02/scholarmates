@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import connect from "@/socketServer/db";
 
+//get user profile
 export async function GET(req) {
   try {
     await connect();
@@ -22,6 +23,7 @@ export async function GET(req) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+//update user profile
 export async function PUT(req) {
   try {
     await connect();

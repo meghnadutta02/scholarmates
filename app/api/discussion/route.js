@@ -2,35 +2,32 @@ import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/socketServer/db";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { ObjectId } from "mongodb";
+
 export async function POST(req) {
   try {
     await connect();
     const session = await getServerSession(options);
-    const { title, privacy, type, categories, subcategories } =
+    const { title, privacy, type, interestCategories, interestSubcategories } =
       await req.json();
 
     const discussion = await Discussion.create({
       title,
       privacy,
       type,
-      creator: new ObjectId("65a00b05c4c6ed34bd3f9527"),
-      categories,
-      subcategories,
+      creator: new ObjectId(session?.user?.db_id),
+      interestCategories,
+      interestSubcategories,
     });
 
     return NextResponse.json({ result: discussion }, { status: 200 });
-    // return NextResponse.json(
-    //   { categories, subcategories, type },
-    //   { status: 200 }
-    // );
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
 export async function GET(req) {
   try {
     await connect();
@@ -59,6 +56,7 @@ export async function GET(req) {
 
       aggregationPipeline.push(atlasSearchQuery);
     }
+
     aggregationPipeline.push(
       {
         $lookup: {
@@ -68,9 +66,24 @@ export async function GET(req) {
           as: "creatorData",
         },
       },
-      { $unwind: "$creatorData" }
-
-      // { $project: { creatorData: 1 } }
+      { $unwind: "$creatorData" },
+      {
+        $project: {
+          "creatorData.interestCategories": 0,
+          "creatorData.interestSubcategories": 0,
+          "creatorData.email": 0,
+          "creatorData.createdAt": 0,
+          "creatorData.updatedAt": 0,
+          "creatorData.__v": 0,
+          "creatorData.dob": 0,
+          "creatorData.degree": 0,
+          "creatorData.department": 0,
+          "creatorData.yearInCollege": 0,
+          "creatorData.connection": 0,
+          "creatorData.bio": 0,
+          "creatorData.isAdmin": 0,
+        },
+      }
     );
 
     if (college) {
@@ -111,7 +124,7 @@ export async function PUT(req) {
 
     const session = await getServerSession(options);
     const id = req.nextUrl.searchParams.get("id");
-    console.log(id);
+
     const data = await req.json();
 
     const discussion = await Discussion.findOne({
@@ -138,22 +151,27 @@ export async function PUT(req) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
 export async function DELETE(req) {
   try {
     await connect();
     const session = await getServerSession(options);
     const id = req.nextUrl.searchParams.get("id");
+
     const discussion = await Discussion.findOne({
       _id: id,
       creator: session?.user?.db_id,
     });
+
     if (!discussion) {
       return NextResponse.json(
         { error: "Discussion not found or unauthorized" },
         { status: 404 }
       );
     }
+
     const deletedDiscussion = await Discussion.findByIdAndDelete(id);
+
     return NextResponse.json({ result: deletedDiscussion }, { status: 200 });
   } catch (err) {
     console.error(err);

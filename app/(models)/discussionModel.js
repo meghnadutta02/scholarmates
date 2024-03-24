@@ -16,6 +16,7 @@ const discussionSchema = new mongoose.Schema(
       required: true,
     },
     title: { type: String, required: true },
+    content: { type: String, required: true, default: "" },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     isActive: { type: Boolean, default: true },
     categories: {
@@ -23,6 +24,26 @@ const discussionSchema = new mongoose.Schema(
       default: [],
     },
     subcategories: {
+      type: [String],
+      default: [],
+    },
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    likedBy: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+      default: [],
+    },
+    dislikedBy: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+      default: [],
+    },
+    dislikes: {
+      type: Number,
+      default: 0,
+    },
+    attachments: {
       type: [String],
       default: [],
     },

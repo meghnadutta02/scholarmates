@@ -1,45 +1,44 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+
 import React from "react";
 
+const getYearWithSuffix = (year) => {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const lastDigit = year % 10;
+  const suffix = suffixes[lastDigit] || suffixes[0];
+  return `${year}${suffix}`;
+};
 const ProfileDetails = ({ user }) => {
   return (
     <div className="px-8 py-4">
       <h2 className="font-bold text-3xl text-center mb-8">Profile</h2>
-      <main className="flex flex-col lg:flex-row justify-evenly gap-4">
-        <section className="bg-white rounded-lg shadow-lg p-6 w-full lg:w-1/4">
+      <div className="flex flex-col justify-evenly gap-4 ">
+        <section className="bg-white rounded-lg shadow-lg p-6 w-full relative">
           <div className="flex flex-col items-center text-center">
             <Avatar>
-              <AvatarImage
-                alt="Prince Patel"
-                src="/placeholder.svg?height=100&width=100"
-              />
+              <AvatarImage alt={user.name} src={user.profilePic} />
             </Avatar>
-
             <h1 className="mt-4 font-bold text-2xl">{user.name}</h1>
-            <p className="mt-2 text-sm text-gray-600">
-              I am currently pursuing MCA from College of Engineering, Anna
-              University, Tamil Nadu. I am looking for full-time work in IT.
-              {user.bio}
-            </p>
-            <div className="mt-4">
-              <Badge variant="secondary">UI/UX Design</Badge>
-              <Badge variant="secondary">Frontend Operations</Badge>
-              <Badge variant="secondary">Full Stack Developer</Badge>
-              <Badge variant="secondary">App Developer</Badge>
-            </div>
-            <div className="flex space-x-3 mt-4">
+
+            {user.bio ? (
+              <p className="mt-2  text-gray-600 italic">{user.bio}</p>
+            ) : (
+              <div className="flex items-center justify-center text-gray-600">
+                <p>Add a bio. </p>
+              </div>
+            )}
+
+            {/* <div className="flex space-x-3 mt-4">
               <MailIcon className="h-5 w-5 text-gray-600" />
               <PhoneIcon className="h-5 w-5 text-gray-600" />
               <GithubIcon className="h-5 w-5 text-gray-600" />
               <LinkedinIcon className="h-5 w-5 text-gray-600" />
               <TwitterIcon className="h-5 w-5 text-gray-600" />
-            </div>
+            </div> */}
           </div>
         </section>
-        <section className="bg-white rounded-lg shadow-lg p-6 w-full lg:w-1/4">
+        <section className="bg-white rounded-lg shadow-lg p-6 w-full ">
           <h2 className="text-xl font-bold mb-6">Details</h2>
           <div className="my-4">
             <h3 className="text-lg font-semibold">Email</h3>
@@ -47,44 +46,67 @@ const ProfileDetails = ({ user }) => {
           </div>
           <div className="my-4">
             <h3 className="text-lg font-semibold">College</h3>
-            <p className="text-md font-semibold text-gray-600">
-              {user.collegeName}
-            </p>
+            {user.collegeName ? (
+              <p className="text-md font-semibold text-gray-600">
+                {user.collegeName}
+              </p>
+            ) : (
+              <div className=" text-gray-600">
+                <p>Enter college name </p>
+              </div>
+            )}
           </div>
           <div className="my-4">
-            <h3 className="text-lg font-semibold">Department</h3>
-            <p className="text-md font-semibold text-gray-600">
-              {user.department}
-            </p>
+            <h3 className="text-lg font-semibold">Degree</h3>
+            {user.department && user.degree ? (
+              <p className="text-md font-semibold text-gray-600">
+                {user.degree} in {user.department} ({" "}
+                {getYearWithSuffix(user.yearInCollege)} year )
+              </p>
+            ) : (
+              <div className=" text-gray-600">
+                <p>Enter degree details </p>
+              </div>
+            )}
           </div>
-          <div className="my-4">
-            <h3 className="text-lg font-semibold">Year</h3>
-            <p className="text-md font-semibold text-gray-600">
-              {user.yearInCollege}
-            </p>
-          </div>
+
           <div className="my-4">
             <h3 className="text-lg font-semibold">Date of Birth</h3>
-            <p className="text-md font-semibold text-gray-600">
-              {new Date(user.dob).toLocaleDateString()}
+            <p className="text-md  text-gray-600">
+              {user.dob ? (
+                <span className="font-semibold">
+                  {new Date(user.dob).toLocaleDateString("en-UK", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+              ) : (
+                <div className=" text-gray-600">
+                  <p>Enter date of birth </p>
+                </div>
+              )}
             </p>
           </div>
         </section>
-        <section className="bg-white rounded-lg shadow-lg p-6 w-full lg:w-1/4">
+        <section className="bg-white rounded-lg shadow-lg p-6 w-full ">
           <h2 className="text-xl font-bold mb-6">Interests</h2>
           <div className="space-y-4">
-            <div>
+            {user.interestSubcategories &&
+            user.interestSubcategories.length > 0 ? (
               <div className="flex flex-wrap gap-2 mt-2">
-                <Badge>Python</Badge>
-                <Badge>Javascript</Badge>
-                <Badge>Dart</Badge>
-                <Badge>HTML</Badge>
-                <Badge>CSS</Badge>
+                {user.interestSubcategories.map((interest, index) => (
+                  <Badge key={index}>{interest}</Badge>
+                ))}
               </div>
-            </div>
+            ) : (
+              <div className=" text-gray-600">
+                <p>No interests added. </p>
+              </div>
+            )}
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { interests } from "@/app/interests";
 import { Button } from "@/components/ui/button";
-
+import "./filter.css";
 export default function DiscussionFilter({ applyFilters }) {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [expandedCategory, setExpandedCategory] = useState(null);
@@ -78,7 +78,7 @@ export default function DiscussionFilter({ applyFilters }) {
 
   return (
     <section className="flex">
-      <aside className=" pl-4 pt-4 pb-16 z-46 overflow-y-auto fixed w-[20%] top-0 right-0 bg-gray-300 shadow-md">
+      <aside className=" pl-4 pt-4 pb-16 z-46 overflow-y-auto fixed w-[23%] top-0 right-0 bottom-0 bg-gray-100 dark:bg-gray-800 shadow-md z-50 text-gray-600 dark:text-white text-md ">
         <h2 className="font-bold">View Discussions from My College</h2>
         <ul>
           <li>

@@ -81,7 +81,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                 alt="Avatar"
                 className="rounded-full"
                 height="48"
-                src="/placeholder.svg"
+                src={discussion.creatorData.profilePic}
                 style={{
                   aspectRatio: "48/48",
                   objectFit: "cover",
@@ -91,20 +91,14 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
               <div className="flex-1 grid gap-2">
                 <div className="flex flex-col  gap-2">
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    @alicej
+                    {discussion.creatorData.name}
                   </span>{" "}
                   <h4 className="font-semibold text-base">
                     {discussion.title}
                   </h4>
                 </div>
                 <div className="prose max-w-none">
-                  <p>
-                    {discussion.content}
-                    Description : Lorem ipsum dolor sit amet, consectetur
-                    adipisicing elit. Hic corporis sed, magnam minus quae nulla
-                    omnis incidunt maxime consequatur amet praesentium assumenda
-                    necessitatibus aut quam rem saepe. Iusto, eum cumque.
-                  </p>
+                  <p>{discussion.content}</p>
                 </div>
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">

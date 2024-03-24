@@ -222,7 +222,7 @@ export const interests = [
     ],
   },
   {
-    category: "Books",
+    category: "Reading",
     subcategories: [
       "Fiction",
       "Non-fiction",

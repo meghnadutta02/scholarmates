@@ -15,160 +15,119 @@ export async function GET(req,{params}) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
 // const data = [
 //   {
-//     name: "John Doe",
-//     email: "john.doe@example.com",
-//     isAdmin: false,
-//     collegeName: "ABC University",
-//     yearInCollege: 2,
-//     department: "ECE",
-//     interests: [
-//       {
-//         category: "Programming",
-//         subcategories: [
-//           "React Native",
-//           "Flutter",
-//           "Java",
-//           "C",
-//           "C++",
-//           "HTML/CSS",
-//         ],
-//       },
-//       {
-//         category: "Development",
-//         subcategories: ["Mobile App Development"],
-//       },
-//       {
-//         category: "Movies",
-//         subcategories: ["Action", "Drama", "Horror", "Mystery"],
-//       },
-//     ],
-//     dob: "2004-05-15",
-//     degree: "Btech",
-//   },
+//     name: "Aarav Gupta",
+//     email: "aarav.gupta@gmail.com",
 
-//   {
-//     name: "Alice Johnson",
-//     email: "alice.johnson@example.com",
-//     isAdmin: false,
-//     collegeName: "XYZ College",
-//     yearInCollege: 3,
-//     department: "Mechanical Engineering",
-//     interests: [
-//       {
-//         category: "Programming",
-//         subcategories: ["Solidity", "Ethereum", "GraphQL"],
-//       },
-//       {
-//         category: "Technology",
-//         subcategories: ["Blockchain"],
-//       },
-//     ],
-//     dob: "2002-08-22",
-//     degree: "Btech",
-//   },
-//   {
-//     name: "Bob Smith",
-//     email: "bob.smith@example.com",
-//     isAdmin: false,
-//     collegeName: "IEM Kolkata",
-//     yearInCollege: 4,
-//     department: "Chemical Engineering",
-//     interests: [
-//       {
-//         category: "Programming",
-//         subcategories: ["Python", "Java", "C++", "HTML/CSS", "Firebase"],
-//       },
-//       {
-//         category: "Technology",
-//         subcategories: ["Machine Learning", "AI"],
-//       },
-//       {
-//         category: "Gaming",
-//         subcategories: ["Call of Duty", "Valorant", "PUBG"],
-//       },
-//     ],
-//     dob: "2000-04-10",
-//     degree: "Btech",
-//   },
-//   {
-//     name: "Eva Rodriguez",
-//     email: "eva.rodriguez@example.com",
-//     isAdmin: true,
-//     collegeName: "PQR Institute",
+//     collegeName: "University of Calcutta",
 //     yearInCollege: 2,
-//     department: "Human Resources",
-//     interests: [
-//       {
-//         category: "Finance and Investing",
-//         subcategories: [
-//           "Economic Trends",
-//           "Personal Finance",
-//           "Stock Market Investing",
-//           "Cryptocurrency",
-//         ],
-//       },
-//       {
-//         category: "Travel",
-//         subcategories: ["Adventure", "Cultural", "Beach"],
-//       },
+//     department: "Computer Science and Engineering",
+//     degree: "Bachelor of Technology",
+//     dob: new Date("2004-05-15"),
+//     interestCategories: ["Programming", "Development", "Movies"],
+//     interestSubcategories: [
+//       "React Native",
+//       "Flutter",
+//       "Java",
+//       "C",
+//       "C++",
+//       "HTML/CSS",
+//       "Mobile App Development",
+//       "Action",
+//       "Drama",
+//       "Horror",
+//       "Mystery",
 //     ],
-//     dob: "2003-12-05",
-//     degree: "MBA",
 //   },
 //   {
-//     name: "Samuel Wilson",
-//     email: "samuel.wilson@example.com",
-//     isAdmin: false,
-//     collegeName: "LMN College",
+//     name: "Isha Patel",
+//     email: "isha.patel@gmail.com",
+
+//     collegeName: "Jadavpur University",
 //     yearInCollege: 3,
 //     department: "Electrical Engineering",
-//     interests: [
-//       {
-//         category: "Programming",
-//         subcategories: ["Java", "C++", "HTML/CSS", "Firebase"],
-//       },
-//       {
-//         category: "Books",
-//         subcategories: [
-//           "Mystery",
-//           "Science Fiction",
-//           "Fantasy",
-//           "Historical Fiction",
-//           "Thriller",
-//         ],
-//       },
-//       {
-//         category: "Movies",
-//         subcategories: ["Sci-Fi", "Thriller", "Fantasy"],
-//       },
+//     degree: "Bachelor of Engineering",
+//     dob: new Date("2003-10-20"),
+//     interestCategories: ["Technology", "Music"],
+//     interestSubcategories: [
+//       "Machine Learning",
+//       "Cloud Computing",
+//       "Guitar",
+//       "Piano",
 //     ],
-//     dob: "2004-01-02",
-//     degree: "Btech",
 //   },
 //   {
-//     name: "Sophia Turner",
-//     email: "sophia.turner@example.com",
-//     isAdmin: false,
-//     collegeName: "XYZ University",
+//     name: "Vihaan Das",
+//     email: "vihaan.das@gmail.com",
+
+//     collegeName: "St. Xavier's College",
 //     yearInCollege: 1,
-//     department: "Civil Engineering",
-//     interests: [
-//       {
-//         category: "Programming",
-//         subcategories: ["Python", "Java", "C"],
-//       },
-//       {
-//         category: "Science",
-//         subcategories: ["Physics", "Chemistry"],
-//       },
+//     department: "Physics",
+//     degree: "Bachelor of Science",
+//     dob: new Date("2004-03-08"),
+//     interestCategories: ["Science", "Reading"],
+//     interestSubcategories: [
+//       "Physics",
+//       "Astronomy",
+//       "Mystery",
+//       "Science Fiction",
 //     ],
-//     dob: "2001-03-27",
-//     degree: "Btech",
+//   },
+//   {
+//     name: "Anaya Banerjee",
+//     email: "anaya.banerjee@gmail.com",
+
+//     collegeName: "Heritage Institute of Technology",
+//     yearInCollege: 4,
+//     department: "Computer Science and Engineering",
+//     degree: "Bachelor of Technology",
+//     dob: new Date("2002-08-25"),
+//     interestCategories: ["Programming", "Development", "Technology"],
+//     interestSubcategories: [
+//       "AI",
+//       "AWS",
+//       "Azure",
+//       "Cloud Computing",
+//       "Web Development",
+//       "C++",
+//       "OOPs",
+//       "MERN Stack",
+//       "DP",
+//       "HTML/CSS",
+//     ],
+//   },
+//   {
+//     name: "Kabir Singh",
+//     email: "kabir.singh@gmail.com",
+
+//     collegeName: "Heritage Institute of Technology",
+//     yearInCollege: 4,
+//     department: "Civil Engineering",
+//     degree: "Bachelor of Technology",
+//     dob: new Date("2002-08-25"),
+//     interestCategories: ["Dance", "Photography"],
+//     interestSubcategories: [
+//       "Street Photography",
+//       "Wildlife Photography",
+//       "Hip Hop",
+//       "Contemporary ",
+//     ],
+//   },
+//   {
+//     name: "Tripti Dixit",
+//     email: "tripti.dixit@gmail.com",
+
+//     collegeName: "Techno India University",
+//     yearInCollege: 2,
+//     department: "Mechanical Engineering",
+//     degree: "Bachelor of Engineering",
+//     dob: new Date("2003-12-10"),
+//     interestCategories: ["Music", "Dance"],
+//     interestSubcategories: ["Singing", "Bharatanatyam", "Kathak", "Hip Hop"],
 //   },
 // ];
-
 // export async function GET(req) {
 //   try {
 //     await connect();

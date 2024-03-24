@@ -1,119 +1,113 @@
 import Link from "next/link";
 import React from "react";
-import {
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenu,
-} from "@/components/ui/dropdown-menu";
 import { getServerSession } from "next-auth";
 import { options } from "../api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = async () => {
   const session = await getServerSession(options);
+
   return (
     <header className="flex flex-row justify-center pt-1">
       <div className="flex h-[60px] items-center px-6 rounded-s-xl border-2 border-zinc-600">
-        <Link className="flex items-center gap-2 font-semibold" href="/">
+        <Link href="/" className="flex items-center gap-2 font-semibold">
           <Package2Icon className="h-6 w-6" />
           <span className="">Likeminds</span>
         </Link>
-        <Button className="ml-auto h-8 w-8" size="icon" variant="icon">
-          <BellIcon className="h-4 w-4" />
-          <span className="sr-only">Toggle notifications</span>
-        </Button>
+        {session && (
+          <Button className="ml-auto h-8 w-8" size="icon" variant="icon">
+            <BellIcon className="h-4 w-4" />
+            <span className="sr-only">Toggle notifications</span>
+          </Button>
+        )}
       </div>
-      <div className="flex h-14 lg:h-[60px] px-6 items-center gap-4 rounded-e-xl bg-zinc-700  dark:bg-gray-800/40">
+      <div className="flex h-14 lg:h-[60px] px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
         <nav className="hidden lg:flex lg:flex-row lg:items-center lg:gap-4 lg:ml-auto lg:flex-1 lg:text-sm lg:justify-end">
-          <Link
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-100 transition-all hover:border hover:border-gray-200  dark:text-gray-400 dark:hover:text-gray-50"
-            href="#"
-          >
-            <MessageSquareIcon className="h-4 w-4" />
-            Messages
-          </Link>
-          <Link
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-100 transition-all hover:border hover:border-gray-200  dark:text-gray-400 dark:hover:text-gray-50"
-            href="#"
-          >
-            <UsersIcon className="h-4 w-4" />
-            Friends
-          </Link>
-
-          {session ? (
+          {session && (
             <Link
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-              href=""
+              href="#"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-100 transition-all hover:border hover:border-gray-200 dark:text-gray-400 dark:hover:text-gray-50"
             >
-              <HomeIcon className="h-4 w-4" />
-              Home
+              <MessageSquareIcon className="h-4 w-4" />
+              Messages
             </Link>
-          ) : (
+          )}
+          {session && (
             <Link
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-              href="/api/auth/signin"
+              href="#"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-100 transition-all hover:border hover:border-gray-200 dark:text-gray-400 dark:hover:text-gray-50"
             >
+              <UsersIcon className="h-4 w-4" />
+              Friends
+            </Link>
+          )}
+          {!session && (
+            <Link
+              href={session ? "" : "/api/auth/signin"}
+              className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
+            >
+              {/* <HomeIcon className="h-4 w-4" /> */}
               Sign In
             </Link>
           )}
         </nav>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              className="rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800"
-              id="menu-button"
-              size="icon"
-              variant="ghost"
-            >
-              <Image
-                alt="Avatar"
-                className="rounded-full"
-                height="32"
-                src="/placeholder.svg"
-                style={{
-                  aspectRatio: "32/32",
-                  objectFit: "cover",
-                }}
-                width="32"
-              />
-              <span className="sr-only">Toggle user menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link href="/profile">Profile</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              {session ? (
+        {session && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                className="rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800"
+                id="menu-button"
+                size="icon"
+                variant="ghost"
+              >
+                <Image
+                  alt="Avatar"
+                  className="rounded-full"
+                  height="32"
+                  src={session?.user?.profilePic}
+                  style={{
+                    aspectRatio: "32/32",
+                    objectFit: "cover",
+                  }}
+                  width="32"
+                />
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/profile">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
                 <Link
                   href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout?callbackUrl=/`}
                 >
                   Sign Out
                 </Link>
-              ) : (
-                <Link
-                  href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signin`}
-                >
-                  Sign In
-                </Link>
-              )}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </header>
   );
 };
 
 export default Navbar;
+
 function BellIcon(props) {
   return (
     <svg

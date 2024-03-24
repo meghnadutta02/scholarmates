@@ -127,8 +127,12 @@ const DiscussionsPage = () => {
             <Button className="ml-4" onClick={handleSearch}>
               Search
             </Button>
-            <Button className="ml-4" variant="secondary" onClick={toggleFilter}>
-              <FaFilter />
+            <Button
+              className="ml-4 flex items-center"
+              variant="secondary"
+              onClick={toggleFilter}
+            >
+              <FaFilter className="mr-1" />
               Filter
             </Button>
           </div>
