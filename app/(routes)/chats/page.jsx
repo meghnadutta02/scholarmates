@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 const connections = [
@@ -83,6 +84,9 @@ export default function Chats() {
               </div>
             </Button>
           ))}
+          <Link href="/chats/discussions" className="border-t-2">
+            <Button className="my-4 ml-8">See Discussions</Button>
+          </Link>
         </div>
 
         {/*CHAT AREA ----- fetch the specific chat messages for the selected user */}
