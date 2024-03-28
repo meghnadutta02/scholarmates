@@ -21,7 +21,7 @@ export async function PUT(req, { params }) {
 
     const userId = new ObjectId(session?.user?.db_id);
     const alreadyLikedIndex = discussion.likedBy.indexOf(userId);
-    console.log(alreadyLikedIndex, discussion.likedBy, userId);
+
     if (alreadyLikedIndex !== -1) {
       discussion.likes -= 1;
       discussion.likedBy.splice(alreadyLikedIndex, 1);

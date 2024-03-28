@@ -12,7 +12,12 @@ const getDiscussions = async (query = "") => {
 };
 
 const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/api/auth/signin?callbackUrl=/discussions");
+    },
+  });
 
   const toggleLike = async (id) => {
     const response = await fetch(
@@ -91,34 +96,23 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         }
 
         const { result } = await getDiscussions(query);
-
-        result.forEach((discussion) => {
-          if (
-            discussion.likedBy &&
-            discussion.likedBy.length > 0 &&
-            discussion.likedBy.includes(session?.user?.db_id)
-          ) {
-            console.log("liked");
-            discussion.isLiked = true;
-          }
-          if (
-            discussion.dislikedBy &&
-            discussion.dislikedBy.length > 0 &&
-            discussion.dislikedBy.includes(session?.user?.db_id)
-          ) {
-            discussion.isDisliked = true;
-          }
+        const userId = session?.user?.db_id;
+        const updatedResult = result.map((discussion) => {
+          const isLiked = discussion.likedBy?.includes(userId);
+          const isDisliked = discussion.dislikedBy?.includes(userId);
+          return { ...discussion, isLiked, isDisliked };
         });
-        setDiscussions(result);
+        setDiscussions(updatedResult);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching discussions:", error);
+
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [selectedFilters, searchQuery, reloadList]);
+  }, [selectedFilters, searchQuery, reloadList, session]);
 
   const handleButtonClick = () => {
     if (buttonState === "Join") {
@@ -139,6 +133,10 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         <p>No discussions found for the selected filters.</p>
       ) : (
         <div className="grid grid-cols-1  gap-6 ">
+          <span className="text-red-400 text-xl">
+            You can only like/dislike the last 2 discussions.Previous
+            discussions do not have those fields
+          </span>
           {discussions.map((discussion) => (
             <div
               key={discussion._id}
@@ -170,8 +168,8 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">
                     <ThumbsUpIcon
-                      className={`w-4 h-4 transition-colors duration-500 ease-in-out cursor-pointer ${
-                        discussion.isLiked ? "text-blue-400" : "inherit"
+                      className={`w-4 h-4  cursor-pointer ${
+                        discussion.isLiked && "text-blue-400"
                       }`}
                       onClick={() => toggleLike(discussion._id)}
                     />
@@ -180,8 +178,8 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                   </Button>
                   <Button className="h-10 " size="icon" variant="icon">
                     <ThumbsDownIcon
-                      className={`w-4 h-4 transition-colors duration-500 ease-in-out cursor-pointer ${
-                        discussion.isDisliked ? "text-red-400" : "inherit"
+                      className={`w-4 h-4  cursor-pointer ${
+                        discussion.isDisliked && "text-red-400"
                       }`}
                       onClick={() => toggleDislike(discussion._id)}
                     />
