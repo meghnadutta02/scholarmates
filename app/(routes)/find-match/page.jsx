@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { io } from "socket.io-client";
 import Image from "next/image";
 var socket, selectedChatCompare;
-import { useSession } from "@/app/(components)/SessionProvider";
+import { useSession } from "next-auth/react";
 import {
   Carousel,
   CarouselContent,
@@ -56,7 +56,7 @@ export default function Component() {
   useEffect(() => {
     if (requestdata.length > 0) {
       localStorage.setItem("request", JSON.stringify(requestdata));
-      console.log("dataaaaa:", requestdata);
+      console.log("data:", requestdata);
     }
   }, [requestdata]);
 

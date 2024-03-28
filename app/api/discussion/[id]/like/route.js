@@ -1,5 +1,6 @@
 import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/app/config/db";
+import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
@@ -18,9 +19,9 @@ export async function PUT(req, { params }) {
       );
     }
 
-    const userId = session?.user?.db_id;
-
+    const userId = new ObjectId(session?.user?.db_id);
     const alreadyLikedIndex = discussion.likedBy.indexOf(userId);
+    console.log(alreadyLikedIndex, discussion.likedBy, userId);
     if (alreadyLikedIndex !== -1) {
       discussion.likes -= 1;
       discussion.likedBy.splice(alreadyLikedIndex, 1);

@@ -3,7 +3,7 @@ import connect from "@/app/config/db";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
-
+import { ObjectId } from "mongodb";
 export async function PUT(req, { params }) {
   await connect();
   const id = params.id;
@@ -18,8 +18,7 @@ export async function PUT(req, { params }) {
       );
     }
 
-    const userId = session?.user?.db_id;
-
+    const userId = new ObjectId(session?.user?.db_id);
     const alreadyDislikedIndex = discussion.dislikedBy.indexOf(userId);
     if (alreadyDislikedIndex !== -1) {
       discussion.dislikes -= 1;

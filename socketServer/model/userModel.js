@@ -1,20 +1,23 @@
 import mongoose from "mongoose";
 
-const interestSchema = new mongoose.Schema({
-  category: {
-    type: String,
-  },
-  subcategories: {
-    type: [String],
-    default: [],
-  },
-});
-
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
+    },
+    proficiencies: [
+      {
+        type: String,
+      },
+    ],
+    bio: {
+      type: String,
+      default: "",
+    },
+    profilePic: {
+      type: String,
+      default: "",
     },
     email: {
       type: String,
@@ -26,6 +29,12 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
+    connection: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     collegeName: {
       type: String,
       default: "",
@@ -46,27 +55,33 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    post: [
-    {  type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",}
+    groupsJoined: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Group",
+      },
     ],
+    post: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
     connection: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-    interests: {
-      type: [interestSchema],
-      default: [],
-    },
+    interestCategories: [
+      {
+        type: String,
+      },
+    ],
+    interestSubcategories: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );
-// userSchema.index({ "interests.subcategories": 1 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
-// User.collection.getIndexes().then((indexes) => {
-//   console.log("Existing indexes for User model:", indexes);
-// });
+
 export default User;

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Loading from "../(routes)/discussions/loading";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 const getDiscussions = async (query = "") => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/discussion${query}`
@@ -11,6 +12,54 @@ const getDiscussions = async (query = "") => {
 };
 
 const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
+  const { data: session } = useSession();
+
+  const toggleLike = async (id) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/like`,
+      { method: "PUT" }
+    );
+    const data = await response.json();
+    console.log(data);
+    if (data.ok)
+      setDiscussions((prevDiscussions) =>
+        prevDiscussions.map((discussion) => {
+          if (discussion._id === id) {
+            if (discussion.isLiked) {
+              discussion.likes += 1;
+            } else {
+              discussion.likes -= 1;
+            }
+            discussion.isLiked = !discussion.isLiked;
+          }
+          return discussion;
+        })
+      );
+  };
+
+  const toggleDislike = async (id) => {
+    console.log("Dislike");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/dislike`,
+      { method: "PUT" }
+    );
+    const data = await response.json();
+    console.log(data);
+    if (data.ok)
+      setDiscussions((prevDiscussions) =>
+        prevDiscussions.map((discussion) => {
+          if (discussion._id === id) {
+            if (discussion.isDisliked) {
+              discussion.dislikes += 1;
+            } else {
+              discussion.dislikes -= 1;
+            }
+            discussion.isDisliked = !discussion.isDisliked;
+          }
+          return discussion;
+        })
+      );
+  };
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [buttonState, setButtonState] = useState("Join");
@@ -40,8 +89,26 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         if (params.length > 0) {
           query = "?" + params.join("&");
         }
-        console.log(query);
+
         const { result } = await getDiscussions(query);
+
+        result.forEach((discussion) => {
+          if (
+            discussion.likedBy &&
+            discussion.likedBy.length > 0 &&
+            discussion.likedBy.includes(session?.user?.db_id)
+          ) {
+            console.log("liked");
+            discussion.isLiked = true;
+          }
+          if (
+            discussion.dislikedBy &&
+            discussion.dislikedBy.length > 0 &&
+            discussion.dislikedBy.includes(session?.user?.db_id)
+          ) {
+            discussion.isDisliked = true;
+          }
+        });
         setDiscussions(result);
         setLoading(false);
       } catch (error) {
@@ -102,14 +169,24 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                 </div>
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">
-                    <ThumbsUpIcon className="w-4 h-4" />
+                    <ThumbsUpIcon
+                      className={`w-4 h-4 transition-colors duration-500 ease-in-out cursor-pointer ${
+                        discussion.isLiked ? "text-blue-400" : "inherit"
+                      }`}
+                      onClick={() => toggleLike(discussion._id)}
+                    />
                     <span className="sr-only">Like</span>
-                    <span className="ml-2">12</span>
+                    <span className="ml-2">{discussion.likes}</span>
                   </Button>
-                  <Button className="h-10" size="icon" variant="icon">
-                    <ThumbsDownIcon className="w-4 h-4" />
+                  <Button className="h-10 " size="icon" variant="icon">
+                    <ThumbsDownIcon
+                      className={`w-4 h-4 transition-colors duration-500 ease-in-out cursor-pointer ${
+                        discussion.isDisliked ? "text-red-400" : "inherit"
+                      }`}
+                      onClick={() => toggleDislike(discussion._id)}
+                    />
                     <span className="sr-only">Dislike</span>
-                    <span className="ml-2">3</span>
+                    <span className="ml-2">{discussion.dislikes}</span>
                   </Button>
                   <Button className="h-10" size="icon" variant="icon">
                     <TrendingUpIcon className="w-4 h-4" />

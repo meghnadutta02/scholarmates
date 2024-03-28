@@ -4,24 +4,48 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { ObjectId } from "mongodb";
-
+import { interests } from "@/app/interests";
+import Group from "@/app/(models)/groupModel";
+import User from "@/app/(models)/userModel";
 export async function POST(req) {
   try {
     await connect();
     const session = await getServerSession(options);
-    const { title, privacy, type, interestCategories, interestSubcategories } =
-      await req.json();
+    const data = await req.formData();
+    const title = data.get("title");
+    const type = data.get("type");
+    const privacy = data.get("privacy");
+    const content = data.get("content");
+    const subcategories = data.getAll("subcategories");
 
     const discussion = await Discussion.create({
       title,
-      privacy,
       type,
+      privacy,
+      content,
       creator: new ObjectId(session?.user?.db_id),
-      interestCategories,
-      interestSubcategories,
+
+      subcategories,
     });
 
-    return NextResponse.json({ result: discussion }, { status: 200 });
+    const group = await Group.create({
+      name: title,
+      isPublic: privacy === "public",
+      participants: [session?.user?.db_id],
+      moderators: [session?.user?.db_id],
+      description: `Group for discussion: ${title}`,
+      type: type,
+    });
+    discussion.groupId = group._id;
+    const user = await User.findById(session?.user?.db_id);
+    user.groupsJoined.push(group._id);
+    await user.save();
+    await discussion.save();
+    return NextResponse.json(
+      { result: discussion },
+      { status: 200 },
+      { groupId: group._id }
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -99,7 +123,11 @@ export async function GET(req) {
       let matchQuery = [];
       if (category) {
         const categories = category.split(",");
-        matchQuery.push({ categories: { $in: categories } });
+        const subcategories = interests
+          .filter((interest) => categories.includes(interest.category))
+          .flatMap((interest) => interest.subcategories);
+
+        matchQuery.push({ subcategories: { $in: subcategories } });
       }
       if (subcategory) {
         const subcategories = subcategory.split(",");

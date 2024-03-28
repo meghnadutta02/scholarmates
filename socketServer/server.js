@@ -4,9 +4,11 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import connection from "./db.js";
+import Group from "./model/groupModel.js";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import sendConnection from "./route/sendConnectionRoute.js";
+import joinRequest from "./route/joinRequestRoute.js";
 //CONFIG ENV
 
 console.log(process.env.MONGO_URI);
@@ -16,6 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/sendconnection", sendConnection);
+app.use("/joinrequest", joinRequest);
 const socketServer = http.createServer(app);
 
 connection();
@@ -34,6 +37,14 @@ io.on("connection", async (socket) => {
     socket.emit("connected");
   });
 
+  socket.on("joinGroupRoom", async ({ groupId }) => {
+    const group = await Group.findById(groupId);
+    if (group) {
+      socket.join(groupId);
+      console.log(`Socket ${socket.id} joined group ${groupId}`);
+    } else console.log(`Group ${groupId} not found`);
+  });
+
   socket.on("send-message", (data) => {
     console.log(data);
     if (data.roomID) {
@@ -41,11 +52,6 @@ io.on("connection", async (socket) => {
     } else {
       io.emit("receive-message", data);
     }
-  });
-
-  socket.on("selectedRoomID", (roomID) => {
-    console.log("Room id : ", roomID);
-    socket.join(roomID);
   });
 
   socket.on("disconnect", () => {

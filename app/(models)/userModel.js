@@ -55,6 +55,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    groupsJoined: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Group",
+      },
+    ],
     post: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
     connection: [
       {

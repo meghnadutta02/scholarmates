@@ -5,7 +5,7 @@ import DiscussionList from "@/app/(components)/DiscussionList";
 import DiscussionFilter from "@/app/(components)/DiscussionFilter";
 import { Button } from "@/components/ui/button";
 import { FaFilter } from "react-icons/fa6";
-
+import CreateDiscussion from "@/app/(components)/NewDiscussion";
 const getSuggestions = async (q) => {
   const response = await fetch(
     `${
@@ -87,8 +87,12 @@ const DiscussionsPage = () => {
 
   return (
     <div>
+      <div className="flex p-4 gap-4 md:p-6 justify-center">
+        <CreateDiscussion />
+      </div>
       <div className="flex">
         {/* filter section */}
+
         {isFilterOpen && (
           <DiscussionFilter applyFilters={handleFilterApplication} />
         )}

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import CreatePost from "@/app/(components)/NewPost";
+// import CreatePost from "@/app/(components)/NewPost";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
@@ -14,9 +14,9 @@ import {
 export default function Home() {
   return (
     <div className="flex flex-col ">
-      <aside className="flex flex-row p-4 gap-4 md:p-6 justify-evenly">
+      {/* <aside className="flex flex-row p-4 gap-4 md:p-6 justify-evenly">
         <CreatePost />
-      </aside>
+      </aside> */}
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:py-8 md:px-16">
         {/* Discussions Feed container */}
         <div className="grid gap-4">
