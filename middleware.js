@@ -1,10 +1,11 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+
 export default withAuth(
-  function middleware(req) {
-    console.log("middleware", req.nextUrl.pathname);
-    console.log("middleware", req.nextauth.token);
+  function middleware(req,res) {
+    // console.log("middleware", req.nextUrl.pathname);
+    // console.log("middleware", req.nextauth.token);
 
     const adminRoutes = [
       "/CreateUser",
@@ -33,9 +34,13 @@ export const config = {
   matcher: [
     "/CreateUser",
     "/AdminRoute1",
+    "/api/users/profile",
     "/AdminRoute2",
     "/AdminRoute3",
     "/posts",
-    "/reels",
+    "/discussions",
   ],
 };
+
+
+
