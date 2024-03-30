@@ -5,28 +5,11 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import { Label } from "@/components/ui/label";
-import { useSession } from "next-auth/react";
+
 import { toast } from "react-toastify";
 import { interests } from "../interests";
-import io from "socket.io-client";
 
 function NewDiscussion() {
-  const [socket, setSocket] = useState(null);
-  useEffect(() => {
-    if (!socket) {
-      const newSocket = io("http://localhost:5001");
-      newSocket.on("connect", () => {
-        console.log("Successfully connected!");
-      });
-      setSocket(newSocket);
-    }
-
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
-  }, [socket]);
   let formData = new FormData();
 
   const [title, setTitle] = useState("");
@@ -107,7 +90,6 @@ function NewDiscussion() {
 
       if (result.ok) {
         toast.success("Discussion created and chat room started. Go to chat!");
-        socket.emit("newDiscussion", { groupId: result.groupId });
       }
     } catch (error) {
       console.error("Error uploading discussion:", error);

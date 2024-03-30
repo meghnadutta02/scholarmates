@@ -4,11 +4,19 @@ import Loading from "../(routes)/discussions/loading";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 const getDiscussions = async (query = "") => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/discussion${query}`
   );
+
   return response.json();
+};
+const getJoinRequests = async () => {
+  const response1 = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/status`
+  );
+  return response1.json();
 };
 
 const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
@@ -67,7 +75,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
   };
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [buttonState, setButtonState] = useState("Join");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -94,16 +102,49 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         if (params.length > 0) {
           query = "?" + params.join("&");
         }
+        const [joinRequestsResult, discussionsResult] =
+          await Promise.allSettled([getJoinRequests(), getDiscussions(query)]);
+        let result = [];
+        let accepted = [];
+        let pending = [];
+        let rejected = [];
+        if (joinRequestsResult.status === "fulfilled") {
+          ({ accepted, pending, rejected } = joinRequestsResult.value);
+        }
 
-        const { result } = await getDiscussions(query);
+        if (discussionsResult.status === "fulfilled") {
+          result = discussionsResult.value.result;
+        }
+
         const userId = session?.user?.db_id;
+
         const updatedResult = result.map((discussion) => {
           const isLiked = discussion.likedBy?.includes(userId);
           const isDisliked = discussion.dislikedBy?.includes(userId);
-          return { ...discussion, isLiked, isDisliked };
+          let isMember = false;
+          let isRequested = false;
+          let isRejected = false;
+          if (accepted.includes(discussion.groupId)) {
+            isMember = true;
+          }
+          if (pending.includes(discussion.groupId)) {
+            isRequested = true;
+          }
+          if (rejected.includes(discussion.groupId)) {
+            isRejected = true;
+          }
+          return {
+            ...discussion,
+            isLiked,
+            isDisliked,
+            isMember,
+            isRequested,
+            isRejected,
+          };
         });
         setDiscussions(updatedResult);
         setLoading(false);
+        console.log("Discussions:", updatedResult);
       } catch (error) {
         console.error("Error fetching discussions:", error);
 
@@ -114,14 +155,23 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
     fetchData();
   }, [selectedFilters, searchQuery, reloadList, session]);
 
-  const handleButtonClick = () => {
-    if (buttonState === "Join") {
-      setButtonState("Requested");
-      // Send a join request here
-    } else if (buttonState === "Requested") {
-      // Do nothing or show a message that a request has already been sent
-    } else if (buttonState === "Member") {
-      // Do nothing or show a message that the user is already a member
+  const handleButtonClick = async (discussion) => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/${discussion._id}`,
+      {
+        method: "GET",
+      }
+    );
+    if (res.ok) {
+      toast.success("Request sent successfully");
+      setDiscussions((prevDiscussions) =>
+        prevDiscussions.map((d) => {
+          if (d._id === discussion._id) {
+            d.isRequested = true;
+          }
+          return d;
+        })
+      );
     }
   };
 
@@ -194,9 +244,20 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                   <Button
                     className="w-24"
                     variant="secondary"
-                    onClick={handleButtonClick}
+                    disabled={
+                      discussion.isMember ||
+                      discussion.isRequested ||
+                      discussion.isRejected
+                    }
+                    onClick={() => handleButtonClick(discussion)}
                   >
-                    {buttonState}
+                    {discussion.isMember
+                      ? "Member"
+                      : discussion.isRequested
+                      ? "Requested"
+                      : discussion.isRejected
+                      ? "Rejected"
+                      : "Join"}
                   </Button>
                 </div>
               </div>
