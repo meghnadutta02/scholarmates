@@ -156,22 +156,38 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
   }, [selectedFilters, searchQuery, reloadList, session]);
 
   const handleButtonClick = async (discussion) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/${discussion._id}`,
-      {
-        method: "GET",
-      }
-    );
-    if (res.ok) {
-      toast.success("Request sent successfully");
+    try {
+      const promise = new Promise(async (resolve, reject) => {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
+          {
+            method: "GET",
+          }
+        );
+        if (!res.ok) {
+          reject(new Error("Error sending request"));
+        } else {
+          resolve(await res.json());
+        }
+      });
+
+      toast.promise(promise, {
+        loading: "Sending request...",
+        success: "Request sent successfully",
+        error: "Error sending request",
+      });
+
       setDiscussions((prevDiscussions) =>
         prevDiscussions.map((d) => {
           if (d._id === discussion._id) {
-            d.isRequested = true;
+            return { ...d, isRequested: true };
           }
           return d;
         })
       );
+    } catch (error) {
+      console.error(error);
+      toast.error("Error sending request");
     }
   };
 
