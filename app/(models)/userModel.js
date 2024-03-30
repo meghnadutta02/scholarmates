@@ -32,40 +32,7 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    collegeName: {
-      type: String,
-      default: "",
-    },
-    yearInCollege: {
-      type: Number,
-      default: 1,
-    },
-    dob: {
-      type: Date,
-      default: null,
-    },
-    department: {
-      type: String,
-      default: "",
-    },
-    degree: {
-      type: String,
-      default: "",
-    },
-    post: [
-    {  type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",}
-    ],
-    connection: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    interests: {
-      type: [interestSchema],
-      default: [],
-    },
+    interests: [interestSchema],
   },
   { timestamps: true }
 );
