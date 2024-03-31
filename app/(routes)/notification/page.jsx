@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import io from "socket.io-client";
 import Notification from "@/app/(components)/Notification";
-import { useSession } from "next-auth/react";
+import { useSession } from '@/app/(components)/SessionProvider'
 var socket, selectedChatCompare;
 const Page = () => {
   const { session, request, setRequest } = useSession();

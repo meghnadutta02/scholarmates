@@ -61,11 +61,10 @@ const userSchema = new mongoose.Schema(
         ref: "Group",
       },
     ],
-    post: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-    connection: [
+    posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Post",
       },
     ],
     interestCategories: [

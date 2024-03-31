@@ -6,7 +6,7 @@ import { AuthProvider } from "./(components)/AuthProvider";
 import Sidebar from "./(components)/Sidebar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import {SessionProvider} from "@/app/(components)/SessionProvider"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -19,7 +19,8 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <div>
-          <AuthProvider>
+         <SessionProvider>
+         <AuthProvider>
             <Navbar />
             <div className="flex justify-center">
               <Sidebar />
@@ -30,6 +31,7 @@ export default async function RootLayout({ children }) {
             </div>
             <ToastContainer />
           </AuthProvider>
+         </SessionProvider>
         </div>
       </body>
     </html>
