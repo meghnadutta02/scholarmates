@@ -113,6 +113,7 @@ function NewDiscussion() {
           <Input
             placeholder="Title"
             value={title}
+            maxLength={50}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>

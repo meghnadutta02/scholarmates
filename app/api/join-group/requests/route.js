@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-import Discussion from "@/app/(models)/discussionModel";
-import Group from "@/app/(models)/groupModel";
 import connect from "@/app/config/db";
 import groupRequest from "@/app/(models)/groupRequestModel";
 import { getServerSession } from "next-auth";
@@ -16,8 +14,9 @@ export async function GET(req) {
 
     const requestsToAccept =
       (await groupRequest
-        .find({ toUsers: userId })
-        .populate("groupId", "name description")) || [];
+        .find({ toUsers: userId, status: "pending" })
+        .populate("groupId", "name description")
+        .populate("fromUser", "name profilePic")) || [];
     const requestsToJoin =
       (await groupRequest
         .find({ fromUser: userId })

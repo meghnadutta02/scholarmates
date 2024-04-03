@@ -33,7 +33,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
       { method: "PUT" }
     );
     const data = await response.json();
-    console.log(data);
+    //console.log(data);
     if (data.ok)
       setDiscussions((prevDiscussions) =>
         prevDiscussions.map((discussion) => {
@@ -57,7 +57,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
       { method: "PUT" }
     );
     const data = await response.json();
-    console.log(data);
+    //console.log(data);
     if (data.ok)
       setDiscussions((prevDiscussions) =>
         prevDiscussions.map((discussion) => {
@@ -144,7 +144,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         });
         setDiscussions(updatedResult);
         setLoading(false);
-        console.log("Discussions:", updatedResult);
+        //console.log("Discussions:", updatedResult);
       } catch (error) {
         console.error("Error fetching discussions:", error);
 

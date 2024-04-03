@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import User from "./userModel";
+import Group from "./groupModel";
 
 const groupRequestSchema = new mongoose.Schema(
   {

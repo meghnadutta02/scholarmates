@@ -22,6 +22,7 @@ const groupSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+
         //by default the creator of the discussion is a moderator
       },
     ],
