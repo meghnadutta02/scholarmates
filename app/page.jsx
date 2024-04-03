@@ -1,3 +1,4 @@
+'use client'
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,31 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
+import { Heading1 } from "lucide-react";
 export default function Home() {
+const [data,setData]=useState([]);
+  const datafxn=async()=>{
+    try{
+      const data=await fetch("/api/posts",
+      {method: "GET"}
+      ,{
+        cache:'no-cache'
+      });
+      if(data);
+      const res = await data.json();
+      console.log(res)
+     setData(res.result);
+    }catch(error){
+      console.log(error)
+    }
+  }
+useEffect(()=>{
+if(data.length==0){
+  datafxn()
+}
+console.log(data)
+},[data]);
   return (
     <div className="flex flex-col ">
       {/* <aside className="flex flex-row p-4 gap-4 md:p-6 justify-evenly">
@@ -69,82 +94,91 @@ export default function Home() {
         </div>
 
         {/* Posts Feed */}
-        <Card
-          key="1"
-          className="mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
-        >
-          <div className="md:flex justify-center">
-            <div className="md:flex-shrink-0">
-              <span className="object-cover md:w-48 rounded-md bg-muted w-[192px] h-[192px]" />
-            </div>
-            <div className="p-8 w-full">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Image
-                    alt="Profile picture"
-                    className="rounded-full"
-                    height="40"
-                    src="/placeholder.svg"
-                    style={{
-                      aspectRatio: "40/40",
-                      objectFit: "cover",
-                    }}
-                    width="40"
-                  />
-                  <div className="ml-4">
-                    <div className="uppercase tracking-wide text-sm text-black dark:text-white font-semibold">
-                      Chamath Palihapitiya
-                    </div>
-                    <div className="text-gray-400 dark:text-gray-300">
-                      @chamath
-                    </div>
+        {
+  !data ? (
+    // Render loader while data is being fetched
+    <div>Loading...</div>
+  ) : (
+    // Render cards when data is available
+    data.map((value, index) => (
+      <Card
+        key={index}
+        className="mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
+      >
+        <div className="md:flex justify-center">
+          <div className="md:flex-shrink-0">
+            <span className="object-cover md:w-48 rounded-md bg-muted w-[192px] h-[192px]" />
+          </div>
+          <div className="p-8 w-full">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Image
+                  alt="Profile picture"
+                  className="rounded-full"
+                  height="40"
+                  src={value.image}
+                  style={{
+                    aspectRatio: "40/40",
+                    objectFit: "cover",
+                  }}
+                  width="40"
+                />
+                <div className="ml-4">
+                  <div className="uppercase tracking-wide text-sm text-black dark:text-white font-semibold">
+                    Chamath Palihapitiya
+                  </div>
+                  <div className="text-gray-400 dark:text-gray-300">
+                    @chamath
                   </div>
                 </div>
               </div>
-              <p className="mt-4 text-gray-500 dark:text-gray-300">
-                I’m in the arena trying stuff. Some will work, some won’t. But
-                always learning. You’re anonymous and afraid of your own shadow.
-                Enjoy the sidelines.
-              </p>
-              <Carousel>
-                <CarouselContent>
-                  <CarouselItem>
-                    <div className="p-4 flex justify-center">
-                      <Image
-                        alt="post"
-                        height={400}
-                        width={400}
-                        src="https://a.storyblok.com/f/191576/1200x800/faa88c639f/round_profil_picture_before_.webp"
-                      />
-                    </div>
-                  </CarouselItem>
-                </CarouselContent>
-                <CarouselPrevious className="ml-8" />
-                <CarouselNext className="mr-8" />
-              </Carousel>
+            </div>
+            <p className="mt-4 text-gray-500 dark:text-gray-300">
+              {value.description}
+            </p>
+            <Carousel>
+              <CarouselContent>
+                <CarouselItem>
+                  <div className="p-4 flex justify-center">
+                    <Image
+                      alt="post"
+                      height={400}
+                      width={400}
+                      src={value.image}
+                    />
+                  </div>
+                </CarouselItem>
+              </CarouselContent>
+              <CarouselPrevious className="ml-8" />
+              <CarouselNext className="mr-8" />
+            </Carousel>
 
-              <div className="flex mt-6 justify-between items-center">
-                <div className="flex space-x-4 text-gray-400 dark:text-gray-300">
-                  <Button variant="icon" className="flex items-center">
-                    <HeartIcon className="h-6 w-6 text-red-500" />
-                    <span className="ml-1 text-red-500">566</span>
-                  </Button>
-                  <Button variant="icon" className="flex items-center">
-                    <MessageCircleIcon className="h-6 w-6 text-green-500" />
-                    <span className="ml-1 text-green-500">241</span>
-                  </Button>
-                  {/* <div className="flex items-center">
-                    <RepeatIcon className="h-6 w-6 text-blue-500" />
-                    <span className="ml-1 text-blue-500">487</span>
-                  </div> */}
-                </div>
-                <div className="text-gray-400 dark:text-gray-300">
-                  7:22 AM · Aug 22, 2023
-                </div>
+            <div className="flex mt-6 justify-between items-center">
+              <div className="flex space-x-4 text-gray-400 dark:text-gray-300">
+                <Button variant="icon" className="flex items-center">
+                  <HeartIcon className="h-6 w-6 text-red-500" />
+                  <span className="ml-1 text-red-500">{value.likes}</span>
+                </Button>
+                <Button variant="icon" className="flex items-center">
+                  <MessageCircleIcon className="h-6 w-6 text-green-500" />
+                  <span className="ml-1 text-green-500">241</span>
+                </Button>
+                {/* <div className="flex items-center">
+                  <RepeatIcon className="h-6 w-6 text-blue-500" />
+                  <span className="ml-1 text-blue-500">487</span>
+                </div> */}
+              </div>
+              <div className="text-gray-400 dark:text-gray-300">
+                7:22 AM · Aug 22, 2023
               </div>
             </div>
           </div>
-        </Card>
+        </div>
+      </Card>
+    ))
+  )
+}
+
       </main>
     </div>
   );

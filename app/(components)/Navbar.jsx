@@ -1,8 +1,10 @@
+
 import Link from "next/link";
 import React from "react";
 import { getServerSession } from "next-auth";
 import { options } from "../api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
+
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -14,8 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Navbar = async () => {
+ 
   const session = await getServerSession(options);
 
+  
   return (
     <header className="flex flex-row justify-center pt-1">
       <div className="flex h-[60px] items-center px-6 rounded-s-xl border-2 border-zinc-600">
@@ -24,10 +28,11 @@ const Navbar = async () => {
           <span className="">Likeminds</span>
         </Link>
         {session && (
-          <Button className="ml-auto h-8 w-8" size="icon" variant="icon">
+          <Link href="/notification">
+          <Button className="ml-auto h-8 w-8" size="icon" variant="icon" >
             <BellIcon className="h-4 w-4" />
-            <span className="sr-only">Toggle notifications</span>
-          </Button>
+           
+          </Button></Link>
         )}
       </div>
       <div className="flex h-14 lg:h-[60px] px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
