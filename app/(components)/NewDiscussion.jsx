@@ -107,7 +107,7 @@ function NewDiscussion() {
   };
 
   return (
-    <div className="md:w-2/3 flex flex-col bg-white p-4 shadow rounded-lg">
+    <div className="w-full flex flex-col bg-white p-4 shadow rounded-lg">
       <form onSubmit={handlePostSubmit}>
         <div className="my-3">
           <Input
