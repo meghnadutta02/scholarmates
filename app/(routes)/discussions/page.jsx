@@ -2,10 +2,20 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import DiscussionList from "@/app/(components)/DiscussionList";
+import { IoIosCreate } from "react-icons/io";
 import DiscussionFilter from "@/app/(components)/DiscussionFilter";
 import { Button } from "@/components/ui/button";
 import { FaFilter } from "react-icons/fa6";
 import CreateDiscussion from "@/app/(components)/NewDiscussion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 const getSuggestions = async (q) => {
   const response = await fetch(
     `${
@@ -16,6 +26,7 @@ const getSuggestions = async (q) => {
 };
 
 const DiscussionsPage = () => {
+  const [open, setOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
     category: [],
     subcategory: [],
@@ -87,8 +98,21 @@ const DiscussionsPage = () => {
 
   return (
     <div>
-      <div className="flex p-4 gap-4 md:p-6 justify-center">
-        <CreateDiscussion />
+      <div className="flex p-4 gap-4 md:p-6 justify-center relative">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <IoIosCreate className="h-12 w-12 text-gray-600 absolute top-14  right-14   cursor-pointer p-2 text-center" />
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[720px]">
+            <DialogHeader>
+              <DialogTitle>New Discussion</DialogTitle>
+              <DialogDescription>
+                Start a new discussion and interact with your peers.
+              </DialogDescription>
+            </DialogHeader>
+            <CreateDiscussion />
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="flex">
         {/* filter section */}

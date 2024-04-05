@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import Group from "@/app/(models)/groupModel";
+import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";
 import groupRequest from "@/app/(models)/groupRequestModel";
 import { getServerSession } from "next-auth";
@@ -26,6 +27,7 @@ export async function PUT(req, { params }) {
     }
 
     const userId = request.fromUser;
+    const user = await User.findById(userId);
     const groupId = request.groupId;
     const group = await Group.findById(groupId);
     if (!group) {
@@ -34,7 +36,7 @@ export async function PUT(req, { params }) {
 
     if (action === "accept") {
       group.participants.push(userId);
-
+      user.groupsJoined.push(groupId);
       request.status = "accepted";
     } else {
       request.status = "rejected";
