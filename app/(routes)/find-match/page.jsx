@@ -27,28 +27,28 @@ export default function Component() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-   if(session){
-    console.log("this is lll:",session)
-    // console.log("request is:",request);
-     setUserId(session.db_id);
-   }
+    if (session) {
+      // console.log("this is lll:",session.db_id)
+      // console.log("request is:",request);
+      setUserId(session.db_id);
+    }
 
   }, [userId]);
 
-  useEffect(() => {
-    socket = io("http://localhost:5001");
-    console.log("userid:",userId)
-    socket.emit("setup", userId);
+  // useEffect(() => {
+  //   socket = io("http://localhost:5001");
+  //   console.log(userId)
+  //   socket.emit("setup", userId);
 
-    socket.on('connectionRequest', (data) => {
-        console.log("data:",data);
-        if (data != null) {
-            setRequestData(prevData => [...prevData, data]);
-        }
+  //   socket.on('connectionRequest', (data) => {
+  //     console.log(data);
+  //     if (data != null) {
+  //       setRequestData(prevData => [...prevData, data]);
+  //     }
 
-        setRequestData(prevRequest => ({ ...prevRequest, ...data }));
-        console.log("data we have:", data);
-    });
+  //     setRequest(prevRequest => ({ ...prevRequest, ...data }));
+  //     console.log("data we have:", data);
+  //   });
 
 
   //   return () => {
@@ -170,7 +170,7 @@ export default function Component() {
                 <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
                   <h2 className="font-semibold text-lg">Interests</h2>
                   <ul className="list-disc list-inside">
-                    {profile.interests?.map((interest) => (
+                    {profile.interests.map((interest) => (
                       <div key={interest._id}>
                         <li>{interest.category}</li>
                       </div>
