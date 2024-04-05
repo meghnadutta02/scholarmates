@@ -19,10 +19,34 @@ export async function GET() {
     const data = await Postkaro.find({});
       
 
-    console.log(data);
-
+    // console.log(data);
+    if(data){
+      console.log(data[0].userId)
+    }
     if (data.length > 0) {
-      return NextResponse.json({ result: data });
+      const postsWithUserDetails = [];
+
+      // Iterate through each post
+      for (const post of data) {
+        // Fetch user details based on userId
+        const user = await User.findOne({ _id: post.userId });
+
+        // If user details are found, add them to the post object
+        if (user) {
+          const postWithUser = {
+            post,
+            // Add user details to the post object
+            user,
+            
+            // Add any other post details you need
+          };
+          console.log(postWithUser)
+          postsWithUserDetails.push(postWithUser);
+        }
+      }
+
+      // Return posts with user details
+      return NextResponse.json({ result: postsWithUserDetails });
     } else {
       return NextResponse.json({
         error: "No posts found",

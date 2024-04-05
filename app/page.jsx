@@ -18,6 +18,7 @@ import Loading from "@/app/(routes)/find-match/loading"
 import CreatePost from "@/app/(components)/Post"
 
 export default function Home() {
+  
   const { session } = useSession();
   const [data, setData] = useState([]);
   const [userId, setUserId] = useState();
@@ -37,8 +38,18 @@ export default function Home() {
       });
       if (data);
       const res = await data.json();
-      console.log(res)
+      console.log("response",res.result[0].post)
       setData(res.result);
+      let dataArray = []; 
+      res.result.map((d)=>{
+       
+        console.log("first",d);
+        dataArray.push(d); 
+        
+      })
+      console.log(dataArray);
+       setData(dataArray);
+      
     } catch (error) {
       console.log(error)
     }
@@ -47,7 +58,7 @@ export default function Home() {
     if (data?.length == 0) {
       datafxn()
     }
-    console.log(data)
+    console.log("data:",data)
   }, [data]);
   return (
     <div className="flex flex-col ">
@@ -112,10 +123,12 @@ export default function Home() {
         ) : (
           // Render cards when data is available
           data.map((value, index) => (
+            
             <Card
               key={index}
               className="mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
             >
+              {console.log(value)};
               <div className="md:flex justify-center">
                 <div className="md:flex-shrink-0">
                   <span className="object-cover md:w-48 rounded-md bg-muted w-[192px] h-[192px]" />
@@ -127,7 +140,7 @@ export default function Home() {
                         alt="Profile picture"
                         className="rounded-full"
                         height="40"
-                        src={value.image}
+                        src={value.user.profilePic}
                         style={{
                           aspectRatio: "40/40",
                           objectFit: "cover",
@@ -136,30 +149,30 @@ export default function Home() {
                       />
                       <div className="ml-4">
                         <div className="uppercase tracking-wide text-sm text-black dark:text-white font-semibold">
-                          Chamath Palihapitiya
+                          {value.user.name}
                         </div>
                         <div className="text-gray-400 dark:text-gray-300">
-                          @chamath
+                          @jrmishra
                         </div>
                       </div>
                     </div>
                   </div>
                   <p className="mt-4 text-gray-800 dark:text-gray-300">
-                  {showMore ? value.description : value.description.split('\n').slice(0, 2).join('\n')}
+                  {showMore ? value.post.description : value.post.description.split('\n').slice(0, 2).join('\n')}
                   </p>
                   {/* Add "See More" button */}
-                  {(value.description.split('\n').length > 4) && (
+                  {(value.post.description.split('\n').length > 4) && (
                     <button
                       onClick={() => setShowMore(!showMore)}
                       className="text-blue-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 cursor-pointer"
                     >
                       {showMore ? "See Less" : "See More..."}
                     </button>)}
-                  {console.log(value.image)}
-                  {value.image.length > 0 && (
+                  {/* {console.log(value.userId)} */}
+                  {value.post.image.length > 0 && (
                     <Carousel>
                       <CarouselContent>
-                        {value.image.map((data, index) => (
+                        {value.post.image.map((data, index) => (
                           <CarouselItem key={index}>
                             <div className="p-4 flex justify-center">
                               <Image
