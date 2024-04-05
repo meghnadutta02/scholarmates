@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
+
 //CONFIG ENV
 
 console.log(process.env.MONGO_URI);
