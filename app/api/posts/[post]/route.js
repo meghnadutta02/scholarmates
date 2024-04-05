@@ -1,6 +1,6 @@
 import {Postkaro} from "../../../(models)/postkaroModel"
 import { User } from "@/app/(models)/userModel";
-import connect from "@/socketServer/db";
+import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import { postObject } from "@/app/config/s3";

@@ -21,10 +21,10 @@ const Page = () => {
     }
   }, [userId]);
 
-  // useEffect(() => {
-  //     socket = io("http://localhost:5001");
-  //     console.log(userId)
-  //     socket.emit("setup", userId);
+    // useEffect(() => {
+    //     socket = io("http://localhost:5001");
+    //     console.log(userId)
+    //     socket.emit("setup", userId);
 
   //     socket.on('connectionRequest', (data) => {
   //         console.log(data);
@@ -53,21 +53,17 @@ const Page = () => {
     console.log("pasr:", parsedData);
   }, []);
 
-  return (
-    <>
-      <div>
-        {data?.map((item, index) => (
-          <Notification
-            key={index}
-            sender={item.senderId}
-            receive={item.recipientId}
-            name={item.sendername}
-            frndId={item.friendRequest}
-          />
-        ))}
-      </div>
-    </>
-  );
+    return (
+        <>
+            <div>
+                {data?.map((item, index) => (
+                    <Notification key={index} sender={item.senderId}
+                        receive={item.recipientId} name={item.sendername} frndId={item.friendRequest
+}/>
+                ))}
+            </div>
+        </>
+    );
 };
 
 export default Page;

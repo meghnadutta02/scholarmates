@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
 import Image from "next/image";
 var socket, selectedChatCompare;
 import { useSession } from '@/app/(components)/SessionProvider'
@@ -18,7 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 export default function Component() {
   // use session
-const {session,request}=useSession();
+  const { session, request } = useSession();
 
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
@@ -51,16 +51,16 @@ const {session,request}=useSession();
     });
 
 
-    return () => {
-        socket.disconnect();
-    };
-}, [userId])
-useEffect(() => {
-    if (requestdata.length > 0) {
-        localStorage.setItem('request', JSON.stringify(requestdata));
-        console.log("dataaaaa:", requestdata);
-    }
-}, [requestdata]);
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, [userId])
+  // useEffect(() => {
+  //   if (requestdata.length > 0) {
+  //     localStorage.setItem('request', JSON.stringify(requestdata));
+  //     console.log("dataaaaa:", requestdata);
+  //   }
+  // }, [requestdata]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,12 +92,14 @@ useEffect(() => {
       if (profileId && userId) {
         const data = await fetch(
           `http://localhost:5001/sendconnection/${userId}`,
-        {  method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ recipientId: profileId }),
-          cache: "no-cache"}
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ recipientId: profileId }),
+            cache: "no-cache"
+          }
         );
         if (data) {
           console.log(data);

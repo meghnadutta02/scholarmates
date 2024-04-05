@@ -1,12 +1,15 @@
 'use client'
-import React from 'react'
+import React,{useState} from 'react'
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Flex, Text, Box, Image } from '@radix-ui/themes';
 import { Button } from "@/components/ui/button";
 const notification = ({ sender, receive, name, frndId }) => {
+  const [isVisible, setIsVisible]=useState(true);
 
-  const acceptHandle = async () => {
+  const acceptHandle = async (x) => {
+    
+console.log(x);
 
     try {
       if (sender && receive) {
@@ -16,13 +19,13 @@ const notification = ({ sender, receive, name, frndId }) => {
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({ friendshipId: frndId, userId: receive }),
+            body: JSON.stringify({ friendshipId: frndId, userId: receive ,action:x}),
             cache: "no-cache"
           });
         if (res.status == 200) {
           console.log(res);
           localStorage.removeItem('request');
-          // window.location.reload();
+           setIsVisible(false);
         }
       } else {
         console.log("NO SENDER AND RECEIVER ID'S PRESENT");
@@ -37,7 +40,7 @@ const notification = ({ sender, receive, name, frndId }) => {
   console.log(sender, name, frndId, receive);
   return (
     <>
-      <Flex gap="3" direction="column">
+     {isVisible && ( <Flex gap="3" direction="column">
         <Card size="3" style={{ width: 500 }}>
           <Flex gap="4" align="center">
             <Avatar
@@ -54,11 +57,11 @@ const notification = ({ sender, receive, name, frndId }) => {
                 Engineering
               </Text>
             </Box>
-            <Button onClick={acceptHandle}>Accept</Button>
-            <Button backgroundcolor="red">Decline</Button>
+            <Button onClick={()=>acceptHandle("accept")} >Accept</Button>
+            <Button backgroundcolor="red" onClick={()=>acceptHandle("decline")}>Decline</Button>
           </Flex>
         </Card>
-      </Flex>
+      </Flex>)}
     </>
   )
 }
