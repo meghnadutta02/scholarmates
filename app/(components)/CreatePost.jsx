@@ -1,5 +1,6 @@
 import React, { useRef, useState,useEffect } from 'react';
 import { useSession } from '@/app/(components)/SessionProvider'
+import {  toast } from 'react-toastify';
 const CreatePost = () => {
   const {session,request}=useSession();
 
@@ -67,8 +68,23 @@ formData.append('description', description);
       });
       if (data);
       const res = await data.json();
-      console.log(res)
-      setData(res.result);
+      console.log("response i get:",res.success)
+      if (res.success==true) {
+        // Reset form fields
+        setDescription('');
+        setImages([]);
+        setImg([]);
+  
+        // Show toast notification
+        // You can use your preferred toast library here
+        toast.success("Post Uploaded SucessFully");
+  
+        // Refresh page
+        window.location.reload();
+      } else {
+        // Handle other response codes if necessary
+        console.error("Error submitting post:", response.statusText);
+      }
     } catch (error) {
       console.log(error)
     }

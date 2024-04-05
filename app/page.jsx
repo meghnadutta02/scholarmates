@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 // import CreatePost from "@/app/(components)/NewPost";
 import { Card } from "@/components/ui/card";
+import { useSession } from "@/app/(components)/SessionProvider"
 import {
   Carousel,
   CarouselContent,
@@ -17,10 +18,20 @@ import Loading from "@/app/(routes)/find-match/loading"
 import CreatePost from "@/app/(components)/Post"
 
 export default function Home() {
+  const { session } = useSession();
   const [data, setData] = useState([]);
+  const [userId, setUserId] = useState();
+  const [showMore,setShowMore]=useState(false);
+  useEffect(() => {
+    if (session) {
+      console.log("this is lll:", session)
+      // console.log("request is:",request);
+      setUserId(session.db_id);
+    }
+  })
   const datafxn = async () => {
     try {
-      const data = await fetch("/api/posts",
+      const data = await fetch(`/api/posts/${userId}`,
         { method: "GET" }, {
         cache: 'no-cache'
       });
@@ -96,87 +107,100 @@ export default function Home() {
 
         {/* Posts Feed */}
         {!data ? (
-            // Render loader while data is being fetched
-            <Loading/>
-          ) : (
-            // Render cards when data is available
-            data.map((value, index) => (
-              <Card
-                key={index}
-                className="mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
-              >
-                <div className="md:flex justify-center">
-                  <div className="md:flex-shrink-0">
-                    <span className="object-cover md:w-48 rounded-md bg-muted w-[192px] h-[192px]" />
-                  </div>
-                  <div className="p-8 w-full">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Image
-                          alt="Profile picture"
-                          className="rounded-full"
-                          height="40"
-                          src={value.image}
-                          style={{
-                            aspectRatio: "40/40",
-                            objectFit: "cover",
-                          }}
-                          width="40"
-                        />
-                        <div className="ml-4">
-                          <div className="uppercase tracking-wide text-sm text-black dark:text-white font-semibold">
-                            Chamath Palihapitiya
-                          </div>
-                          <div className="text-gray-400 dark:text-gray-300">
-                            @chamath
-                          </div>
+          // Render loader while data is being fetched
+          <Loading />
+        ) : (
+          // Render cards when data is available
+          data.map((value, index) => (
+            <Card
+              key={index}
+              className="mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
+            >
+              <div className="md:flex justify-center">
+                <div className="md:flex-shrink-0">
+                  <span className="object-cover md:w-48 rounded-md bg-muted w-[192px] h-[192px]" />
+                </div>
+                <div className="p-8 w-full">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Image
+                        alt="Profile picture"
+                        className="rounded-full"
+                        height="40"
+                        src={value.image}
+                        style={{
+                          aspectRatio: "40/40",
+                          objectFit: "cover",
+                        }}
+                        width="40"
+                      />
+                      <div className="ml-4">
+                        <div className="uppercase tracking-wide text-sm text-black dark:text-white font-semibold">
+                          Chamath Palihapitiya
+                        </div>
+                        <div className="text-gray-400 dark:text-gray-300">
+                          @chamath
                         </div>
                       </div>
                     </div>
-                    <p className="mt-4 text-gray-500 dark:text-gray-300">
-                      {value.description}
-                    </p>
+                  </div>
+                  <p className="mt-4 text-gray-800 dark:text-gray-300">
+                  {showMore ? value.description : value.description.split('\n').slice(0, 2).join('\n')}
+                  </p>
+                  {/* Add "See More" button */}
+                  {(value.description.split('\n').length > 4) && (
+                    <button
+                      onClick={() => setShowMore(!showMore)}
+                      className="text-blue-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 cursor-pointer"
+                    >
+                      {showMore ? "See Less" : "See More..."}
+                    </button>)}
+                  {console.log(value.image)}
+                  {value.image.length > 0 && (
                     <Carousel>
                       <CarouselContent>
-                        <CarouselItem>
-                          <div className="p-4 flex justify-center">
-                            <Image
-                              alt="post"
-                              height={400}
-                              width={400}
-                              src={value.image}
-                            />
-                          </div>
-                        </CarouselItem>
+                        {value.image.map((data, index) => (
+                          <CarouselItem key={index}>
+                            <div className="p-4 flex justify-center">
+                              <Image
+                                alt="post"
+                                height={400}
+                                width={400}
+                                src={data}
+                              />
+                            </div>
+                          </CarouselItem>
+                        ))}
                       </CarouselContent>
                       <CarouselPrevious className="ml-8" />
                       <CarouselNext className="mr-8" />
                     </Carousel>
+                  )}
 
-                    <div className="flex mt-6 justify-between items-center">
-                      <div className="flex space-x-4 text-gray-400 dark:text-gray-300">
-                        <Button variant="icon" className="flex items-center">
-                          <HeartIcon className="h-6 w-6 text-red-500" />
-                          <span className="ml-1 text-red-500">{value.likes}</span>
-                        </Button>
-                        <Button variant="icon" className="flex items-center">
-                          <MessageCircleIcon className="h-6 w-6 text-green-500" />
-                          <span className="ml-1 text-green-500">241</span>
-                        </Button>
-                        {/* <div className="flex items-center">
+                  <div className="flex mt-6 justify-between items-center">
+                    <div className="flex space-x-4 text-gray-400 dark:text-gray-300">
+                      <Button variant="icon" className="flex items-center">
+                        <HeartIcon className="h-6 w-6 text-red-500" />
+                        <span className="ml-1 text-red-500">{value.likes}</span>
+                      </Button>
+                      <Button variant="icon" className="flex items-center">
+                        <MessageCircleIcon className="h-6 w-6 text-green-500" />
+                        <span className="ml-1 text-green-500">241</span>
+                      </Button>
+                      {/* <div className="flex items-center">
                   <RepeatIcon className="h-6 w-6 text-blue-500" />
                   <span className="ml-1 text-blue-500">487</span>
                 </div> */}
-                      </div>
-                      <div className="text-gray-400 dark:text-gray-300">
-                        7:22 AM · Aug 22, 2023
-                      </div>
+                    </div>
+                    <div className="text-gray-400 dark:text-gray-300">
+                      7:22 AM · Aug 22, 2023
                     </div>
                   </div>
                 </div>
-              </Card>
-            ))
-          )
+              </div>
+            </Card>
+          ))
+        )
         }
 
       </main>

@@ -1,5 +1,5 @@
 import {Postkaro} from "../../../(models)/postkaroModel"
-import { User } from "@/app/(models)/userModel";
+import { User } from "../../../(models)/userModel";
 import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
@@ -16,7 +16,7 @@ export async function GET() {
     // const skip = (page - 1) * pageSize;
 
     // Fetch posts with pagination, sorting by createdAt field in descending order
-    const data = await Post.find({});
+    const data = await Postkaro.find({});
       
 
     console.log(data);
@@ -37,6 +37,10 @@ export async function GET() {
     });
   }
 }
+
+
+// ================Post data==========
+
 export async function POST(req, { params }) {
   await connect();
   
@@ -74,33 +78,39 @@ export async function POST(req, { params }) {
 
       
     }
-console.log(uploadedImages)
+// console.log(uploadedImages)
+
+//==============upload image in database==========
+
+
 if(uploadedImages){
   const newPost = await Postkaro({
     userId: userId,
-    // description: description,
-    // image: uploadedImages, // Assign the array of uploaded images
-    // caption: caption,
+    description: description,
+    image: uploadedImages, // Assign the array of uploaded images
+    caption: caption,
     
   });
   
-  console.log(newPost)
+  // console.log(newPost)  //check the structure of the data save in db
+
   const data=await newPost.save();
-  console.log(data);
-}
+
+  // console.log(data);      //check what data we get from database
 
 // Save the new post to the database
 
+  if (data) {
+    console.log(data)
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $push: { posts: data._id } },
+      { new: true }
+    );
+    console.log(updatedUser);
+  }
+}
 
-    // if (newPost) {
-    //   console.log(newPost)
-    //   const updatedUser = await User.findByIdAndUpdate(
-    //     userId,
-    //     { $push: { post: newPost._id } },
-    //     { new: true }
-    //   );
-    //   console.log(updatedUser);
-    // }
 
     return NextResponse.json({
       result: "Posts uploaded",
