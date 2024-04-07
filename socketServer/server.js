@@ -49,6 +49,7 @@ io.on("connection", async (socket) => {
   socket.on("send-message", (data) => {
     console.log(data);
     if (data.roomID) {
+      socket.join(data.roomID);
       io.to(data.roomID).emit("receive-message", data.message);
     } else {
       io.emit("receive-message", data);

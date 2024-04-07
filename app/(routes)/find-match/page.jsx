@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { io } from "socket.io-client";
 import Image from "next/image";
 var socket, selectedChatCompare;
-import { useSession } from '@/app/(components)/SessionProvider'
+import { useSession } from "@/app/(components)/SessionProvider";
 import {
   Carousel,
   CarouselContent,
@@ -32,8 +32,7 @@ export default function Component() {
       // console.log("request is:",request);
       setUserId(session.db_id);
     }
-
-  }, [userId]);
+  }, [userId, session]);
 
   // useEffect(() => {
   //   socket = io("http://localhost:5001");
@@ -49,7 +48,6 @@ export default function Component() {
   //     setRequest(prevRequest => ({ ...prevRequest, ...data }));
   //     console.log("data we have:", data);
   //   });
-
 
   //   return () => {
   //     socket.disconnect();
@@ -95,10 +93,10 @@ export default function Component() {
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ recipientId: profileId }),
-            cache: "no-cache"
+            cache: "no-cache",
           }
         );
         if (data) {
@@ -170,9 +168,9 @@ export default function Component() {
                 <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
                   <h2 className="font-semibold text-lg">Interests</h2>
                   <ul className="list-disc list-inside">
-                    {profile.interests.map((interest) => (
+                    {profile.interestCategories.map((interest) => (
                       <div key={interest._id}>
-                        <li>{interest.category}</li>
+                        <li>{interest}</li>
                       </div>
                     ))}
                   </ul>
