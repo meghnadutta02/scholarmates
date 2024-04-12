@@ -111,7 +111,7 @@ const GroupChatbox = ({ roomID }) => {
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
         </div>
       ) : (
-        <div className="flex flex-col justify-between">
+        <div className="flex flex-col justify-between ">
           <h2 className="text-center font-semibold text-xl">
             {groupDetails?.title}
           </h2>
