@@ -42,6 +42,11 @@ export const sendConnectionController = async (req, resp) => {
     console.log("requestdata:", requestdata._id);
 
     // / Send a notification to the recipient using Socket.io
+    if(requestdata){
+     senderUser.requestPending.push(recipientId);
+     await senderUser.save();
+     console.log("first",senderUser)
+    }
 
     io.to(recipientId).emit("connectionRequest", {
       recipientId: recipientId,
@@ -85,9 +90,11 @@ export const receiveConnectionController = async (req, resp) => {
     const sender = await User.findById(friendshipRequest.user);
     if (user || sender) {
       user.connection.push(sender._id);
+      await user.updateOne({$pull:{requestPending:sender._id}});
       await user.save();
 
       sender.connection.push(user._id);
+     await sender.updateOne({$pull:{requestPending:user._id}});
       await sender.save();
     }
     console.log(user, sender);

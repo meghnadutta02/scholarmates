@@ -4,7 +4,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Flex, Text, Box, Image } from "@radix-ui/themes";
 import { Button } from "@/components/ui/button";
-const Notification = ({ sender, receive, name, frndId }) => {
+const Notification = ({ sender, receive, name, frndId ,user,data}) => {
   const [isVisible, setIsVisible] = useState(true);
 
   const acceptHandle = async (x) => {
@@ -20,8 +20,8 @@ const Notification = ({ sender, receive, name, frndId }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              friendshipId: frndId,
-              userId: receive,
+              friendshipId: data._id,
+              userId: data.requestTo,
               action: x,
             }),
             cache: "no-cache",
@@ -39,36 +39,44 @@ const Notification = ({ sender, receive, name, frndId }) => {
       console.log(error.message);
     }
   };
+  const profile=(id)=>{
+    alert(id);
+  }
 
-  console.log(sender, name, frndId, receive);
+  console.log(sender, name, frndId, receive,user,data);
   return (
     <>
       {isVisible && (
         <Flex gap="3" direction="column">
-          <Card size="3" style={{ width: 500 }}>
-            <Flex gap="4" align="center">
-              <Avatar
+          <Card size="3" style={{ width: 500 }} >
+            <Flex gap="4" align="center" className="flex">
+              <img
                 size="3"
-                src="https://images.unsplash.com/photo-1607346256330-dee7af15f7c5?&w=64&h=64&dpr=2&q=70&crop=focalpoint&fp-x=0.67&fp-y=0.5&fp-z=1.4&fit=crop"
-                radius="full"
+                src={user.profilePic}
+                className="rounded-full"
                 fallback="T"
               />
               <Box>
-                <Text as="div" size="4" weight="bold">
-                  {name}
+                <Text as="div" size="4" className="cursor-pointer hover:color-blue" weight="bold" onClick={()=>profile(user._id)}>
+                  {user.name}
+                </Text>
+                <Text as="div" size="4" color="gray" >
+                  {user.collegeName}
                 </Text>
                 <Text as="div" size="4" color="gray">
-                  Engineering
+                  {user.degree}
                 </Text>
+
               </Box>
-              <Button onClick={() => acceptHandle("accept")}>Accept</Button>
+
+            </Flex>
+            <Button onClick={() => acceptHandle("accept")}>Accept</Button>
               <Button
                 backgroundcolor="red"
                 onClick={() => acceptHandle("decline")}
               >
                 Decline
               </Button>
-            </Flex>
           </Card>
         </Flex>
       )}

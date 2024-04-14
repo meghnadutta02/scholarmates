@@ -25,12 +25,14 @@ export default function Component() {
   const [userId, setUserId] = useState();
   const [requestdata, setRequestData] = useState([]);
   const [data, setData] = useState([]);
+  const [visible,setVisible]=useState(true);
+  const [requestPend,setRequestPen]=useState([]);
 
   useEffect(() => {
     if (session) {
-      // console.log("this is lll:",session.db_id)
-      // console.log("request is:",request);
-      setUserId(session.db_id);
+      console.log(session);
+      setUserId(session);
+      setRequestPen(session.requestPending);
     }
   }, [userId, session]);
 
@@ -64,7 +66,7 @@ export default function Component() {
     const fetchData = async () => {
       try {
         if (userId) {
-          const res = await fetch(`/api/users/${userId}`, {
+          const res = await fetch(`/api/users/${userId.db_id}`, {
             cache: "no-cache",
           });
           if (!res.ok) {
@@ -89,17 +91,18 @@ export default function Component() {
     try {
       if (profileId && userId) {
         const data = await fetch(
-          `http://localhost:5001/sendconnection/${userId}`,
+          `http://localhost:5001/sendconnection/${userId.db_id}`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ recipientId: profileId }),
+            body: JSON.stringify({ recipientId: profileId ,}),
             cache: "no-cache",
           }
         );
         if (data) {
+          setVisible(false)
           console.log(data);
         }
       } else {
@@ -120,7 +123,8 @@ export default function Component() {
       <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl ">
         <CarouselContent>
           {profiles.map((profile) => (
-            <CarouselItem key={profile._id}>
+           !userId?.connection?.includes(profile._id) ?
+           (<CarouselItem key={profile._id}>
               <div className="grid gap-2">
                 <div className="rounded-xl border ">
                   <Image
@@ -152,9 +156,13 @@ export default function Component() {
                       </div>
                     </div>
                     <div className="flex ml-auto gap-4">
-                      <Button onClick={() => handleConnectClick(profile._id)}>
-                        Connect
-                      </Button>
+                    {requestPend?.includes(profile._id) ? (
+                        <Button disabled>Requested</Button>
+                      ) : (
+                        <Button onClick={() => handleConnectClick(profile._id)}>
+                          Connect
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -176,7 +184,7 @@ export default function Component() {
                   </ul>
                 </div>
               </div>
-            </CarouselItem>
+            </CarouselItem>):null
           ))}
         </CarouselContent>
         <CarouselPrevious />

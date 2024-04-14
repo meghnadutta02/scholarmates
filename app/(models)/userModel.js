@@ -35,6 +35,13 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    requestPending: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     collegeName: {
       type: String,
       default: "",

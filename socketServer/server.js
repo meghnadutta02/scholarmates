@@ -7,6 +7,7 @@ import connection from "./db.js";
 import Group from "./model/groupModel.js";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import notification from "./route/notification.js"
 import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
 
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/sendconnection", sendConnection);
 app.use("/joinrequest", joinRequest);
+app.use("/notification",notification)
 const socketServer = http.createServer(app);
 
 connection();
