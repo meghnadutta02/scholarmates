@@ -4,13 +4,17 @@ import { Input } from "@/components/ui/input";
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { VscSend } from "react-icons/vsc";
+// import Linkify from "react-linkify";
+import { Interweave } from "interweave";
+import { UrlMatcher } from "interweave-autolink";
+import { useSession } from "./SessionProvider";
 
 const GroupChatbox = ({ roomID }) => {
-  const { data: session } = useSession();
+  const { socket, session } = useSession();
   const [loading, setLoading] = useState(true);
-  const [socket, setSocket] = useState(null);
+  // const [socket, setSocket] = useState(null);
   const [message, setMessage] = useState({
     text: "",
     groupId: roomID,
@@ -43,7 +47,10 @@ const GroupChatbox = ({ roomID }) => {
   const sendMessageHandler = async (e) => {
     e.preventDefault();
     if (message.text.trim() !== "") {
-      socket.emit("send-message", { message: message, roomID: roomID });
+      socket.emit("send-message", {
+        message: message,
+        roomID: roomID,
+      });
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${groupId}`,
@@ -70,34 +77,23 @@ const GroupChatbox = ({ roomID }) => {
     const fetchData = async () => {
       const groupMessages = await getGroupMessages(groupId);
       setInboxMessages(groupMessages.messagesWithSenderName);
-      console.log(groupMessages.messagesWithSenderName);
     };
 
     fetchData();
   }, [groupId]);
 
   useEffect(() => {
-    if (!socket) {
-      const newSocket = io("http://localhost:5001");
-      newSocket.on("connect", () => {
-        console.log("Successfully connected!");
-      });
-      setSocket(newSocket);
-    }
-
     if (socket) {
-      socket.emit("selectedRoomID", groupId);
-      socket.on("receive-message", (msg) => {
-        console.log(msg);
+      const messageHandler = (msg) => {
         setInboxMessages((prevMessages) => [...prevMessages, msg]);
-      });
-    }
+      };
+      socket.emit("groupchat-setup", groupId);
+      socket.on("receive-message", messageHandler);
 
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
+      return () => {
+        socket.off("receive-message", messageHandler);
+      };
+    }
   }, [groupId, socket]);
 
   useEffect(() => {
@@ -112,25 +108,36 @@ const GroupChatbox = ({ roomID }) => {
         </div>
       ) : (
         <div className="flex flex-col justify-between ">
-          <h2 className="text-center font-semibold text-xl">
+          <h2 className="text-center font-semibold text-xl py-4">
             {groupDetails?.title}
           </h2>
 
-          <div className="p-4 border h-[30rem] rounded-md overflow-y-auto">
+          <div className="p-4 mx-2 border h-[30rem] rounded-sm overflow-y-auto">
             {inboxMessages.map((msg, index) => (
               <div
                 key={index}
                 className={`flex ${
-                  msg.sender === session?.user?.db_id
+                  msg.sender === session?.db_id
                     ? "justify-end"
                     : "justify-start"
                 }`}
               >
                 <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
-                  {msg.sender != session?.user?.db_id && (
+                  {msg.sender != session?.db_id && (
                     <p className="text-sm font-medium">{msg.senderName}</p>
                   )}
-                  <p className="">{msg.text}</p>
+                  {/* <Linkify
+                    options={{
+                      target: "_blank",
+                      style: { color: "red", fontWeight: "bold" },
+                    }}
+                  >
+                    {msg.text}
+                  </Linkify> */}
+                  <Interweave
+                    content={msg.text}
+                    matchers={[new UrlMatcher("url")]}
+                  />
                   <p className="text-xs flex justify-end font-light">
                     {new Date(msg.updatedAt).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -153,9 +160,10 @@ const GroupChatbox = ({ roomID }) => {
                   onChange={(e) =>
                     setMessage({
                       text: e.target.value,
-                      sender: session.user?.db_id,
+                      sender: session?.db_id,
                       updatedAt: new Date().toISOString(),
                       groupId: groupId,
+                      senderName: session?.name,
                     })
                   }
                   placeholder="Enter message"

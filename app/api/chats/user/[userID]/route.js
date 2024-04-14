@@ -14,8 +14,10 @@ export async function GET(req, { params }) {
     const senderID = session.user.db_id;
     const recipientID = params.userID;
     const messages = await UserMessage.find({
-      sender: senderID,
-      recipient: recipientID,
+      $or: [
+        { sender: senderID, recipient: recipientID },
+        { sender: recipientID, recipient: senderID },
+      ],
     });
     return NextResponse.json({ messages }, { status: 200 });
   } catch (error) {

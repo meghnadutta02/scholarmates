@@ -1,16 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import { useSession } from "./SessionProvider";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Interweave } from "interweave";
+import { UrlMatcher } from "interweave-autolink";
 
 const UserChatbox = ({ selectedUser }) => {
+  const { socket, session } = useSession();
   const [message, setMessage] = useState({
     text: "",
     attachments: [],
+    sender: session.db_id,
   });
   const [loading, setLoading] = useState(true);
   const [inboxMessages, setInboxMessages] = useState([]);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const fetchInboxMessages = async () => {
@@ -22,7 +33,6 @@ const UserChatbox = ({ selectedUser }) => {
           throw new Error("Failed to fetch messages");
         }
         const data = await response.json();
-        console.log(data);
         setInboxMessages(data.messages);
         return data;
       } catch (error) {
@@ -30,6 +40,7 @@ const UserChatbox = ({ selectedUser }) => {
         return [];
       } finally {
         setLoading(false);
+        scrollToLastMessage();
       }
     };
 
@@ -39,8 +50,11 @@ const UserChatbox = ({ selectedUser }) => {
   const sendMessageHandler = async (e) => {
     e.preventDefault();
     if (message.text.trim() !== "") {
-      //   socket.emit("send-message", { message: message, roomID: roomID });
-
+      socket.emit("userchat-send", {
+        message: message,
+        receiver: selectedUser,
+        sender: session.db_id,
+      });
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${selectedUser._id}`,
         {
@@ -51,7 +65,6 @@ const UserChatbox = ({ selectedUser }) => {
       );
       if (res.ok) {
         // toast.success("Message sent");
-        setInboxMessages((prevMessages) => [...prevMessages, message]);
       } else {
         toast.error("Message not sent");
       }
@@ -62,85 +75,134 @@ const UserChatbox = ({ selectedUser }) => {
     }
   };
 
+  useEffect(() => {
+    if (socket) {
+      const messageHandler = (msg) => {
+        setInboxMessages((prevMessages) => [...prevMessages, msg]);
+      };
+      socket.emit("userchat-setup", {
+        sender: session.db_id,
+        receiver: selectedUser._id,
+      });
+      socket.on("userchat-receive", messageHandler);
+
+      return () => {
+        socket.off("userchat-receive", messageHandler);
+      };
+    }
+  }, [socket, inboxMessages, session.db_id, selectedUser._id]);
+
+  const scrollToLastMessage = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToLastMessage();
+  }, [inboxMessages]);
+
   return (
-    <div className="flex flex-col h-[100%] justify-between p-4">
-      <div>
-        {/* chat info header */}
-        <div className="flex border-b px-2 pb-2 mb-4 items-center gap-4">
-          <div className="w-12 h-12 relative">
-            <Image
-              alt="User avatar"
-              className="rounded-full"
-              height="48"
-              src={selectedUser.profilePic}
-              style={{
-                aspectRatio: "48/48",
-                objectFit: "cover",
-              }}
-              width="48"
-            />
-            <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" />
-          </div>
-          <div className="flex flex-col">
-            <h1 className="text-lg font-semibold">{selectedUser.name}</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Typing...
-            </p>
-          </div>
-          <Button className="ml-auto" size="sm" variant="outline">
-            info
-          </Button>
+    <div>
+      {loading ? (
+        <div className="flex justify-center items-center h-[30rem]">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
         </div>
-        <div className="flex flex-col gap-2">
+      ) : (
+        <div className="flex flex-col h-[100%] justify-between p-4">
           <div>
-            {inboxMessages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  msg.sender === selectedUser._id
-                    ? "justify-start"
-                    : "justify-end"
-                }`}
-              >
-                <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
-                  {msg.sender != selectedUser._id && (
-                    <p className="text-sm font-medium">{msg.senderName}</p>
-                  )}
-                  <p className="">{msg.text}</p>
-                  <p className="text-[10px] flex justify-end font-light">
-                    {new Date(msg.updatedAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+            {/* chat info header */}
+            <div className="flex px-2 mb-4 items-center gap-4 justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 relative">
+                  <Image
+                    alt="User avatar"
+                    className="rounded-full"
+                    height="36"
+                    src={selectedUser.profilePic}
+                    style={{
+                      aspectRatio: "48/48",
+                      objectFit: "cover",
+                    }}
+                    width="48"
+                  />
+                  <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" />
+                </div>
+                <div className="flex flex-col">
+                  <h1 className="text-lg font-semibold">{selectedUser.name}</h1>
                 </div>
               </div>
-            ))}
+
+              <div className="border p-1 rounded-lg">
+                <Popover>
+                  <PopoverTrigger>info</PopoverTrigger>
+                  <PopoverContent>
+                    <p>Name : {selectedUser.name}</p>
+                    <p>College : {selectedUser.collegeName}</p>
+                    <p>Course : {selectedUser.degree}</p>
+                    <p>Year : {selectedUser.yearInCollege}</p>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            <div className="flex flex-col border rounded-md  h-[30rem] overflow-y-auto">
+              <div className="p-4 ">
+                {inboxMessages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${
+                      msg.sender === selectedUser._id
+                        ? "justify-start"
+                        : "justify-end"
+                    }`}
+                  >
+                    <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
+                      {msg.sender != selectedUser._id && (
+                        <p className="text-sm font-medium">{msg.senderName}</p>
+                      )}
+                      <Interweave
+                        content={msg.text}
+                        matchers={[new UrlMatcher("url")]}
+                      />
+                      <p className="text-[10px] flex justify-end font-light">
+                        {new Date(msg.updatedAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
+          </div>
+          <div className=" flex-shrink-0">
+            <form
+              onSubmit={sendMessageHandler}
+              className="flex items-center p-2 gap-2"
+            >
+              <Button className="h-8" variant="outline">
+                <PaperclipIcon className="w-4 h-4" />
+                Attach
+              </Button>
+              <Input
+                className="flex-1"
+                placeholder="Type a message"
+                value={message.text}
+                onChange={(e) =>
+                  setMessage({
+                    text: e.target.value,
+                    updatedAt: new Date().toISOString(),
+                    sender: session.db_id,
+                  })
+                }
+              />
+              <Button className="h-8" type="submit">
+                Send
+              </Button>
+            </form>
           </div>
         </div>
-      </div>
-      <div className="border-t flex-shrink-0">
-        <form className="flex items-center p-2 gap-2">
-          <Button className="h-8" variant="outline">
-            <PaperclipIcon className="w-4 h-4" />
-            Attach
-          </Button>
-          <Input
-            className="flex-1"
-            placeholder="Type a message"
-            value={message.text}
-            onChange={(e) =>
-              setMessage({
-                text: e.target.value,
-                updatedAt: new Date().toISOString(),
-              })
-            }
-          />
-          <Button className="h-8" type="submit" onClick={sendMessageHandler}>
-            Send
-          </Button>
-        </form>
-      </div>
+      )}
     </div>
   );
 };

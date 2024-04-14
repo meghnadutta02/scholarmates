@@ -2,7 +2,6 @@
 import GroupChatbox from "@/app/(components)/GroupChatbox";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
-import { IoArrowBackCircleSharp } from "react-icons/io5";
 import Image from "next/image";
 import Spinnersvg from "@/public/Spinner.svg";
 
@@ -21,7 +20,6 @@ const Page = () => {
         throw new Error("Failed to fetch requests");
       }
       const data = await response.json();
-      console.log(data.groups);
       setGroups(data.groups);
     } catch (error) {
       console.error(error);
@@ -41,35 +39,35 @@ const Page = () => {
           <Image src={Spinnersvg} alt="Loading..." className="h-28" />
         </div>
       ) : (
-        <div className="px-16">
-          {isRoomSelected ? (
-            <>
-              <IoArrowBackCircleSharp
-                className="h-10 w-10"
-                onClick={() => setIsRoomSelected(false)}
-              />
-              <GroupChatbox roomID={roomID} />
-            </>
-          ) : (
-            <div>
-              <h1 className="text-center mt-4 font-semibold text-3xl">
-                Joined Discussion
-              </h1>
-
+        <div className="flex flex-col min-h-[30rem] rounded-lg border my-4">
+          <div className="flex flex-1">
+            <div className="w-1/3 border-r py-2 px-1 flex flex-col gap-2 overflow-hidden">
               {groups.map((group) => (
-                <div key={group._id} className="my-2">
+                <div key={group._id} className=" border-b">
                   <Button
                     onClick={() => {
                       setRoomID(group._id);
                       setIsRoomSelected(true);
                     }}
+                    variant="ghost"
+                    className="flex h-12 w-full justify-start"
                   >
                     {group.name}
                   </Button>
                 </div>
               ))}
             </div>
-          )}
+
+            {isRoomSelected ? (
+              <div className="min-w-[240px] md:min-w-[750px]">
+                <GroupChatbox key={roomID} roomID={roomID} />
+              </div>
+            ) : (
+              <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
+                <p>Choose conversation</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

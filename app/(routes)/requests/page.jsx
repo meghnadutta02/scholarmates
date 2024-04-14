@@ -9,13 +9,9 @@ const Request = () => {
         defaultValue="c"
         className=" flex flex-col justify-centre items-center  "
       >
-        <TabsList className="">
-          <TabsTrigger value="c" className="lg:text-lg">
-            Connections
-          </TabsTrigger>
-          <TabsTrigger value="g" className="lg:text-lg">
-            Groups
-          </TabsTrigger>
+        <TabsList>
+          <TabsTrigger value="c">Connections</TabsTrigger>
+          <TabsTrigger value="g">Groups</TabsTrigger>
         </TabsList>
         <TabsContent value="c">Make changes to your account here.</TabsContent>
 

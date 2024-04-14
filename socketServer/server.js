@@ -30,6 +30,8 @@ const io = new Server(socketServer, {
   },
 });
 
+const activeUserChatrooms = new Map();
+
 io.on("connection", async (socket) => {
   console.log("Connected to socket.io");
   socket.on("setup", (userData) => {
@@ -38,25 +40,47 @@ io.on("connection", async (socket) => {
     socket.emit("connected");
   });
 
-  socket.on("joinGroupRoom", async ({ groupId }) => {
-    const group = await Group.findById(groupId);
-    if (group) {
+  socket.on("groupchat-setup", async (groupId) => {
+    if (groupId) {
       socket.join(groupId);
       console.log(`Socket ${socket.id} joined group ${groupId}`);
     } else console.log(`Group ${groupId} not found`);
   });
 
+  socket.on("userchat-setup", async (data) => {
+    if (!data || !data.sender || !data.receiver) {
+      console.error("Invalid data received:", data);
+      return;
+    }
+    function generateRoomId(userId1, userId2) {
+      const combinedIds = [userId1, userId2].sort().join("_");
+      return combinedIds;
+    }
+    const roomId = generateRoomId(data.sender, data.receiver);
+
+    if (!socket.rooms.has(roomId)) {
+      socket.join(roomId);
+      activeUserChatrooms.set(socket.id, roomId);
+    }
+  });
+
   socket.on("send-message", (data) => {
-    console.log(data);
     if (data.roomID) {
-      socket.join(data.roomID);
       io.to(data.roomID).emit("receive-message", data.message);
     } else {
       io.emit("receive-message", data);
     }
   });
 
+  socket.on("userchat-send", (data) => {
+    if (data.message && activeUserChatrooms.has(socket.id)) {
+      const roomId = activeUserChatrooms.get(socket.id);
+      io.to(roomId).emit("userchat-receive", data.message);
+    }
+  });
+
   socket.on("disconnect", () => {
+    activeUserChatrooms.delete(socket.id);
     console.log("user disconnected");
   });
 });
