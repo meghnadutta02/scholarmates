@@ -66,7 +66,7 @@ export default function Component() {
     const fetchData = async () => {
       try {
         if (userId) {
-          const res = await fetch(`/api/users/${userId.db_id}`, {
+          const res = await fetch(`/api/users/findusers/${userId.db_id}`, {
             cache: "no-cache",
           });
           if (!res.ok) {
@@ -129,9 +129,9 @@ export default function Component() {
                 <div className="rounded-xl border ">
                   <Image
                     alt="Profile Picture"
-                    className="mx-auto"
+                    className="mx-auto rounded-full"
                     height={300}
-                    src="https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg?size=338&ext=jpg&ga=GA1.1.1269040533.1708732800&semt=ais"
+                    src={profile.profilePic}
                     width={300}
                   />
                 </div>
@@ -145,7 +145,7 @@ export default function Component() {
                         alt="Thumbnail"
                         className="rounded-full object-cover aspect-square"
                         height={40}
-                        src="/placeholder.svg"
+                        src={profile.profilePic}
                         width={40}
                       />
                       <div className="text-sm">
