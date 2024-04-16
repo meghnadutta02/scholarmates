@@ -32,10 +32,34 @@ export default function Component() {
     if (session) {
       console.log(session);
       setUserId(session);
-      setRequestPen(session.requestPending);
+      
     }
   }, [userId, session]);
 
+const userdata=async()=>{
+  try {
+    const res = await fetch("/api/users/profile", {
+      cache: "no-cache",
+
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
+    const data = await res.json();
+    // console.log("data",data.result);
+    console.log(data.result._id);
+    
+    setData(data.result)
+    setRequestPen(data.result.requestPending);
+    setVisible(true);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+  }
+}
+
+useEffect(()=>{
+  userdata();
+},[visible])
   // useEffect(() => {
   //   socket = io("http://localhost:5001");
   //   console.log(userId)
@@ -102,7 +126,7 @@ export default function Component() {
           }
         );
         if (data) {
-          setVisible(false)
+         setVisible(false);
           console.log(data);
         }
       } else {
@@ -123,7 +147,7 @@ export default function Component() {
       <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl ">
         <CarouselContent>
           {profiles.map((profile) => (
-           !userId?.connection?.includes(profile._id) ?
+           !data?.connection?.includes(profile._id) ?
            (<CarouselItem key={profile._id}>
               <div className="grid gap-2">
                 <div className="rounded-xl border ">

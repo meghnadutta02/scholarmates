@@ -100,7 +100,8 @@ export const receiveConnectionController = async (req, resp) => {
     console.log(user, sender);
     // Use remove() or deleteOne() to delete the friendshipRequest
     await friendshipRequest.deleteOne(); //
-
+    await sender.updateOne({$pull:{requestPending:user._id}});
+    await sender.save();
     return resp.status(200).send({
       message: "accepted",
       sucess: true,
