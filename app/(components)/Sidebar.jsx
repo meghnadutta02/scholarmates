@@ -7,7 +7,7 @@ import { options } from "@/app/api/auth/[...nextauth]/options";
 const Sidebar = async () => {
   const session = await getServerSession(options);
   return (
-    <div className="hidden md:flex rounded-se-lg bg-gray-100 dark:bg-gray-800 w-[15%]">
+    <div className="hidden lg:flex rounded-se-lg bg-gray-100 dark:bg-gray-800 w-[15%]">
       <nav className="flex-col items-start fixed px-4 text-md lg:text-lg font-medium">
         <Link
           className="flex items-center gap-3 rounded-lg  px-3 py-2 text-gray-900  transition-all hover:text-gray-900  dark:text-gray-50 dark:hover:text-gray-50"

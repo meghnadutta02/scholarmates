@@ -1,36 +1,31 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Avatar } from "@/components/ui/avatar";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { Flex, Text, Box, Image } from "@radix-ui/themes";
+import { Flex, Text, Box } from "@radix-ui/themes";
 import { useSession } from "./SessionProvider";
 const Connection = () => {
-    const session=useSession();
+  const session = useSession();
   const [isVisible, setIsVisible] = useState(true);
-    const[userId,setUserId]=useState(); 
-    const [data,setData]=useState([]);
-    const [dataFetched, setDataFetched] = useState(false);
-    useEffect(()=>{
-        if(session){
-            setUserId(session.session.db_id);
-            console.log(session);
-        }
-    },[userId])
+  const [userId, setUserId] = useState();
+  const [data, setData] = useState([]);
+  const [dataFetched, setDataFetched] = useState(false);
+  useEffect(() => {
+    if (session) {
+      setUserId(session.session.db_id);
+    }
+  }, [userId, session]);
   const acceptHandle = async () => {
-    
-
     try {
-        const res = await fetch(`/api/users/connection/${userId}`, 
-        {
-          method: "GET",
-          cache: "no-cache",
-        }
-      );
-      if(res){
+      const res = await fetch(`/api/users/connection/${userId}`, {
+        method: "GET",
+        cache: "no-cache",
+      });
+      if (res) {
         const data = await res.json();
-        const dattaa=data.result;
-       setData((prevdata)=>[...prevdata,...dattaa]);
-        
+        const dattaa = data.result;
+        setData((prevdata) => [...prevdata, ...dattaa]);
+
         setDataFetched(true);
         console.log(data.result);
       }
@@ -38,51 +33,45 @@ const Connection = () => {
       console.log(error.message);
     }
   };
-  
-useEffect(()=>{
-if (userId && !dataFetched) { // Only fetch data if userId is set and data is not fetched
-    acceptHandle();
-    
-  }
-}),[userId,dataFetched]
-  
+
+  useEffect(() => {
+    if (userId && !dataFetched) {
+      // Only fetch data if userId is set and data is not fetched
+      acceptHandle();
+    }
+  }),
+    [userId, dataFetched];
+
   return (
-    <>
-       
-       
-     {
-        data?.map((user)=>{
-          return(
-            <Flex gap="3" direction="column" key={user.index}>
-            <Card size="3" style={{ width: 500 }} >
-              <Flex gap="4" align="center" className="flex">
-                <img
-                  size="3"
-                  src={user.profilePic}
-                  className="rounded-full"
-                  fallback="T"
-                />
-                <Box>
-                  <Text as="div" size="4 font-bold text-xl" className="cursor-pointer hover:color-blue" weight="bold" onClick={()=>profile(user._id)}>
-                    {user.name}
-                  </Text>
-                  <Text as="div" size="4" color="gray" >
-                    {user.collegeName}
-                  </Text>
-                  <Text as="div" size="4" color="gray">
-                    {user.degree}
-                  </Text>
-  
-                </Box>
-  
-              </Flex>
-             
-            </Card>
-          </Flex>
-          )
-        })
-     }
-    </>
+    <div className="flex flex-col px-8">
+      {data?.map((user) => {
+        return (
+          <div className="my-2" key={user.index}>
+            <Flex gap="4" align="center" className="flex">
+              <Image
+                alt="ProfilePic"
+                height={10}
+                width={60}
+                src={user.profilePic}
+                className="mr-2 rounded-full border"
+                fallback="T"
+              />
+              <Box>
+                <p
+                  className="text-md font-semibold cursor-pointer hover:color-blue"
+                  onClick={() => profile(user._id)}
+                >
+                  {user.name}
+                </p>
+                <p className="text-sm">{user.collegeName}</p>
+
+                <p className="text-sm">{user.degree}</p>
+              </Box>
+            </Flex>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

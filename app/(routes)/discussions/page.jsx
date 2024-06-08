@@ -98,22 +98,6 @@ const DiscussionsPage = () => {
 
   return (
     <div>
-      <div className="flex p-4 gap-4 md:p-6 justify-center relative">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <IoIosCreate className="h-12 w-12 text-gray-600 absolute top-14  right-14   cursor-pointer p-2 text-center" />
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[720px]">
-            <DialogHeader>
-              <DialogTitle>New Discussion</DialogTitle>
-              <DialogDescription>
-                Start a new discussion and interact with your peers.
-              </DialogDescription>
-            </DialogHeader>
-            <CreateDiscussion />
-          </DialogContent>
-        </Dialog>
-      </div>
       <div className="flex">
         {/* filter section */}
 
@@ -163,6 +147,20 @@ const DiscussionsPage = () => {
               <FaFilter className="mr-1" />
               Filter
             </Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <IoIosCreate className="h-8 w-8 ml-4 mt-1" />
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[720px]">
+                <DialogHeader>
+                  <DialogTitle>New Discussion</DialogTitle>
+                  <DialogDescription>
+                    Start a new discussion and interact with your peers.
+                  </DialogDescription>
+                </DialogHeader>
+                <CreateDiscussion />
+              </DialogContent>
+            </Dialog>
           </div>
 
           <DiscussionList

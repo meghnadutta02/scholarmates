@@ -4,22 +4,21 @@ import GroupRequests from "@/app/(components)/GroupRequests";
 import Connection from "@/app/(components)/Connection";
 const Request = () => {
   return (
-    <div className="mt-7 w-full px-2">
-      <Tabs
-        defaultValue="c"
-        className=" flex flex-col justify-centre items-center  "
-      >
-        <TabsList>
+    <div className="mt-7 flex px-2 w-full">
+      <Tabs defaultValue="c" className="w-full">
+        <TabsList className="flex mx-auto w-min">
           <TabsTrigger value="c">Connections</TabsTrigger>
           <TabsTrigger value="g">Groups</TabsTrigger>
         </TabsList>
-        <TabsContent value="c">
-          <Connection/>
-        </TabsContent>
+        <div className="flex w-full border rounded-lg my-4 px-2 pt-4 pb-8">
+          <TabsContent value="c">
+            <Connection />
+          </TabsContent>
 
-        <TabsContent value="g" className="w-full ">
-          <GroupRequests />
-        </TabsContent>
+          <TabsContent value="g">
+            <GroupRequests />
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );
