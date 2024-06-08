@@ -1,10 +1,11 @@
 import connect from "@/app/config/db";
-import User from "@/app/(models)/userModel";
+import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import UserMessage from "@/app/(models)/userMessageModel";
 import { ObjectId } from "mongodb";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
+import { postObject } from "@/app/config/s3";
 
 //GET all the messages with a specific user
 export async function GET(req, { params }) {
@@ -27,21 +28,34 @@ export async function GET(req, { params }) {
 }
 
 //send a message to a user
+
 export async function POST(req, { params }) {
   try {
     await connect();
 
     const receiverID = params.userID;
     const session = await getServerSession(options);
-    const payload = await req.json();
-    console.log(payload);
+    const data = await req.formData();
+    const formDataArray = Array.from(data.values());
+    const text = formDataArray[0];
+    const files = formDataArray.filter((value) => value instanceof File);
+    const attachments = [];
 
+    for (const file of files) {
+      const byteData = await file.arrayBuffer();
+      const buffer = Buffer.from(byteData);
+      const path = `public/media/user-chat/${uuidv4()}-${file.name}`;
+      console.log(path);
+      const attachmentURL = await postObject(path, buffer);
+
+      attachments.push(attachmentURL);
+    }
     const newMessage = await UserMessage.create({
       sender: new ObjectId(session?.user?.db_id),
       recipient: new ObjectId(receiverID),
-      text: payload.message.text,
+      text: text,
       status: "delivered",
-      attachments: payload.message.attachments,
+      attachments: attachments,
     });
 
     await newMessage.save();

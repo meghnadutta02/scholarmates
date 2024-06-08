@@ -9,6 +9,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
 
@@ -22,6 +30,7 @@ const UserChatbox = ({ selectedUser }) => {
   const [loading, setLoading] = useState(true);
   const [inboxMessages, setInboxMessages] = useState([]);
   const messagesEndRef = useRef(null);
+  const [filePreviews, setFilePreviews] = useState([]);
 
   useEffect(() => {
     const fetchInboxMessages = async () => {
@@ -49,36 +58,73 @@ const UserChatbox = ({ selectedUser }) => {
 
   const sendMessageHandler = async (e) => {
     e.preventDefault();
-    if (message.text.trim() !== "") {
-      socket.emit("userchat-send", {
-        message: message,
-        receiver: selectedUser,
-        sender: session.db_id,
-      });
+
+    if (message.text.trim() !== "" || message.attachments.length > 0) {
+      const tempMessage = {
+        ...message,
+        tempId: Date.now(), // Generate a temporary ID
+      };
+
+      // Add the temporary message to the state to ensure the messages get updated only once
+      setInboxMessages((prevMessages) => [...prevMessages, tempMessage]);
+
+      const formData = new FormData();
+      formData.append("text", message.text);
+      formData.append("sender", session.db_id);
+
+      if (message.attachments != null) {
+        message.attachments.forEach((file, index) => {
+          formData.append(`attachments`, file);
+        });
+      }
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${selectedUser._id}`,
         {
           method: "POST",
-          body: JSON.stringify({ message }),
-          headers: { "Content-Type": "application/json" },
+          body: formData,
         }
       );
+
       if (res.ok) {
-        // toast.success("Message sent");
+        const data = await res.json();
+        console.log(data);
+        setInboxMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            msg.tempId === tempMessage.tempId ? data.result : msg
+          )
+        );
+        socket.emit("userchat-send", {
+          message: data.result,
+          receiver: selectedUser,
+          sender: session.db_id,
+        });
       } else {
         toast.error("Message not sent");
+        // Remove the temporary message if the API call fails
+        setInboxMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
+        );
       }
+
       setMessage({
         text: "",
         attachments: [],
       });
+      setFilePreviews([]);
     }
   };
 
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
-        setInboxMessages((prevMessages) => [...prevMessages, msg]);
+        setInboxMessages((prevMessages) => {
+          // Check if the message already exists to avoid duplicates
+          if (prevMessages.some((m) => m._id === msg._id)) {
+            return prevMessages;
+          }
+          return [...prevMessages, msg];
+        });
       };
       socket.emit("userchat-setup", {
         sender: session.db_id,
@@ -99,6 +145,17 @@ const UserChatbox = ({ selectedUser }) => {
   useEffect(() => {
     scrollToLastMessage();
   }, [inboxMessages]);
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setMessage((prevMessage) => ({
+      ...prevMessage,
+      attachments: files,
+    }));
+
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setFilePreviews(previews);
+  };
 
   return (
     <div>
@@ -158,6 +215,33 @@ const UserChatbox = ({ selectedUser }) => {
                       {msg.sender != selectedUser._id && (
                         <p className="text-sm font-medium">{msg.senderName}</p>
                       )}
+                      {msg.attachments != null && (
+                        <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
+                          {msg.attachments.map((attachment, index) => (
+                            <Dialog key={index}>
+                              <DialogTrigger>
+                                <Image
+                                  className="rounded-md"
+                                  src={attachment}
+                                  alt="attachment"
+                                  height={200}
+                                  width={200}
+                                  objectFit="cover"
+                                />
+                              </DialogTrigger>
+                              <DialogContent className="fixed top-1/2 left-1/2 w-screen flex items-center justify-center">
+                                <Image
+                                  className="rounded-md w-[100vw]"
+                                  height={2000}
+                                  width={2000}
+                                  src={attachment}
+                                  alt="attachment"
+                                />
+                              </DialogContent>
+                            </Dialog>
+                          ))}
+                        </div>
+                      )}
                       <Interweave
                         content={msg.text}
                         matchers={[new UrlMatcher("url")]}
@@ -175,27 +259,65 @@ const UserChatbox = ({ selectedUser }) => {
               </div>
             </div>
           </div>
-          <div className=" flex-shrink-0">
+
+          <div className="flex-shrink-0">
+            {filePreviews.length > 0 && (
+              <div className="flex gap-2 mb-2">
+                {filePreviews.map((preview, index) => (
+                  <div key={index} className="relative w-16 h-16">
+                    <Image
+                      src={preview}
+                      alt={`preview-${index}`}
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-lg"
+                    />
+                    <button
+                      className="absolute top-0 right-0 bg-white rounded-full p-1"
+                      onClick={() => {
+                        const newPreviews = filePreviews.filter(
+                          (_, i) => i !== index
+                        );
+                        setFilePreviews(newPreviews);
+                        setMessage((prevMessage) => ({
+                          ...prevMessage,
+                          attachments: prevMessage.attachments.filter(
+                            (_, i) => i !== index
+                          ),
+                        }));
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             <form
               onSubmit={sendMessageHandler}
               className="flex items-center p-2 gap-2"
             >
-              <Button className="h-8" variant="outline">
-                <PaperclipIcon className="w-4 h-4" />
-                Attach
-              </Button>
               <Input
                 className="flex-1"
                 placeholder="Type a message"
                 value={message.text}
                 onChange={(e) =>
-                  setMessage({
+                  setMessage((prevMessage) => ({
+                    ...prevMessage,
                     text: e.target.value,
-                    updatedAt: new Date().toISOString(),
-                    sender: session.db_id,
-                  })
+                  }))
                 }
               />
+              <label className="relative cursor-pointer m-2">
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <PaperclipIcon className="w-5 h-5 cursor-pointer" />
+              </label>
+
               <Button className="h-8" type="submit">
                 Send
               </Button>

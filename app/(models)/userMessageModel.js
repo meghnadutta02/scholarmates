@@ -14,7 +14,7 @@ const userMessageSchema = new mongoose.Schema(
     },
     text: {
       type: String,
-      required: true,
+      // required: true,
     },
     status: {
       type: String,
@@ -24,8 +24,6 @@ const userMessageSchema = new mongoose.Schema(
     attachments: [
       {
         type: String,
-        enum: ["image", "video", "audio", "document"],
-        url: String,
       },
     ],
   },
