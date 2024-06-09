@@ -51,6 +51,7 @@ const GroupChatbox = ({ roomID }) => {
       const tempMessage = {
         ...message,
         tempId: Date.now(), // Generate a temporary ID
+        sending: true,
       };
       // Add the temporary message to the state to ensure the messages get updated only once
       setInboxMessages((prevMessages) => [...prevMessages, tempMessage]);
@@ -205,10 +206,16 @@ const GroupChatbox = ({ roomID }) => {
                     matchers={[new UrlMatcher("url")]}
                   />
                   <p className="text-xs flex justify-end font-light">
-                    {new Date(msg.updatedAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {msg.sending ? (
+                      <>Sending...</>
+                    ) : (
+                      <>
+                        {new Date(msg.updatedAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </>
+                    )}
                   </p>
                 </div>
               </div>

@@ -22,7 +22,6 @@ const UserChatbox = ({ selectedUser }) => {
     sender: session.db_id,
   });
   const [loading, setLoading] = useState(true);
-  const [messageSending, setMessageSending] = useState(false);
 
   const [inboxMessages, setInboxMessages] = useState([]);
   const messagesEndRef = useRef(null);
@@ -56,11 +55,10 @@ const UserChatbox = ({ selectedUser }) => {
     e.preventDefault();
 
     if (message.text.trim() !== "" || message.attachments.length > 0) {
-      setMessageSending(true);
-
       const tempMessage = {
         ...message,
         tempId: Date.now(), // Generate a temporary ID
+        sending: true,
       };
 
       // Add the temporary message to the state to ensure the messages get updated only once
@@ -86,7 +84,7 @@ const UserChatbox = ({ selectedUser }) => {
 
       if (res.ok) {
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         setInboxMessages((prevMessages) =>
           prevMessages.map((msg) =>
             msg.tempId === tempMessage.tempId ? data.result : msg
@@ -97,7 +95,6 @@ const UserChatbox = ({ selectedUser }) => {
           receiver: selectedUser,
           sender: session.db_id,
         });
-        setMessageSending(false);
       } else {
         toast.error("Message not sent");
         // Remove the temporary message if the API call fails
@@ -248,7 +245,7 @@ const UserChatbox = ({ selectedUser }) => {
                         matchers={[new UrlMatcher("url")]}
                       />
                       <p className="text-[10px] flex justify-end font-light">
-                        {messageSending ? (
+                        {msg.sending ? (
                           <>Sending...</>
                         ) : (
                           <>
