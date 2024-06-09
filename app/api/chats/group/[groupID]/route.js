@@ -6,6 +6,8 @@ import Discussion from "@/app/(models)/discussionModel";
 import { ObjectId } from "mongodb";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
+import { v4 as uuidv4 } from "uuid";
+import { postObject } from "@/app/config/s3";
 
 //Get all the messages of a group
 export async function GET(req, { params }) {
@@ -41,15 +43,28 @@ export async function POST(req, { params }) {
 
     const groupID = params.groupID;
     const session = await getServerSession(options);
-    const payload = await req.json();
-    console.log(payload);
+    const data = await req.formData();
+    const formDataArray = Array.from(data.values());
+    const senderName = data.get("senderName");
+    const text = data.get("text");
+    const files = formDataArray.filter((value) => value instanceof File);
+    const attachments = [];
 
+    for (const file of files) {
+      const byteData = await file.arrayBuffer();
+      const buffer = Buffer.from(byteData);
+      const path = `public/media/group-chat/${uuidv4()}-${file.name}`;
+      const attachmentURL = await postObject(path, buffer);
+
+      attachments.push(attachmentURL);
+    }
     const newMessage = await Message.create({
       conversationId: new ObjectId(groupID),
       sender: new ObjectId(session?.user?.db_id),
-      text: payload.message.text,
+      senderName: senderName,
+      text: text,
       status: "delivered",
-      attachments: payload.message.attachments,
+      attachments: attachments,
     });
 
     await newMessage.save();

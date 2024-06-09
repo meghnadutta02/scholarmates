@@ -45,7 +45,6 @@ export async function POST(req, { params }) {
       const byteData = await file.arrayBuffer();
       const buffer = Buffer.from(byteData);
       const path = `public/media/user-chat/${uuidv4()}-${file.name}`;
-      console.log(path);
       const attachmentURL = await postObject(path, buffer);
 
       attachments.push(attachmentURL);

@@ -9,14 +9,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { VscSend } from "react-icons/vsc";
 import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
 
@@ -28,6 +22,8 @@ const UserChatbox = ({ selectedUser }) => {
     sender: session.db_id,
   });
   const [loading, setLoading] = useState(true);
+  const [messageSending, setMessageSending] = useState(false);
+
   const [inboxMessages, setInboxMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const [filePreviews, setFilePreviews] = useState([]);
@@ -60,6 +56,8 @@ const UserChatbox = ({ selectedUser }) => {
     e.preventDefault();
 
     if (message.text.trim() !== "" || message.attachments.length > 0) {
+      setMessageSending(true);
+
       const tempMessage = {
         ...message,
         tempId: Date.now(), // Generate a temporary ID
@@ -99,6 +97,7 @@ const UserChatbox = ({ selectedUser }) => {
           receiver: selectedUser,
           sender: session.db_id,
         });
+        setMessageSending(false);
       } else {
         toast.error("Message not sent");
         // Remove the temporary message if the API call fails
@@ -112,6 +111,8 @@ const UserChatbox = ({ selectedUser }) => {
         attachments: [],
       });
       setFilePreviews([]);
+    } else {
+      toast.error("Message empty");
     }
   };
 
@@ -247,10 +248,16 @@ const UserChatbox = ({ selectedUser }) => {
                         matchers={[new UrlMatcher("url")]}
                       />
                       <p className="text-[10px] flex justify-end font-light">
-                        {new Date(msg.updatedAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {messageSending ? (
+                          <>Sending...</>
+                        ) : (
+                          <>
+                            {new Date(msg.updatedAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -308,18 +315,20 @@ const UserChatbox = ({ selectedUser }) => {
                   }))
                 }
               />
-              <label className="relative cursor-pointer m-2">
-                <input
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                />
-                <PaperclipIcon className="w-5 h-5 cursor-pointer" />
-              </label>
+              <div>
+                <label className="relative cursor-pointer m-2">
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  <PaperclipIcon className="w-5 h-5 mx-2 cursor-pointer" />
+                </label>
+              </div>
 
               <Button className="h-8" type="submit">
-                Send
+                <VscSend height={50} />
               </Button>
             </form>
           </div>

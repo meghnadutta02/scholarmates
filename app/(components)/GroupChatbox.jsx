@@ -6,15 +6,15 @@ import io from "socket.io-client";
 import { toast } from "react-toastify";
 // import { useSession } from "next-auth/react";
 import { VscSend } from "react-icons/vsc";
-// import Linkify from "react-linkify";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
 import { useSession } from "./SessionProvider";
+import Image from "next/image";
 
 const GroupChatbox = ({ roomID }) => {
   const { socket, session } = useSession();
   const [loading, setLoading] = useState(true);
-  // const [socket, setSocket] = useState(null);
   const [message, setMessage] = useState({
     text: "",
     groupId: roomID,
@@ -24,6 +24,7 @@ const GroupChatbox = ({ roomID }) => {
   const [inboxMessages, setInboxMessages] = useState([]);
   const [groupDetails, setGroupDetails] = useState({});
   const messagesEndRef = useRef(null);
+  const [filePreviews, setFilePreviews] = useState([]);
 
   const getGroupMessages = async (groupId) => {
     try {
@@ -46,30 +47,59 @@ const GroupChatbox = ({ roomID }) => {
 
   const sendMessageHandler = async (e) => {
     e.preventDefault();
-    if (message.text.trim() !== "") {
-      socket.emit("send-message", {
-        message: message,
-        roomID: roomID,
-      });
+    if (message.text.trim() !== "" || message.attachments.length > 0) {
+      const tempMessage = {
+        ...message,
+        tempId: Date.now(), // Generate a temporary ID
+      };
+      // Add the temporary message to the state to ensure the messages get updated only once
+      setInboxMessages((prevMessages) => [...prevMessages, tempMessage]);
+
+      const formData = new FormData();
+      formData.append("text", message.text);
+      formData.append("sender", session.db_id);
+      formData.append("groupId", groupId);
+      formData.append("senderName", session.name);
+
+      if (message.attachments != null) {
+        message.attachments.forEach((file, index) => {
+          formData.append(`attachments`, file);
+        });
+      }
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${groupId}`,
         {
           method: "POST",
-          body: JSON.stringify({ message }),
-          headers: { "Content-Type": "application/json" },
+          body: formData,
         }
       );
       if (res.ok) {
-        // toast.success("Message sent");
+        const data = await res.json();
+        // console.log(data);
+        setInboxMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            msg.tempId === tempMessage.tempId ? data.result : msg
+          )
+        );
+        socket.emit("send-message", {
+          message: data.result,
+          roomID: roomID,
+        });
       } else {
         toast.error("Message not sent");
+        // Remove the temporary message if the API call fails
+        setInboxMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
+        );
       }
+
       setMessage({
         text: "",
         groupId: roomID,
         attachments: [],
       });
+      setFilePreviews([]);
     }
   };
 
@@ -85,7 +115,13 @@ const GroupChatbox = ({ roomID }) => {
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
-        setInboxMessages((prevMessages) => [...prevMessages, msg]);
+        setInboxMessages((prevMessages) => {
+          // Check if the message already exists to avoid duplicates
+          if (prevMessages.some((m) => m._id === msg._id)) {
+            return prevMessages;
+          }
+          return [...prevMessages, msg];
+        });
       };
       socket.emit("groupchat-setup", groupId);
       socket.on("receive-message", messageHandler);
@@ -99,6 +135,17 @@ const GroupChatbox = ({ roomID }) => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [inboxMessages]);
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setMessage((prevMessage) => ({
+      ...prevMessage,
+      attachments: files,
+    }));
+
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setFilePreviews(previews);
+  };
 
   return (
     <div>
@@ -126,14 +173,33 @@ const GroupChatbox = ({ roomID }) => {
                   {msg.sender != session?.db_id && (
                     <p className="text-sm font-medium">{msg.senderName}</p>
                   )}
-                  {/* <Linkify
-                    options={{
-                      target: "_blank",
-                      style: { color: "red", fontWeight: "bold" },
-                    }}
-                  >
-                    {msg.text}
-                  </Linkify> */}
+                  {msg.attachments != null && (
+                    <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
+                      {msg.attachments.map((attachment, index) => (
+                        <Dialog key={index}>
+                          <DialogTrigger>
+                            <Image
+                              className="rounded-md"
+                              src={attachment}
+                              alt="attachment"
+                              height={200}
+                              width={200}
+                              objectFit="cover"
+                            />
+                          </DialogTrigger>
+                          <DialogContent className="fixed top-1/2 left-1/2 w-screen flex items-center justify-center">
+                            <Image
+                              className="rounded-md w-[100vw]"
+                              height={2000}
+                              width={2000}
+                              src={attachment}
+                              alt="attachment"
+                            />
+                          </DialogContent>
+                        </Dialog>
+                      ))}
+                    </div>
+                  )}
                   <Interweave
                     content={msg.text}
                     matchers={[new UrlMatcher("url")]}
@@ -150,30 +216,71 @@ const GroupChatbox = ({ roomID }) => {
             <div ref={messagesEndRef} />
           </div>
           <div>
-            <form className="flex flex-row mx-8 my-4 justify-between">
-              <div className="w-2/3">
-                <Input
-                  required
-                  type="text"
-                  className="mt-2"
-                  value={message.text}
-                  onChange={(e) =>
-                    setMessage({
-                      text: e.target.value,
-                      sender: session?.db_id,
-                      updatedAt: new Date().toISOString(),
-                      groupId: groupId,
-                      senderName: session?.name,
-                    })
-                  }
-                  placeholder="Enter message"
-                />
+            {filePreviews.length > 0 && (
+              <div className="flex gap-2 mb-2">
+                {filePreviews.map((preview, index) => (
+                  <div key={index} className="relative w-16 h-16">
+                    <Image
+                      src={preview}
+                      alt={`preview-${index}`}
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-lg"
+                    />
+                    <button
+                      className="absolute top-0 right-0 bg-white rounded-full p-1"
+                      onClick={() => {
+                        const newPreviews = filePreviews.filter(
+                          (_, i) => i !== index
+                        );
+                        setFilePreviews(newPreviews);
+                        setMessage((prevMessage) => ({
+                          ...prevMessage,
+                          attachments: prevMessage.attachments.filter(
+                            (_, i) => i !== index
+                          ),
+                        }));
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
+            )}
+            <form
+              onSubmit={sendMessageHandler}
+              className="flex items-center p-2 gap-2"
+            >
+              <Input
+                type="text"
+                className="flex-1"
+                value={message.text}
+                onChange={(e) =>
+                  setMessage((prevMessage) => ({
+                    ...prevMessage,
+                    text: e.target.value,
+                    senderName: session?.name,
+                    sender: session?.db_id,
+                  }))
+                }
+                placeholder="Type a message"
+              />
               <div>
-                <Button className="my-2" onClick={sendMessageHandler}>
-                  <VscSend height={50} />
-                </Button>
+                <label className="relative cursor-pointer m-2">
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  <PaperclipIcon className="w-5 h-5 mx-2 cursor-pointer" />
+                </label>
               </div>
+
+              <Button className="h-8" type="submit">
+                <VscSend height={50} />
+              </Button>
             </form>
           </div>
         </div>
@@ -183,3 +290,22 @@ const GroupChatbox = ({ roomID }) => {
 };
 
 export default GroupChatbox;
+
+function PaperclipIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+    </svg>
+  );
+}

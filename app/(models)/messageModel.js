@@ -12,9 +12,13 @@ const messageSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    text: {
+    senderName: {
       type: String,
       required: true,
+    },
+    text: {
+      type: String,
+      // required: true,
     },
     status: {
       type: String,
@@ -24,8 +28,6 @@ const messageSchema = new mongoose.Schema(
     attachments: [
       {
         type: String,
-        enum: ["image", "video", "audio", "document"],
-        url: String,
       },
     ],
   },
