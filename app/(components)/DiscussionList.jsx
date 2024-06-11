@@ -26,8 +26,11 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
       redirect("/api/auth/signin?callbackUrl=/discussions");
     },
   });
+  const [animationState, setAnimationState] = useState({});
 
   const toggleLike = async (id) => {
+    setAnimationState((prev) => ({ ...prev, [id]: "like" }));
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/like`,
       { method: "PUT" }
@@ -51,9 +54,14 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
             : discussion
         )
       );
+    setTimeout(() => {
+      setAnimationState((prev) => ({ ...prev, [id]: null }));
+    }, 300);
   };
 
   const toggleDislike = async (id) => {
+    setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/dislike`,
       { method: "PUT" }
@@ -77,6 +85,9 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
             : discussion
         )
       );
+    setTimeout(() => {
+      setAnimationState((prev) => ({ ...prev, [id]: undefined }));
+    }, 300);
   };
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -239,9 +250,9 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">
                     <ThumbsUpIcon
-                      className={`w-4 h-4  cursor-pointer ${
+                      className={`w-4 h-4 cursor-pointer ${
                         discussion.isLiked && "text-blue-400"
-                      }`}
+                      } ${animationState[discussion._id] === "like" && "pop"}`}
                       onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
@@ -249,8 +260,10 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                   </Button>
                   <Button className="h-10 " size="icon" variant="icon">
                     <ThumbsDownIcon
-                      className={`w-4 h-4  cursor-pointer ${
+                      className={`w-4 h-4 cursor-pointer ${
                         discussion.isDisliked && "text-red-400"
+                      } ${
+                        animationState[discussion._id] === "dislike" && "pop"
                       }`}
                       onClick={() => toggleDislike(discussion._id)}
                     />
