@@ -32,45 +32,50 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
       `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/like`,
       { method: "PUT" }
     );
-    const data = await response.json();
-    //console.log(data);
-    if (data.ok)
+
+    if (response.ok)
       setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((discussion) => {
-          if (discussion._id === id) {
-            if (discussion.isLiked) {
-              discussion.likes += 1;
-            } else {
-              discussion.likes -= 1;
-            }
-            discussion.isLiked = !discussion.isLiked;
-          }
-          return discussion;
-        })
+        prevDiscussions.map((discussion) =>
+          discussion._id === id
+            ? {
+                ...discussion,
+                likes: discussion.isLiked
+                  ? discussion.likes - 1
+                  : discussion.likes + 1,
+                isLiked: !discussion.isLiked,
+                dislikes: discussion.isDisliked
+                  ? discussion.dislikes - 1
+                  : discussion.dislikes,
+                isDisliked: false,
+              }
+            : discussion
+        )
       );
   };
 
   const toggleDislike = async (id) => {
-    console.log("Dislike");
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/dislike`,
       { method: "PUT" }
     );
-    const data = await response.json();
-    //console.log(data);
-    if (data.ok)
+
+    if (response.ok)
       setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((discussion) => {
-          if (discussion._id === id) {
-            if (discussion.isDisliked) {
-              discussion.dislikes += 1;
-            } else {
-              discussion.dislikes -= 1;
-            }
-            discussion.isDisliked = !discussion.isDisliked;
-          }
-          return discussion;
-        })
+        prevDiscussions.map((discussion) =>
+          discussion._id === id
+            ? {
+                ...discussion,
+                dislikes: discussion.isDisliked
+                  ? discussion.dislikes - 1
+                  : discussion.dislikes + 1,
+                isDisliked: !discussion.isDisliked,
+                likes: discussion.isLiked
+                  ? discussion.likes - 1
+                  : discussion.likes,
+                isLiked: false,
+              }
+            : discussion
+        )
       );
   };
   const [discussions, setDiscussions] = useState([]);
@@ -253,9 +258,11 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                     <span className="ml-2">{discussion.dislikes}</span>
                   </Button>
                   <Button className="h-10" size="icon" variant="icon">
-                    <TrendingUpIcon className="w-4 h-4" />
                     <span className="sr-only">Popularity</span>
-                    <span className="ml-2">High</span>
+                    <span className="ml-2 flex">
+                      <TrendingUpIcon className="w-5 h-5" />
+                      <p className="font-normal ml-2"> 645</p>
+                    </span>
                   </Button>
                   <Button
                     className="w-24"
