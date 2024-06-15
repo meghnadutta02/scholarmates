@@ -2,6 +2,7 @@
   "name": "socketserver",
   "version": "1.0.0",
   "type": "module",
+  
   "description": "Node Socket server",
   "main": "server.js",
   "scripts": {
