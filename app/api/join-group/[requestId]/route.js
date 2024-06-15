@@ -44,6 +44,7 @@ export async function PUT(req, { params }) {
 
     await group.save();
     await request.save();
+    await user.save();
 
     const message =
       action === "accept" ? "Request accepted" : "Request rejected";

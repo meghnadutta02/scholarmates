@@ -50,20 +50,20 @@ const GroupRequests = () => {
   }, []);
 
   return (
-    <div className="lg:w-4/5 mx-auto md:w-[95%] w-full ">
+    <div className="">
       {loading ? (
         <div className="flex justify-center items-center  z-50">
           <Image src={Spinnersvg} alt="Loading..." className="h-28" />
         </div>
       ) : (
-        <div className="flex flex-col  gap-4 mt-3 p-2 ">
+        <div className="flex flex-col gap-4 p-2">
           {mergedRequests.length === 0 ? (
             <p>No requests to display</p>
           ) : (
             mergedRequests.map((request) => (
               <div key={request._id} className="">
                 {requestsToJoin.includes(request) && (
-                  <div className="bg-gray-100 rounded-md shadow-lg p-3 ">
+                  <div className="bg-gray-100 rounded-md shadow-lg px-3 py-2">
                     Your request to join group -{" "}
                     <TooltipProvider>
                       <Tooltip>
@@ -82,37 +82,39 @@ const GroupRequests = () => {
                   </div>
                 )}
                 {requestsToAccept.includes(request) && (
-                  <div className="flex justify-between items-center bg-gray-100 rounded-md shadow-lg p-3">
-                    {showButton && (
-                      <div className="flex items-center">
-                        <Image
-                          src={request?.fromUser?.profilePic}
-                          alt={request?.fromUser?.name}
-                          width={36}
-                          height={36}
-                          className="rounded-full mr-2"
-                        />
+                  <div className="flex w-full justify-between items-center bg-gray-100 rounded-md shadow-lg px-3 py-2">
+                    <div className="">
+                      {showButton && (
+                        <div className="flex items-center">
+                          <Image
+                            src={request?.fromUser?.profilePic}
+                            alt={request?.fromUser?.name}
+                            width={36}
+                            height={36}
+                            className="rounded-full mr-2"
+                          />
 
-                        <div>
-                          {request?.fromUser?.name} has requested to join group
-                          -{" "}
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                #
-                                {request.groupId._id.substring(
-                                  request.groupId._id.length - 4
-                                )}
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{request?.groupId?.name}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>{" "}
+                          <div>
+                            {request?.fromUser?.name} has requested to join
+                            group -{" "}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  #
+                                  {request.groupId._id.substring(
+                                    request.groupId._id.length - 4
+                                  )}
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{request?.groupId?.name}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>{" "}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    <div>
+                      )}
+                    </div>
+                    <div className="">
                       <button
                         onClick={async () => {
                           try {
@@ -126,7 +128,7 @@ const GroupRequests = () => {
                               setShowButton(false);
                               toast.success(
                                 <div>
-                                  {request?.fromUser?.name}'s request to join
+                                  Request from {request?.fromUser?.name} to join
                                   group - #
                                   {request.groupId._id.substring(
                                     request.groupId._id.length - 4
@@ -157,7 +159,7 @@ const GroupRequests = () => {
 
                               toast.success(
                                 <div>
-                                  {request?.fromUser?.name}'s request to join
+                                  Request from {request?.fromUser?.name} to join
                                   group - #
                                   {request.groupId._id.substring(
                                     request.groupId._id.length - 4

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 // import CreatePost from "@/app/(components)/NewPost";
 import { Card } from "@/components/ui/card";
+import { useSession } from "@/app/(components)/SessionProvider"
 import {
   Carousel,
   CarouselContent,
@@ -13,35 +14,57 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
-import { Heading1 } from "lucide-react";
+import Loading from "@/app/(routes)/find-match/loading"
+import CreatePost from "@/app/(components)/Post"
+
 export default function Home() {
-const [data,setData]=useState([]);
-  const datafxn=async()=>{
-    try{
-      const data=await fetch("/api/posts",
-      {method: "GET"}
-      ,{
-        cache:'no-cache'
+  
+  const { session } = useSession();
+  const [data, setData] = useState([]);
+  const [userId, setUserId] = useState();
+  const [showMore,setShowMore]=useState(false);
+  useEffect(() => {
+    if (session) {
+      console.log("this is lll:", session)
+      // console.log("request is:",request);
+      setUserId(session.db_id);
+    }
+  })
+  const datafxn = async () => {
+    try {
+      const data = await fetch(`/api/posts/${userId}`,
+        { method: "GET" }, {
+        cache: 'no-cache'
       });
-      if(data);
+      if (data);
       const res = await data.json();
-      console.log(res)
-     setData(res.result);
-    }catch(error){
+      console.log("response",res.result[0].post)
+      setData(res.result);
+      let dataArray = []; 
+      res.result.map((d)=>{
+       
+        console.log("first",d);
+        dataArray.push(d); 
+        
+      })
+      console.log(dataArray);
+       setData(dataArray);
+      
+    } catch (error) {
       console.log(error)
     }
   }
-useEffect(()=>{
-if(data.length==0){
-  datafxn()
-}
-console.log(data)
-},[data]);
+  useEffect(() => {
+    if (data?.length == 0) {
+      datafxn()
+    }
+    console.log("data:",data)
+  }, [data]);
   return (
     <div className="flex flex-col ">
-      {/* <aside className="flex flex-row p-4 gap-4 md:p-6 justify-evenly">
+      <aside className="flex flex-row p-4 gap-4 md:p-6 justify-evenly">
         <CreatePost />
-      </aside> */}
+      </aside>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:py-8 md:px-16">
         {/* Discussions Feed container */}
         <div className="grid gap-4">
@@ -94,90 +117,104 @@ console.log(data)
         </div>
 
         {/* Posts Feed */}
-        {
-  !data ? (
-    // Render loader while data is being fetched
-    <div>Loading...</div>
-  ) : (
-    // Render cards when data is available
-    data.map((value, index) => (
-      <Card
-        key={index}
-        className="mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
-      >
-        <div className="md:flex justify-center">
-          <div className="md:flex-shrink-0">
-            <span className="object-cover md:w-48 rounded-md bg-muted w-[192px] h-[192px]" />
-          </div>
-          <div className="p-8 w-full">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Image
-                  alt="Profile picture"
-                  className="rounded-full"
-                  height="40"
-                  src={value.image}
-                  style={{
-                    aspectRatio: "40/40",
-                    objectFit: "cover",
-                  }}
-                  width="40"
-                />
-                <div className="ml-4">
-                  <div className="uppercase tracking-wide text-sm text-black dark:text-white font-semibold">
-                    Chamath Palihapitiya
-                  </div>
-                  <div className="text-gray-400 dark:text-gray-300">
-                    @chamath
-                  </div>
+        {!data ? (
+          // Render loader while data is being fetched
+          <Loading />
+        ) : (
+          // Render cards when data is available
+          data.map((value, index) => (
+            
+            <Card
+              key={index}
+              className="mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
+            >
+              {console.log(value)};
+              <div className="md:flex justify-center">
+                <div className="md:flex-shrink-0">
+                  <span className="object-cover md:w-48 rounded-md bg-muted w-[192px] h-[192px]" />
                 </div>
-              </div>
-            </div>
-            <p className="mt-4 text-gray-500 dark:text-gray-300">
-              {value.description}
-            </p>
-            <Carousel>
-              <CarouselContent>
-                <CarouselItem>
-                  <div className="p-4 flex justify-center">
-                    <Image
-                      alt="post"
-                      height={400}
-                      width={400}
-                      src={value.image}
-                    />
+                <div className="p-8 w-full">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Image
+                        alt="Profile picture"
+                        className="rounded-full"
+                        height="40"
+                        src={value.user.profilePic}
+                        style={{
+                          aspectRatio: "40/40",
+                          objectFit: "cover",
+                        }}
+                        width="40"
+                      />
+                      <div className="ml-4">
+                        <div className="uppercase tracking-wide text-sm text-black dark:text-white font-semibold">
+                          {value.user.name}
+                        </div>
+                        <div className="text-gray-400 dark:text-gray-300">
+                          @jrmishra
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </CarouselItem>
-              </CarouselContent>
-              <CarouselPrevious className="ml-8" />
-              <CarouselNext className="mr-8" />
-            </Carousel>
+                  <p className="mt-4 text-gray-800 dark:text-gray-300">
+                  {showMore ? value.post.description : value.post.description.split('\n').slice(0, 2).join('\n')}
+                  </p>
+                  {/* Add "See More" button */}
+                  {(value.post.description.split('\n').length > 4) && (
+                    <button
+                      onClick={() => setShowMore(!showMore)}
+                      className="text-blue-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 cursor-pointer"
+                    >
+                      {showMore ? "See Less" : "See More..."}
+                    </button>)}
+                  {/* {console.log(value.userId)} */}
+                  {value.post.image.length > 0 && (
+                    <Carousel>
+                      <CarouselContent>
+                        {value.post.image.map((data, index) => (
+                          <CarouselItem key={index}>
+                            <div className="p-4 flex justify-center">
+                              <Image
+                                alt="post"
+                                height={400}
+                                width={400}
+                                src={data}
+                              />
+                            </div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="ml-8" />
+                      <CarouselNext className="mr-8" />
+                    </Carousel>
+                  )}
 
-            <div className="flex mt-6 justify-between items-center">
-              <div className="flex space-x-4 text-gray-400 dark:text-gray-300">
-                <Button variant="icon" className="flex items-center">
-                  <HeartIcon className="h-6 w-6 text-red-500" />
-                  <span className="ml-1 text-red-500">{value.likes}</span>
-                </Button>
-                <Button variant="icon" className="flex items-center">
-                  <MessageCircleIcon className="h-6 w-6 text-green-500" />
-                  <span className="ml-1 text-green-500">241</span>
-                </Button>
-                {/* <div className="flex items-center">
+                  <div className="flex mt-6 justify-between items-center">
+                    <div className="flex space-x-4 text-gray-400 dark:text-gray-300">
+                      <Button variant="icon" className="flex items-center">
+                        <HeartIcon className="h-6 w-6 text-red-500" />
+                        <span className="ml-1 text-red-500">{value.likes}</span>
+                      </Button>
+                      <Button variant="icon" className="flex items-center">
+                        <MessageCircleIcon className="h-6 w-6 text-green-500" />
+                        <span className="ml-1 text-green-500">241</span>
+                      </Button>
+                      {/* <div className="flex items-center">
                   <RepeatIcon className="h-6 w-6 text-blue-500" />
                   <span className="ml-1 text-blue-500">487</span>
                 </div> */}
+                    </div>
+                    <div className="text-gray-400 dark:text-gray-300">
+                      7:22 AM · Aug 22, 2023
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="text-gray-400 dark:text-gray-300">
-                7:22 AM · Aug 22, 2023
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-    ))
-  )
-}
+            </Card>
+          ))
+        )
+        }
 
       </main>
     </div>

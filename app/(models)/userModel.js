@@ -35,6 +35,13 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    requestPending: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     collegeName: {
       type: String,
       default: "",
@@ -64,7 +71,7 @@ const userSchema = new mongoose.Schema(
     posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",
+        ref: "Postkaro",
       },
     ],
     interestCategories: [
@@ -82,5 +89,4 @@ const userSchema = new mongoose.Schema(
 );
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
-
 export default User;

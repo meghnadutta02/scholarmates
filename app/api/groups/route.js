@@ -11,7 +11,12 @@ export async function GET(req) {
   try {
     await connect();
     const session = await getServerSession(options);
+<<<<<<< HEAD
     const userId = session?.user?.db_id;
+=======
+    const userId = session.user.db_id;
+
+>>>>>>> 81963bf31a19d470d013b72a1ab252af4bd2ae8d
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");

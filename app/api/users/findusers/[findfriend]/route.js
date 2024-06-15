@@ -7,7 +7,7 @@ export async function GET(req, { params }) {
   try {
     await connect();
 
-    const users = await User.find({ _id: { $ne: params.findusers } });
+    const users = await User.find({ _id: { $ne: params.findfriend } });
 
     return NextResponse.json({ result: users }, { status: 200 });
   } catch (error) {

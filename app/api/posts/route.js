@@ -1,6 +1,6 @@
 import { Post } from "@/app/(models)/postModel";
 import { User } from "@/app/(models)/userModel";
-import connect from "@/socketServer/db";
+import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import { postObject } from "@/app/config/s3";
@@ -29,50 +29,4 @@ export async function GET() {
   }
 }
 
-export async function POST(req, { params }) {
-  await connect();
-  const userId = params.post;
-  const data = await req.formData();
-  const description = data.get("description");
-  const caption = data.get("caption");
-  const file = data.get("image");
 
-  if (!file) {
-    return NextResponse.json({ error: "No files found", success: false });
-  }
-
-  try {
-    const byteData = await file.arrayBuffer();
-    const buffer = Buffer.from(byteData);
-    const path = `public/${file.name}`;
-    const uploadedImage = await postObject(path, buffer);
-
-    const newPost = await Post.create({
-      description: description,
-      image: uploadedImage,
-      caption: caption,
-      userId: userId,
-    });
-
-    if (newPost) {
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        { $push: { post: newPost._id } },
-        { new: true }
-      );
-      console.log(updatedUser);
-    }
-
-
-    return NextResponse.json({
-      result: "Post uploaded",
-      success: true,
-    });
-  } catch (error) {
-    console.error("Error occurred while uploading post:", error);
-    return NextResponse.json({
-      error: "Error occurred while uploading post",
-      success: false,
-    });
-  }
-}

@@ -1,10 +1,10 @@
 import { io } from "socket.io-client";
-import { getServerSession } from "next-auth";
-import { options } from "../api/auth/[...nextauth]/options";
+import { getSession } from "next-auth";
+// import { options } from "../api/auth/[...nextauth]/options";
 
 const setupSocket = async () => {
   try {
-    const session = await getServerSession(options);
+    const session = await getSession();
     const socket = io("http://localhost:5001");
 
     socket.on("connect", () => {

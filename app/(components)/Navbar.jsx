@@ -1,9 +1,10 @@
-
 import Link from "next/link";
 import React from "react";
 import { getServerSession } from "next-auth";
 import { options } from "../api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
+import { MdOutlineConnectWithoutContact } from "react-icons/md";
+import { MdGroupAdd } from "react-icons/md";
 
 import Image from "next/image";
 import {
@@ -16,46 +17,54 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Navbar = async () => {
- 
   const session = await getServerSession(options);
 
-  
   return (
-    <header className="flex flex-row justify-center pt-1">
-      <div className="flex h-[60px] items-center px-6 rounded-s-xl border-2 border-zinc-600">
+    <header className="fixed z-10 top-0 left-1/2 transform -translate-x-1/2 flex flex-row justify-center pt-1">
+      <div className="flex  items-center px-4 rounded-s-xl border-2 border-zinc-600 bg-white">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <Package2Icon className="h-6 w-6" />
-          <span className="">Likeminds</span>
+          <span>Likeminds</span>
         </Link>
         {session && (
           <Link href="/notification">
-          <Button className="ml-auto h-8 w-8" size="icon" variant="icon" >
-            <BellIcon className="h-4 w-4" />
-           
-          </Button></Link>
+            <Button className="ml-auto h-8 w-8" size="icon" variant="icon">
+              <BellIcon className="h-5 w-5" />
+            </Button>
+          </Link>
         )}
       </div>
-      <div className="flex h-14 lg:h-[60px] px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
-        <nav className="hidden lg:flex lg:flex-row lg:items-center lg:gap-4 lg:ml-auto lg:flex-1 lg:text-sm lg:justify-end">
-          {session && (
-            <Link
-              href="#"
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-100 transition-all hover:border hover:border-gray-200 dark:text-gray-400 dark:hover:text-gray-50"
-            >
-              <MessageSquareIcon className="h-4 w-4" />
-              Messages
-            </Link>
-          )}
-          {session && (
-            <Link
-              href="#"
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-100 transition-all hover:border hover:border-gray-200 dark:text-gray-400 dark:hover:text-gray-50"
-            >
-              <UsersIcon className="h-4 w-4" />
-              Friends
-            </Link>
-          )}
-          {!session && (
+      <div className="flex h-14 px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
+        <nav className="flex flex-row items-center gap-4 ml-auto flex-1 text-sm justify-end">
+          {session ? (
+            <>
+              <Link
+                href="/chats"
+                className="flex items-center gap-2 rounded-lg px-2 py-2 text-gray-100 transition-all hover:text-pink-500 dark:text-gray-400 dark:hover:text-gray-50"
+              >
+                <MessageSquareIcon className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/discussions"
+                className="flex items-center gap-2 rounded-lg px-2 py-2 text-gray-100 transition-all hover:text-pink-500 dark:text-gray-400 dark:hover:text-gray-50"
+              >
+                <UsersIcon className="h-4 w-4" />
+              </Link>
+
+              <Link
+                className="flex items-center gap-3 rounded-lg px-2 py-2 text-gray-100 transition-all hover:text-pink-500 dark:text-gray-400 dark:hover:text-gray-50"
+                href="/find-match"
+              >
+                <MdOutlineConnectWithoutContact className="h-4 w-4" />
+              </Link>
+              <Link
+                className="flex items-center gap-3 rounded-lg px-2 py-2 text-gray-100 transition-all hover:text-pink-500 dark:text-gray-400 dark:hover:text-gray-50"
+                href="/requests"
+              >
+                <MdGroupAdd className="h-4 w-4" />
+              </Link>
+            </>
+          ) : (
             <Link
               href={session ? "" : "/api/auth/signin"}
               className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
@@ -189,86 +198,6 @@ function Package2Icon(props) {
       <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
       <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
       <path d="M12 3v6" />
-    </svg>
-  );
-}
-
-function SettingsIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function ThumbsDownIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17 14V2" />
-      <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z" />
-    </svg>
-  );
-}
-
-function ThumbsUpIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M7 10v12" />
-      <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
-    </svg>
-  );
-}
-
-function TrendingUpIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-      <polyline points="16 7 22 7 22 13" />
     </svg>
   );
 }

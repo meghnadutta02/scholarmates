@@ -39,6 +39,23 @@ const ProfileDetails = ({ user }) => {
           </div>
         </section>
         <section className="bg-white rounded-lg shadow-lg p-6 w-full ">
+          <h2 className="text-xl font-bold mb-6">Interests</h2>
+          <div className="space-y-4">
+            {user.interestSubcategories &&
+            user.interestSubcategories.length > 0 ? (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {user.interestSubcategories.map((interest, index) => (
+                  <Badge key={index}>{interest}</Badge>
+                ))}
+              </div>
+            ) : (
+              <div className=" text-gray-600">
+                <p>No interests added. </p>
+              </div>
+            )}
+          </div>
+        </section>
+        <section className="bg-white rounded-lg shadow-lg p-6 w-full ">
           <h2 className="text-xl font-bold mb-6">Details</h2>
           <div className="my-4">
             <h3 className="text-lg font-semibold">Email</h3>
@@ -87,23 +104,6 @@ const ProfileDetails = ({ user }) => {
                 </div>
               )}
             </p>
-          </div>
-        </section>
-        <section className="bg-white rounded-lg shadow-lg p-6 w-full ">
-          <h2 className="text-xl font-bold mb-6">Interests</h2>
-          <div className="space-y-4">
-            {user.interestSubcategories &&
-            user.interestSubcategories.length > 0 ? (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {user.interestSubcategories.map((interest, index) => (
-                  <Badge key={index}>{interest}</Badge>
-                ))}
-              </div>
-            ) : (
-              <div className=" text-gray-600">
-                <p>No interests added. </p>
-              </div>
-            )}
           </div>
         </section>
       </div>
