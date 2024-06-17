@@ -24,7 +24,7 @@ const Header = async () => {
       <div className="flex  px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
         <nav className="flex flex-row items-center gap-4 ml-auto flex-1  justify-end">
           <Link
-            href={session ? "" : "/api/auth/signin"}
+            href={session ? "" : "/api/auth/signin?callbackUrl=/discussions"}
             className=" text-white font-semibold md:text-lg text-md "
           >
             Sign In

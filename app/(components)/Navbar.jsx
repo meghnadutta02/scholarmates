@@ -22,7 +22,7 @@ const Navbar = async () => {
   return (
     <header className="fixed z-10 top-0 left-1/2 transform -translate-x-1/2 flex flex-row justify-center pt-1">
       <div className="flex  items-center px-4 rounded-s-xl border-2 border-zinc-600 bg-white">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Link href="#" className="flex items-center gap-2 font-semibold">
           <Image src={logo} alt="Likeminds" className="h-10 w-10" />
           <span>AlikeHub</span>
         </Link>
@@ -90,9 +90,9 @@ const Navbar = async () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+
               <DropdownMenuItem>
                 <Link href="/profile">Profile</Link>
               </DropdownMenuItem>

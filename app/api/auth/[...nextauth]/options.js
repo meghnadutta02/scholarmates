@@ -2,7 +2,7 @@ import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import connect from "@/app/config/db";
 import User from "@/app/(models)/userModel";
-
+import { redirect } from "next/navigation";
 export const options = {
   providers: [
     GitHubProvider({
@@ -65,15 +65,9 @@ export const options = {
       user.connection = currentUser.connection;
       return user;
     },
-    async redirect({ url, baseUrl }) {
-      if (url === `${baseUrl}/api/auth/signin`) {
-        return `${baseUrl}/discussions`;
-      } else if (url === `${baseUrl}/api/auth/signout`) {
-        return `${baseUrl}/`;
-      }
-      return url.startsWith(baseUrl) ? url : baseUrl;
-    },
-
+    // async redirect({ url, baseUrl }) {
+    //   return baseUrl + "/discussions";
+    // },
     // for server side
     async jwt({ token, user }) {
       if (user) {
@@ -110,5 +104,4 @@ export const options = {
     colorScheme: "light",
     logo: "/logo.png",
   },
-  // pages: { signIn: "/auth/signIn" },
 };
