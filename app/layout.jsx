@@ -1,34 +1,41 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./(components)/Navbar";
-import Footer from "./(components)/Footer";
+import RightSidebar from "./(components)/RightSidebar";
 import { AuthProvider } from "./(components)/AuthProvider";
-import Sidebar from "./(components)/Sidebar";
+import LeftSidebar from "./(components)/LeftSidebar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SessionProvider } from "@/app/(components)/SessionProvider";
 const inter = Inter({ subsets: ["latin"] });
-
+import { getServerSession } from "next-auth";
+import { options } from "./api/auth/[...nextauth]/options";
+import Header from "./(components)/Header";
 export const metadata = {
-  title: "AlikeMinds",
+  title: "AlikeHub",
   description: "By Half Prayash",
 };
 
 export default async function RootLayout({ children }) {
+  const session = await getServerSession(options);
   return (
     <html lang="en">
       <body className={inter.className}>
         <div>
           <SessionProvider>
             <AuthProvider>
-              <Navbar />
-              <div className="flex justify-center mt-16">
-                <Sidebar />
-                <div className="flex justify-center min-h-screen md:w-[70%]">
-                  {children}
+              {session ? <Navbar /> : <Header />}
+              {session ? (
+                <div className="flex justify-center mt-16">
+                  <LeftSidebar />
+                  <div className="flex justify-center min-h-screen md:w-[70%]">
+                    {children}
+                  </div>
+                  <RightSidebar />
                 </div>
-                <Footer />
-              </div>
+              ) : (
+                <>{children}</>
+              )}
               <ToastContainer />
             </AuthProvider>
           </SessionProvider>

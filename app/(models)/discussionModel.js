@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Group from "./groupModel";
 
 const discussionSchema = new mongoose.Schema(
   {

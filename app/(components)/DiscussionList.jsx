@@ -20,12 +20,7 @@ const getJoinRequests = async () => {
 };
 
 const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect("/api/auth/signin?callbackUrl=/discussions");
-    },
-  });
+  const { data: session } = useSession();
   const [animationState, setAnimationState] = useState({});
 
   const toggleLike = async (id) => {

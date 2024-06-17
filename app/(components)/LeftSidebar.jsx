@@ -2,20 +2,11 @@ import Link from "next/link";
 import React from "react";
 import { MdOutlineConnectWithoutContact } from "react-icons/md";
 import { MdGroupAdd } from "react-icons/md";
-import { getServerSession } from "next-auth";
-import { options } from "@/app/api/auth/[...nextauth]/options";
-const Sidebar = async () => {
-  const session = await getServerSession(options);
+
+const LeftSidebar = async () => {
   return (
     <div className="hidden lg:flex rounded-se-lg bg-gray-100 dark:bg-gray-800 w-[15%]">
       <nav className="flex-col items-start fixed px-4 text-md lg:text-lg font-medium">
-        <Link
-          className="flex items-center gap-3 rounded-lg  px-3 py-2 text-gray-900  transition-all hover:text-gray-900  dark:text-gray-50 dark:hover:text-gray-50"
-          href="/"
-        >
-          <HomeIcon className="h-4 w-4" />
-          Home
-        </Link>
         <Link
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           href="/chats"
@@ -30,37 +21,34 @@ const Sidebar = async () => {
           <UsersIcon className="h-4 w-4" />
           Discussions
         </Link>
-        {session && (
-          <>
-            <Link
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-              href="/profile"
-            >
-              <SettingsIcon className="h-4 w-4" />
-              Profile
-            </Link>
-            <Link
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-              href="/find-match"
-            >
-              <MdOutlineConnectWithoutContact className="h-4 w-4" />
-              Find People
-            </Link>
-            <Link
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-              href="/requests"
-            >
-              <MdGroupAdd className="h-4 w-4" />
-              Requests
-            </Link>
-          </>
-        )}
+
+        <Link
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+          href="/profile"
+        >
+          <SettingsIcon className="h-4 w-4" />
+          Profile
+        </Link>
+        <Link
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+          href="/find-match"
+        >
+          <MdOutlineConnectWithoutContact className="h-4 w-4" />
+          Find People
+        </Link>
+        <Link
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+          href="/requests"
+        >
+          <MdGroupAdd className="h-4 w-4" />
+          Requests
+        </Link>
       </nav>
     </div>
   );
 };
 
-export default Sidebar;
+export default LeftSidebar;
 
 function HomeIcon(props) {
   return (

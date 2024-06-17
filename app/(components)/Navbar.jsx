@@ -5,7 +5,7 @@ import { options } from "../api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
 import { MdOutlineConnectWithoutContact } from "react-icons/md";
 import { MdGroupAdd } from "react-icons/md";
-
+import logo from "@/public/logo.png";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -23,8 +23,8 @@ const Navbar = async () => {
     <header className="fixed z-10 top-0 left-1/2 transform -translate-x-1/2 flex flex-row justify-center pt-1">
       <div className="flex  items-center px-4 rounded-s-xl border-2 border-zinc-600 bg-white">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Package2Icon className="h-6 w-6" />
-          <span>Likeminds</span>
+          <Image src={logo} alt="Likeminds" className="h-10 w-10" />
+          <span>AlikeHub</span>
         </Link>
         {session && (
           <Link href="/notification">
@@ -36,7 +36,7 @@ const Navbar = async () => {
       </div>
       <div className="flex h-14 px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
         <nav className="flex flex-row items-center gap-4 ml-auto flex-1 text-sm justify-end">
-          {session ? (
+          {session && (
             <>
               <Link
                 href="/chats"
@@ -64,14 +64,6 @@ const Navbar = async () => {
                 <MdGroupAdd className="h-4 w-4" />
               </Link>
             </>
-          ) : (
-            <Link
-              href={session ? "" : "/api/auth/signin"}
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-            >
-              {/* <HomeIcon className="h-4 w-4" /> */}
-              Sign In
-            </Link>
           )}
         </nav>
         {session && (
