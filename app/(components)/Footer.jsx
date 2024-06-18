@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="flex flex-col items-center md:items-start mb-8 md:mb-0 text-center md:text-left">
           <Image src={logo} alt="AlikeHub Logo" className="w-32 h-auto mb-4" />
           <p className="text-lg">
-            "AlikeHub - Made for the students, by the students."
+            &quot;AlikeHub - Made for the students, by the students.&quot;
           </p>
         </div>
         <div className="flex flex-col items-center md:items-start">
