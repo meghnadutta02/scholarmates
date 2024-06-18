@@ -4,10 +4,12 @@ import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+
 export async function PUT(req, { params }) {
   await connect();
   const id = params.id;
   const session = await getServerSession(options);
+
   try {
     const discussion = await Discussion.findById(id);
 
@@ -19,13 +21,26 @@ export async function PUT(req, { params }) {
     }
 
     const userId = new ObjectId(session?.user?.db_id);
+
     const alreadyDislikedIndex = discussion.dislikedBy.indexOf(userId);
+
+    const alreadyLikedIndex = discussion.likedBy.indexOf(userId);
+
+    if (alreadyLikedIndex !== -1) {
+      discussion.likes -= 1;
+      discussion.likedBy.splice(alreadyLikedIndex, 1);
+    }
+
     if (alreadyDislikedIndex !== -1) {
       discussion.dislikes -= 1;
       discussion.dislikedBy.splice(alreadyDislikedIndex, 1);
     } else {
       discussion.dislikes += 1;
       discussion.dislikedBy.push(userId);
+    }
+
+    if (discussion.dislikes < 0) {
+      discussion.dislikes = 0;
     }
 
     await discussion.save();

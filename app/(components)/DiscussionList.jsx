@@ -7,7 +7,12 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 const getDiscussions = async (query = "") => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/discussion${query}`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/discussion${query}`,
+    {
+      next: {
+        revalidate: 1200,
+      },
+    }
   );
 
   return response.json();
@@ -135,6 +140,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
           let isMember = false;
           let isRequested = false;
           let isRejected = false;
+
           if (accepted.includes(discussion.groupId)) {
             isMember = true;
           }
@@ -210,10 +216,6 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         <p>No discussions found for the selected filters.</p>
       ) : (
         <div className="grid grid-cols-1  gap-6 ">
-          <span className="text-red-400 text-xl">
-            You can only like/dislike the last 2 discussions.Previous
-            discussions do not have those fields
-          </span>
           {discussions.map((discussion) => (
             <div
               key={discussion._id}
@@ -247,7 +249,10 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                     <ThumbsUpIcon
                       className={`w-4 h-4 cursor-pointer ${
                         discussion.isLiked && "text-blue-400"
-                      } ${animationState[discussion._id] === "like" && "pop"}`}
+                      } ${
+                        animationState[discussion._id] === "like" &&
+                        "pop text-blue-400"
+                      }`}
                       onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
@@ -258,20 +263,15 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                       className={`w-4 h-4 cursor-pointer ${
                         discussion.isDisliked && "text-red-400"
                       } ${
-                        animationState[discussion._id] === "dislike" && "pop"
+                        animationState[discussion._id] === "dislike" &&
+                        "pop text-red-400"
                       }`}
                       onClick={() => toggleDislike(discussion._id)}
                     />
                     <span className="sr-only">Dislike</span>
                     <span className="ml-2">{discussion.dislikes}</span>
                   </Button>
-                  <Button className="h-10" size="icon" variant="icon">
-                    <span className="sr-only">Popularity</span>
-                    <span className="ml-2 flex">
-                      <TrendingUpIcon className="w-5 h-5" />
-                      <p className="font-normal ml-2"> 645</p>
-                    </span>
-                  </Button>
+
                   <Button
                     className="w-24"
                     variant="secondary"
@@ -337,26 +337,6 @@ function ThumbsUpIcon(props) {
     >
       <path d="M7 10v12" />
       <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
-    </svg>
-  );
-}
-
-function TrendingUpIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-      <polyline points="16 7 22 7 22 13" />
     </svg>
   );
 }

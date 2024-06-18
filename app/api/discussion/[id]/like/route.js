@@ -9,6 +9,7 @@ export async function PUT(req, { params }) {
   await connect();
   const session = await getServerSession(options);
   const id = params.id;
+
   try {
     const discussion = await Discussion.findById(id);
 
@@ -21,6 +22,12 @@ export async function PUT(req, { params }) {
 
     const userId = new ObjectId(session?.user?.db_id);
     const alreadyLikedIndex = discussion.likedBy.indexOf(userId);
+    const alreadyDislikedIndex = discussion.dislikedBy.indexOf(userId);
+
+    if (alreadyDislikedIndex !== -1) {
+      discussion.dislikes -= 1;
+      discussion.dislikedBy.splice(alreadyDislikedIndex, 1);
+    }
 
     if (alreadyLikedIndex !== -1) {
       discussion.likes -= 1;
@@ -28,6 +35,10 @@ export async function PUT(req, { params }) {
     } else {
       discussion.likes += 1;
       discussion.likedBy.push(userId);
+    }
+
+    if (discussion.likes < 0) {
+      discussion.likes = 0;
     }
 
     await discussion.save();

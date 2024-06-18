@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import { LuTrendingDown } from "react-icons/lu";
 const getDiscussions = async () => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/discussions/trending`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/trending`,
+    { next: { revalidate: 1800 } }
   );
 
   return response.json();
@@ -101,7 +103,7 @@ const Trending = () => {
         }
 
         if (discussionsResult.status === "fulfilled") {
-          result = discussionsResult.value.result;
+          result = discussionsResult.value.discussions;
         }
 
         const userId = session?.user?.db_id;
@@ -112,13 +114,14 @@ const Trending = () => {
           let isMember = false;
           let isRequested = false;
           let isRejected = false;
-          if (accepted.includes(discussion.groupId)) {
+
+          if (accepted.includes(discussion?.groupId?._id)) {
             isMember = true;
           }
-          if (pending.includes(discussion.groupId)) {
+          if (pending.includes(discussion?.groupId?._id)) {
             isRequested = true;
           }
-          if (rejected.includes(discussion.groupId)) {
+          if (rejected.includes(discussion?.groupId?._id)) {
             isRejected = true;
           }
           return {
@@ -131,6 +134,7 @@ const Trending = () => {
           };
         });
         setDiscussions(updatedResult);
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching discussions:", error);
@@ -179,7 +183,7 @@ const Trending = () => {
   };
 
   return (
-    <div>
+    <div className="pt-5 px-6">
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
@@ -219,7 +223,10 @@ const Trending = () => {
                     <ThumbsUpIcon
                       className={`w-4 h-4 cursor-pointer ${
                         discussion.isLiked && "text-blue-400"
-                      } ${animationState[discussion._id] === "like" && "pop"}`}
+                      } ${
+                        animationState[discussion._id] === "like" &&
+                        "pop text-blue-400"
+                      }`}
                       onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
@@ -230,18 +237,25 @@ const Trending = () => {
                       className={`w-4 h-4 cursor-pointer ${
                         discussion.isDisliked && "text-red-400"
                       } ${
-                        animationState[discussion._id] === "dislike" && "pop"
+                        animationState[discussion._id] === "dislike" &&
+                        "pop text-red-400"
                       }`}
                       onClick={() => toggleDislike(discussion._id)}
                     />
                     <span className="sr-only">Dislike</span>
                     <span className="ml-2">{discussion.dislikes}</span>
                   </Button>
+
                   <Button className="h-10" size="icon" variant="icon">
                     <span className="sr-only">Popularity</span>
                     <span className="ml-2 flex">
-                      <TrendingUpIcon className="w-5 h-5" />
-                      <p className="font-normal ml-2"> 645</p>
+                      {discussion.rankChange === "decrease" ? (
+                        <LuTrendingDown className="w-5 h-5 text-red-400" />
+                      ) : (
+                        <TrendingUpIcon className="w-5 h-5 text-green-400" />
+                      )}
+
+                      <p className="font-normal ml-2"> {discussion.rankJump}</p>
                     </span>
                   </Button>
                   <Button

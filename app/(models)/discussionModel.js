@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Group from "./groupModel";
-
+import User from "./userModel";
 const discussionSchema = new mongoose.Schema(
   {
     privacy: { type: String, enum: ["private", "public"], required: true },
@@ -17,6 +17,8 @@ const discussionSchema = new mongoose.Schema(
       ],
       required: true,
     },
+    previousRankChange: { type: String, default: "increase" },
+    previousRankJump: { type: Number, default: 0 },
     title: { type: String, required: true },
     content: { type: String, required: true, default: "" },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -51,6 +53,11 @@ const discussionSchema = new mongoose.Schema(
     },
     //chat group
     groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group" },
+
+    previousRank: {
+      type: Number,
+      default: 21,
+    },
   },
   { timestamps: true }
 );

@@ -35,6 +35,6 @@ export const config = {
     "/AdminRoute3",
     "/posts",
     "/chats",
-    "/discussions",
+    "/discussions/:path*",
   ],
 };
