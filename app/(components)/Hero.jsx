@@ -13,19 +13,19 @@ const Hero = () => {
     <div className="mt-8 px-4">
       <div className="flex flex-col lg:flex-row md:gap-8 gap-6 w-full px-4 md:px-8 mt-8">
         <div className="w-full lg:w-1/2 flex justify-center mx-auto md:mt-8 pt-8">
-          <Image src={main} alt="jumbotron" height={400} width={400} />
+          <Image src={main} alt="jumbotron" height={460} width={460} />
         </div>
         <div className="w-full lg:w-1/2 flex flex-col justify-center">
-          <div className="justify-center md:justify-start mr-4 mb-4 flex">
+          <div className="justify-start mr-4 mb-4 flex">
             <TypeAnimation
               sequence={["", "Welcome", "Welcome to", "Welcome to AlikeHub"]}
               wrapper="span"
               speed={2}
-              className="font-bold border-b-2 pt-16 border-b-pink-600 text-blue-800 text-2xl md:text-4xl font-serif dark:text-gray-200"
-              repeat={1}
+              className="font-bold  md:pt-16 pt-6  text-blue-800 text-2xl md:text-5xl font-serif dark:text-gray-200"
+              repeat={2}
             />
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col md:gap-4 gap-2 ">
             <motion.div
               className="mb-4"
               initial="hidden"
@@ -56,7 +56,7 @@ const Hero = () => {
               hidden: { opacity: 0, x: -60 },
               visible: { opacity: 1, x: 0 },
             }}
-            className="text-md md:hidden relative text-gray-600 dark:text-gray-400  mt-4"
+            className="text-md md:hidden relative text-gray-600 dark:text-gray-400  mt-1"
           >
             At AlikeHub, we harness the power of connection. Our platform unites
             individuals with shared interests and goals. Whether for
@@ -74,7 +74,7 @@ const Hero = () => {
               hidden: { opacity: 0, x: -60 },
               visible: { opacity: 1, x: 0 },
             }}
-            className="text-md md:text-xl relative hidden md:block text-gray-600 dark:text-gray-400 md:mt-0 mt-4"
+            className="text-md md:text-xl relative hidden md:block text-gray-600 dark:text-gray-400 md:mt-2 mt-4"
           >
             At AlikeHub, we believe in the power of connection. Our platform is
             designed to bring together people who share similar interests,

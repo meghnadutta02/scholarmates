@@ -73,7 +73,7 @@ const Services = () => {
         >
           Discover, Connect, and Grow Together
         </motion.div>
-        <div className="md:mt-12 mt-8 flex flex-col md:gap-8 gap-7">
+        <div className="md:mt-12 mt-6 flex flex-col md:gap-8 gap-7">
           {services.map((service, index) => (
             <motion.div
               key={index}
