@@ -25,8 +25,20 @@ const getJoinRequests = async () => {
 };
 
 const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
+  const [expandedDiscussion, setExpandedDiscussion] = useState([]);
   const { data: session } = useSession();
   const [animationState, setAnimationState] = useState({});
+  const toggleDiscussion = (id) => {
+    setExpandedDiscussion((prev) => {
+      const isIdPresent = prev.includes(id);
+
+      if (isIdPresent) {
+        return prev.filter((item) => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
 
   const toggleLike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "like" }));
@@ -223,7 +235,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
             >
               <Image
                 alt="Avatar"
-                className="rounded-full"
+                className="rounded-full hidden sm:block"
                 height="48"
                 src={discussion.creatorData.profilePic}
                 style={{
@@ -232,6 +244,18 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                 }}
                 width="48"
               />
+              <Image
+                alt="Avatar"
+                className="rounded-full sm:hidden block"
+                height="38"
+                src={discussion.creatorData.profilePic}
+                style={{
+                  aspectRatio: "38/38",
+                  objectFit: "cover",
+                }}
+                width="38"
+              />
+
               <div className="flex-1 grid gap-2">
                 <div className="flex flex-col  gap-2">
                   <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -241,7 +265,17 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                     {discussion.title}
                   </h4>
                 </div>
-                <div className="prose max-w-none">
+                <div
+                  className={`prose max-w-none cursor-pointer md:hidden ${
+                    expandedDiscussion.includes(discussion._id)
+                      ? ""
+                      : "line-clamp-2"
+                  }`}
+                  onClick={() => toggleDiscussion(discussion._id)}
+                >
+                  <p>{discussion.content}</p>
+                </div>
+                <div className="prose max-w-none  md:block hidden">
                   <p>{discussion.content}</p>
                 </div>
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
