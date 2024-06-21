@@ -247,7 +247,7 @@ export const interests = [
       "Web Development",
       "App Development",
       "Game Development",
-      "Database Design & Development",
+      "Database Design",
       "Software Testing & QA",
       "Software Engineering",
       "Hardware Engineering",

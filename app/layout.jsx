@@ -26,7 +26,7 @@ export default async function RootLayout({ children }) {
             <AuthProvider>
               {session ? <Navbar /> : <Header />}
               {session ? (
-                <div className="flex justify-center mt-16">
+                <div className="flex justify-center md:mt-16 mt-8">
                   <LeftSidebar />
                   <div className="flex justify-center min-h-screen md:w-[70%]">
                     {children}
