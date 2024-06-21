@@ -10,7 +10,7 @@ const Request = () => {
           <TabsTrigger value="c">Connections</TabsTrigger>
           <TabsTrigger value="g">Groups</TabsTrigger>
         </TabsList>
-        <div className="flex w-full border rounded-lg my-4 px-2 pt-4 pb-8">
+        <div className="flex w-full  my-4 justify-center pt-4 pb-8">
           <TabsContent value="c">
             <Connection />
           </TabsContent>
