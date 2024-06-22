@@ -42,10 +42,10 @@ export const sendConnectionController = async (req, resp) => {
     console.log("requestdata:", requestdata._id);
 
     // / Send a notification to the recipient using Socket.io
-    if(requestdata){
-     senderUser.requestPending.push(recipientId);
-     await senderUser.save();
-     console.log("first",senderUser)
+    if (requestdata) {
+      senderUser.requestPending.push(recipientId);
+      await senderUser.save();
+      console.log("first", senderUser)
     }
 
     io.to(recipientId).emit("connectionRequest", {
@@ -70,9 +70,8 @@ export const sendConnectionController = async (req, resp) => {
 
 export const receiveConnectionController = async (req, resp) => {
   try {
-    // const userId = params.receiverconnection;
-    const { userId, friendshipId } = req.body;
-    console.log(userId, friendshipId);
+    const { userId, friendshipId, action } = req.body;
+    console.log(userId, friendshipId, action);
 
     const friendshipRequest = await Request.findById(friendshipId);
     console.log(friendshipRequest);
@@ -82,30 +81,58 @@ export const receiveConnectionController = async (req, resp) => {
     }
 
     if (!userId || !friendshipRequest.participants.includes(userId)) {
-      return res
-        .status(403)
-        .json({ message: "You do not have permission to accept this request" });
+      return resp.status(403).json({ message: "You do not have permission to accept this request" });
     }
     const user = await User.findById(friendshipRequest.requestTo);
     const sender = await User.findById(friendshipRequest.user);
-    if (user || sender) {
-      user.connection.push(sender._id);
-      await user.updateOne({$pull:{requestPending:sender._id}});
-      await user.save();
+    if (action === 'accept') {
 
-      sender.connection.push(user._id);
-     await sender.updateOne({$pull:{requestPending:user._id}});
-      await sender.save();
+
+      if (user && sender) {
+        if (!user.connection.includes(sender._id)) {
+          user.connection.push(sender._id);
+        }
+
+        if (!sender.connection.includes(user._id)) {
+          sender.connection.push(user._id);
+        }
+        await user.updateOne({ $pull: { requestPending: sender._id } });
+        await sender.updateOne({ $pull: { requestPending: user._id } });
+
+        await user.save();
+        await sender.save();
+
+        console.log(user, sender);
+
+        await friendshipRequest.deleteOne();
+
+        io.to(sender.socketId).emit('friendRequestAccepted', {
+          message: `Your friend request to ${user.name} was accepted.`,
+          userId: user._id
+        });
+
+        return resp.status(200).send({
+          message: "accepted",
+          success: true,
+        });
+      } else {
+        return resp.status(404).json({ message: "User or sender not found" });
+      }
+    } else if (action === 'decline') {
+      await user.updateOne({ $pull: { requestPending: sender._id } });
+      await sender.updateOne({ $pull: { requestPending: user._id } });
+      await friendshipRequest.deleteOne();
+
+      return resp.status(200).send({
+        message: "declined",
+        success: true,
+      });
+    } else {
+      return resp.status(400).send({
+        message: "Invalid action",
+        success: false,
+      });
     }
-    console.log(user, sender);
-    // Use remove() or deleteOne() to delete the friendshipRequest
-    await friendshipRequest.deleteOne(); //
-    await sender.updateOne({$pull:{requestPending:user._id}});
-    await sender.save();
-    return resp.status(200).send({
-      message: "accepted",
-      sucess: true,
-    });
   } catch (error) {
     console.error(error);
 

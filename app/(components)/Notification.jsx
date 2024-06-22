@@ -4,6 +4,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Flex, Text, Box, Image } from "@radix-ui/themes";
 import { Button } from "@/components/ui/button";
+import {toast} from 'react-toastify'
 const Notification = ({ sender, receive, name, frndId ,user,data}) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -29,6 +30,7 @@ const Notification = ({ sender, receive, name, frndId ,user,data}) => {
         );
         if (res.status == 200) {
           console.log(res);
+          toast(res.message);
           localStorage.removeItem("request");
           setIsVisible(false);
         }

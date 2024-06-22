@@ -55,13 +55,17 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     await connect();
-    const session = await getServerSession(options);
+    const session = await getServerSession();
+
 
     const searchQuery = req.nextUrl.searchParams.get("searchQuery");
     const college = req.nextUrl.searchParams.get("college");
     const discussionType = req.nextUrl.searchParams.get("type");
     const category = req.nextUrl.searchParams.get("category");
     const subcategory = req.nextUrl.searchParams.get("subcategory");
+    const offset = parseInt(req.nextUrl.offset) || 0;
+    const limit = parseInt(req.nextUrl.limit) || 10;
+
     let aggregationPipeline = [];
 
     if (searchQuery) {
@@ -77,7 +81,6 @@ export async function GET(req) {
           },
         },
       };
-
       aggregationPipeline.push(atlasSearchQuery);
     }
 
@@ -115,10 +118,12 @@ export async function GET(req) {
         $match: { "creatorData.collegeName": session?.user?.collegeName },
       });
     }
+
     if (discussionType) {
       const types = discussionType.split(",");
       aggregationPipeline.push({ $match: { type: { $in: types } } });
     }
+
     if (category || subcategory) {
       let matchQuery = [];
       if (category) {
@@ -126,7 +131,6 @@ export async function GET(req) {
         const subcategories = interests
           .filter((interest) => categories.includes(interest.category))
           .flatMap((interest) => interest.subcategories);
-
         matchQuery.push({ subcategories: { $in: subcategories } });
       }
       if (subcategory) {
@@ -135,14 +139,18 @@ export async function GET(req) {
       }
       aggregationPipeline.push({ $match: { $or: matchQuery } });
     }
+
     aggregationPipeline.push({ $match: { isActive: true } });
+
+    // Apply pagination
+    aggregationPipeline.push({ $skip: offset }, { $limit: limit });
 
     const discussions = await Discussion.aggregate(aggregationPipeline);
 
     return NextResponse.json({ result: discussions }, { status: 200 });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (error) {
+    console.error("Error fetching discussions:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 

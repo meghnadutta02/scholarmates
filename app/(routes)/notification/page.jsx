@@ -84,7 +84,7 @@ const Page = () => {
         <>
             <div>
                 {data?.map((item, index) => (
-                    <Notification key={index} data={item.requestData }sender={item.requestData.user}
+                    <Notification key={index} data={item.requestData } sender={item.requestData.user}
                         receive={item.requestData.requestTo}  frndId={item.requestData._id} user={item.userData} />
                 ))}
             </div>
