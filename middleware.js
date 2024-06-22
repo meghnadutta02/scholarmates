@@ -1,12 +1,8 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-
 export default withAuth(
-  function middleware(req,res) {
-    // console.log("middleware", req.nextUrl.pathname);
-    // console.log("middleware", req.nextauth.token);
-
+  function middleware(req, res) {
     const adminRoutes = [
       "/CreateUser",
       "/AdminRoute1",
@@ -38,9 +34,7 @@ export const config = {
     "/AdminRoute2",
     "/AdminRoute3",
     "/posts",
-    "/discussions",
+    "/chats",
+    "/discussions/:path*",
   ],
 };
-
-
-

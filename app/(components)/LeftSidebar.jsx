@@ -1,58 +1,62 @@
 import Link from "next/link";
 import React from "react";
 import { MdOutlineConnectWithoutContact } from "react-icons/md";
-import { getServerSession } from "next-auth";
-import { options } from "@/app/api/auth/[...nextauth]/options";
-const Sidebar = async () => {
-  const session = await getServerSession(options);
+import { MdGroupAdd } from "react-icons/md";
+import { Lightbulb, TrendingUp } from "lucide-react";
+
+const LeftSidebar = async () => {
   return (
-    <div className="hidden md:flex rounded-se-lg bg-gray-100 dark:bg-gray-800 w-[15%]">
+    <div className="hidden lg:flex rounded-se-lg bg-gray-100 dark:bg-gray-800 w-[15%]">
       <nav className="flex-col items-start fixed px-4 text-md lg:text-lg font-medium">
-        <Link
-          className="flex items-center gap-3 rounded-lg  px-3 py-2 text-gray-900  transition-all hover:text-gray-900  dark:text-gray-50 dark:hover:text-gray-50"
-          href="/"
-        >
-          <HomeIcon className="h-4 w-4" />
-          Home
-        </Link>
         <Link
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           href="/chats"
         >
-          <MessageSquareIcon className="h-4 w-4" />
+          <MessageSquareIcon className="h-5 w-5" />
           Chats
         </Link>
         <Link
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           href="/discussions"
         >
-          <UsersIcon className="h-4 w-4" />
+          <UsersIcon className="h-5 w-5" />
           Discussions
         </Link>
-        {session && (
-          <>
-            <Link
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-              href="/profile"
-            >
-              <SettingsIcon className="h-4 w-4" />
-              Profile
-            </Link>
-            <Link
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-              href="/find-match"
-            >
-              <MdOutlineConnectWithoutContact className="h-4 w-4" />
-              Find People
-            </Link>
-          </>
-        )}
+
+        <Link
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+          href="/find-match"
+        >
+          <MdOutlineConnectWithoutContact className="h-5 w-5" />
+          Find People
+        </Link>
+        <Link
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+          href="/requests"
+        >
+          <MdGroupAdd className="h-5 w-5" />
+          Requests
+        </Link>
+        <Link
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+          href="/discussions/trending"
+        >
+          <TrendingUp className="mt-1 h-5 w-5" />
+          Trending
+        </Link>
+        <Link
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+          href="/chats"
+        >
+          <Lightbulb className="mt-1 h-5 w-5" />
+          Suggestions
+        </Link>
       </nav>
     </div>
   );
 };
 
-export default Sidebar;
+export default LeftSidebar;
 
 function HomeIcon(props) {
   return (

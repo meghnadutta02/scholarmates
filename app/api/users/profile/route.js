@@ -10,7 +10,7 @@ export async function GET(req) {
     await connect();
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
-    console.log(id);
+    
 
     const user = await User.findOne({
       _id: id,

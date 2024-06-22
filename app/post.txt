@@ -1,0 +1,151 @@
+<main className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:py-8 md:px-16">
+        {/* Discussions Feed container */}
+        {discussions.length === 0 && (
+          <div className="flex justify-center items-center h-96">
+            {" "}
+            No discussions found
+          </div>
+        )}
+        <div className="grid gap-4">
+          {/* Discussion cards */}
+          {discussions.length > 0 &&
+            discussions.map((discussion, index) => (
+              <Card
+                key={index}
+                className="flex items-start p-8 gap-4 rounded-xl shadow-md mx-auto"
+              >
+                <Image
+                  alt="Avatar"
+                  className="rounded-full"
+                  height="48"
+                  src={discussion?.creator?.profilePic || "/placeholder.svg"}
+                  style={{
+                    aspectRatio: "48/48",
+                    objectFit: "cover",
+                  }}
+                  width="48"
+                />
+
+                <div className="flex-1 grid gap-2">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-semibold text-base">
+                      {discussion.title}
+                    </h4>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      @{discussion?.creator?.name || "Anonymous"}
+                    </span>{" "}
+                  </div>
+                  <div className="prose max-w-none">
+                    <p>{discussion.content}</p>
+                  </div>
+                  <div className="grid w-full grid-cols-3 items-center gap-4 text-center md:gap-8">
+                    <Button className="h-10" size="icon" variant="icon">
+                      <ThumbsUpIcon className="w-4 h-4" />
+                      <span className="sr-only">Like</span>
+                      <span className="ml-2">{discussion.likes}</span>
+                    </Button>
+                    <Button className="h-10" size="icon" variant="icon">
+                      <ThumbsDownIcon className="w-4 h-4" />
+                      <span className="sr-only">Dislike</span>
+                      <span className="ml-2">{discussion.dislikes}</span>
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+        </div>
+        {/* Commented out Posts Feed */}
+        {/* 
+        <div className="grid grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4">
+          {data.map((value, index) => (
+            <Card
+              key={index}
+              className="mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden"
+            >
+              <div className="md:flex justify-center">
+                <div className="md:flex-shrink-0">
+                  <span className="object-cover md:w-48 rounded-md bg-muted w-[192px] h-[192px]" />
+                </div>
+                <div className="p-8 w-full">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Image
+                        alt="Profile picture"
+                        className="rounded-full"
+                        height="40"
+                        src={value.user.profilePic}
+                        style={{
+                          aspectRatio: "40/40",
+                          objectFit: "cover",
+                        }}
+                        width="40"
+                      />
+                      <div className="ml-4">
+                        <div className="uppercase tracking-wide text-sm text-black dark:text-white font-semibold">
+                          {value.user.name}
+                        </div>
+                        <div className="text-gray-400 dark:text-gray-300">
+                          @{value.user.username}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="mt-4 text-gray-800 dark:text-gray-300">
+                    {showMore[index]
+                      ? value.post.description
+                      : value.post.description
+                          .split("\n")
+                          .slice(0, 2)
+                          .join("\n")}
+                  </p>
+                  {value.post.description.split("\n").length > 4 && (
+                    <button
+                      onClick={() => handleShowMoreToggle(index)}
+                      className="text-blue-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 cursor-pointer"
+                    >
+                      {showMore[index] ? "See Less" : "See More..."}
+                    </button>
+                  )}
+                  {value.post.image.length > 0 && (
+                    <Carousel>
+                      <CarouselContent>
+                        {value.post.image.map((data, index) => (
+                          <CarouselItem key={index}>
+                            <div className="p-4 flex justify-center">
+                              <Image
+                                alt="post"
+                                height={400}
+                                width={400}
+                                src={data}
+                              />
+                            </div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="ml-8" />
+                      <CarouselNext className="mr-8" />
+                    </Carousel>
+                  )}
+  
+                  <div className="flex mt-6 justify-between items-center">
+                    <div className="flex space-x-4 text-gray-400 dark:text-gray-300">
+                      <Button variant="icon" className="flex items-center">
+                        <HeartIcon className="h-6 w-6 text-red-500" />
+                        <span className="ml-1 text-red-500">{value.likes}</span>
+                      </Button>
+                      <Button variant="icon" className="flex items-center">
+                        <MessageCircleIcon className="h-6 w-6 text-green-500" />
+                        <span className="ml-1 text-green-500">241</span>
+                      </Button>
+                    </div>
+                    <div className="text-gray-400 dark:text-gray-300">
+                      7:22 AM · Aug 22, 2023
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+        */}
+      </main>

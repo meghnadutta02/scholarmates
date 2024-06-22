@@ -65,6 +65,7 @@ const PostPage = () => {
       </p>
     </div>
   );
-};
+});
 
+}
 export default PostPage;

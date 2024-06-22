@@ -2,13 +2,14 @@ import mongoose from "mongoose";
 const connect = async () => {
   try {
     if (mongoose.connection.readyState === 1) {
-      console.log("Already connected to MongoDB Atlas");
+      // console.log("Already connected to MongoDB Atlas");
       return;
     }
-    console.log(process.env.MONGO_URI)
+    // console.log(process.env.MONGO_URI)
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      
     });
     console.log("Connected to MongoDB Atlas");
   } catch (err) {

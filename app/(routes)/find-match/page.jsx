@@ -1,12 +1,9 @@
 "use client";
-import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
+import Spinnersvg from "@/public/Spinner.svg";
 import { Button } from "@/components/ui/button";
 import { io } from "socket.io-client";
 import Image from "next/image";
-var socket, selectedChatCompare;
-import { useSession } from "next-auth/react";
+import { useSession } from "@/app/(components)/SessionProvider";
 import {
   Carousel,
   CarouselContent,
@@ -25,9 +22,36 @@ export default function Component() {
   const [userId, setUserId] = useState();
   const [requestdata, setRequestData] = useState([]);
   const [data, setData] = useState([]);
+  const [visible, setVisible] = useState(true);
+  const [requestPend, setRequestPen] = useState([]);
 
   useEffect(() => {
     if (session) {
+      setUserId(session);
+    }
+  }, [userId, session]);
+
+  const userdata = async () => {
+    try {
+      const res = await fetch("/api/users/profile", {
+        cache: "no-cache",
+      });
+      if (!res.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const data = await res.json();
+
+      setData(data.result);
+      setRequestPen(data.result.requestPending);
+      setVisible(true);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    userdata();
+  }, [visible]);
       // console.log("this is lll:",session.db_id)
       // console.log("request is:",request);
       setUserId(session.db_id);
@@ -79,7 +103,6 @@ export default function Component() {
   //     console.log("data we have:", data);
   //   });
 
-
   //   return () => {
   //     socket.disconnect();
   //   };
@@ -96,7 +119,8 @@ export default function Component() {
     const fetchData = async () => {
       try {
         if (userId) {
-          const res = await fetch(`/api/users/${userId}`, {
+          setLoading(true);
+          const res = await fetch(`/api/users/findusers/${userId.db_id}`, {
             cache: "no-cache",
           });
           if (!res.ok) {
@@ -121,7 +145,7 @@ export default function Component() {
     try {
       if (profileId && userId) {
         const data = await fetch(
-          `http://localhost:5001/sendconnection/${userId}`,
+          `http://localhost:5001/sendconnection/${userId.db_id}`,
           {
             method: "POST",
             headers: {
@@ -139,6 +163,7 @@ export default function Component() {
           }
         );
         if (data) {
+          setVisible(false);
           console.log(data);
         }
       } else {
@@ -150,76 +175,95 @@ export default function Component() {
   };
 
   return (
-    // <div className="w-full px-4 mx-auto grid grid-rows-[auto_1fr_auto] gap-4 md:gap-6 pb-10">
-    //   <main className="grid br md:grid-cols-6 gap-10 items-center">
     <div className="justify-center">
       <h2 className="my-4 text-center font-semibold text-2xl">
         Connect with people
       </h2>
-      <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl ">
-        <CarouselContent>
-          {profiles.map((profile) => (
-            <CarouselItem key={profile._id}>
-              <div className="grid gap-2">
-                <div className="rounded-xl border ">
-                  <Image
-                    alt="Profile Picture"
-                    className="mx-auto"
-                    height={300}
-                    src="https://img.freepik.com/free-vector/isolated-young-handsome-man-different-poses-white-background-illustration_632498-859.jpg?size=338&ext=jpg&ga=GA1.1.1269040533.1708732800&semt=ais"
-                    width={300}
-                  />
-                </div>
-                <div className="p-2  grid gap-2">
-                  <h1 className="text-2xl font-semibold line-clamp-2">
-                    {profile.name}
-                  </h1>
-                  <div className="flex gap-2 items-center">
-                    <div className="flex gap-2 items-center">
-                      <Image
-                        alt="Thumbnail"
-                        className="rounded-full object-cover aspect-square"
-                        height={40}
-                        src="/placeholder.svg"
-                        width={40}
-                      />
-                      <div className="text-sm">
-                        <div className="font-semibold">Software Engineer</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {profile.collegeName}
+      {loading ? (
+        <div className="flex justify-center items-center  z-50">
+          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
+        </div>
+      ) : (
+        <div>
+          <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl ">
+            <CarouselContent>
+              {profiles.map((profile) =>
+                !data?.connection?.includes(profile._id) ? (
+                  <CarouselItem key={profile._id}>
+                    <div className="grid gap-2">
+                      <div className="rounded-xl border ">
+                        <Image
+                          alt="Profile Picture"
+                          className="mx-auto rounded-full"
+                          height={300}
+                          src={profile.profilePic}
+                          width={300}
+                        />
+                      </div>
+                      <div className="p-2  grid gap-2">
+                        <h1 className="text-2xl font-semibold line-clamp-2">
+                          {profile.name}
+                        </h1>
+                        <div className="flex gap-2 items-center">
+                          <div className="flex gap-2 items-center">
+                            <Image
+                              alt="Thumbnail"
+                              className="rounded-full object-cover aspect-square"
+                              height={40}
+                              src={profile.profilePic}
+                              width={40}
+                            />
+                            <div className="text-sm">
+                              <div className="font-semibold">
+                                Software Engineer
+                              </div>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">
+                                {profile.collegeName}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex ml-auto gap-4">
+                            {requestPend?.includes(profile._id) ? (
+                              <Button disabled>Requested</Button>
+                            ) : (
+                              <Button
+                                onClick={() => handleConnectClick(profile._id)}
+                              >
+                                Connect
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex ml-auto gap-4">
-                      <Button onClick={() => handleConnectClick(profile._id)}>
-                        Connect
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
-                  <p>{profile.bio}</p>
-                </div>
-                <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
-                  <h2 className="font-semibold text-lg">Interests</h2>
-                  <ul className="list-disc list-inside">
-                    {profile.interestSubcategories.map((interest) => (
-                      <div key={interest}>
-                        <li>{interest}</li>
+                      <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
+                        <p>
+                          Im a full-stack developer with a passion for React and
+                          Node.js. In my free time, I love contributing to
+                          open-source projects and exploring new technologies.
+                        </p>
                       </div>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+                      <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
+                        <h2 className="font-semibold text-lg">Interests</h2>
+                        <ul className="list-disc list-inside">
+                          {profile.interestCategories.map((interest) => (
+                            <div key={interest._id}>
+                              <li>{interest}</li>
+                            </div>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ) : null
+              )}
+            </CarouselContent>
+
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
+      )}
     </div>
-    //   </main>
-    // </div>
   );
 }
 

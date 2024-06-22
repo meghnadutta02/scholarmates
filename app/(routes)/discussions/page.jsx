@@ -2,10 +2,21 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import DiscussionList from "@/app/(components)/DiscussionList";
-import DiscussionFilter from "@/app/(components)/DiscussionFilter";
+import { IoIosCreate } from "react-icons/io";
+
 import { Button } from "@/components/ui/button";
-import { FaFilter } from "react-icons/fa6";
+import FilterDrawer from "@/app/(components)/FilterDrawer";
+
 import CreateDiscussion from "@/app/(components)/NewDiscussion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 const getSuggestions = async (q) => {
   const response = await fetch(
     `${
@@ -16,6 +27,7 @@ const getSuggestions = async (q) => {
 };
 
 const DiscussionsPage = () => {
+  const [open, setOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
     category: [],
     subcategory: [],
@@ -26,7 +38,7 @@ const DiscussionsPage = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false); // New state variable
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   const suggestionsRef = useRef(null);
 
   const handleFilterApplication = (filters) => {
@@ -87,58 +99,64 @@ const DiscussionsPage = () => {
 
   return (
     <div>
-      <div className="flex p-4 gap-4 md:p-6 justify-center">
-        <CreateDiscussion />
-      </div>
       <div className="flex">
         {/* filter section */}
 
-        {isFilterOpen && (
-          <DiscussionFilter applyFilters={handleFilterApplication} />
-        )}
         {/* discussion list */}
-        <div className="flex-1 pt-5 px-6 ">
+        <div className="flex-1 md:pt-5 pt-0  md:px-6 px-4 ">
           {/* search button */}
-          <div className="flex mb-10 justify-center">
-            <div className=" relative w-[50%]">
-              <input
-                type="text"
-                placeholder="looking for a cloud engineer?"
-                className="w-full pl-10 pr-4 py-2 rounded border"
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  e.target.value.length > 3 && handleSearch();
-                }}
-              />
-              <div className="absolute top-3 left-1 flex items-center pointer-events-none">
-                <AiOutlineSearch className="h-5 w-5 text-gray-400" />{" "}
-              </div>
-              {/* search suggestions */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div
-                  ref={suggestionsRef}
-                  className="absolute top-11 w-full bg-gray-200 rounded shadow-lg "
-                >
-                  {suggestions.map((suggestion, index) => (
-                    <div key={index} className="p-2 truncate">
-                      {suggestion.title}
-                    </div>
-                  ))}
+          <div className="flex mb-10 md:justify-center md:flex-row flex-col gap-4 w-full ">
+            <div className="flex gap-2 md:gap-0 md:justify-between">
+              <div className=" relative  w-[85%]  ">
+                <input
+                  type="text"
+                  placeholder="looking for a ml engineer?"
+                  className="w-full pl-10 pr-4 py-2 rounded border"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    e.target.value.length > 3 && handleSearch();
+                  }}
+                />
+                <div className="absolute top-3 left-1 flex items-center pointer-events-none">
+                  <AiOutlineSearch className="h-5 w-5 text-gray-400" />{" "}
                 </div>
-              )}
-            </div>
+                {/* search suggestions */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div
+                    ref={suggestionsRef}
+                    className="absolute top-11 w-full bg-gray-200 rounded shadow-lg "
+                  >
+                    {suggestions.map((suggestion, index) => (
+                      <div key={index} className="p-2 truncate">
+                        {suggestion.title}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-            <Button className="ml-4" onClick={handleSearch}>
-              Search
-            </Button>
-            <Button
-              className="ml-4 flex items-center"
-              variant="secondary"
-              onClick={toggleFilter}
-            >
-              <FaFilter className="mr-1" />
-              Filter
-            </Button>
+              <Button className="md:ml-4" onClick={handleSearch}>
+                Search
+              </Button>
+            </div>
+            <div className="flex justify-between ">
+              <FilterDrawer applyFilters={handleFilterApplication} />
+
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <IoIosCreate className="h-8 w-8 ml-4 mt-1" />
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[720px]">
+                  <DialogHeader>
+                    <DialogTitle>New Discussion</DialogTitle>
+                    <DialogDescription>
+                      Start a new discussion and interact with your peers.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <CreateDiscussion />
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
 
           <DiscussionList
