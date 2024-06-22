@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-const getDiscussions = async (query = "", offset = 0, limit = 10) => {
+const getDiscussions = async (query = "", offset = 0, limit = 5) => {
+  console.log(offset,limit);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/discussion?${query}&offset=${offset}&limit=${limit}`,
     {
@@ -32,8 +33,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0); // Pagination offset
-  const limit = 10;
-
+  const limit = 5;
   const observer = useRef(null);
 
   useEffect(() => {
@@ -136,16 +136,18 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
       threshold: 0.5,
     });
 
-    // if (observer.current && discussions.length > 0) {
-    //   observer.current.observe(document.querySelector("#observer"));
-    // }
+    const observerTarget = document.querySelector("#observer");
+    if (observer.current && observerTarget) {
+      observer.current.observe(observerTarget);
+    }
 
     return () => {
-      if (observer.current) {
-        observer.current.disconnect();
+      if (observer.current && observerTarget) {
+        observer.current.unobserve(observerTarget);
       }
     };
   }, [discussions]);
+
 
   const toggleDiscussion = (id) => {
     setExpandedDiscussion((prev) => {
@@ -261,117 +263,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
   };
 
   return (
-    // <div>
-    //   {loading ? (
-    //     <Loading />
-    //   ) : discussions.length === 0 ? (
-    //     <p>No discussions found for the selected filters.</p>
-    //   ) : (
-    //     <div className="grid grid-cols-1 gap-6">
-    //       {discussions.map((discussion, index) => (
-    //         <div
-    //           key={discussion._id}
-    //           className="flex items-start gap-4 rounded-lg shadow-sm p-2"
-    //         >
-    //           <Image
-    //             alt="Avatar"
-    //             className="rounded-full hidden sm:block"
-    //             height="48"
-    //             src={discussion.creatorData.profilePic}
-    //             style={{
-    //               aspectRatio: "48/48",
-    //               objectFit: "cover",
-    //             }}
-    //             width="48"
-    //           />
-    //           <Image
-    //             alt="Avatar"
-    //             className="rounded-full sm:hidden block"
-    //             height="38"
-    //             src={discussion.creatorData.profilePic}
-    //             style={{
-    //               aspectRatio: "38/38",
-    //               objectFit: "cover",
-    //             }}
-    //             width="38"
-    //           />
 
-    //           <div className="flex-1 grid gap-2">
-    //             <div className="flex flex-col gap-2">
-    //               <span className="text-sm text-gray-500 dark:text-gray-400">
-    //                 {new Date(discussion.createdAt).toLocaleDateString("en-US", {
-    //                   year: "numeric",
-    //                   month: "short",
-    //                   day: "numeric",
-    //                 })}
-    //               </span>
-    //               <h2 className="text-lg font-semibold">{discussion.title}</h2>
-    //             </div>
-    //             <div className="flex flex-row justify-between items-center">
-    //               <div
-    //                 className="prose max-w-none md:hidden block"
-    //                 dangerouslySetInnerHTML={{ __html: discussion.content }}
-    //               />
-    //               <div
-    //                 className="prose max-w-none md:block hidden"
-    //                 dangerouslySetInnerHTML={{ __html: discussion.content }}
-    //               />
-    //               <div className="flex items-center gap-4 text-center md:gap-8 mb-2">
-    //                 <Button
-    //                   className="flex items-center h-10"
-    //                   size="icon"
-    //                   variant="icon"
-    //                   onClick={() => toggleLike(discussion._id)}
-    //                 >
-    //                   <ThumbsUpIcon
-    //                     className={`w-4 h-4 cursor-pointer ${discussion.isLiked && "text-blue-400"
-    //                       } ${animationState[discussion._id] === "like" &&
-    //                       "pop text-blue-400"
-    //                       }`}
-    //                   />
-    //                   <span className="ml-2">{discussion.likes}</span>
-    //                 </Button>
-    //                 <Button
-    //                   className="flex items-center h-10"
-    //                   size="icon"
-    //                   variant="icon"
-    //                   onClick={() => toggleDislike(discussion._id)}
-    //                 >
-    //                   <ThumbsDownIcon
-    //                     className={`w-4 h-4 cursor-pointer ${discussion.isDisliked && "text-red-400"
-    //                       } ${animationState[discussion._id] === "dislike" &&
-    //                       "pop text-red-400"
-    //                       }`}
-    //                   />
-    //                   <span className="ml-2">{discussion.dislikes}</span>
-    //                 </Button>
-    //                 <Button
-    //                   className="flex items-center px-4 h-10"
-    //                   variant="secondary"
-    //                   disabled={
-    //                     discussion.isMember ||
-    //                     discussion.isRequested ||
-    //                     discussion.isRejected
-    //                   }
-    //                   onClick={() => handleButtonClick(discussion)}
-    //                 >
-    //                   {discussion.isMember
-    //                     ? "Member"
-    //                     : discussion.isRequested
-    //                       ? "Requested"
-    //                       : discussion.isRejected
-    //                         ? "Rejected"
-    //                         : "Join"}
-    //                 </Button>
-    //               </div>
-    //             </div>
-    //           </div>
-    //         </div>
-    //       ))}
-    //       <div id="observer" className="intersection-observer" />
-    //     </div>
-    //   )}
-    // </div> 
     <div>
       {loading ? (
         <Loading />
@@ -418,8 +310,8 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                 </div>
                 <div
                   className={`prose max-w-none cursor-pointer md:hidden ${expandedDiscussion.includes(discussion._id)
-                      ? ""
-                      : "line-clamp-2"
+                    ? ""
+                    : "line-clamp-2"
                     }`}
                   onClick={() => toggleDiscussion(discussion._id)}
                 >
@@ -474,6 +366,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
               </div>
             </div>
           ))}
+          <div id="observer" className="h-4"></div>
         </div>
       )}
     </div>

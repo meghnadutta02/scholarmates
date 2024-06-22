@@ -63,9 +63,10 @@ export async function GET(req) {
     const discussionType = req.nextUrl.searchParams.get("type");
     const category = req.nextUrl.searchParams.get("category");
     const subcategory = req.nextUrl.searchParams.get("subcategory");
-    const offset = parseInt(req.nextUrl.offset) || 0;
-    const limit = parseInt(req.nextUrl.limit) || 10;
+    const offset = parseInt(req.nextUrl.searchParams.get("offset")) || 0;  // Correctly get offset
+    const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 5;
 
+    console.log(offset, limit);
     let aggregationPipeline = [];
 
     if (searchQuery) {
