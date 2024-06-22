@@ -32,6 +32,7 @@ export default function Component() {
       // console.log("request is:",request);
       setUserId(session.db_id);
     }
+<<<<<<< HEAD
   }, [userId]);
 
   useEffect(() => {
@@ -59,6 +60,37 @@ export default function Component() {
       console.log("data:", requestdata);
     }
   }, [requestdata]);
+=======
+
+  }, [userId]);
+
+  // useEffect(() => {
+  //   socket = io("http://localhost:5001");
+  //   console.log(userId)
+  //   socket.emit("setup", userId);
+
+  //   socket.on('connectionRequest', (data) => {
+  //     console.log(data);
+  //     if (data != null) {
+  //       setRequestData(prevData => [...prevData, data]);
+  //     }
+
+  //     setRequest(prevRequest => ({ ...prevRequest, ...data }));
+  //     console.log("data we have:", data);
+  //   });
+
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, [userId])
+  // useEffect(() => {
+  //   if (requestdata.length > 0) {
+  //     localStorage.setItem('request', JSON.stringify(requestdata));
+  //     console.log("dataaaaa:", requestdata);
+  //   }
+  // }, [requestdata]);
+>>>>>>> jr
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,10 +125,17 @@ export default function Component() {
           {
             method: "POST",
             headers: {
+<<<<<<< HEAD
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ recipientId: profileId }),
             cache: "no-cache",
+=======
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ recipientId: profileId }),
+            cache: "no-cache"
+>>>>>>> jr
           }
         );
         if (data) {

@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import ServerSideComponent from "@/app/(components)/ServerSideComponent";
 import { redirect } from "next/navigation";
+import { useSession } from '@/app/(components)/SessionProvider'
 const PostPage = () => {
   const postId = 100;
   // const { data: session } = useSession({
@@ -12,13 +12,20 @@ const PostPage = () => {
   //     redirect("/api/auth/signin?callbackUrl=/posts");
   //   },
   // });
-  const { data: session } = useSession();
+  const {session,request}=useSession();
   const [posts, setPosts] = useState([]);
+  const [userId, setUserId] = useState();
+  useEffect(() => {
+    if(session){
+     // console.log("this is lll:",session.db_id)
+     // console.log("request is:",request);
+     setUserId(session.db_id);
+    }
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/posts`
+          `http:localhost:3000/api/posts`
         );
         const data = await response.json();
 
@@ -52,9 +59,9 @@ const PostPage = () => {
       </div> */}
       <ServerSideComponent />
       <p>
-        {session?.user?.email}
+        {userId?.email}
         <br />
-        {session?.user?.role}
+        {userId?.role}
       </p>
     </div>
   );
