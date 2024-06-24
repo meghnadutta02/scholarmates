@@ -22,8 +22,8 @@ export async function POST(req) {
     const file = data.get("coverImage");
 
     let coverImage = null;
-
-    if (file != "") {
+    console.log(file);
+    if (file && file instanceof File) {
       const byteData = await file.arrayBuffer();
       const buffer = Buffer.from(byteData);
       const path = `public/${file.name}`;

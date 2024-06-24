@@ -180,7 +180,10 @@ function NewDiscussion() {
             defaultValue={privacy}
             name="privacy"
             className="flex items-center space-x-2 mt-[5px]"
-            onChange={(e) => setPrivacy(e.target.value)}
+            onChange={(e) => {
+              e.preventDefault();
+              setPrivacy(e.target.value);
+            }}
           >
             <div className="flex items-center space-x-2">
               <TooltipProvider>
@@ -213,6 +216,7 @@ function NewDiscussion() {
           </RadioGroup>
           <div className="mt-3">
             <Input
+              required
               placeholder="Group Title"
               value={groupTitle}
               maxLength={50}
