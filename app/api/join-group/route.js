@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import Discussion from "@/app/(models)/discussionModel";
 import Group from "@/app/(models)/groupModel";
+import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";
 import groupRequest from "@/app/(models)/groupRequestModel";
 import { getServerSession } from "next-auth";
@@ -15,6 +16,7 @@ export async function GET(req) {
     const session = await getServerSession(options);
 
     const userId = new ObjectId(session?.user?.db_id);
+    const user = await User.findById(userId);
     const discussion = await Discussion.findById(discussionId);
     if (!discussion) {
       throw new Error("Discussion not found");
@@ -26,8 +28,9 @@ export async function GET(req) {
       throw new Error("Group not found");
     }
 
-    if (group.isPublic) {
+    if (group.isPublic && !group.participants.includes(userId)) {
       group.participants.push(userId);
+      user.groupsJoined.push(groupId);
       await group.save();
 
       return NextResponse.json(

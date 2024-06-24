@@ -2,20 +2,20 @@
 import { useState, useEffect, useContext, createContext } from "react";
 import { getSession } from "next-auth/react";
 import io from "socket.io-client";
-import {toast } from 'react-toastify';
+import { toast } from "react-toastify";
 const SessionContext = createContext();
 
 export const SessionProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [request, setRequest] = useState();
   const [loading, setLoading] = useState(true);
-  const [notification,setNotification]=useState([]);
+  const [notification, setNotification] = useState([]);
   const [socket, setSocket] = useState(null);
   const [seenNotifications, setSeenNotifications] = useState(new Set());
 
   const removeDuplicates = (array) => {
-    const uniqueSet = new Set(array.map(item => JSON.stringify(item)));
-    return Array.from(uniqueSet).map(item => JSON.parse(item));
+    const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
+    return Array.from(uniqueSet).map((item) => JSON.parse(item));
   };
 
   useEffect(() => {
@@ -40,7 +40,6 @@ export const SessionProvider = ({ children }) => {
       console.log("Successfully connected in socket context!");
     });
 
-
     setSocket(newSocket);
 
     return () => {
@@ -48,38 +47,40 @@ export const SessionProvider = ({ children }) => {
     };
   }, []);
 
-///NOTIFICATION FOR INCOMING REQUEST BY:-JYOTIRADITYA STARTED
+  ///NOTIFICATION FOR INCOMING REQUEST BY:-JYOTIRADITYA STARTED
 
   useEffect(() => {
     if (socket && session) {
-      const data=session.db_id
-      console.log("session", session);
+      const data = session.db_id;
+
       socket.emit("setup", data);
 
-      socket.on('connectionRequest', (data) => {
-        console.log('Received connection request:', data);
-        if(data){
-          setNotification(prev => {
+      socket.on("connectionRequest", (data) => {
+        console.log("Received connection request:", data);
+        if (data) {
+          setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
             return newNotifications;
           });
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
-            setSeenNotifications(prev => new Set(prev).add(dataString));
-            toast('you get a connection request');
+            setSeenNotifications((prev) => new Set(prev).add(dataString));
+            toast("you get a connection request");
           }
         }
         // Handle the data received from the server
       });
-      socket.on('friendRequestAccepted', (data) => {
+      socket.on("friendRequestAccepted", (data) => {
         console.log("my data", data);
-      })
+      });
     }
-  }, [socket, session,seenNotifications]);
+  }, [socket, session, seenNotifications]);
 
-///NOTIFICATION FOR INCOMING REQUEST BY:-JYOTIRADITYA ENDED
+  ///NOTIFICATION FOR INCOMING REQUEST BY:-JYOTIRADITYA ENDED
   return (
-    <SessionContext.Provider value={{ session, request, setRequest, socket,notification}}>
+    <SessionContext.Provider
+      value={{ session, request, setRequest, socket, notification }}
+    >
       {!loading && children}
     </SessionContext.Provider>
   );

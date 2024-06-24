@@ -28,7 +28,7 @@ function NewDiscussion() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
-  const [privacy, setPrivacy] = useState("");
+  const [privacy, setPrivacy] = useState("public");
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageURL, setImageURL] = useState(null);
 
@@ -174,7 +174,7 @@ function NewDiscussion() {
         <div className="">
           <Label htmlFor="privacy">Configure Group Preferences</Label>
           <RadioGroup
-            defaultValue="public"
+            defaultValue={privacy}
             name="privacy"
             className="flex items-center space-x-2 mt-[5px]"
             onChange={(e) => setPrivacy(e.target.value)}

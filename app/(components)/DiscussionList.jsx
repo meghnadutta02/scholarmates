@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import Loading from "../(routes)/discussions/loading"; // Adjust path as per your project structure
-import { Button } from "@/components/ui/button"; // Adjust path as per your UI library
+import Loading from "../(routes)/discussions/loading";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
 const getDiscussions = async (query = "", offset = 0, limit = 5) => {
-  console.log(offset, limit);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/discussion?${query}&offset=${offset}&limit=${limit}`,
     {
@@ -109,7 +108,9 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         });
 
         setDiscussions((prevDiscussions) => {
-          // Filter out duplicate discussions by _id
+          if (offset === 0) {
+            return updatedResult;
+          }
           const filteredDiscussions = updatedResult.filter((newDiscussion) =>
             prevDiscussions.every(
               (existingDiscussion) =>
@@ -156,7 +157,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         observer.current.unobserve(observerTarget);
       }
     };
-  }, [discussions,hasMore]);
+  }, [discussions, hasMore]);
 
   const toggleDiscussion = (id) => {
     setExpandedDiscussion((prev) => {
@@ -237,27 +238,36 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
 
   const handleButtonClick = async (discussion) => {
     try {
-      let r;
-      const promise = new Promise(async (resolve, reject) => {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
-          {
-            method: "GET",
-          }
-        );
-        if (!res.ok) {
-          reject(new Error("Error sending request"));
-        } else {
-          r = await res.json();
-          resolve(r);
+      const toastId = toast.loading("Sending request...");
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
+        {
+          method: "GET",
         }
-      });
-      if (r.status === 200) {
-        toast.promise(promise, {
-          loading: "Sending request...",
-          success: "Request sent successfully",
-          error: "Error sending request",
+      );
+
+      if (!res.ok) {
+        toast.update(toastId, {
+          render: "Error sending request",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
         });
+        throw new Error("Error sending request");
+      }
+
+      const r = await res.json();
+      console.log(r);
+
+      if (r.status === 200) {
+        toast.update(toastId, {
+          render: "Request sent successfully",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+        });
+
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussion._id) {
@@ -267,11 +277,13 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
           })
         );
       } else {
-        toast.promise(promise, {
-          loading: "Joining Group...",
-          success: "Joined group successfully",
-          error: "Error joining group",
+        toast.update(toastId, {
+          render: "Joined group successfully",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
         });
+
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussion._id) {

@@ -47,7 +47,7 @@ const NavbarClient = () => {
                   {notification.length}
                 </span>
               )}
-              <BellIcon className="relative top-2 start-1 h-5 w-5 text-white" />
+              <BellIcon className="relative  h-5 w-5 text-white" />
             </Button>
           </Link>
           <DropdownMenu>

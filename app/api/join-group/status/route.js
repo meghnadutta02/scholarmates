@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+import User from "@/app/(models)/userModel";
 
-import Group from "@/app/(models)/groupModel";
 import connect from "@/app/config/db";
 import groupRequest from "@/app/(models)/groupRequestModel";
 import { getServerSession } from "next-auth";
@@ -15,9 +15,7 @@ export async function GET(req) {
     const groups = await groupRequest.find({
       fromUser: session?.user?.db_id,
     });
-    const groups1 = await Group.find({
-      moderators: { $in: [new ObjectId(session?.user?.db_id)] },
-    }).select("_id");
+    const user = await User.findById(session?.user?.db_id);
     const accepted = groups
       .filter((group) => group.status === "accepted")
       .map((group) => group.groupId);
@@ -27,7 +25,7 @@ export async function GET(req) {
     const rejected = groups
       .filter((group) => group.status === "rejected")
       .map((group) => group.groupId);
-    groups1.map((group) => accepted.push(group._id));
+    user.groupsJoined.map((group) => accepted.push(group._id));
     return NextResponse.json({ accepted, pending, rejected }, { status: 200 });
   } catch (error) {
     console.error(error);

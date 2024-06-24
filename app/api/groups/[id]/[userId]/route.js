@@ -5,12 +5,13 @@ import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
+// Make a user a moderator or remove moderator status
 export async function PUT(req, { params }) {
   await connect();
   const id = params.id;
   const session = await getServerSession(options);
   const userId = params.userId;
-  const { action } = await req.json();
+  const action = req.nextUrl.searchParams.get("action");
 
   try {
     const group = await Group.findById(id);
@@ -44,6 +45,7 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
 // Delete a user from a group
 export async function DELETE(req, { params }) {
   await connect();

@@ -144,7 +144,7 @@ const DiscussionsPage = () => {
 
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                  <IoIosCreate className="h-8 w-8 ml-4 mt-1" />
+                  <IoIosCreate className="h-8 w-8 ml-4 mt-1 cursor-pointer" />
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[720px]">
                   <DialogHeader>
