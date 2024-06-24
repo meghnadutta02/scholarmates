@@ -64,7 +64,10 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
           query = "?" + params.join("&");
         }
         const [joinRequestsResult, discussionsResult] =
-          await Promise.allSettled([getJoinRequests(), getDiscussions(query, offset, limit)]);
+          await Promise.allSettled([
+            getJoinRequests(),
+            getDiscussions(query, offset, limit),
+          ]);
         let result = [];
         let accepted = [];
         let pending = [];
@@ -108,7 +111,10 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         setDiscussions((prevDiscussions) => {
           // Filter out duplicate discussions by _id
           const filteredDiscussions = updatedResult.filter((newDiscussion) =>
-            prevDiscussions.every((existingDiscussion) => existingDiscussion._id !== newDiscussion._id)
+            prevDiscussions.every(
+              (existingDiscussion) =>
+                existingDiscussion._id !== newDiscussion._id
+            )
           );
           return [...prevDiscussions, ...filteredDiscussions];
         });
@@ -152,7 +158,6 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
     };
   }, [discussions, hasMore]);
 
-
   const toggleDiscussion = (id) => {
     setExpandedDiscussion((prev) => {
       const isIdPresent = prev.includes(id);
@@ -177,16 +182,16 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         prevDiscussions.map((discussion) =>
           discussion._id === id
             ? {
-              ...discussion,
-              likes: discussion.isLiked
-                ? discussion.likes - 1
-                : discussion.likes + 1,
-              isLiked: !discussion.isLiked,
-              dislikes: discussion.isDisliked
-                ? discussion.dislikes - 1
-                : discussion.dislikes,
-              isDisliked: false,
-            }
+                ...discussion,
+                likes: discussion.isLiked
+                  ? discussion.likes - 1
+                  : discussion.likes + 1,
+                isLiked: !discussion.isLiked,
+                dislikes: discussion.isDisliked
+                  ? discussion.dislikes - 1
+                  : discussion.dislikes,
+                isDisliked: false,
+              }
             : discussion
         )
       );
@@ -210,16 +215,16 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         prevDiscussions.map((discussion) =>
           discussion._id === id
             ? {
-              ...discussion,
-              dislikes: discussion.isDisliked
-                ? discussion.dislikes - 1
-                : discussion.dislikes + 1,
-              isDisliked: !discussion.isDisliked,
-              likes: discussion.isLiked
-                ? discussion.likes - 1
-                : discussion.likes,
-              isLiked: false,
-            }
+                ...discussion,
+                dislikes: discussion.isDisliked
+                  ? discussion.dislikes - 1
+                  : discussion.dislikes + 1,
+                isDisliked: !discussion.isDisliked,
+                likes: discussion.isLiked
+                  ? discussion.likes - 1
+                  : discussion.likes,
+                isLiked: false,
+              }
             : discussion
         )
       );
@@ -232,6 +237,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
 
   const handleButtonClick = async (discussion) => {
     try {
+      let r;
       const promise = new Promise(async (resolve, reject) => {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
@@ -242,24 +248,39 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         if (!res.ok) {
           reject(new Error("Error sending request"));
         } else {
-          resolve(await res.json());
+          r = await res.json();
+          resolve(r);
         }
       });
-
-      toast.promise(promise, {
-        loading: "Sending request...",
-        success: "Request sent successfully",
-        error: "Error sending request",
-      });
-
-      setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((d) => {
-          if (d._id === discussion._id) {
-            return { ...d, isRequested: true };
-          }
-          return d;
-        })
-      );
+      if (r.status === 200) {
+        toast.promise(promise, {
+          loading: "Sending request...",
+          success: "Request sent successfully",
+          error: "Error sending request",
+        });
+        setDiscussions((prevDiscussions) =>
+          prevDiscussions.map((d) => {
+            if (d._id === discussion._id) {
+              return { ...d, isRequested: true };
+            }
+            return d;
+          })
+        );
+      } else {
+        toast.promise(promise, {
+          loading: "Joining Group...",
+          success: "Joined group successfully",
+          error: "Error joining group",
+        });
+        setDiscussions((prevDiscussions) =>
+          prevDiscussions.map((d) => {
+            if (d._id === discussion._id) {
+              return { ...d, isMember: true };
+            }
+            return d;
+          })
+        );
+      }
     } catch (error) {
       console.error(error);
       toast.error("Error sending request");
@@ -267,7 +288,6 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
   };
 
   return (
-
     <div>
       {loading ? (
         <Loading />
@@ -314,10 +334,11 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                 </div>
                 <ImageContainer data={discussion.coverimages}/>
                 <div
-                  className={`prose max-w-none cursor-pointer md:hidden ${expandedDiscussion.includes(discussion._id)
-                    ? ""
-                    : "line-clamp-2"
-                    }`}
+                  className={`prose max-w-none cursor-pointer md:hidden ${
+                    expandedDiscussion.includes(discussion._id)
+                      ? ""
+                      : "line-clamp-2"
+                  }`}
                   onClick={() => toggleDiscussion(discussion._id)}
                 >
                   <p>{discussion.content}</p>
@@ -328,10 +349,12 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">
                     <ThumbsUpIcon
-                      className={`w-4 h-4 cursor-pointer ${discussion.isLiked && "text-blue-400"
-                        } ${animationState[discussion._id] === "like" &&
+                      className={`w-4 h-4 cursor-pointer ${
+                        discussion.isLiked && "text-blue-400"
+                      } ${
+                        animationState[discussion._id] === "like" &&
                         "pop text-blue-400"
-                        }`}
+                      }`}
                       onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
@@ -339,10 +362,12 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                   </Button>
                   <Button className="h-10 " size="icon" variant="icon">
                     <ThumbsDownIcon
-                      className={`w-4 h-4 cursor-pointer ${discussion.isDisliked && "text-red-400"
-                        } ${animationState[discussion._id] === "dislike" &&
+                      className={`w-4 h-4 cursor-pointer ${
+                        discussion.isDisliked && "text-red-400"
+                      } ${
+                        animationState[discussion._id] === "dislike" &&
                         "pop text-red-400"
-                        }`}
+                      }`}
                       onClick={() => toggleDislike(discussion._id)}
                     />
                     <span className="sr-only">Dislike</span>
@@ -362,10 +387,10 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                     {discussion.isMember
                       ? "Member"
                       : discussion.isRequested
-                        ? "Requested"
-                        : discussion.isRejected
-                          ? "Rejected"
-                          : "Join"}
+                      ? "Requested"
+                      : discussion.isRejected
+                      ? "Rejected"
+                      : "Join"}
                   </Button>
                 </div>
               </div>
@@ -375,7 +400,6 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         </div>
       )}
     </div>
-
   );
 };
 

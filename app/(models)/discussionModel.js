@@ -47,10 +47,16 @@ const discussionSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+<<<<<<< HEAD
     coverimages:[{type:String}],
     attachments: {
       type: [String],
       default: [],
+=======
+    coverImage: {
+      type: String,
+      default: "",
+>>>>>>> 2ec96a929dcd6c7036f81a931cff973de823a209
     },
     //chat group
     groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group" },
