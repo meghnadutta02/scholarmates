@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
-import ImageContainer from "./discussionImages/ImageContainer";
+import Link from "next/link";
+import { InfoIcon } from "lucide-react";
 
 const getDiscussions = async (query = "", offset = 0, limit = 5) => {
   const response = await fetch(
@@ -133,15 +134,15 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
     fetchData();
   }, [selectedFilters, searchQuery, reloadList, session, offset]);
 
-  // Intersection Observer for lazy loading more discussions
-  const observerCallback = (entries) => {
-    const target = entries[0];
-    if (target.isIntersecting && hasMore) {
-      setOffset((prevOffset) => prevOffset + limit);
-    }
-  };
-
   useEffect(() => {
+    // Intersection Observer for lazy loading more discussions
+    const observerCallback = (entries) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasMore) {
+        setOffset((prevOffset) => prevOffset + limit);
+      }
+    };
+
     observer.current = new IntersectionObserver(observerCallback, {
       root: null,
       rootMargin: "0px",
@@ -345,7 +346,6 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                     {discussion.title}
                   </h4>
                 </div>
-                <ImageContainer data={discussion.coverimages}/>
                 <div
                   className={`prose max-w-none cursor-pointer md:hidden ${
                     expandedDiscussion.includes(discussion._id)
@@ -405,6 +405,11 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                       ? "Rejected"
                       : "Join"}
                   </Button>
+                  <Link href={`/discussions/${discussion._id}`}>
+                    <Button className="w-24" variant="icon">
+                      <InfoIcon className="w-4 h-4" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
