@@ -3,7 +3,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import DiscussionList from "@/app/(components)/DiscussionList";
 import { IoIosCreate } from "react-icons/io";
-
 import { Button } from "@/components/ui/button";
 import FilterDrawer from "@/app/(components)/FilterDrawer";
 

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import ImageContainer from "./discussionImages/ImageContainer";
 
 const getDiscussions = async (query = "", offset = 0, limit = 5) => {
   const response = await fetch(
@@ -344,6 +345,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                     {discussion.title}
                   </h4>
                 </div>
+                <ImageContainer data={discussion.coverimages}/>
                 <div
                   className={`prose max-w-none cursor-pointer md:hidden ${
                     expandedDiscussion.includes(discussion._id)
