@@ -1,7 +1,8 @@
 import User from "../model/userModel.js";
 import Request from "../model/requestModel.js";
 // import { io } from "../path/to/socketServer";
-import { io } from "../server.js";
+import { io, activeUsers } from "../server.js";
+
 
 export const sendConnectionController = async (req, resp) => {
   try {
@@ -45,16 +46,26 @@ export const sendConnectionController = async (req, resp) => {
     if (requestdata) {
       senderUser.requestPending.push(recipientId);
       await senderUser.save();
-      console.log("first", senderUser)
+      // console.log("first", senderUser)
     }
 
-    io.to(recipientId).emit("connectionRequest", {
-      recipientId: recipientId,
-      senderId: senderId,
-      sendername: senderUser.name,
-      friendRequest: requestdata._id,
-      interest: senderUser.interest,
-    });
+    const recipientSocketId = activeUsers.get(recipientId);
+    console.log("Id is ", recipientSocketId);
+    if (recipientSocketId) {
+      // Emit a notification event only to the recipient's socket
+      io.to(recipientSocketId).emit("connectionRequest", {
+        recipientId: recipientId,
+        senderId: senderId,
+        sendername: senderUser.name,
+        friendRequest: requestdata._id,
+        interest: senderUser.interest,
+      });
+    } else {
+      requestdata.notification = true;
+      await requestdata.save();
+      // Handle case where recipient is not connected
+      // This could involve queuing the notification or other logic based on your app's needs
+    }
 
     return resp.status(200).send({
       sucess: true,
@@ -142,3 +153,4 @@ export const receiveConnectionController = async (req, resp) => {
     });
   }
 };
+

@@ -1,15 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Flex, Text, Box, Image } from "@radix-ui/themes";
 import { Button } from "@/components/ui/button";
-import {toast} from 'react-toastify'
-const Notification = ({ sender, receive, name, frndId ,user,data}) => {
+import { toast } from 'react-toastify'
+import { useSession } from "../(components)/SessionProvider";
+const Notification = ({ sender, receive, name, frndId, user, data }) => {
+  const { socket, session,notification } = useSession();
   const [isVisible, setIsVisible] = useState(true);
 
+  useEffect(()=>{
+    if(notification){
+      console.log("notification",notification);
+    }
+  },[notification])
   const acceptHandle = async (x) => {
-    console.log(x);
+    // console.log(socket);
+    // console.log(x);
 
     try {
       if (sender && receive) {
@@ -29,7 +37,7 @@ const Notification = ({ sender, receive, name, frndId ,user,data}) => {
           }
         );
         if (res.status == 200) {
-          console.log(res);
+          // console.log(res);
           toast(res.message);
           localStorage.removeItem("request");
           setIsVisible(false);
@@ -41,11 +49,11 @@ const Notification = ({ sender, receive, name, frndId ,user,data}) => {
       console.log(error.message);
     }
   };
-  const profile=(id)=>{
+  const profile = (id) => {
     alert(id);
   }
 
-  console.log(sender, name, frndId, receive,user,data);
+  // console.log(sender, name, frndId, receive, user, data);
   return (
     <>
       {isVisible && (
@@ -59,7 +67,7 @@ const Notification = ({ sender, receive, name, frndId ,user,data}) => {
                 fallback="T"
               />
               <Box>
-                <Text as="div" size="4" className="cursor-pointer hover:color-blue" weight="bold" onClick={()=>profile(user._id)}>
+                <Text as="div" size="4" className="cursor-pointer hover:color-blue" weight="bold" onClick={() => profile(user._id)}>
                   {user.name}
                 </Text>
                 <Text as="div" size="4" color="gray" >
@@ -73,12 +81,12 @@ const Notification = ({ sender, receive, name, frndId ,user,data}) => {
 
             </Flex>
             <Button onClick={() => acceptHandle("accept")}>Accept</Button>
-              <Button
-                backgroundcolor="red"
-                onClick={() => acceptHandle("decline")}
-              >
-                Decline
-              </Button>
+            <Button
+              backgroundcolor="red"
+              onClick={() => acceptHandle("decline")}
+            >
+              Decline
+            </Button>
           </Card>
         </Flex>
       )}

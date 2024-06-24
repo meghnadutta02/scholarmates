@@ -1,10 +1,11 @@
+// NavbarClient.js
+"use client"; // Make sure this file is treated as a client component
+
 import Link from "next/link";
 import React from "react";
-import { getServerSession } from "next-auth";
-import { options } from "../api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
 import MenuDrawer from "@/app/(components)/MenuDrawer";
-
+import { useSession } from "@/app/(components)/SessionProvider";
 import logo from "@/public/logo.png";
 import Image from "next/image";
 import {
@@ -16,8 +17,8 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-const Navbar = async () => {
-  const session = await getServerSession(options);
+const NavbarClient = () => {
+  const { session, notification } = useSession();
 
   return (
     <div className=" flex justify-between ">
@@ -41,7 +42,12 @@ const Navbar = async () => {
               size="icon"
               variant="icon"
             >
-              <BellIcon className="h-5 w-5 text-white" />
+              {notification?.length > 0 && (
+                <span className="absolute z-10 inline-flex items-center justify-center p-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                  {notification.length}
+                </span>
+              )}
+              <BellIcon className="relative top-2 start-1 h-5 w-5 text-white" />
             </Button>
           </Link>
           <DropdownMenu>
@@ -56,7 +62,7 @@ const Navbar = async () => {
                   alt="Avatar"
                   className="rounded-full"
                   height="32"
-                  src={session?.user?.profilePic}
+                  src={session?.profilePic}
                   style={{
                     aspectRatio: "32/32",
                     objectFit: "cover",
@@ -67,7 +73,7 @@ const Navbar = async () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
+              <DropdownMenuLabel>{session?.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
               <DropdownMenuItem>
@@ -92,7 +98,7 @@ const Navbar = async () => {
   );
 };
 
-export default Navbar;
+export default NavbarClient;
 
 function BellIcon(props) {
   return (
