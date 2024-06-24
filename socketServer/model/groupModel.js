@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+function moderatorLimit(val) {
+  return val.length <= 5;
+}
 const groupSchema = new mongoose.Schema(
   {
     name: {
@@ -18,13 +21,15 @@ const groupSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    moderators: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        //by default the creator of the discussion is a moderator
-      },
-    ],
+    moderators: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
+      validate: [moderatorLimit, "{PATH} exceeds the limit of 5"],
+    },
     description: String,
   },
   { timestamps: true }

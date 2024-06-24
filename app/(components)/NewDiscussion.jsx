@@ -1,5 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -13,13 +21,14 @@ function NewDiscussion() {
   let formData = new FormData();
 
   const [title, setTitle] = useState("");
+  const [groupTitle, setGroupTitle] = useState("");
   const [content, setContent] = useState("");
   const [type, setType] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
-  const [privacy, setPrivacy] = useState("public");
+  const [privacy, setPrivacy] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageURL, setImageURL] = useState(null);
 
@@ -66,7 +75,7 @@ function NewDiscussion() {
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
-
+    formData.append("groupTitle", groupTitle);
     formData.append("title", title);
     formData.append("content", content);
     formData.append("type", type);
@@ -111,7 +120,7 @@ function NewDiscussion() {
       <form onSubmit={handlePostSubmit}>
         <div className="my-3">
           <Input
-            placeholder="Title"
+            placeholder="Discussion Title"
             value={title}
             maxLength={50}
             onChange={(e) => setTitle(e.target.value)}
@@ -160,6 +169,52 @@ function NewDiscussion() {
             value={selectedSubCategories}
             onChange={handleSubCategoryChange}
             placeholder="Select a category first"
+          />
+        </div>
+        <div className="">
+          <Label htmlFor="privacy">Configure Group Preferences</Label>
+          <RadioGroup
+            defaultValue="public"
+            name="privacy"
+            className="flex items-center space-x-2 mt-[5px]"
+            onChange={(e) => setPrivacy(e.target.value)}
+          >
+            <div className="flex items-center space-x-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <RadioGroupItem value="public" id="privacyPublic" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Users can join directly.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <Label htmlFor="privacyPublic">Public</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <RadioGroupItem value="private" id="privacyPrivate" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      Users can send requests to join, which must be approved.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <Label htmlFor="privacyPrivate">Private</Label>
+            </div>
+          </RadioGroup>
+        </div>
+        <div className="mt-3">
+          <Input
+            placeholder="Group Title"
+            value={groupTitle}
+            maxLength={50}
+            onChange={(e) => setGroupTitle(e.target.value)}
           />
         </div>
         <div className="flex flex-row justify-between mt-3">

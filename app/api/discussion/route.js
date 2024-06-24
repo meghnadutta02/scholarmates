@@ -13,6 +13,7 @@ export async function POST(req) {
     const session = await getServerSession(options);
     const data = await req.formData();
     const title = data.get("title");
+    const groupTitle = data.get("groupTitle");
     const type = data.get("type");
     const privacy = data.get("privacy");
     const content = data.get("content");
@@ -29,7 +30,7 @@ export async function POST(req) {
     });
 
     const group = await Group.create({
-      name: title,
+      name: groupTitle,
       isPublic: privacy === "public",
       participants: [session?.user?.db_id],
       moderators: [session?.user?.db_id],
@@ -57,13 +58,12 @@ export async function GET(req) {
     await connect();
     const session = await getServerSession();
 
-
     const searchQuery = req.nextUrl.searchParams.get("searchQuery");
     const college = req.nextUrl.searchParams.get("college");
     const discussionType = req.nextUrl.searchParams.get("type");
     const category = req.nextUrl.searchParams.get("category");
     const subcategory = req.nextUrl.searchParams.get("subcategory");
-    const offset = parseInt(req.nextUrl.searchParams.get("offset")) || 0;  // Correctly get offset
+    const offset = parseInt(req.nextUrl.searchParams.get("offset")) || 0; // Correctly get offset
     const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 5;
 
     console.log(offset, limit);
