@@ -33,6 +33,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0); // Pagination offset
+  const [hasMore, setHasMore] = useState(true);
   const limit = 5;
   const observer = useRef(null);
 
@@ -118,6 +119,9 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
           return [...prevDiscussions, ...filteredDiscussions];
         });
         setLoading(false);
+        if (result.length < limit) {
+          setHasMore(false);
+        }
       } catch (error) {
         console.error("Error fetching discussions:", error);
         setLoading(false);
@@ -130,7 +134,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
   // Intersection Observer for lazy loading more discussions
   const observerCallback = (entries) => {
     const target = entries[0];
-    if (target.isIntersecting) {
+    if (target.isIntersecting && hasMore) {
       setOffset((prevOffset) => prevOffset + limit);
     }
   };
@@ -152,7 +156,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         observer.current.unobserve(observerTarget);
       }
     };
-  }, [discussions]);
+  }, [discussions,hasMore]);
 
   const toggleDiscussion = (id) => {
     setExpandedDiscussion((prev) => {
