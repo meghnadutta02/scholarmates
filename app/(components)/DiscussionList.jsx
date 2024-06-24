@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button"; // Adjust path as per your UI l
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import ImageContainer from "./discussionImages/ImageContainer";
 
 const getDiscussions = async (query = "", offset = 0, limit = 5) => {
-  console.log(offset,limit);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/discussion?${query}&offset=${offset}&limit=${limit}`,
     {
@@ -150,7 +150,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         observer.current.unobserve(observerTarget);
       }
     };
-  }, [discussions,hasMore]);
+  }, [discussions, hasMore]);
 
 
   const toggleDiscussion = (id) => {
@@ -312,6 +312,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                     {discussion.title}
                   </h4>
                 </div>
+                <ImageContainer data={discussion.coverimages}/>
                 <div
                   className={`prose max-w-none cursor-pointer md:hidden ${expandedDiscussion.includes(discussion._id)
                     ? ""

@@ -47,6 +47,7 @@ const discussionSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    coverimages:[{type:String}],
     attachments: {
       type: [String],
       default: [],

@@ -7,6 +7,7 @@ import { ObjectId } from "mongodb";
 import { interests } from "@/app/interests";
 import Group from "@/app/(models)/groupModel";
 import User from "@/app/(models)/userModel";
+import {postObject}from "@/app/config/s3"
 export async function POST(req) {
   try {
     await connect();
@@ -17,14 +18,32 @@ export async function POST(req) {
     const privacy = data.get("privacy");
     const content = data.get("content");
     const subcategories = data.getAll("subcategories");
+    const formDataArray =Array.from(data.values());
+    const files = formDataArray.filter((value) => value instanceof File);
+    console.log(files);
 
+    if (!files || files.length === 0) {
+      return NextResponse.json({ error: "No files found", success: false });
+    }
+
+    const uploadedImages = [];
+
+    for (const file of files) {
+      const byteData = await file.arrayBuffer();
+      const buffer = Buffer.from(byteData);
+      const path = `public/${file.name}`;
+      const uploadedImage = await postObject(path, buffer);
+      uploadedImages.push(uploadedImage);
+    }
+
+   if(uploadedImages){
     const discussion = await Discussion.create({
       title,
       type,
       privacy,
       content,
       creator: new ObjectId(session?.user?.db_id),
-
+      coverimages:uploadedImages,
       subcategories,
     });
 
@@ -46,6 +65,9 @@ export async function POST(req) {
       { status: 200 },
       { groupId: group._id }
     );
+   }
+
+    
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });
