@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import Message from "@/app/(models)/messageModel";
 import Discussion from "@/app/(models)/discussionModel";
 import { ObjectId } from "mongodb";
+import Group from "@/app/(models)/groupModel";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
@@ -25,7 +26,8 @@ export async function GET(req, { params }) {
         return messageObj;
       })
     );
-    const groupDetails = await Discussion.find({ groupId: groupID });
+    const groupDetails = await Group.findById(groupID);
+    console.log(groupDetails);
     return NextResponse.json(
       { messagesWithSenderName, groupDetails },
       { status: 200 }

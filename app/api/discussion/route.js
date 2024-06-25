@@ -13,16 +13,17 @@ export async function POST(req) {
     await connect();
     const session = await getServerSession(options);
     const data = await req.formData();
-    const title = data.get("title");
+    let title = data.get("title");
     const groupTitle = data.get("groupTitle");
     const type = data.get("type");
     const privacy = data.get("privacy");
     const content = data.get("content");
     const subcategories = data.getAll("subcategories");
     const file = data.get("coverImage");
+    title = title.trim();
+    title = title[0].toUpperCase() + title.slice(1);
+    let coverImage = "";
 
-    let coverImage = null;
-    console.log(file);
     if (file && file instanceof File) {
       const byteData = await file.arrayBuffer();
       const buffer = Buffer.from(byteData);

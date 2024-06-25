@@ -35,7 +35,7 @@ const GroupChatbox = ({ roomID }) => {
         throw new Error("Failed to fetch messages");
       }
       const data = await response.json();
-      setGroupDetails(data.groupDetails[0]);
+      setGroupDetails(data.groupDetails);
       return data;
     } catch (error) {
       console.error(error);
@@ -157,7 +157,7 @@ const GroupChatbox = ({ roomID }) => {
       ) : (
         <div className="flex flex-col justify-between ">
           <h2 className="text-center font-semibold text-xl py-4">
-            {groupDetails?.title}
+            {groupDetails?.name}
           </h2>
 
           <div className="p-4 mx-2 border h-[30rem] rounded-sm overflow-y-auto">

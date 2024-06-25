@@ -9,18 +9,18 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+
+import { useState } from "react";
 import Select from "react-select";
 import { Label } from "@/components/ui/label";
-import { PlusIcon } from "@radix-ui/react-icons";
+
 import { toast } from "react-toastify";
 import { interests } from "../interests";
-import CreatePost from "./CreatePost";
+
 import { PaperclipIcon } from "lucide-react";
 function NewDiscussion() {
   let formData = new FormData();
-
+  const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
   const [groupTitle, setGroupTitle] = useState("");
   const [content, setContent] = useState("");
@@ -31,7 +31,6 @@ function NewDiscussion() {
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
   const [privacy, setPrivacy] = useState("public");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [imageURL, setImageURL] = useState(null);
 
   const categories = interests.flatMap(
     (categoryObject) => Object.values(categoryObject)[0]
@@ -67,7 +66,6 @@ function NewDiscussion() {
   ];
 
   const handleImageChange = (event) => {
-    setImageURL(URL.createObjectURL(event.target.files?.[0]));
     setSelectedImage(event.target.files?.[0]);
   };
   const handleSubCategoryChange = (selectedSubCategories) => {
@@ -76,13 +74,23 @@ function NewDiscussion() {
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
+    setIsDisabled(true);
+    const toastId = toast.loading("Creating discussion...");
     formData.append("groupTitle", groupTitle);
     formData.append("title", title);
     formData.append("content", content);
     formData.append("type", type);
     formData.append("privacy", privacy);
     formData.append("coverImage", selectedImage);
-
+    if (
+      !title ||
+      !content ||
+      !type ||
+      !selectedCategory ||
+      !selectedSubCategories.length
+    ) {
+      return toast.error("Please fill out all fields");
+    }
     if (!selectedCategory) {
       return toast.error("Please select a category");
     }
@@ -100,16 +108,28 @@ function NewDiscussion() {
       );
 
       if (result.ok) {
-        toast.success("Discussion created and chat room started. Go to chat!");
+        toast.update(toastId, {
+          render: "Discussion created! Go to chat room.",
+          type: "success",
+          isLoading: false,
+          autoClose: 4000,
+        });
       }
     } catch (error) {
       console.error("Error uploading discussion:", error);
-      toast.error("Error uploading discussion");
+      toast.update(toastId, {
+        render: "Error creating discussiont",
+        type: "error",
+        isLoading: false,
+        autoClose: 4000,
+      });
     }
-    setImageURL("");
+
     setSelectedImage("");
     setTitle("");
     setType("");
+    setIsDisabled(false);
+    setGroupTitle("");
     setSelectedCategories([]);
     setSelectedSubCategories([]);
     setSelectedCategory(null);
@@ -177,18 +197,17 @@ function NewDiscussion() {
         <div className="">
           <Label htmlFor="privacy">Configure Group Preferences</Label>
           <RadioGroup
-            defaultValue={privacy}
+            defaultValue="public"
             name="privacy"
             className="flex items-center space-x-2 mt-[5px]"
             onChange={(e) => {
-              e.preventDefault();
               setPrivacy(e.target.value);
             }}
           >
             <div className="flex items-center space-x-2">
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger type="button">
                     <RadioGroupItem value="public" id="privacyPublic" />
                   </TooltipTrigger>
                   <TooltipContent>
@@ -201,7 +220,7 @@ function NewDiscussion() {
             <div className="flex items-center space-x-2">
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger type="button">
                     <RadioGroupItem value="private" id="privacyPrivate" />
                   </TooltipTrigger>
                   <TooltipContent>
@@ -214,40 +233,34 @@ function NewDiscussion() {
               <Label htmlFor="privacyPrivate">Private</Label>
             </div>
           </RadioGroup>
-          <div className="mt-3">
-            <Input
-              required
-              placeholder="Group Title"
-              value={groupTitle}
-              maxLength={50}
-              onChange={(e) => setGroupTitle(e.target.value)}
-            />
-          </div>
         </div>
-        <div className="flex justify-start">
-          <label className="flex w-1/2 cursor-pointer mt-2">
+        <div className="mt-3">
+          <Input
+            placeholder="Group Title"
+            value={groupTitle}
+            maxLength={30}
+            onChange={(e) => setGroupTitle(e.target.value)}
+          />
+        </div>
+
+        <div className="flex justify-start my-3 p-[10px] border rounded  items-center">
+          <Label className="flex  cursor-pointer text-gray-500 font-normal ">
             Add a cover image
-            <PaperclipIcon className="w-5 h-5 mx-2 mt-1 cursor-pointer" />
+            <PaperclipIcon className="w-4 h-4 mx-2 cursor-pointer" />
             <input
               type="file"
               onChange={handleImageChange}
               className="hidden cursor-pointer"
             />
-          </label>
+          </Label>
           <div>
             {selectedImage && (
-              <Image
-                src={imageURL}
-                alt="Preview"
-                height={100}
-                width={100}
-                className="mt-2"
-              />
+              <span className="text-sm font-medium">{selectedImage.name}</span>
             )}
           </div>
         </div>
 
-        <Button className="h-8 w-full flex" type="submit">
+        <Button className="h-8 w-full " type="submit" disabled={isDisabled}>
           Submit
         </Button>
       </form>

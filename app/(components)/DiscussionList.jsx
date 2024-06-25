@@ -33,7 +33,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
   const [animationState, setAnimationState] = useState({});
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [offset, setOffset] = useState(0); // Pagination offset
+  const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const limit = 5;
   const observer = useRef(null);
@@ -260,7 +260,6 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
       }
 
       const r = await res.json();
-      console.log(r);
 
       if (r.status === 200) {
         toast.update(toastId, {
@@ -342,8 +341,10 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     {discussion.creatorData.name}
                   </span>{" "}
-                  <h4 className="font-semibold text-base">
-                    {discussion.title}
+                  <h4 className="font-semibold text-base cursor-pointer">
+                    <Link href={`/discussions/${discussion._id}`}>
+                      {discussion.title}
+                    </Link>
                   </h4>
                 </div>
                 <div
@@ -354,10 +355,15 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                   }`}
                   onClick={() => toggleDiscussion(discussion._id)}
                 >
-                  <p>{discussion.content}</p>
+                  <p className="cursor-pointer">{discussion.content}</p>
                 </div>
-                <div className="prose max-w-none  md:block hidden">
-                  <p>{discussion.content}</p>
+                <div className="prose max-w-none  md:block hidden ">
+                  <p className="cursor-pointer">
+                    {" "}
+                    <Link href={`/discussions/${discussion._id}`}>
+                      {discussion.content}
+                    </Link>
+                  </p>
                 </div>
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">
@@ -388,7 +394,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                   </Button>
 
                   <Button
-                    className="w-24"
+                    className="md:w-24 w-[70px]"
                     variant="secondary"
                     disabled={
                       discussion.isMember ||
@@ -406,8 +412,8 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
                       : "Join"}
                   </Button>
                   <Link href={`/discussions/${discussion._id}`}>
-                    <Button className="w-24" variant="icon">
-                      <InfoIcon className="w-4 h-4" />
+                    <Button className="w-24 md:hidden" variant="icon">
+                      <InfoIcon className="w-5 h-5" />
                     </Button>
                   </Link>
                 </div>
