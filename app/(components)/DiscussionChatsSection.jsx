@@ -33,15 +33,15 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="flex flex-col  w-full">
+    <div className="flex flex-col">
       {loading ? (
         <div className="flex justify-center items-center  z-50">
           <Image src={Spinnersvg} alt="Loading..." className="h-28" />
         </div>
       ) : (
         <div className="flex flex-col min-h-[30rem] rounded-lg border my-4">
-          <div className="flex flex-1">
-            <div className="w-1/3 border-r py-2 px-1 flex flex-col gap-2 overflow-hidden">
+          <div className="flex flex-1 max-h-[30rem]">
+            <div className="w-1/3 border-r py-2 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
               {groups.map((group) => (
                 <div key={group._id} className=" border-b">
                   <Button
@@ -59,11 +59,11 @@ const Page = () => {
             </div>
 
             {isRoomSelected ? (
-              <div className="min-w-[240px] md:min-w-[750px]">
+              <div className="min-w-[240px] md:min-w-[728px]">
                 <GroupChatbox key={roomID} roomID={roomID} />
               </div>
             ) : (
-              <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
+              <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[728px]">
                 <p>Choose conversation</p>
               </div>
             )}

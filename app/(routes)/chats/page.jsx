@@ -45,8 +45,8 @@ export default function Chats() {
           </TabsList>
           <TabsContent value="c">
             <div className="flex flex-col min-h-[30rem] rounded-lg border my-4">
-              <div className="flex flex-1">
-                <div className="w-1/3 border-r py-4 px-1 flex flex-col gap-2 overflow-hidden">
+              <div className="flex flex-1 max-h-[30rem]">
+                <div className="w-1/3 border-r py-4 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
                   {connections.map((connection) => (
                     <div key={connection._id} className="border-b pb-1">
                       <Button
@@ -81,14 +81,14 @@ export default function Chats() {
                 </div>
 
                 {selectedUser ? (
-                  <div className="min-w-[240px] md:min-w-[750px]">
+                  <div className="min-w-[240px] md:min-w-[728px]">
                     <UserChatbox
                       key={selectedUser}
                       selectedUser={selectedUser}
                     />
                   </div>
                 ) : (
-                  <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
+                  <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[728px]">
                     <p>Choose conversation</p>
                   </div>
                 )}

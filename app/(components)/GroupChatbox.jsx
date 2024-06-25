@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState, useEffect, useRef } from "react";
-import io from "socket.io-client";
+import DisplayMedia from "./DisplayMedia";
 import { toast } from "react-toastify";
 // import { useSession } from "next-auth/react";
 import { VscSend } from "react-icons/vsc";
@@ -155,7 +155,7 @@ const GroupChatbox = ({ roomID }) => {
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
         </div>
       ) : (
-        <div className="flex flex-col justify-between ">
+        <div className="flex flex-col justify-between max-h-[32rem]">
           <h2 className="text-center font-semibold text-xl py-4">
             {groupDetails?.name}
           </h2>
@@ -177,27 +177,7 @@ const GroupChatbox = ({ roomID }) => {
                   {msg.attachments != null && (
                     <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
                       {msg.attachments.map((attachment, index) => (
-                        <Dialog key={index}>
-                          <DialogTrigger>
-                            <Image
-                              className="rounded-md"
-                              src={attachment}
-                              alt="attachment"
-                              height={200}
-                              width={200}
-                              objectFit="cover"
-                            />
-                          </DialogTrigger>
-                          <DialogContent className="fixed top-1/2 left-1/2 w-screen flex items-center justify-center">
-                            <Image
-                              className="rounded-md w-[100vw]"
-                              height={2000}
-                              width={2000}
-                              src={attachment}
-                              alt="attachment"
-                            />
-                          </DialogContent>
-                        </Dialog>
+                        <DisplayMedia key={index} fileUrl={attachment} />
                       ))}
                     </div>
                   )}
