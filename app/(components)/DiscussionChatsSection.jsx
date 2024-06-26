@@ -35,18 +35,18 @@ const Page = () => {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col w-full">
-        {loading ? (
-          <div className="flex justify-center items-center z-50">
-            <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-          </div>
-        ) : (
-          <div className="flex flex-col min-h-[30rem] rounded-lg border-2 my-4 font-sans">
-            <div className="flex flex-1">
-              {groups.length > 0 ? (
-                <div className="w-1/3 border-r-2 py-2 px-1 flex flex-col gap-2 overflow-hidden">
+      {loading ? (
+        <div className="flex justify-center items-center z-50">
+          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
+        </div>
+      ) : (
+        <div className="flex flex-col min-h-[32rem] rounded-lg border my-4">
+          <div className="flex flex-1 max-h-[32rem]">
+            {groups.length > 0 ? (
+              <>
+                <div className="w-1/3 border-r py-2 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
                   {groups.map((group) => (
-                    <div key={group._id} className="">
+                    <div key={group._id} className=" ">
                       <Button
                         onClick={() => {
                           setRoomID(group._id);
@@ -62,35 +62,32 @@ const Page = () => {
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center w-full py-16">
-                  <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
-                    You haven't started any discussions yet.
-                  </p>
-                  <Link
-                    href="/discussions"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
-                  >
-                    Start a discussion
-                  </Link>
-                </div>
-              )}
-
-              {isRoomSelected ? (
-                <div className="min-w-[240px] md:w-[790px]">
-                  <GroupChatbox key={roomID} roomID={roomID} />
-                </div>
-              ) : (
-                groups.length > 0 && (
-                  <div className="flex flex-wrap justify-center items-center py-16 min-w-[240px] md:w-[790px]">
+                {isRoomSelected ? (
+                  <div className="min-w-[240px] md:min-w-[750px]">
+                    <GroupChatbox key={roomID} roomID={roomID} />
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
                     <p>Choose a conversation</p>
                   </div>
-                )
-              )}
-            </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center w-full py-16">
+                <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
+                  You haven't started any discussions yet.
+                </p>
+                <Link
+                  href="/discussions"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
+                >
+                  Start a discussion
+                </Link>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

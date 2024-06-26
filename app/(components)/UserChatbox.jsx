@@ -158,7 +158,7 @@ const UserChatbox = ({ selectedUser }) => {
   return (
     <div>
       {loading ? (
-        <div className="flex justify-center items-center h-[30rem]">
+        <div className="flex justify-center items-center h-[32rem]">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
         </div>
       ) : (
@@ -198,7 +198,7 @@ const UserChatbox = ({ selectedUser }) => {
                 </Popover>
               </div>
             </div>
-            <div className="flex flex-col border rounded-md  h-[30rem] overflow-y-auto">
+            <div className="flex flex-col border rounded-md  h-[32rem] overflow-y-auto">
               <div className="p-4 ">
                 {inboxMessages.map((msg, index) => (
                   <div

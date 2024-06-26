@@ -53,7 +53,7 @@ export async function DELETE(req, { params }) {
   const id = params.id;
   const session = await getServerSession(options);
 
-  const { userId } = await req.json();
+  const { userId } = params;
 
   try {
     const group = await Group.findById(id);
