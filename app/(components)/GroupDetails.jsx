@@ -245,7 +245,8 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
                   </span>
                 </div>
                 {(isCurrentUserCreator || isCurrentUserModerator) &&
-                  participant._id !== currentUser && (
+                  participant._id !== currentUser &&
+                  group.creator !== participant._id && (
                     <DropdownMenu>
                       <DropdownMenuTrigger>
                         <Button variant="ghost" size="sm">
@@ -277,6 +278,7 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
                             )}
                           </>
                         )}
+
                         <DropdownMenuItem
                           onSelect={() => handleKickMember(participant._id)}
                         >

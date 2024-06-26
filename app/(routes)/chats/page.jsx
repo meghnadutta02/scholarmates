@@ -84,14 +84,14 @@ export default function Chats() {
                   </div>
 
                   {selectedUser ? (
-                    <div className="min-w-[240px] md:min-w-[750px]">
+                    <div className="min-w-[240px] md:min-w-[790px]">
                       <UserChatbox
                         key={selectedUser._id}
                         selectedUser={selectedUser}
                       />
                     </div>
                   ) : (
-                    <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
+                    <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[790px]">
                       <p>Choose conversation</p>
                     </div>
                   )}
