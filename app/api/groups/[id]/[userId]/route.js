@@ -3,6 +3,7 @@ import connect from "@/app/config/db";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
+import User from "@/app/(models)/userModel";
 import { ObjectId } from "mongodb";
 
 // Make a user a moderator or remove moderator status
@@ -40,7 +41,7 @@ export async function PUT(req, { params }) {
 
     await group.save();
 
-    return NextResponse.json({ group }, { status: 200 });
+    return NextResponse.json({ messsage: "Successful" }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -68,14 +69,15 @@ export async function DELETE(req, { params }) {
         { status: 403 }
       );
     }
-
+    const user = await User.findById(userId);
+    user.groupsJoined = user.groupsJoined.filter((id) => id.toString() !== id);
     group.participants = group.participants.filter(
       (id) => id.toString() !== userId
     );
-
+    await user.save();
     await group.save();
 
-    return NextResponse.json({ group }, { status: 200 });
+    return NextResponse.json({ messsage: "Successful" }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

@@ -16,7 +16,7 @@ export async function GET(req, { params }) {
     await connect();
 
     const groupID = params.groupID;
-
+    const session = await getServerSession(options);
     const messages = await Message.find({ conversationId: groupID });
     const messagesWithSenderName = await Promise.all(
       messages.map(async (message) => {
@@ -26,8 +26,23 @@ export async function GET(req, { params }) {
         return messageObj;
       })
     );
-    const groupDetails = await Group.findById(groupID);
-    console.log(groupDetails);
+    const group = await Group.findById(groupID)
+      .populate("moderators", "_id")
+      .populate("participants", "_id name profilePic");
+    const userId = session?.user?.db_id;
+    const groupDetails = {
+      _id: group._id,
+      name: group.name,
+      description: group.description,
+      isPublic: group.isPublic,
+      createdAt: group.createdAt,
+      creator: group.moderators[0]._id,
+      participants: group.participants,
+      moderators: group.moderators.map((mod) => mod._id),
+
+      currentUser: userId,
+    };
+
     return NextResponse.json(
       { messagesWithSenderName, groupDetails },
       { status: 200 }

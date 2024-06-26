@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState, useEffect, useRef } from "react";
+import GroupDetails from "@/app/(components)/GroupDetails";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
 // import { useSession } from "next-auth/react";
@@ -15,6 +16,8 @@ import Image from "next/image";
 const GroupChatbox = ({ roomID }) => {
   const { socket, session } = useSession();
   const [loading, setLoading] = useState(true);
+
+  const [showGroupDetails, setShowGroupDetails] = useState(false);
   const [message, setMessage] = useState({
     text: "",
     groupId: roomID,
@@ -149,18 +152,26 @@ const GroupChatbox = ({ roomID }) => {
   };
 
   return (
-    <div>
+    <>
       {loading ? (
         <div className="flex justify-center items-center h-[30rem]">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
         </div>
+      ) : showGroupDetails ? (
+        <GroupDetails
+          groupDetails={groupDetails}
+          setShowGroupDetails={setShowGroupDetails}
+        />
       ) : (
-        <div className="flex flex-col justify-between ">
-          <h2 className="text-center font-semibold text-xl py-4">
+        <div className="flex flex-col justify-between bg-gray-100 dark:bg-gray-800 ">
+          <h2
+            className="text-center font-semibold text-xl py-4 cursor-pointer"
+            onClick={() => setShowGroupDetails(true)}
+          >
             {groupDetails?.name}
           </h2>
 
-          <div className="p-4 mx-2 border h-[30rem] rounded-sm overflow-y-auto">
+          <div className="p-4 mx-2 border-2 h-[30rem] rounded-sm overflow-y-auto bg-white">
             {inboxMessages.map((msg, index) => (
               <div
                 key={index}
@@ -292,7 +303,7 @@ const GroupChatbox = ({ roomID }) => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -4,43 +4,45 @@ import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 
-export async function GET(req, { params }) {
-  await connect();
-  const id = params.id;
-  const session = await getServerSession(options);
+//get group details
+// export async function GET(req, { params }) {
+//   await connect();
+//   const id = params.id;
+//   const session = await getServerSession(options);
 
-  try {
-    const group = await Group.findById(id)
-      .populate("participants")
-      .populate("moderators")
-      .populate("moderators", "_id name profilePic")
-      .populate("participants", "_id name profilePic");
+//   try {
+//     const group = await Group.findById(id)
+//       .populate("participants")
+//       .populate("moderators")
+//       .populate("moderators", "_id name profilePic")
+//       .populate("participants", "_id name profilePic");
 
-    if (!group) {
-      return NextResponse.json({ result: "Group not found." }, { status: 404 });
-    }
+//     if (!group) {
+//       return NextResponse.json({ result: "Group not found." }, { status: 404 });
+//     }
 
-    const userId = session?.user?.db_id;
-    const isUserModerator = group.moderators.some(
-      (mod) => mod._id.toString() === userId
-    );
+//     const userId = session?.user?.db_id;
+//     const isUserModerator = group.moderators.some(
+//       (mod) => mod._id.toString() === userId
+//     );
 
-    const groupDetails = {
-      name: group.name,
-      description: group.description,
-      isPublic: group.isPublic,
-      createdAt: group.createdAt,
-      creator: group.moderators[0],
-      participants: group.participants,
-      moderators: group.moderators,
-      isUserModerator,
-    };
+//     const groupDetails = {
+//       name: group.name,
+//       description: group.description,
+//       isPublic: group.isPublic,
+//       createdAt: group.createdAt,
+//       creator: group.moderators[0],
+//       participants: group.participants,
+//       moderators: group.moderators,
+//       isUserModerator,
+//     };
 
-    return NextResponse.json({ groupDetails }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
+//     return NextResponse.json({ groupDetails }, { status: 200 });
+//   } catch (error) {
+//     return NextResponse.json({ error: error.message }, { status: 500 });
+//   }
+// }
+
 //Update group description and/or privacy
 export async function PUT(req, { params }) {
   await connect();
@@ -64,11 +66,11 @@ export async function PUT(req, { params }) {
       );
     }
 
-    if (description !== undefined) {
+    if (description !== undefined && group.description !== description) {
       group.description = description;
     }
 
-    if (isPublic !== undefined) {
+    if (isPublic !== undefined && group.isPublic !== isPublic) {
       group.isPublic = isPublic;
     }
 

@@ -101,11 +101,11 @@ const FilterDrawer = ({ applyFilters }) => {
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40" />
         <Drawer.Content className="rounded-se-lg bg-zinc-700 dark:bg-gray-800 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-scroll scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-400 scrollbar-thumb-rounded-full shadow-inner">
-          <div className="p-4 rounded-se-lg bg-zinc-700 dark:bg-gray-800 flex-1 h-full font-sans">
+          <div className="p-4 rounded-se-lg bg-zinc-700  dark:bg-gray-800 flex-1 h-full font-sans">
             <div className="max-w-lg mx-auto">
               <section className="flex">
                 <aside className="text-gray-200 dark:text-white text-md w-full">
-                  <h2 className="font-bold text-xl ">My College</h2>
+                  <h2 className="font-semibold text-xl ">My College</h2>
                   <ul className="border-b-2 border-gray-200 pb-[10px] ">
                     <li>
                       <input
@@ -123,7 +123,7 @@ const FilterDrawer = ({ applyFilters }) => {
 
                   <Collapsible className="border-b-2 border-gray-200 pb-[8px]">
                     <div className="flex my-2 items-center justify-between">
-                      <h2 className="text-xl font-bold">Categories</h2>
+                      <h2 className="text-xl font-semibold">Categories</h2>
                       <CollapsibleTrigger asChild>
                         <CaretSortIcon className="h-8 w-8 ml-4 hover:bg-slate-600 hover:rounded-full p-1" />
                       </CollapsibleTrigger>
@@ -142,7 +142,7 @@ const FilterDrawer = ({ applyFilters }) => {
                                   interest.category
                                 )}
                                 onChange={handleCategoryChange}
-                                className="h-4 w-4 accent-yellow-500"
+                                className="h-4 w-4 "
                               />
                               <label
                                 className="ml-2"
@@ -215,7 +215,7 @@ const FilterDrawer = ({ applyFilters }) => {
 
                   <Collapsible className="border-b-2 border-gray-200 pb-[8px]">
                     <div className="flex my-2 items-center justify-between">
-                      <h2 className="text-xl font-bold">Type</h2>
+                      <h2 className="text-xl font-semibold">Type</h2>
                       <CollapsibleTrigger asChild>
                         <CaretSortIcon className="h-8 w-8 ml-4 hover:bg-slate-600 hover:rounded-full p-1" />
                       </CollapsibleTrigger>
@@ -307,14 +307,14 @@ const FilterDrawer = ({ applyFilters }) => {
                   <div className="flex justify-center gap-4 my-5">
                     <Button
                       variant=""
-                      className="font-bold py-1 px-4"
+                      className="font-semibold py-1 px-4"
                       onClick={applyFilters1}
                     >
                       Apply
                     </Button>
                     <Button
                       variant="destructive"
-                      className="font-bold py-1 px-4 rounded"
+                      className="font-semibold py-1 px-4 rounded"
                       onClick={resetFilters}
                     >
                       Reset
