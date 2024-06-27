@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import DiscussionChatsSection from "@/app/(components)/DiscussionChatsSection";
-import Link from "next/link"; // Import Link for navigation
+import Link from "next/link";
+import Spinnersvg from "@/public/Spinner.svg";
 
 export default function Chats() {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -36,8 +37,8 @@ export default function Chats() {
   return (
     <div>
       {loading ? (
-        <div className="flex justify-center items-center h-[30rem]">
-          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
+        <div className="flex justify-center items-center z-50">
+          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
         </div>
       ) : (
         <Tabs defaultValue="c" className="mt-6 flex flex-col items-center">
@@ -47,9 +48,9 @@ export default function Chats() {
           </TabsList>
           <TabsContent value="c">
             {connections.length > 0 ? (
-              <div className="flex flex-col min-h-[30rem] rounded-lg border my-4">
-                <div className="flex flex-1">
-                  <div className="w-1/3 border-r py-4 px-1 flex flex-col gap-2 overflow-hidden">
+              <div className="flex flex-col min-h-[32rem] rounded-lg border my-4">
+                <div className="flex flex-1 max-h-[32rem]">
+                  <div className="w-1/3 border-r py-4 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
                     {connections.map((connection) => (
                       <div key={connection._id} className="border-b pb-1">
                         <Button

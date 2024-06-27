@@ -4,6 +4,12 @@ import { Button } from "@/components/ui/button";
 import { io } from "socket.io-client";
 import Image from "next/image";
 import { useSession } from "@/app/(components)/SessionProvider";
+const getYearWithSuffix = (year) => {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const lastDigit = year % 10;
+  const suffix = suffixes[lastDigit] || suffixes[0];
+  return `${year}${suffix}`;
+};
 import {
   Carousel,
   CarouselContent,
@@ -11,7 +17,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { useState, useEffect } from "react";
 export default function Component() {
   // use session
@@ -147,34 +153,38 @@ export default function Component() {
                 !data?.connection?.includes(profile._id) ? (
                   <CarouselItem key={profile._id}>
                     <div className="grid gap-2">
-                      <div className="rounded-xl border ">
-                        <Image
-                          alt="Profile Picture"
-                          className="mx-auto rounded-full"
-                          height={300}
-                          src={profile.profilePic}
-                          width={300}
-                        />
-                      </div>
                       <div className="p-2  grid gap-2">
-                        <h1 className="text-2xl font-semibold line-clamp-2">
-                          {profile.name}
-                        </h1>
                         <div className="flex gap-2 items-center">
                           <div className="flex gap-2 items-center">
                             <Image
                               alt="Thumbnail"
                               className="rounded-full object-cover aspect-square"
-                              height={40}
+                              height={80}
                               src={profile.profilePic}
-                              width={40}
+                              width={80}
                             />
-                            <div className="text-sm">
+                            <div className="text-sm flex flex-col gap-2">
                               <div className="font-semibold">
-                                Software Engineer
+                                {profile.name}
                               </div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400">
-                                {profile.collegeName}
+                              <div className="flex flex-col">
+                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                  {profile.collegeName}
+                                </div>
+                                {profile.department && profile.degree && (
+                                  <>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                      {profile.degree} in {profile.department}{" "}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                      {" "}
+                                      {getYearWithSuffix(
+                                        profile.yearInCollege
+                                      )}{" "}
+                                      year{" "}
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -192,11 +202,7 @@ export default function Component() {
                         </div>
                       </div>
                       <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
-                        <p>
-                          Im a full-stack developer with a passion for React and
-                          Node.js. In my free time, I love contributing to
-                          open-source projects and exploring new technologies.
-                        </p>
+                        <p>{profile.bio}</p>
                       </div>
                       <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
                         <h2 className="font-semibold text-lg">Interests</h2>

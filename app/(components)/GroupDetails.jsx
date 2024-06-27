@@ -48,7 +48,7 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
         toast.success("Member removed successfully", { autoClose: 5000 });
       }
     } catch (error) {
-      toast.error("Failed to kick member");
+      toast.error("Failed to remove member");
       console.error(error);
     }
   };
@@ -144,7 +144,7 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
   const isCurrentUserModerator = group.moderators.includes(currentUser);
 
   return (
-    <div className="flex flex-col justify-between bg-gray-100   dark:bg-gray-800 pb-2 relative">
+    <div className="flex flex-col justify-between bg-gray-100 max-h-[32rem]  dark:bg-gray-800 pb-2 relative">
       <h2 className="text-center font-semibold text-xl py-4">{group.name}</h2>
 
       <IoArrowBackCircleOutline
@@ -152,7 +152,7 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
         onClick={() => setShowGroupDetails(false)}
       />
 
-      <div className="p-4 mx-2 border-2 h-[30rem] rounded-sm overflow-y-scroll bg-white">
+      <div className="p-4 mx-2 border-2 h-[32rem] rounded-sm overflow-y-auto bg-white">
         {isCurrentUserCreator && (
           <div className="flex items-center justify-end">
             <Label htmlFor="privacy-switch" className="mr-2 text-sm">
@@ -282,7 +282,7 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
                         <DropdownMenuItem
                           onSelect={() => handleKickMember(participant._id)}
                         >
-                          Kick Member
+                          Remove Member
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

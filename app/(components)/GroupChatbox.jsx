@@ -4,10 +4,11 @@ import { Input } from "@/components/ui/input";
 import React, { useState, useEffect, useRef } from "react";
 import GroupDetails from "@/app/(components)/GroupDetails";
 import DisplayMedia from "./DisplayMedia";
+import Spinnersvg from "@/public/Spinner.svg";
 import { toast } from "react-toastify";
-// import { useSession } from "next-auth/react";
+
 import { VscSend } from "react-icons/vsc";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
 import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
 import { useSession } from "./SessionProvider";
@@ -154,8 +155,8 @@ const GroupChatbox = ({ roomID }) => {
   return (
     <>
       {loading ? (
-        <div className="flex justify-center items-center h-[30rem]">
-          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
+        <div className="flex justify-center items-center z-50">
+          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
         </div>
       ) : showGroupDetails ? (
         <GroupDetails
@@ -163,7 +164,7 @@ const GroupChatbox = ({ roomID }) => {
           setShowGroupDetails={setShowGroupDetails}
         />
       ) : (
-        <div className="flex flex-col justify-between bg-gray-100 dark:bg-gray-800 ">
+        <div className="flex flex-col justify-between bg-gray-100 dark:bg-gray-800 max-h-[32rem] ">
           <h2
             className="text-center font-semibold text-xl py-4 cursor-pointer"
             onClick={() => setShowGroupDetails(true)}
@@ -171,7 +172,7 @@ const GroupChatbox = ({ roomID }) => {
             {groupDetails?.name}
           </h2>
 
-          <div className="p-4 mx-2 border-2 h-[30rem] rounded-sm overflow-y-auto bg-white">
+          <div className="p-4 mx-2 border-2 h-[32rem] rounded-sm overflow-y-auto bg-white">
             {inboxMessages.map((msg, index) => (
               <div
                 key={index}
