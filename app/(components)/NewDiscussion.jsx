@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -7,18 +8,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
 import { Textarea } from "@/components/ui/textarea";
-
-import { useState } from "react";
 import Select from "react-select";
 import { Label } from "@/components/ui/label";
-
 import { toast } from "react-toastify";
 import { interests } from "../interests";
-
 import { PaperclipIcon } from "lucide-react";
-function NewDiscussion() {
+
+function NewDiscussion({ discussion, onSave }) {
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
@@ -31,6 +28,27 @@ function NewDiscussion() {
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
   const [privacy, setPrivacy] = useState("public");
   const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    if (discussion) {
+      setTitle(discussion.title);
+      setGroupTitle(discussion.groupTitle);
+      setContent(discussion.content);
+      setType(discussion.type);
+      setPrivacy(discussion.privacy);
+      // Set selected category and subcategories
+      const selectedCategory = categoryOptions.find(
+        (category) => category.value === discussion.category
+      );
+      setSelectedCategory(selectedCategory);
+      handleCategoryChange(selectedCategory);
+      const selectedSubCategories = discussion.subcategories.map((subcategory) => ({
+        label: subcategory,
+        value: subcategory,
+      }));
+      setSelectedSubCategories(selectedSubCategories);
+    }
+  }, [discussion]);
 
   const categories = interests.flatMap(
     (categoryObject) => Object.values(categoryObject)[0]
@@ -45,7 +63,7 @@ function NewDiscussion() {
     setSelectedCategory(selectedCategory);
 
     const newSubcategories =
-      interests.find((interest) => interest.category === selectedCategory.value)
+      interests.find((interest) => interest.category === selectedCategory?.value)
         ?.subcategories || [];
 
     const newSubcategoryOptions = newSubcategories.map((subcategory) => ({
@@ -68,6 +86,7 @@ function NewDiscussion() {
   const handleImageChange = (event) => {
     setSelectedImage(event.target.files?.[0]);
   };
+
   const handleSubCategoryChange = (selectedSubCategories) => {
     setSelectedSubCategories(selectedSubCategories);
   };
@@ -75,7 +94,8 @@ function NewDiscussion() {
   const handlePostSubmit = async (e) => {
     e.preventDefault();
     setIsDisabled(true);
-    const toastId = toast.loading("Creating discussion...");
+    const toastId = toast.loading(discussion ? "Updating discussion..." : "Creating discussion...");
+
     formData.append("groupTitle", groupTitle);
     formData.append("title", title);
     formData.append("content", content);
@@ -100,25 +120,26 @@ function NewDiscussion() {
 
     try {
       const result = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/discussion`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/discussion${discussion ? `/${discussion._id}` : ''}`,
         {
-          method: "POST",
+          method: discussion ? "PUT" : "POST",
           body: formData,
         }
       );
 
       if (result.ok) {
         toast.update(toastId, {
-          render: "Discussion created! Go to chat room.",
+          render: discussion ? "Discussion updated!" : "Discussion created! Go to chat room.",
           type: "success",
           isLoading: false,
           autoClose: 4000,
         });
+        if (onSave) onSave();
       }
     } catch (error) {
       console.error("Error uploading discussion:", error);
       toast.update(toastId, {
-        render: "Error creating discussiont",
+        render: discussion ? "Error updating discussion" : "Error creating discussion",
         type: "error",
         isLoading: false,
         autoClose: 4000,
@@ -197,7 +218,7 @@ function NewDiscussion() {
         <div className="">
           <Label htmlFor="privacy">Configure Group Preferences</Label>
           <RadioGroup
-            defaultValue="public"
+            defaultValue={privacy}
             name="privacy"
             className="flex items-center space-x-2 mt-[5px]"
             onChange={(e) => {

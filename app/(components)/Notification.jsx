@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Flex, Text, Box, Image } from "@radix-ui/themes";
@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from 'react-toastify'
 import { useSession } from "../(components)/SessionProvider";
 const Notification = ({ sender, receive, name, frndId, user, data }) => {
-  const { socket, session,notification } = useSession();
+  const { socket, session, notification } = useSession();
   const [isVisible, setIsVisible] = useState(true);
 
-  useEffect(()=>{
-    if(notification){
-      console.log("notification",notification);
+  useEffect(() => {
+    if (notification) {
+      console.log("notification", notification);
     }
-  },[notification])
+  }, [notification])
   const acceptHandle = async (x) => {
     // console.log(socket);
     // console.log(x);
@@ -58,7 +58,7 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
     <>
       {isVisible && (
         <Flex gap="3" direction="column">
-          <Card size="3" style={{ width: 500 }} >
+          <Card size="3" className="p-3" style={{ width: 500}} >
             <Flex gap="4" align="center" className="flex">
               <img
                 size="3"
@@ -80,7 +80,7 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
               </Box>
 
             </Flex>
-            <Button onClick={() => acceptHandle("accept")}>Accept</Button>
+            <Button className="mr-2" onClick={() => acceptHandle("accept")}>Accept</Button>
             <Button
               backgroundcolor="red"
               onClick={() => acceptHandle("decline")}
