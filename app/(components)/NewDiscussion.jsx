@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRouter } from 'next/navigation'
+
 import {
   Tooltip,
   TooltipContent,
@@ -16,6 +18,7 @@ import { interests } from "../interests";
 import { PaperclipIcon } from "lucide-react";
 
 function NewDiscussion({ discussion, onSave }) {
+  const router = useRouter()
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
@@ -36,6 +39,7 @@ function NewDiscussion({ discussion, onSave }) {
       setContent(discussion.content);
       setType(discussion.type);
       setPrivacy(discussion.privacy);
+      setSelectedImage(discussion.coverImage)
       // Set selected category and subcategories
       const selectedCategory = categoryOptions.find(
         (category) => category.value === discussion.category
@@ -119,8 +123,10 @@ function NewDiscussion({ discussion, onSave }) {
     });
 
     try {
-      const result = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/discussion${discussion ? `/${discussion._id}` : ''}`,
+      const apiUrl = discussion
+      ? `${process.env.NEXT_PUBLIC_API_URL}/api/mydiscussion?id=${discussion._id}`
+      : `${process.env.NEXT_PUBLIC_API_URL}/api/discussion`;
+      const result = await fetch(apiUrl,
         {
           method: discussion ? "PUT" : "POST",
           body: formData,
@@ -134,6 +140,7 @@ function NewDiscussion({ discussion, onSave }) {
           isLoading: false,
           autoClose: 4000,
         });
+        router.push('/mydiscussion');
         if (onSave) onSave();
       }
     } catch (error) {

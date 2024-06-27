@@ -11,11 +11,12 @@ import NewDiscussion from "@/app/(components)/NewDiscussion"
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import ReactTimeAgo from "react-time-ago";
-
+import {useSession} from "@/app/(components)/SessionProvider"
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 const DiscussionDetails = ({ params }) => {
   const router = useRouter()
+  const {session}=useSession();
   const { id } = params;
   const [selectedDiscussion, setSelectedDiscussion] = useState(null);
   const [discussion, setDiscussion] = useState(null);
@@ -76,6 +77,7 @@ const DiscussionDetails = ({ params }) => {
     // Refresh the list of discussions or handle post-save logic
   };
   useEffect(() => {
+    console.log(session.db_id)
     if (id) {
       const fetchDiscussion = async () => {
         const res = await fetch(
@@ -85,7 +87,7 @@ const DiscussionDetails = ({ params }) => {
           }
         );
         const data = await res.json();
-        console.log(data);
+        console.log(data.discussion.creator._id);
         setDiscussion(data.discussion);
         setStatus(data.status);
         setIsLikedByUser(data.isLikedByUser);
@@ -225,6 +227,7 @@ const DiscussionDetails = ({ params }) => {
       setSelectedDiscussion(null);
     }
   };
+  
 
   return (
     <>
@@ -264,21 +267,31 @@ const DiscussionDetails = ({ params }) => {
               />
 
               <div className="relative flex flex-col items-start justify-between bg-white rounded-lg dark:bg-gray-800">
+             
                 <div className="flex-col gap-2 md:gap-5">
-                  <div className="flex justify-around m-3">
+               
+                  
+                  {session?.db_id==discussion.creator._id &&(
+                    <div className="flex justify-around m-3">
                     <button onClick={() => handleEditClick(discussion)} className="p-3 bg-slate-100 border-2 rounded-lg">
                       <EditIcon className="w-6 h-6" />
                     </button>
                     <button className="p-3 bg-slate-100 border-2 rounded-lg" onClick={() => handleGetDiscussionId(discussion._id)}>
                       <DeleteIcon className="w-6 h-6" />
                     </button>
-                  </div>
-                  <h4 className="mt-4 text-base font-semibold">{discussion.title}</h4>
+                    </div>
+                   )}
+                 
+                
+                   <h4 className="mt-4 text-base font-semibold">{discussion.title}</h4>
                   <div className="prose max-w-none">
                     <p>{discussion.content}</p>
                   </div>
-                </div>
-                <div className="grid w-full gap-4 md:gap-8 grid-cols-4">
+               </div>
+                
+                  
+             
+                 <div className="grid w-full gap-4 md:gap-8 grid-cols-4">
                   <Button className="h-10" size="icon" variant="icon">
                     <ThumbsUpIcon
                       className={`w-4 h-4 cursor-pointer ${isLikedByUser && "text-blue-400"} ${animationState[discussion._id] === "like" && "pop text-blue-400"}`}
@@ -326,6 +339,16 @@ const DiscussionDetails = ({ params }) => {
                       {discussion.title}
                     </h4>
                   </div>
+                  {session?.db_id==discussion.creator._id &&(
+                    <div className="flex justify-between">
+                    <button onClick={() => handleEditClick(discussion)} className="p-3 m-3 bg-slate-100 border-2 rounded-lg">
+                      <EditIcon className="w-6 h-6" />
+                    </button>
+                    <button className="p-3 m-3 bg-slate-100 border-2 rounded-lg" onClick={() => handleGetDiscussionId(discussion._id)}>
+                      <DeleteIcon className="w-6 h-6" />
+                    </button>
+                    </div>
+                   )}
                   <div className="flex items-center text-gray-500 dark:text-gray-400 justify-self-start">
                     <span>
                       <ReactTimeAgo date={new Date(discussion.createdAt)} locale="en-US" />
