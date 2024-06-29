@@ -7,21 +7,15 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
 
-
 const getDiscussions = async () => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/mydiscussion`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "GET",
-    }
-  );
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "GET",
+  });
   return response.json();
 };
-
-
 
 const DiscussionList = () => {
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
@@ -37,9 +31,9 @@ const DiscussionList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
-        const [discussionsResult] =
-          await Promise.allSettled([getDiscussions()]);
+        const [discussionsResult] = await Promise.allSettled([
+          getDiscussions(),
+        ]);
         let result = [];
         let accepted = [];
         let pending = [];
@@ -60,7 +54,7 @@ const DiscussionList = () => {
           return {
             ...discussion,
             isLiked,
-            isDisliked
+            isDisliked,
           };
         });
 
@@ -140,16 +134,16 @@ const DiscussionList = () => {
         prevDiscussions.map((discussion) =>
           discussion._id === id
             ? {
-              ...discussion,
-              likes: discussion.isLiked
-                ? discussion.likes - 1
-                : discussion.likes + 1,
-              isLiked: !discussion.isLiked,
-              dislikes: discussion.isDisliked
-                ? discussion.dislikes - 1
-                : discussion.dislikes,
-              isDisliked: false,
-            }
+                ...discussion,
+                likes: discussion.isLiked
+                  ? discussion.likes - 1
+                  : discussion.likes + 1,
+                isLiked: !discussion.isLiked,
+                dislikes: discussion.isDisliked
+                  ? discussion.dislikes - 1
+                  : discussion.dislikes,
+                isDisliked: false,
+              }
             : discussion
         )
       );
@@ -173,16 +167,16 @@ const DiscussionList = () => {
         prevDiscussions.map((discussion) =>
           discussion._id === id
             ? {
-              ...discussion,
-              dislikes: discussion.isDisliked
-                ? discussion.dislikes - 1
-                : discussion.dislikes + 1,
-              isDisliked: !discussion.isDisliked,
-              likes: discussion.isLiked
-                ? discussion.likes - 1
-                : discussion.likes,
-              isLiked: false,
-            }
+                ...discussion,
+                dislikes: discussion.isDisliked
+                  ? discussion.dislikes - 1
+                  : discussion.dislikes + 1,
+                isDisliked: !discussion.isDisliked,
+                likes: discussion.isLiked
+                  ? discussion.likes - 1
+                  : discussion.likes,
+                isLiked: false,
+              }
             : discussion
         )
       );
@@ -260,20 +254,17 @@ const DiscussionList = () => {
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
-        <p>No discussion found create, your Discussion..</p>
+        <p>You have no discussions. Create a discussion..</p>
       ) : (
         <div className=" grid grid-cols-1  gap-6 ">
           {discussions?.map((discussion) => (
             <div
               key={discussion._id}
-              style={{width:'64vw'}}
+              style={{ width: "64vw" }}
               className="relative flex items-start gap-4 rounded-lg shadow-sm p-2"
             >
-              
-
               {/* Delete Icon */}
 
-            
               <Image
                 alt="Avatar"
                 className="rounded-full hidden sm:block"
@@ -309,10 +300,11 @@ const DiscussionList = () => {
                   </h4>
                 </div>
                 <div
-                  className={`prose max-w-none cursor-pointer md:hidden ${expandedDiscussion.includes(discussion._id)
-                    ? ""
-                    : "line-clamp-2"
-                    }`}
+                  className={`prose max-w-none cursor-pointer md:hidden ${
+                    expandedDiscussion.includes(discussion._id)
+                      ? ""
+                      : "line-clamp-2"
+                  }`}
                   onClick={() => toggleDiscussion(discussion._id)}
                 >
                   <p className="cursor-pointer">{discussion.content}</p>
@@ -328,10 +320,12 @@ const DiscussionList = () => {
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">
                     <ThumbsUpIcon
-                      className={`w-4 h-4 cursor-pointer ${discussion.isLiked && "text-blue-400"
-                        } ${animationState[discussion._id] === "like" &&
+                      className={`w-4 h-4 cursor-pointer ${
+                        discussion.isLiked && "text-blue-400"
+                      } ${
+                        animationState[discussion._id] === "like" &&
                         "pop text-blue-400"
-                        }`}
+                      }`}
                       onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
@@ -339,10 +333,12 @@ const DiscussionList = () => {
                   </Button>
                   <Button className="h-10 " size="icon" variant="icon">
                     <ThumbsDownIcon
-                      className={`w-4 h-4 cursor-pointer ${discussion.isDisliked && "text-red-400"
-                        } ${animationState[discussion._id] === "dislike" &&
+                      className={`w-4 h-4 cursor-pointer ${
+                        discussion.isDisliked && "text-red-400"
+                      } ${
+                        animationState[discussion._id] === "dislike" &&
                         "pop text-red-400"
-                        }`}
+                      }`}
                       onClick={() => toggleDislike(discussion._id)}
                     />
                     <span className="sr-only">Dislike</span>
@@ -394,7 +390,6 @@ function ThumbsDownIcon(props) {
   );
 }
 
-
 function ThumbsUpIcon(props) {
   return (
     <svg
@@ -414,5 +409,3 @@ function ThumbsUpIcon(props) {
     </svg>
   );
 }
-
-
