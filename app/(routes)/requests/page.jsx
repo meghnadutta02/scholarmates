@@ -65,9 +65,11 @@ const Request = () => {
                 setRequestNot(prevData => [...prevData, ...newData]);
             } else {
                 console.log("Error:", response.statusText);
+                setLoading(false);
             }
         } catch (error) {
             console.log(error)
+            setLoading(false)
         }
     }
 
@@ -96,7 +98,7 @@ const Request = () => {
                     <TabsContent value="c" className="w-[80%] m-auto">
 
                     
-                        {loading ? <Loading />:(<div class="m-auto">
+                        {loading ? <Loading /> :data.length==0 ? "You Have No Connection Request.":(<div class="m-auto">
                                     {data?.map((item, index) => (
                                         <Notification key={index} data={item.requestData} sender={item.requestData.user}
                                             receive={item.requestData.requestTo} frndId={item.requestData._id} user={item.userData} />

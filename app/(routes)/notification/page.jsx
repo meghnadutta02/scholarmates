@@ -5,8 +5,10 @@ import ToastNotification from "@/app/(components)/ToastNotification"
 import { useSession } from "@/app/(components)/SessionProvider";
 
 const Page = () => {
-    const {notification } = useSession();
-    
+    const {notification,clearUnreadCount } = useSession();
+    useEffect(() => {
+        clearUnreadCount();
+      }, [clearUnreadCount]);
 
     return (
         <>

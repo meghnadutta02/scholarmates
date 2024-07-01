@@ -1,8 +1,9 @@
 import React from 'react'
-
+import Link from 'next/link'
 const ToastNotification = ({data}) => {
   return (
     <>
+<Link href='/requests'>
 <div id="toast-notification" class="w-full max-w-xs p-4 text-gray-900 bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-300" role="alert">
     <div class="flex items-center mb-3">
         <span class="mb-1 text-sm font-semibold text-gray-900 dark:text-white">New notification</span>
@@ -22,6 +23,7 @@ const ToastNotification = ({data}) => {
         </div>
     </div>
 </div>
+</Link>
  </>
   )}
 

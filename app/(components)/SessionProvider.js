@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import { useState, useEffect, useContext, createContext } from "react";
 import { getSession } from "next-auth/react";
 import io from "socket.io-client";
@@ -12,10 +12,15 @@ export const SessionProvider = ({ children }) => {
   const [notification, setNotification] = useState([]);
   const [socket, setSocket] = useState(null);
   const [seenNotifications, setSeenNotifications] = useState(new Set());
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const removeDuplicates = (array) => {
     const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
     return Array.from(uniqueSet).map((item) => JSON.parse(item));
+  };
+
+  const clearUnreadCount = () => {
+    setUnreadCount(0);
   };
 
   useEffect(() => {
@@ -47,8 +52,6 @@ export const SessionProvider = ({ children }) => {
     };
   }, []);
 
-  ///NOTIFICATION FOR INCOMING REQUEST BY:-JYOTIRADITYA STARTED
-
   useEffect(() => {
     if (socket && session) {
       const data = session.db_id;
@@ -60,26 +63,26 @@ export const SessionProvider = ({ children }) => {
         if (data) {
           setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
+            setUnreadCount(newNotifications.length);
             return newNotifications;
           });
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
             setSeenNotifications((prev) => new Set(prev).add(dataString));
-            toast("you get a connection request");
+            toast("You got a connection request");
           }
         }
-        // Handle the data received from the server
       });
+
       socket.on("friendRequestAccepted", (data) => {
-        console.log("my data", data);
+        console.log("My data", data);
       });
     }
   }, [socket, session, seenNotifications]);
 
-  ///NOTIFICATION FOR INCOMING REQUEST BY:-JYOTIRADITYA ENDED
   return (
     <SessionContext.Provider
-      value={{ session, request, setRequest, socket, notification }}
+      value={{ session, request, setRequest, socket, notification, setNotification, unreadCount, clearUnreadCount }}
     >
       {!loading && children}
     </SessionContext.Provider>

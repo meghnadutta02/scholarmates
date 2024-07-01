@@ -10,11 +10,8 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
   const { socket, session, notification } = useSession();
   const [isVisible, setIsVisible] = useState(true);
 
-  useEffect(() => {
-    if (notification) {
-      console.log("notification", notification);
-    }
-  }, [notification])
+  
+
   const acceptHandle = async (x) => {
     // console.log(socket);
     // console.log(x);

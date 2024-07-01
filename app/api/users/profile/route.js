@@ -8,20 +8,21 @@ import connect from "@/app/config/db";
 export async function GET(req) {
   try {
     await connect();
-    const session = await getServerSession(options);
-    const id = session?.user?.db_id;
+    const data=req.nextUrl.searchParams.get("id");
     
-
-    const user = await User.findOne({
-      _id: id,
-    }).select("-createdAt -updatedAt -__v");
+    if(data){
+      console.log(data);
+      const user = await User.findOne({
+        _id: data,
+      }).select("-createdAt -updatedAt -__v");
+    
     console.log(user);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
     return NextResponse.json({ result: user }, { status: 200 });
-    n;
+  }
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -49,5 +50,48 @@ export async function PUT(req) {
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
+// UNFOLLOW CONNECTIONS
+
+export async function POST(req, resp) {
+  try {
+    await connect();
+    const secondUserId = req.nextUrl.searchParams.get("seconduserId");
+    console.log("second user", secondUserId);
+    const session = await getServerSession(options);
+    const id = session?.user?.db_id;
+
+    if (secondUserId && id) {
+      const user = await User.findById(id);
+      const secondUser = await User.findById(secondUserId);
+
+      if (!user || !secondUser) {
+        return NextResponse.json(
+          { error: "Something missing in user and second user" },
+          { status: 401 }
+        );
+      }
+        await user.connection.pull(secondUserId);
+        await secondUser.connection.pull(id);
+      // Your logic to update the user and second user
+
+      await user.save(); // Save the changes
+      await secondUser.save(); // Save the changes
+
+      return NextResponse.json(
+        { success: "Unfollowed this user" },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "User IDs are missing" },
+        { status: 400 }
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

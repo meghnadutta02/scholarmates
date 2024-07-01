@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NavbarClient = () => {
-  const { session, notification } = useSession();
+  const { session, unreadCount } = useSession();
 
   return (
     <div className=" flex justify-between ">
@@ -42,9 +42,9 @@ const NavbarClient = () => {
               size="icon"
               variant="icon"
             >
-              {notification?.length > 0 && (
+              {unreadCount> 0 && (
                 <span className="absolute z-10 inline-flex items-center justify-center p-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
-                  {notification.length}
+               { unreadCount}
                 </span>
               )}
               <BellIcon className="relative  h-5 w-5 text-white" />
@@ -77,7 +77,7 @@ const NavbarClient = () => {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem>
-                <Link href="/profile">Profile</Link>
+                <Link href={`/profile/${session?.db_id}`}>Profile</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 

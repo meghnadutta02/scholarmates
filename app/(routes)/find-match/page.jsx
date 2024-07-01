@@ -39,7 +39,7 @@ export default function Component() {
 
   const userdata = async () => {
     try {
-      const res = await fetch("/api/users/profile", {
+      const res = await fetch(`/api/users/profile?id=${userId.db_id}`, {
         cache: "no-cache",
       });
       if (!res.ok) {
@@ -47,6 +47,7 @@ export default function Component() {
       }
       const data = await res.json();
 
+      
       setData(data.result);
       setRequestPen(data.result.requestPending);
       setVisible(true);
@@ -112,6 +113,8 @@ export default function Component() {
 
   const handleConnectClick = async (profileId) => {
     try {
+      console.log("profile",profileId);
+      console.log(userId.db_id);
       if (profileId && userId) {
         const data = await fetch(
           `http://localhost:5001/sendconnection/${userId.db_id}`,
@@ -190,6 +193,7 @@ export default function Component() {
                           </div>
                           <div className="flex ml-auto gap-4">
                             {requestPend?.includes(profile._id) ? (
+                            
                               <Button disabled>Requested</Button>
                             ) : (
                               <Button
