@@ -82,8 +82,8 @@ const NavbarClient = () => {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem>
-                <Link href="/mydiscussion">MyDiscussion</Link>
-                </DropdownMenuItem>
+                <Link href="/my-discussions">My Discussions</Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Link

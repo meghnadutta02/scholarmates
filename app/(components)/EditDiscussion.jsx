@@ -1,36 +1,56 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { Textarea } from "@/components/ui/textarea";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
 import { Label } from "@/components/ui/label";
-
 import { toast } from "react-toastify";
 import { interests } from "../interests";
-
 import { PaperclipIcon } from "lucide-react";
-function NewDiscussion() {
+
+const EditDiscussion = ({ discussion, setDiscussion }) => {
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
-  const [title, setTitle] = useState("");
-  const [groupTitle, setGroupTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [type, setType] = useState("");
+
+  const [title, setTitle] = useState(discussion.title || "");
+  const [content, setContent] = useState(discussion.content || "");
+  const [type, setType] = useState(discussion.type || "");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
-  const [privacy, setPrivacy] = useState("public");
+
   const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    const initialCategory = interests.find((interest) =>
+      interest.subcategories.includes(discussion.subcategories[0])
+    );
+
+    if (initialCategory) {
+      setSelectedCategory({
+        label: initialCategory.category,
+        value: initialCategory.category,
+      });
+
+      const newSubcategoryOptions = initialCategory.subcategories.map(
+        (subcategory) => ({
+          label: subcategory,
+          value: subcategory,
+        })
+      );
+
+      setSubCategoryOptions(newSubcategoryOptions);
+      const initialSubCategories = discussion.subcategories.map((sub) => ({
+        label: sub,
+        value: sub,
+      }));
+
+      setSelectedSubCategories(initialSubCategories);
+    }
+  }, [discussion]);
 
   const categories = interests.flatMap(
     (categoryObject) => Object.values(categoryObject)[0]
@@ -68,6 +88,7 @@ function NewDiscussion() {
   const handleImageChange = (event) => {
     setSelectedImage(event.target.files?.[0]);
   };
+
   const handleSubCategoryChange = (selectedSubCategories) => {
     setSelectedSubCategories(selectedSubCategories);
   };
@@ -75,13 +96,7 @@ function NewDiscussion() {
   const handlePostSubmit = async (e) => {
     e.preventDefault();
     setIsDisabled(true);
-    const toastId = toast.loading("Creating discussion...");
-    formData.append("groupTitle", groupTitle);
-    formData.append("title", title);
-    formData.append("content", content);
-    formData.append("type", type);
-    formData.append("privacy", privacy);
-    formData.append("coverImage", selectedImage);
+
     if (
       !title ||
       !content ||
@@ -91,50 +106,60 @@ function NewDiscussion() {
     ) {
       return toast.error("Please fill out all fields");
     }
-    if (!selectedCategory) {
-      return toast.error("Please select a category");
-    }
+    const toastId = toast.loading("Updating discussion...");
+
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("type", type);
+    formData.append("coverImage", selectedImage);
     selectedSubCategories.forEach((subcategory) => {
       formData.append("subcategories", subcategory.value);
     });
 
     try {
       const result = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/discussion`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${discussion._id}`,
         {
-          method: "POST",
+          method: "PUT",
           body: formData,
         }
       );
 
       if (result.ok) {
+        const updatedDiscussion = await result.json();
+        delete updatedDiscussion.result.creator;
+        setDiscussion((prevDiscussion) => ({
+          ...prevDiscussion,
+          ...updatedDiscussion.result,
+        }));
+
         toast.update(toastId, {
-          render: "Discussion created! Go to chat room.",
+          render: "Discussion updated! Go to chat room.",
           type: "success",
           isLoading: false,
           autoClose: 4000,
         });
       }
     } catch (error) {
-      console.error("Error uploading discussion:", error);
       toast.update(toastId, {
-        render: "Error creating discussiont",
+        render: "Error updating discussion",
         type: "error",
         isLoading: false,
         autoClose: 4000,
       });
+      console.error("Error updating discussion:", error);
     }
 
     setSelectedImage("");
     setTitle("");
     setType("");
     setIsDisabled(false);
-    setGroupTitle("");
+
     setSelectedCategories([]);
     setSelectedSubCategories([]);
     setSelectedCategory(null);
     setContent("");
-    setPrivacy("public");
+
     setSelectedImage(null);
   };
 
@@ -194,57 +219,9 @@ function NewDiscussion() {
             placeholder="Select a category first"
           />
         </div>
-        <div className="">
-          <Label htmlFor="privacy">Configure Group Preferences</Label>
-          <RadioGroup
-            defaultValue="public"
-            name="privacy"
-            className="flex items-center space-x-2 mt-[5px]"
-            onChange={(e) => {
-              setPrivacy(e.target.value);
-            }}
-          >
-            <div className="flex items-center space-x-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger type="button">
-                    <RadioGroupItem value="public" id="privacyPublic" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Users can join directly.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <Label htmlFor="privacyPublic">Public</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger type="button">
-                    <RadioGroupItem value="private" id="privacyPrivate" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      Users can send requests to join, which must be approved.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <Label htmlFor="privacyPrivate">Private</Label>
-            </div>
-          </RadioGroup>
-        </div>
-        <div className="mt-3">
-          <Input
-            placeholder="Group Title"
-            value={groupTitle}
-            maxLength={30}
-            onChange={(e) => setGroupTitle(e.target.value)}
-          />
-        </div>
 
-        <div className="flex justify-start my-3 p-[10px] border rounded  items-center">
-          <Label className="flex  cursor-pointer text-gray-500 font-normal ">
+        <div className="flex justify-start my-3 p-[10px] border rounded items-center">
+          <Label className="flex cursor-pointer text-gray-500 font-normal">
             Add a cover image
             <PaperclipIcon className="w-4 h-4 mx-2 cursor-pointer" />
             <input
@@ -260,12 +237,12 @@ function NewDiscussion() {
           </div>
         </div>
 
-        <Button className="h-8 w-full " type="submit" disabled={isDisabled}>
+        <Button className="h-8 w-full" type="submit" disabled={isDisabled}>
           Submit
         </Button>
       </form>
     </div>
   );
-}
+};
 
-export default NewDiscussion;
+export default EditDiscussion;

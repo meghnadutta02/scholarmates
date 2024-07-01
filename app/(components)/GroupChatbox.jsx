@@ -14,7 +14,7 @@ import { UrlMatcher } from "interweave-autolink";
 import { useSession } from "./SessionProvider";
 import Image from "next/image";
 
-const GroupChatbox = ({ roomID }) => {
+const GroupChatbox = ({ roomID, setGroups, setIsRoomSelected, setRoomID }) => {
   const { socket, session } = useSession();
   const [loading, setLoading] = useState(true);
 
@@ -162,6 +162,9 @@ const GroupChatbox = ({ roomID }) => {
         <GroupDetails
           groupDetails={groupDetails}
           setShowGroupDetails={setShowGroupDetails}
+          setGroups={setGroups}
+          setIsRoomSelected={setIsRoomSelected}
+          setRoomID={setRoomID}
         />
       ) : (
         <div className="flex flex-col justify-between bg-gray-100 dark:bg-gray-800 max-h-[32rem] ">

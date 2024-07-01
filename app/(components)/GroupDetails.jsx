@@ -2,7 +2,20 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MdEdit } from "react-icons/md";
+import { IoMdExit } from "react-icons/io";
 import { toast } from "react-toastify";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import {
   DropdownMenu,
@@ -24,11 +37,17 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 
-const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
+const GroupDetails = ({
+  groupDetails,
+  setShowGroupDetails,
+  setGroups,
+  setIsRoomSelected,
+  setRoomID,
+}) => {
   const [description, setDescription] = useState(groupDetails.description);
   const [isPrivate, setIsPrivate] = useState(groupDetails.isPrivate);
   const [group, setGroup] = useState(groupDetails);
-
+  const [name, setName] = useState(groupDetails.name);
   const handleKickMember = async (memberId) => {
     try {
       const response = await fetch(
@@ -52,7 +71,33 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
       console.error(error);
     }
   };
+  const handleExitGroup = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${group._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
+      if (response.ok) {
+        setGroups((prevGroups) =>
+          prevGroups.filter((g) => g._id !== group._id)
+        );
+        setIsRoomSelected(false);
+        setRoomID(null);
+        toast.success("You are no longer a member", {
+          autoClose: 5000,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error exiting group");
+    }
+  };
   const handleModeratorStatus = async (memberId, action) => {
     try {
       const response = await fetch(
@@ -86,7 +131,30 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
       console.error(error);
     }
   };
+  const handleUpdateName = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${group._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name }),
+        }
+      );
 
+      if (response.ok) {
+        setGroup((prevGroup) => ({ ...prevGroup, name }));
+        toast.success("Group name updated successfully", {
+          autoClose: 5000,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error updating group name");
+    }
+  };
   const handleUpdateDescription = async () => {
     try {
       const response = await fetch(
@@ -108,7 +176,7 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating group description:");
+      toast.error("Error updating group description");
     }
   };
 
@@ -134,7 +202,7 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating group privacy:");
+      toast.error("Error updating group privacy");
     }
   };
 
@@ -145,12 +213,61 @@ const GroupDetails = ({ groupDetails, setShowGroupDetails }) => {
 
   return (
     <div className="flex flex-col justify-between bg-gray-100 max-h-[32rem]  dark:bg-gray-800 pb-2 relative">
-      <h2 className="text-center font-semibold text-xl py-4">{group.name}</h2>
-
+      <div className="flex justify-center py-4 items-center gap-1">
+        <span className=" font-semibold text-xl ">{group.name}</span>
+        {(isCurrentUserCreator || isCurrentUserModerator) && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <MdEdit className="cursor-pointer" />
+            </DialogTrigger>
+            <DialogContent className="w-[45%]">
+              <DialogHeader>
+                <DialogTitle>Edit Group Name</DialogTitle>
+                <DialogDescription>
+                  Update the group name below:
+                </DialogDescription>
+              </DialogHeader>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-4"
+              />
+              <DialogFooter>
+                <Button onClick={handleUpdateName}>Save</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
       <IoArrowBackCircleOutline
         className="w-6 h-6 left-[7px] cursor-pointer top-5 absolute"
         onClick={() => setShowGroupDetails(false)}
       />
+
+      {!isCurrentUserCreator && (
+        <AlertDialog>
+          <AlertDialogTrigger>
+            <IoMdExit className="w-[22px] h-[22px] right-[7px] cursor-pointer top-5 absolute font-extralight" />
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Are you sure you want to leave the group?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Once you leave the group, you will no longer have access to its
+                discussions and content.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleExitGroup}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
 
       <div className="p-4 mx-2 border-2 h-[32rem] rounded-sm overflow-y-auto bg-white">
         {isCurrentUserCreator && (

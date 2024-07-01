@@ -64,7 +64,13 @@ const Page = () => {
                 </div>
                 {isRoomSelected ? (
                   <div className="min-w-[240px] md:min-w-[750px]">
-                    <GroupChatbox key={roomID} roomID={roomID} />
+                    <GroupChatbox
+                      key={roomID}
+                      roomID={roomID}
+                      setGroups={setGroups}
+                      setIsRoomSelected={setIsRoomSelected}
+                      setRoomID={setRoomID}
+                    />
                   </div>
                 ) : (
                   <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">

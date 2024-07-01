@@ -34,7 +34,6 @@ export async function POST(req) {
     const discussion = await Discussion.create({
       title,
       type,
-      privacy,
       content,
       creator: new ObjectId(session?.user?.db_id),
       coverImage: coverImage,

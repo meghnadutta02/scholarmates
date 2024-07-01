@@ -32,7 +32,7 @@ export async function GET(req) {
       group.participants.push(userId);
       user.groupsJoined.push(groupId);
       await group.save();
-
+      await user.save();
       return NextResponse.json(
         { result: "User added to group" },
         { status: 201 }

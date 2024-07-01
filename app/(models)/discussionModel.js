@@ -3,8 +3,6 @@ import Group from "./groupModel";
 import User from "./userModel";
 const discussionSchema = new mongoose.Schema(
   {
-    privacy: { type: String, enum: ["private", "public"], required: true },
-
     type: {
       type: String,
       enum: [

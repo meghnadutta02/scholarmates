@@ -16,9 +16,7 @@ export async function GET(req) {
       fromUser: session?.user?.db_id,
     });
     const user = await User.findById(session?.user?.db_id);
-    const accepted = groups
-      .filter((group) => group.status === "accepted")
-      .map((group) => group.groupId);
+    let accepted = [];
     const pending = groups
       .filter((group) => group.status === "pending")
       .map((group) => group.groupId);
