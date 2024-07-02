@@ -154,101 +154,6 @@ const DiscussionList = () => {
     }, 300);
   };
 
-  const toggleDislike = async (id) => {
-    setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/dislike`,
-      { method: "PUT" }
-    );
-
-    if (response.ok) {
-      setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((discussion) =>
-          discussion._id === id
-            ? {
-                ...discussion,
-                dislikes: discussion.isDisliked
-                  ? discussion.dislikes - 1
-                  : discussion.dislikes + 1,
-                isDisliked: !discussion.isDisliked,
-                likes: discussion.isLiked
-                  ? discussion.likes - 1
-                  : discussion.likes,
-                isLiked: false,
-              }
-            : discussion
-        )
-      );
-    }
-
-    setTimeout(() => {
-      setAnimationState((prev) => ({ ...prev, [id]: undefined }));
-    }, 300);
-  };
-
-  const handleButtonClick = async (discussion) => {
-    try {
-      const toastId = toast.loading("Sending request...");
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
-        {
-          method: "GET",
-        }
-      );
-
-      if (!res.ok) {
-        toast.update(toastId, {
-          render: "Error sending request",
-          type: "error",
-          isLoading: false,
-          autoClose: 5000,
-        });
-        throw new Error("Error sending request");
-      }
-
-      const r = await res.json();
-
-      if (r.status === 200) {
-        toast.update(toastId, {
-          render: "Request sent successfully",
-          type: "success",
-          isLoading: false,
-          autoClose: 5000,
-        });
-
-        setDiscussions((prevDiscussions) =>
-          prevDiscussions.map((d) => {
-            if (d._id === discussion._id) {
-              return { ...d, isRequested: true };
-            }
-            return d;
-          })
-        );
-      } else {
-        toast.update(toastId, {
-          render: "Joined group successfully",
-          type: "success",
-          isLoading: false,
-          autoClose: 5000,
-        });
-
-        setDiscussions((prevDiscussions) =>
-          prevDiscussions.map((d) => {
-            if (d._id === discussion._id) {
-              return { ...d, isMember: true };
-            }
-            return d;
-          })
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error sending request");
-    }
-  };
-
   return (
     <div>
       {loading ? (
@@ -256,43 +161,16 @@ const DiscussionList = () => {
       ) : discussions.length === 0 ? (
         <p>You have no discussions. Create a discussion..</p>
       ) : (
-        <div className=" grid grid-cols-1  gap-6 ">
+        <div className="grid grid-cols-1 gap-6">
           {discussions?.map((discussion) => (
             <div
               key={discussion._id}
-              style={{ width: "64vw" }}
               className="relative flex items-start gap-4 rounded-lg shadow-sm p-2"
             >
               {/* Delete Icon */}
 
-              <Image
-                alt="Avatar"
-                className="rounded-full hidden sm:block"
-                height="48"
-                src={session?.user?.profilePic}
-                style={{
-                  aspectRatio: "48/48",
-                  objectFit: "cover",
-                }}
-                width="48"
-              />
-              <Image
-                alt="Avatar"
-                className="rounded-full sm:hidden block"
-                height="38"
-                src={session?.user?.profilePic}
-                style={{
-                  aspectRatio: "38/38",
-                  objectFit: "cover",
-                }}
-                width="38"
-              />
-
-              <div className="flex-1 grid gap-2">
+              <div className="flex-1 gap-2">
                 <div className="flex flex-col  gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {session?.user?.name}
-                  </span>{" "}
                   <h4 className="font-semibold text-base cursor-pointer">
                     <Link href={`/discussions/${discussion._id}`}>
                       {discussion.title}
@@ -309,54 +187,34 @@ const DiscussionList = () => {
                 >
                   <p className="cursor-pointer">{discussion.content}</p>
                 </div>
-                <div className="prose max-w-none  md:block hidden ">
-                  <p className="cursor-pointer">
-                    {" "}
-                    <Link href={`/discussions/${discussion._id}`}>
-                      {discussion.content}
-                    </Link>
-                  </p>
-                </div>
-                <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
-                  <Button className="h-10" size="icon" variant="icon">
-                    <ThumbsUpIcon
-                      className={`w-4 h-4 cursor-pointer ${
-                        discussion.isLiked && "text-blue-400"
-                      } ${
-                        animationState[discussion._id] === "like" &&
-                        "pop text-blue-400"
-                      }`}
-                      onClick={() => toggleLike(discussion._id)}
-                    />
-                    <span className="sr-only">Like</span>
-                    <span className="ml-2">{discussion.likes}</span>
-                  </Button>
-                  <Button className="h-10 " size="icon" variant="icon">
-                    <ThumbsDownIcon
-                      className={`w-4 h-4 cursor-pointer ${
-                        discussion.isDisliked && "text-red-400"
-                      } ${
-                        animationState[discussion._id] === "dislike" &&
-                        "pop text-red-400"
-                      }`}
-                      onClick={() => toggleDislike(discussion._id)}
-                    />
-                    <span className="sr-only">Dislike</span>
-                    <span className="ml-2">{discussion.dislikes}</span>
-                  </Button>
-
-                  <Button
-                    className="md:w-24 w-[70px]"
-                    variant="secondary"
-                    disabled
-                  >
-                    Member
-                  </Button>
-                  <Link href={`/discussions/${discussion._id}`}>
-                    <Button className="w-24 md:hidden" variant="icon">
-                      <InfoIcon className="w-5 h-5" />
+                <div className="flex justify-between my-1">
+                  <div className="prose max-w-[80%] md:block hidden ">
+                    <p className="cursor-pointer pr-2">
+                      <Link href={`/discussions/${discussion._id}`}>
+                        {discussion.content}
+                      </Link>
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 items-center text-center">
+                    <Button className="h-10" size="icon" variant="icon">
+                      <ThumbsUpIcon
+                        className={`w-4 h-4 cursor-pointer ${
+                          discussion.isLiked && "text-blue-400"
+                        } ${
+                          animationState[discussion._id] === "like" &&
+                          "pop text-blue-400"
+                        }`}
+                        onClick={() => toggleLike(discussion._id)}
+                      />
+                      <span className="sr-only">Like</span>
+                      <span className="ml-2">{discussion.likes}</span>
                     </Button>
-                  </Link>
+                    <Link href={`/discussions/${discussion._id}`}>
+                      <Button className="w-24" variant="icon">
+                        <InfoIcon className="w-5 h-5" />
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

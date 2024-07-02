@@ -1,5 +1,13 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
+
+const getYearWithSuffix = (year) => {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const lastDigit = year % 10;
+  const suffix = suffixes[lastDigit] || suffixes[0];
+  return `${year}${suffix}`;
+};
+
 const DetailSection = ({ user }) => {
   return (
     <>
