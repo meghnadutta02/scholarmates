@@ -1,32 +1,39 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-
+import DetailSection from "./DetailSection";
+import DiscussionSection from "./DiscussionSection";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 import { useSession } from "./SessionProvider";
 import { Button } from "@/components/ui/button";
+import { Disc } from "lucide-react";
 
-const ProfileDetailsTab = ({ user }) => {
+const ProfileDetailsTab = ({ user: initialUser }) => {
   const [loading, setLoading] = useState(true);
-
+  const [user, setUser] = useState(initialUser);
   const { session } = useSession();
-  const [isConnected, setIsConnected] = useState({
-    connection: [],
-    requestPending: [],
-  });
-  const [check, setCheck] = useState(false);
 
   useEffect(() => {
-    const fetchUpdatedUser = async (id) => {
+    const fetchCurrentUser = async (id) => {
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile?id=${id}`
         );
         if (res.ok) {
-          const updatedUser = await res.json();
-          setIsConnected(updatedUser.result);
+          const currentUser = await res.json();
+          const isConnected = currentUser.result.connection.includes(
+            initialUser._id
+          );
+          const isRequestPending = currentUser.result.requestPending.includes(
+            initialUser._id
+          );
+          setUser((prevUser) => ({
+            ...prevUser,
+            isConnected,
+            isRequestPending,
+          }));
           setLoading(false);
         } else {
           toast.error("Failed to fetch updated user data");
@@ -38,8 +45,8 @@ const ProfileDetailsTab = ({ user }) => {
         setLoading(false);
       }
     };
-    fetchUpdatedUser(session.db_id);
-  }, [session.db_id, check]);
+    fetchCurrentUser(session.db_id);
+  }, [session.db_id, initialUser._id]);
 
   const handleremoveClick = async (id) => {
     setLoading(true);
@@ -56,7 +63,7 @@ const ProfileDetailsTab = ({ user }) => {
           autoClose: 4000,
           closeOnClick: true,
         });
-        setCheck((prevCheck) => !prevCheck);
+        setUser((prevUser) => ({ ...prevUser, isConnected: false }));
       } else {
         toast.error("Failed to remove connection");
       }
@@ -87,7 +94,7 @@ const ProfileDetailsTab = ({ user }) => {
             autoClose: 4000,
             closeOnClick: true,
           });
-          setCheck((prevCheck) => !prevCheck);
+          setUser((prevUser) => ({ ...prevUser, isRequestPending: true }));
         } else {
           toast.error("Failed to send connection request");
         }
@@ -101,54 +108,52 @@ const ProfileDetailsTab = ({ user }) => {
     }
   };
 
-  // Memoize isConnected for optimized rendering
-  const memoizedIsConnected = useMemo(() => isConnected, [isConnected]);
   return (
     <div className="md:px-8 px-4 py-4 md:w-[85%] w-full mx-auto">
-      <section className="bg-white rounded-lg shadow-lg p-6 w-full relative">
+      <section className="bg-white rounded-lg shadow-lg md:p-6 p-4 w-full relative">
         <div className="flex flex-col items-center text-center">
           <Avatar>
             <AvatarImage alt={user.name} src={user.profilePic} />
           </Avatar>
           <h1 className="mt-4 font-bold text-2xl">{user.name}</h1>
           {user.bio && <p className="mt-2 text-gray-600 italic">{user.bio}</p>}
-          <div className="gap-4 mt-7">
-            {session?.db_id !== user._id && (
-              <>
-                {memoizedIsConnected.connection.includes(user._id) ? (
-                  <Button
-                    onClick={() => handleremoveClick(user._id)}
-                    disabled={loading}
-                  >
-                    Remove Connection
-                  </Button>
-                ) : memoizedIsConnected.requestPending.includes(user._id) ? (
-                  <Button disabled={true}>Requested</Button>
-                ) : (
-                  <Button
-                    onClick={() => handleConnectClick(user._id)}
-                    disabled={loading}
-                  >
-                    Connect
-                  </Button>
-                )}
-              </>
+          <div className="gap-4 mt-4">
+            {user.isConnected ? (
+              <Button
+                onClick={() => handleremoveClick(user._id)}
+                disabled={loading}
+              >
+                Remove Connection
+              </Button>
+            ) : user.isRequestPending ? (
+              <Button disabled={true}>Requested</Button>
+            ) : (
+              <Button
+                onClick={() => handleConnectClick(user._id)}
+                disabled={loading}
+              >
+                Connect
+              </Button>
             )}
           </div>
         </div>
       </section>
-      <Tabs defaultValue="c" className="w-full">
+      <Tabs defaultValue="c" className="w-full mt-4">
         <TabsList className="flex mx-auto w-min">
-          <TabsTrigger value="c">Details</TabsTrigger>
-          <TabsTrigger value="d">Discussions</TabsTrigger>
+          <TabsTrigger value="c" className="text-md">
+            Details
+          </TabsTrigger>
+          <TabsTrigger value="d" className="text-md">
+            Discussions
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="c" className=" w-full ">
-          hi
+          <DetailSection user={user} />
         </TabsContent>
 
-        <TabsContent value="g" className=" w-full">
-          bye
+        <TabsContent value="d" className=" w-full">
+          <DiscussionSection user={user} />
         </TabsContent>
       </Tabs>
     </div>

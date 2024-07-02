@@ -23,7 +23,7 @@ const ProfileDetails = ({ initialUser }) => {
       {session.db_id === user._id ? (
         <div className="md:px-8 px-3 py-4 md:w-[85%] w-full mx-auto">
           <div className="flex flex-col justify-evenly gap-4">
-            <section className="bg-white rounded-lg shadow-lg p-6 w-full relative">
+            <section className="bg-white rounded-lg shadow-lg md:p-6 p-4 w-full relative">
               <div className="flex flex-col items-center text-center">
                 <Avatar>
                   <AvatarImage alt={user.name} src={user.profilePic} />
@@ -38,8 +38,8 @@ const ProfileDetails = ({ initialUser }) => {
                 )}
               </div>
             </section>
-            <section className="bg-white rounded-lg shadow-lg p-6 w-full">
-              <h2 className="text-xl font-bold mb-6">Interests</h2>
+            <section className="bg-white rounded-lg shadow-lg md:p-6 p-4 w-full">
+              <h2 className="text-xl font-bold md:mb-6 mb-4">Interests</h2>
               <div className="space-y-4">
                 {user.interestSubcategories &&
                 user.interestSubcategories.length > 0 ? (
@@ -55,8 +55,8 @@ const ProfileDetails = ({ initialUser }) => {
                 )}
               </div>
             </section>
-            <section className="bg-white rounded-lg shadow-lg p-6 w-full">
-              <h2 className="text-xl font-bold mb-6">Details</h2>
+            <section className="bg-white rounded-lg shadow-lg p-4 md:p-6 w-full">
+              <h2 className="text-xl font-bold md:mb-6 mb-4">Details</h2>
               <div className="my-4">
                 <h3 className="text-lg font-semibold">Email</h3>
                 <p className="text-md font-semibold text-gray-600">
