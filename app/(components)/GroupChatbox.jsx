@@ -13,8 +13,15 @@ import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
 import { useSession } from "./SessionProvider";
 import Image from "next/image";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 
-const GroupChatbox = ({ roomID, setGroups, setIsRoomSelected, setRoomID }) => {
+const GroupChatbox = ({
+  roomID,
+  setGroups,
+  setIsRoomSelected,
+  setRoomID,
+  setToggleChatView,
+}) => {
   const { socket, session } = useSession();
   const [loading, setLoading] = useState(true);
 
@@ -167,15 +174,24 @@ const GroupChatbox = ({ roomID, setGroups, setIsRoomSelected, setRoomID }) => {
           setRoomID={setRoomID}
         />
       ) : (
-        <div className="flex flex-col justify-between bg-gray-100 dark:bg-gray-800 max-h-[32rem] ">
-          <h2
-            className="text-center font-semibold text-xl py-4 cursor-pointer"
-            onClick={() => setShowGroupDetails(true)}
-          >
-            {groupDetails?.name}
-          </h2>
+        <div className="flex flex-col h-[100%] justify-between bg-gray-50 dark:bg-gray-800">
+          <div className="flex items-center justify-between px-4">
+            <h2
+              className="text-center font-semibold text-xl py-4 cursor-pointer"
+              onClick={() => setShowGroupDetails(true)}
+            >
+              {groupDetails?.name}
+            </h2>
+            <div className=" p-1 rounded-lg">
+              <IoArrowBackCircleOutline
+                className="cursor-pointer hover:text-gray-500 transition-colors duration-200 ease-in-out"
+                onClick={() => setToggleChatView(true)}
+                size={30}
+              />
+            </div>
+          </div>
 
-          <div className="p-4 mx-2 border-2 h-[32rem] rounded-sm overflow-y-auto bg-white">
+          <div className="p-4 mx-2 border h-[32rem] rounded-md overflow-y-auto bg-white scrollbar-none">
             {inboxMessages.map((msg, index) => (
               <div
                 key={index}

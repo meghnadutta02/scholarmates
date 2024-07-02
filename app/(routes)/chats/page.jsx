@@ -12,6 +12,7 @@ export default function Chats() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toggleChatView, setToggleChatView] = useState(true);
 
   const fetchConnections = async () => {
     try {
@@ -49,52 +50,63 @@ export default function Chats() {
           <TabsContent value="c">
             {connections.length > 0 ? (
               <div className="flex flex-col min-h-[32rem] rounded-lg border my-4">
-                <div className="flex flex-1 max-h-[32rem]">
-                  <div className="w-1/3 border-r py-4 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
-                    {connections.map((connection) => (
-                      <div key={connection._id} className="border-b pb-1">
-                        <Button
-                          onClick={() => setSelectedUser(connection)}
-                          variant="ghost"
-                          className="flex h-12 w-full justify-start gap-4"
+                <div className="flex flex-1 max-h-[32rem] min-w-[300px]">
+                  {toggleChatView ? (
+                    <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px] px-1 flex flex-col overflow-y-auto scrollbar-thin">
+                      {connections.map((connection) => (
+                        <div
+                          key={connection._id}
+                          className="border-b py-2 hover:bg-gray-100"
                         >
-                          <div className="hidden md:block w-10 h-10 relative">
-                            <Image
-                              alt="User avatar"
-                              className="rounded-full"
-                              height="48"
-                              src={connection.profilePic}
-                              style={{
-                                aspectRatio: "48/48",
-                                objectFit: "cover",
-                              }}
-                              width="48"
-                            />
-                          </div>
-                          <div className="flex flex-col">
-                            <h1 className="text-md md:text-lg font-semibold">
-                              {connection.name}
-                            </h1>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              Last message{" "}
-                            </p>
-                          </div>
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {selectedUser ? (
-                    <div className="min-w-[240px] md:min-w-[790px]">
-                      <UserChatbox
-                        key={selectedUser._id}
-                        selectedUser={selectedUser}
-                      />
+                          <Button
+                            onClick={() => {
+                              setSelectedUser(connection);
+                              setToggleChatView(false);
+                            }}
+                            variant="icon"
+                            className="flex h-12 w-full justify-start gap-4"
+                          >
+                            <div className=" w-10 h-10 relative">
+                              <Image
+                                alt="User avatar"
+                                className="rounded-full"
+                                height="48"
+                                src={connection.profilePic}
+                                style={{
+                                  aspectRatio: "48/48",
+                                  objectFit: "cover",
+                                }}
+                                width="48"
+                              />
+                            </div>
+                            <div className="flex flex-col">
+                              <h1 className="font-semibold">
+                                {connection.name}
+                              </h1>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">
+                                Last message{" "}
+                              </p>
+                            </div>
+                          </Button>
+                        </div>
+                      ))}
                     </div>
                   ) : (
-                    <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[790px]">
-                      <p>Choose conversation</p>
-                    </div>
+                    <>
+                      {selectedUser ? (
+                        <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px]">
+                          <UserChatbox
+                            key={selectedUser._id}
+                            selectedUser={selectedUser}
+                            setToggleChatView={setToggleChatView}
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[790px]">
+                          <p>Choose conversation</p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

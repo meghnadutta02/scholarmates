@@ -13,8 +13,11 @@ import { VscSend } from "react-icons/vsc";
 import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
 import DisplayMedia from "./DisplayMedia";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
-const UserChatbox = ({ selectedUser }) => {
+const UserChatbox = ({ selectedUser, setToggleChatView }) => {
   const { socket, session } = useSession();
   const [message, setMessage] = useState({
     text: "",
@@ -162,85 +165,97 @@ const UserChatbox = ({ selectedUser }) => {
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
         </div>
       ) : (
-        <div className="flex flex-col h-[100%] justify-between p-4">
+        <div className="flex flex-col h-[100%] bg-gray-50 justify-between p-4">
           <div>
             {/* chat info header */}
             <div className="flex px-2 mb-4 items-center gap-4 justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 relative">
-                  <Image
-                    alt="User avatar"
-                    className="rounded-full"
-                    height="36"
-                    src={selectedUser.profilePic}
-                    style={{
-                      aspectRatio: "48/48",
-                      objectFit: "cover",
-                    }}
-                    width="48"
-                  />
-                  <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" />
-                </div>
-                <div className="flex flex-col">
-                  <h1 className="text-lg font-semibold">{selectedUser.name}</h1>
-                </div>
-              </div>
-
-              <div className="border p-1 rounded-lg">
+              <div className="flex items-center justify-start gap-2">
                 <Popover>
-                  <PopoverTrigger>info</PopoverTrigger>
+                  <PopoverTrigger>
+                    <div className="w-12 h-12 relative">
+                      <Image
+                        alt="User avatar"
+                        className="rounded-full"
+                        height="36"
+                        src={selectedUser.profilePic}
+                        style={{
+                          aspectRatio: "48/48",
+                          objectFit: "cover",
+                        }}
+                        width="48"
+                      />
+                      <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" />
+                    </div>
+                  </PopoverTrigger>
                   <PopoverContent>
+                    <Link
+                      href={`/profile/${selectedUser._id}`}
+                      className="text-blue-600"
+                    >
+                      View Profile
+                    </Link>
                     <p>Name : {selectedUser.name}</p>
                     <p>College : {selectedUser.collegeName}</p>
                     <p>Course : {selectedUser.degree}</p>
                     <p>Year : {selectedUser.yearInCollege}</p>
                   </PopoverContent>
                 </Popover>
+
+                <div className="flex flex-col">
+                  <h1 className="text-lg font-semibold">{selectedUser.name}</h1>
+                </div>
+              </div>
+
+              <div className=" p-1 rounded-lg">
+                <IoArrowBackCircleOutline
+                  className="cursor-pointer hover:text-gray-500 transition-colors duration-200 ease-in-out"
+                  onClick={() => setToggleChatView(true)}
+                  size={30}
+                />
               </div>
             </div>
-            <div className="flex flex-col border rounded-md  h-[32rem] overflow-y-auto">
-              <div className="p-4 ">
-                {inboxMessages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${
-                      msg.sender === selectedUser._id
-                        ? "justify-start"
-                        : "justify-end"
-                    }`}
-                  >
-                    <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
-                      {msg.sender != selectedUser._id && (
-                        <p className="text-sm font-medium">{msg.senderName}</p>
+
+            <div className="flex flex-col border rounded-md bg-white h-[32rem] overflow-y-auto scrollbar-none">
+              {inboxMessages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex ${
+                    msg.sender === selectedUser._id
+                      ? "justify-start"
+                      : "justify-end"
+                  }`}
+                >
+                  <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
+                    {msg.sender != selectedUser._id && (
+                      <p className="text-sm font-medium">{msg.senderName}</p>
+                    )}
+                    {msg.attachments != null && (
+                      <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
+                        {msg.attachments.map((attachment, index) => (
+                          <DisplayMedia key={index} fileUrl={attachment} />
+                        ))}
+                      </div>
+                    )}
+                    <Interweave
+                      content={msg.text}
+                      matchers={[new UrlMatcher("url")]}
+                    />
+                    <p className="text-[10px] flex justify-end font-light">
+                      {msg.sending ? (
+                        <>Sending...</>
+                      ) : (
+                        <>
+                          {new Date(msg.updatedAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </>
                       )}
-                      {msg.attachments != null && (
-                        <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
-                          {msg.attachments.map((attachment, index) => (
-                            <DisplayMedia key={index} fileUrl={attachment} />
-                          ))}
-                        </div>
-                      )}
-                      <Interweave
-                        content={msg.text}
-                        matchers={[new UrlMatcher("url")]}
-                      />
-                      <p className="text-[10px] flex justify-end font-light">
-                        {msg.sending ? (
-                          <>Sending...</>
-                        ) : (
-                          <>
-                            {new Date(msg.updatedAt).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </>
-                        )}
-                      </p>
-                    </div>
+                    </p>
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
             </div>
           </div>
 

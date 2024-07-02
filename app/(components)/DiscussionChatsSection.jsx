@@ -11,6 +11,7 @@ const Page = () => {
   const [isRoomSelected, setIsRoomSelected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
+  const [toggleChatView, setToggleChatView] = useState(true);
 
   const fetchGroups = async () => {
     try {
@@ -40,58 +41,66 @@ const Page = () => {
           <Image src={Spinnersvg} alt="Loading..." className="h-28" />
         </div>
       ) : (
-        <div className="flex flex-col min-h-[32rem] rounded-lg border my-4">
-          <div className="flex flex-1 max-h-[32rem]">
-            {groups.length > 0 ? (
-              <>
-                <div className="w-1/3 border-r py-2 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
-                  {groups.map((group) => (
-                    <div key={group._id} className=" ">
-                      <Button
-                        onClick={() => {
-                          setRoomID(group._id);
-                          setIsRoomSelected(true);
-                        }}
-                        variant="ghost"
-                        className={`flex h-12 w-full justify-start bg-gray-100 dark:bg-gray-800 hover:bg-gray-300 truncate ${
-                          roomID === group._id ? "bg-gray-300" : ""
-                        }`}
+        <div>
+          {groups.length > 0 ? (
+            <div className="flex flex-col min-h-[34rem] rounded-lg border my-4">
+              <div className="flex flex-1 max-h-[36rem]">
+                {toggleChatView ? (
+                  <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px] border-r py-2 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
+                    {groups.map((group) => (
+                      <div
+                        key={group._id}
+                        className="border-b py-2 hover:bg-gray-100"
                       >
-                        {group.name}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                {isRoomSelected ? (
-                  <div className="min-w-[240px] md:min-w-[750px]">
-                    <GroupChatbox
-                      key={roomID}
-                      roomID={roomID}
-                      setGroups={setGroups}
-                      setIsRoomSelected={setIsRoomSelected}
-                      setRoomID={setRoomID}
-                    />
+                        <Button
+                          onClick={() => {
+                            setRoomID(group._id);
+                            setIsRoomSelected(true);
+                            setToggleChatView(false);
+                          }}
+                          variant="icon"
+                          className={`flex h-10 w-full justify-start truncate `}
+                        >
+                          {group.name}
+                        </Button>
+                      </div>
+                    ))}
                   </div>
                 ) : (
-                  <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
-                    <p>Choose a conversation</p>
-                  </div>
+                  <>
+                    {isRoomSelected ? (
+                      <div className="min-w-[240px] md:min-w-[750px]">
+                        <GroupChatbox
+                          key={roomID}
+                          roomID={roomID}
+                          setGroups={setGroups}
+                          setIsRoomSelected={setIsRoomSelected}
+                          setRoomID={setRoomID}
+                          setToggleChatView={setToggleChatView}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
+                        <p>Choose a conversation</p>
+                      </div>
+                    )}
+                  </>
                 )}
-              </>
-            ) : (
-              <div className="flex flex-col items-center justify-center w-full py-16">
-                <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
-                  You haven't started any discussions yet.
-                </p>
-                <Link
-                  href="/discussions"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
-                >
-                  Start a discussion
-                </Link>
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full py-16">
+              <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
+                You haven&apos;t started any discussions yet.
+              </p>
+              <Link
+                href="/discussions"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
+              >
+                Start a discussion
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>
