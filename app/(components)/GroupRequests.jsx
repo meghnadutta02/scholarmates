@@ -53,17 +53,17 @@ const GroupRequests = () => {
     <div className="w-full ">
       {loading ? (
         <div className="flex justify-center items-center  z-50">
-          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
+          <Image src={Spinnersvg} alt="Loading..." className="md:h-28 h-24" />
         </div>
       ) : (
-        <div className="flex flex-col gap-4 p-2 w-full ">
+        <div className="flex flex-col gap-4 p-2 w-full  ">
           {mergedRequests.length === 0 ? (
             <p>No requests to display</p>
           ) : (
             mergedRequests.map((request) => (
-              <div key={request._id} className="">
+              <div key={request._id} className="md:text-base text-[14px]">
                 {requestsToJoin.includes(request) && (
-                  <div className="bg-gray-100 rounded-md shadow-lg px-3 py-2">
+                  <div className=" rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 font-sans my-auto">
                     Your request to join group -{" "}
                     <TooltipProvider>
                       <Tooltip>
@@ -82,7 +82,7 @@ const GroupRequests = () => {
                   </div>
                 )}
                 {requestsToAccept.includes(request) && (
-                  <div className="flex w-full justify-between items-center bg-gray-100 rounded-md shadow-lg px-3 py-2">
+                  <div className="flex w-full justify-between items-center  rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2">
                     <div className="">
                       {showButton && (
                         <div className="flex items-center">
@@ -95,8 +95,10 @@ const GroupRequests = () => {
                           />
 
                           <div>
-                            {request?.fromUser?.name} has requested to join
-                            group -{" "}
+                            <span className="font-semibold ">
+                              {request?.fromUser?.name}
+                            </span>{" "}
+                            has requested to join group -{" "}
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger>
@@ -114,7 +116,7 @@ const GroupRequests = () => {
                         </div>
                       )}
                     </div>
-                    <div className="">
+                    <div className="flex gap-1">
                       <button
                         onClick={async () => {
                           try {
@@ -141,9 +143,11 @@ const GroupRequests = () => {
                             console.error(error);
                           }
                         }}
-                        className="mr-2 p-1 transform transition-transform hover:scale-125 text-zinc-700"
+                        className=" md:p-1 p-[2px] transform transition-transform hover:scale-125 text-zinc-700"
                       >
-                        {showButton && <FaCheck className="h-4 w-4" />}
+                        {showButton && (
+                          <FaCheck className="h-4 w-4 transform transition-transform hover:scale-125" />
+                        )}
                       </button>
                       <button
                         onClick={async () => {
@@ -172,10 +176,10 @@ const GroupRequests = () => {
                             console.error(error);
                           }
                         }}
-                        className=" transform transition-transform hover:scale-125 p-1 text-zinc-700"
+                        className=" transform transition-transform hover:scale-125 md:p-1 p-[2px] text-zinc-700"
                       >
                         {showButton && (
-                          <FaTimes className="h-[17px] w-[17px]" />
+                          <FaTimes className="h-[17px] w-[17px] transform transition-transform hover:scale-125" />
                         )}
                       </button>
                     </div>

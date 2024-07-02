@@ -28,7 +28,7 @@ export default async function RootLayout({ children }) {
               {session ? (
                 <div className="flex justify-center md:mt-16 mt-8">
                   <LeftSidebar />
-                  <div className="flex justify-center min-h-screen md:w-[70%]">
+                  <div className="flex justify-center min-h-screen md:w-[70%] w-[92%]">
                     {children}
                   </div>
                   <RightSidebar />

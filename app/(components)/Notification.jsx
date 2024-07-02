@@ -1,21 +1,17 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Avatar } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
-import { Flex, Text, Box, Image } from "@radix-ui/themes";
-import { Button } from "@/components/ui/button";
-import { toast } from 'react-toastify'
-import { useSession } from "../(components)/SessionProvider";
+import React, { useState } from "react";
+import { FaTimes, FaCheck } from "react-icons/fa";
+import { toast } from "react-toastify";
+import Image from "next/image";
+
 const Notification = ({ sender, receive, name, frndId, user, data }) => {
-  const { socket, session, notification } = useSession();
   const [isVisible, setIsVisible] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  
+  const [isConnected, setIsConnected] = useState(false);
 
-  const acceptHandle = async (x) => {
-    // console.log(socket);
-    // console.log(x);
-
+  const acceptHandle = async (action) => {
+    setLoading(true);
     try {
       if (sender && receive) {
         const res = await fetch(
@@ -28,64 +24,90 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
             body: JSON.stringify({
               friendshipId: data._id,
               userId: data.requestTo,
-              action: x,
+              action: action,
             }),
             cache: "no-cache",
           }
         );
-        if (res.status == 200) {
-          // console.log(res);
-          toast(res.message);
+
+        if (res.status === 200) {
+          toast.success(
+            action === "accept" ? "Request accepted" : "Request declined"
+          );
           localStorage.removeItem("request");
           setIsVisible(false);
+          if (action === "accept") {
+            setIsConnected(true);
+          }
+        } else {
+          throw new Error("Failed to update request");
         }
       } else {
         console.log("NO SENDER AND RECEIVER ID'S PRESENT");
       }
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
+      toast.error("An error occurred");
+    } finally {
+      setLoading(false);
     }
   };
+
   const profile = (id) => {
     alert(id);
-  }
+  };
 
-  // console.log(sender, name, frndId, receive, user, data);
   return (
     <>
       {isVisible && (
-        <Flex gap="3" direction="column">
-          <Card size="3" className="p-3" style={{ width: 500}} >
-            <Flex gap="4" align="center" className="flex">
-              <img
-                size="3"
-                src={user.profilePic}
-                className="rounded-full"
-                fallback="T"
-              />
-              <Box>
-                <Text as="div" size="4" className="cursor-pointer hover:color-blue" weight="bold" onClick={() => profile(user._id)}>
-                  {user.name}
-                </Text>
-                <Text as="div" size="4" color="gray" >
-                  {user.collegeName}
-                </Text>
-                <Text as="div" size="4" color="gray">
-                  {user.degree}
-                </Text>
-
-              </Box>
-
-            </Flex>
-            <Button className="mr-2" onClick={() => acceptHandle("accept")}>Accept</Button>
-            <Button
-              backgroundcolor="red"
-              onClick={() => acceptHandle("decline")}
+        <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px]">
+          <div className="flex items-center font-sans">
+            <Image
+              src={user.profilePic}
+              alt={user.name}
+              width={36}
+              height={36}
+              className="rounded-full mr-2"
+            />
+            <div className="cursor-pointer" onClick={() => profile(user._id)}>
+              <span className="font-semibold">{user.name}</span> has sent you a
+              connection request.
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => acceptHandle("accept")}
+              className=" p-1 transform transition-transform hover:scale-125"
+              disabled={loading}
             >
-              Decline
-            </Button>
-          </Card>
-        </Flex>
+              <FaCheck className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => acceptHandle("decline")}
+              className="p-1 transform transition-transform hover:scale-125"
+              disabled={loading}
+            >
+              <FaTimes className="h-[17px] w-[17px]" />
+            </button>
+          </div>
+        </div>
+      )}
+      {isConnected && (
+        <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px]">
+          <div className="flex items-center font-sans">
+            <Image
+              src={user.profilePic}
+              alt={user.name}
+              width={36}
+              height={36}
+              className="rounded-full mr-2"
+            />
+            <div>
+              <span className="font-semibold">{user.name}</span> is now a
+              connection.
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
