@@ -47,7 +47,6 @@ export default function Component() {
       }
       const data = await res.json();
 
-      
       setData(data.result);
       setRequestPen(data.result.requestPending);
       setVisible(true);
@@ -97,7 +96,7 @@ export default function Component() {
             throw new Error("Failed to fetch data");
           }
           const data = await res.json();
-          console.log(data.result);
+
           setProfiles(data.result);
         }
       } catch (error) {
@@ -113,7 +112,7 @@ export default function Component() {
 
   const handleConnectClick = async (profileId) => {
     try {
-      console.log("profile",profileId);
+      console.log("profile", profileId);
       console.log(userId.db_id);
       if (profileId && userId) {
         const data = await fetch(
@@ -193,7 +192,6 @@ export default function Component() {
                           </div>
                           <div className="flex ml-auto gap-4">
                             {requestPend?.includes(profile._id) ? (
-                            
                               <Button disabled>Requested</Button>
                             ) : (
                               <Button
