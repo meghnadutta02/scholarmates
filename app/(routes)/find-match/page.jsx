@@ -89,7 +89,7 @@ export default function Component() {
       try {
         if (userId) {
           setLoading(true);
-          const res = await fetch(`/api/users/findusers/${userId.db_id}`, {
+          const res = await fetch(`/api/users/matching`, {
             cache: "no-cache",
           });
           if (!res.ok) {
@@ -107,8 +107,6 @@ export default function Component() {
     };
     fetchData();
   }, [userId]);
-
-  // connect user
 
   const handleConnectClick = async (profileId) => {
     try {

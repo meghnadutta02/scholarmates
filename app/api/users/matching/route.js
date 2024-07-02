@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { ObjectId } from "mongodb";
+
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
@@ -12,13 +12,18 @@ export async function GET(req) {
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
 
-    const user = await User.findOne({ _id: id }).select("interestCategories");
+    const user = await User.findById(id).select(
+      "interestCategories connection"
+    );
 
     if (user.interestCategories.length > 0) {
       const interests = user.interestCategories;
 
+      const connections = user.connection;
+      connections.push(id);
+
       const users = await User.aggregate([
-        { $match: { _id: { $ne: new ObjectId(id) } } },
+        { $match: { _id: { $nin: connections } } },
         { $match: { interestCategories: { $in: interests } } },
       ]);
 
