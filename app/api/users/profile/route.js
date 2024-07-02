@@ -8,21 +8,18 @@ import connect from "@/app/config/db";
 export async function GET(req) {
   try {
     await connect();
-    const data=req.nextUrl.searchParams.get("id");
-    
-    if(data){
-      console.log(data);
+    const data = req.nextUrl.searchParams.get("id");
+
+    if (data) {
       const user = await User.findOne({
         _id: data,
       }).select("-createdAt -updatedAt -__v");
-    
-    console.log(user);
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+      return NextResponse.json({ result: user }, { status: 200 });
     }
-    return NextResponse.json({ result: user }, { status: 200 });
-  }
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -73,8 +70,8 @@ export async function POST(req, resp) {
           { status: 401 }
         );
       }
-        await user.connection.pull(secondUserId);
-        await secondUser.connection.pull(id);
+      await user.connection.pull(secondUserId);
+      await secondUser.connection.pull(id);
       // Your logic to update the user and second user
 
       await user.save(); // Save the changes
