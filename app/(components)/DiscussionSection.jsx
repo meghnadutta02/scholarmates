@@ -51,8 +51,7 @@ const DiscussionSection = ({ user }) => {
         let accepted = [];
         let pending = [];
         let rejected = [];
-        console.log("joinRequestsResult", joinRequestsResult);
-        console.log("discussionsResult", discussionsResult);
+
         if (joinRequestsResult.status === "fulfilled") {
           ({ accepted, pending, rejected } = joinRequestsResult.value);
         }
@@ -60,16 +59,7 @@ const DiscussionSection = ({ user }) => {
         if (discussionsResult.status === "fulfilled") {
           result = discussionsResult.value.result;
         }
-        console.log(
-          "result",
-          result,
-          "accepted",
-          accepted,
-          "pending",
-          pending,
-          "rejected",
-          rejected
-        );
+
         const userId = session?.user?.db_id;
 
         const updatedResult = result.map((discussion) => {
@@ -287,6 +277,14 @@ const DiscussionSection = ({ user }) => {
       toast.error("Error sending request");
     }
   };
+
+  if (!loading && discussions.length === 0) {
+    return (
+      <div className="flex justify-center md:text-lg text-md font-semibold font-sans mt-3">
+        This user has no discussions.
+      </div>
+    );
+  }
 
   return (
     <div>

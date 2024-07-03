@@ -159,67 +159,67 @@ const DiscussionList = () => {
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
-        <p>You have no discussions. Create a discussion..</p>
+        <p className="md:mt-7 mt-4">
+          You have no discussions. Create a discussion..
+        </p>
       ) : (
-        <div className="grid grid-cols-1 gap-6">
-          {discussions?.map((discussion) => (
-            <div
-              key={discussion._id}
-              className="relative flex items-start gap-4 rounded-lg shadow-sm p-2"
-            >
-              {/* Delete Icon */}
-
-              <div className="flex-1 gap-2">
-                <div className="flex flex-col  gap-2">
-                  <h4 className="font-semibold text-base cursor-pointer">
-                    <Link href={`/discussions/${discussion._id}`}>
-                      {discussion.title}
-                    </Link>
-                  </h4>
-                </div>
-                <div
-                  className={`prose max-w-none cursor-pointer md:hidden ${
-                    expandedDiscussion.includes(discussion._id)
-                      ? ""
-                      : "line-clamp-2"
-                  }`}
-                  onClick={() => toggleDiscussion(discussion._id)}
-                >
-                  <p className="cursor-pointer">{discussion.content}</p>
-                </div>
-                <div className="flex justify-between my-1">
-                  <div className="prose max-w-[80%] md:block hidden ">
-                    <p className="cursor-pointer pr-2">
+        <div className="md:mt-7 mt-4">
+          <h2 className="text-xl font-semibold">
+            {discussions.length} discussion{discussions.length !== 1 ? "s" : ""}
+          </h2>
+          <div className="grid grid-cols-1 gap-6 mt-4">
+            {discussions?.map((discussion) => (
+              <div
+                key={discussion._id}
+                className="relative flex items-start gap-4 rounded-lg shadow p-2"
+              >
+                <div className="flex-1 gap-2">
+                  <div className="flex flex-col  gap-2">
+                    <h4 className="font-semibold text-base cursor-pointer">
                       <Link href={`/discussions/${discussion._id}`}>
-                        {discussion.content}
+                        {discussion.title}
                       </Link>
-                    </p>
+                    </h4>
                   </div>
-                  <div className="grid grid-cols-2 items-center text-center">
-                    <Button className="h-10" size="icon" variant="icon">
-                      <ThumbsUpIcon
-                        className={`w-4 h-4 cursor-pointer ${
-                          discussion.isLiked && "text-blue-400"
-                        } ${
-                          animationState[discussion._id] === "like" &&
-                          "pop text-blue-400"
-                        }`}
-                        onClick={() => toggleLike(discussion._id)}
-                      />
-                      <span className="sr-only">Like</span>
-                      <span className="ml-2">{discussion.likes}</span>
-                    </Button>
-                    <Link href={`/discussions/${discussion._id}`}>
-                      <Button className="w-24" variant="icon">
-                        <InfoIcon className="w-5 h-5" />
+                  <div
+                    className={`prose max-w-none cursor-pointer md:hidden ${
+                      expandedDiscussion.includes(discussion._id)
+                        ? ""
+                        : "line-clamp-2"
+                    }`}
+                    onClick={() => toggleDiscussion(discussion._id)}
+                  >
+                    <p className="cursor-pointer">{discussion.content}</p>
+                  </div>
+                  <div className="flex justify-between my-1">
+                    <div className="prose max-w-[80%] md:block hidden ">
+                      <p className="cursor-pointer pr-2">
+                        <Link href={`/discussions/${discussion._id}`}>
+                          {discussion.content}
+                        </Link>
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 items-center text-center">
+                      <Button className="h-10" size="icon" variant="icon">
+                        <ThumbsUpIcon
+                          className={`w-4 h-4 cursor-pointer ${
+                            discussion.isLiked && "text-blue-400"
+                          } ${
+                            animationState[discussion._id] === "like" &&
+                            "pop text-blue-400"
+                          }`}
+                          onClick={() => toggleLike(discussion._id)}
+                        />
+                        <span className="sr-only">Like</span>
+                        <span className="ml-2">{discussion.likes}</span>
                       </Button>
-                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-          <div id="observer" className="h-4"></div>
+            ))}
+            <div id="observer" className="h-4"></div>
+          </div>
         </div>
       )}
     </div>

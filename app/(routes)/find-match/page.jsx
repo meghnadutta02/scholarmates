@@ -2,7 +2,6 @@
 import Spinnersvg from "@/public/Spinner.svg";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
-import { io } from "socket.io-client";
 import Image from "next/image";
 import { useSession } from "@/app/(components)/SessionProvider";
 import { useState, useEffect } from "react";

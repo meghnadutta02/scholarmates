@@ -7,7 +7,7 @@ import connection from "./db.js";
 import Group from "./model/groupModel.js";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
-import notification from "./route/notification.js"
+import notification from "./route/notification.js";
 import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/sendconnection", sendConnection);
 app.use("/joinrequest", joinRequest);
-app.use("/notification", notification)
+app.use("/notification", notification);
 const socketServer = http.createServer(app);
 
 connection();
@@ -48,11 +48,15 @@ io.on("connection", async (socket) => {
       console.log("Active users:", activeUsers);
       socket.emit("connected");
 
-      const pendingRequests = await Request.find({ requestTo: user._id, notification: true });
+      const pendingRequests = await Request.find({
+        requestTo: user._id,
+        notification: true,
+      });
       for (let request of pendingRequests) {
         const sender = await User.findById(request.user);
         io.to(socket.id).emit("connectionRequest", {
           recipientId: request.requestTo,
+          timestamp: new Date(),
           senderId: request.user,
           sendername: sender.name,
           friendRequest: request._id,
@@ -66,7 +70,6 @@ io.on("connection", async (socket) => {
   // ========END============
 
   // ==========CHAT SYSTEM STARTED==========
-
 
   socket.on("groupchat-setup", async (groupId) => {
     if (groupId) {

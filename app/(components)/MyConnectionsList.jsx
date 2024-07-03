@@ -31,7 +31,6 @@ const Connection = () => {
           setData((prevData) => [...prevData, ...dattaa]);
           setLoading(false);
           setDataFetched(true);
-          console.log(responseData.result);
         }
       } catch (error) {
         console.log(error.message);
@@ -52,7 +51,7 @@ const Connection = () => {
       ) : data.length == 0 ? (
         "You have no connections."
       ) : (
-        <div className="w-full mt-7 font-sans">
+        <div className="w-full md:mt-7 mt-4 font-sans">
           <h2 className="text-xl font-semibold">
             {data.length} connection{data.length !== 1 ? "s" : ""}
           </h2>
