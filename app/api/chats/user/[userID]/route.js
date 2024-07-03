@@ -12,14 +12,24 @@ export async function GET(req, { params }) {
   try {
     await connect();
     const session = await getServerSession(options);
-    const senderID = session.user.db_id;
+    const currentUserID = session.user.db_id;
     const recipientID = params.userID;
     const messages = await UserMessage.find({
       $or: [
-        { sender: senderID, recipient: recipientID },
-        { sender: recipientID, recipient: senderID },
+        { sender: currentUserID, recipient: recipientID },
+        { sender: recipientID, recipient: currentUserID },
       ],
     });
+
+    await UserMessage.updateMany(
+      {
+        sender: recipientID,
+        recipient: currentUserID,
+        status: "delivered",
+      },
+      { $set: { status: "read" } }
+    );
+
     return NextResponse.json({ messages }, { status: 200 });
   } catch (error) {
     console.error(error);

@@ -55,7 +55,7 @@ const DiscussionDetails = ({ params }) => {
           autoClose: 4000,
           closeOnClick: true,
         });
-        router.push("/my-discussions");
+        router.push("/my-engagements");
       }
     } catch (error) {
       console.error("Failed to delete discussion:", error);
@@ -222,8 +222,9 @@ const DiscussionDetails = ({ params }) => {
   return (
     <>
       <div
-        className={`container mx-auto p-4 ${showConfirmDelete ? "blur-md" : ""
-          }`}
+        className={`container mx-auto p-4 ${
+          showConfirmDelete ? "blur-md" : ""
+        }`}
       >
         {discussion.coverImage !== "" ? (
           <div className="flex flex-col gap-2 md:gap-4">
@@ -303,10 +304,12 @@ const DiscussionDetails = ({ params }) => {
                   <div className="grid w-full gap-4 md:gap-8 grid-cols-4 ">
                     <Button className="h-10" size="icon" variant="icon">
                       <ThumbsUpIcon
-                        className={`w-4 h-4 cursor-pointer ${isLikedByUser && "text-blue-400"
-                          } ${animationState[discussion._id] === "like" &&
+                        className={`w-4 h-4 cursor-pointer ${
+                          isLikedByUser && "text-blue-400"
+                        } ${
+                          animationState[discussion._id] === "like" &&
                           "pop text-blue-400"
-                          }`}
+                        }`}
                         onClick={() => toggleLike(discussion._id)}
                       />
                       <span className="sr-only">Like</span>
@@ -314,10 +317,12 @@ const DiscussionDetails = ({ params }) => {
                     </Button>
                     <Button className="h-10" size="icon" variant="icon">
                       <ThumbsDownIcon
-                        className={`w-4 h-4 cursor-pointer ${isDislikedByUser && "text-red-400"
-                          } ${animationState[discussion._id] === "dislike" &&
+                        className={`w-4 h-4 cursor-pointer ${
+                          isDislikedByUser && "text-red-400"
+                        } ${
+                          animationState[discussion._id] === "dislike" &&
                           "pop text-red-400"
-                          }`}
+                        }`}
                         onClick={() => toggleDislike(discussion._id)}
                       />
                       <span className="sr-only">Dislike</span>
@@ -332,8 +337,8 @@ const DiscussionDetails = ({ params }) => {
                       {status === "accepted"
                         ? "Member"
                         : status === "pending"
-                          ? "Requested"
-                          : "Join"}
+                        ? "Requested"
+                        : "Join"}
                     </Button>
                     <Button
                       className="h-10"
@@ -412,10 +417,12 @@ const DiscussionDetails = ({ params }) => {
                 <div className="grid items-center w-full gap-4 mb-2 text-center md:gap-8 grid-cols-4">
                   <Button className="h-10" size="icon" variant="icon">
                     <ThumbsUpIcon
-                      className={`w-4 h-4 cursor-pointer ${isLikedByUser && "text-blue-400"
-                        } ${animationState[discussion._id] === "like" &&
+                      className={`w-4 h-4 cursor-pointer ${
+                        isLikedByUser && "text-blue-400"
+                      } ${
+                        animationState[discussion._id] === "like" &&
                         "pop text-blue-400"
-                        }`}
+                      }`}
                       onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
@@ -423,10 +430,12 @@ const DiscussionDetails = ({ params }) => {
                   </Button>
                   <Button className="h-10" size="icon" variant="icon">
                     <ThumbsDownIcon
-                      className={`w-4 h-4 cursor-pointer ${isDislikedByUser && "text-red-400"
-                        } ${animationState[discussion._id] === "dislike" &&
+                      className={`w-4 h-4 cursor-pointer ${
+                        isDislikedByUser && "text-red-400"
+                      } ${
+                        animationState[discussion._id] === "dislike" &&
                         "pop text-red-400"
-                        }`}
+                      }`}
                       onClick={() => toggleDislike(discussion._id)}
                     />
                     <span className="sr-only">Dislike</span>
@@ -441,8 +450,8 @@ const DiscussionDetails = ({ params }) => {
                     {status === "accepted"
                       ? "Member"
                       : status === "pending"
-                        ? "Requested"
-                        : "Join"}
+                      ? "Requested"
+                      : "Join"}
                   </Button>
                   <Button
                     className="h-10"
@@ -467,8 +476,8 @@ const DiscussionDetails = ({ params }) => {
               Are you sure you want to delete this discussion?
             </p>
             <p className="flex gap-1 items-center mt-2 ">
-              <MdOutlineInfo />
-              <span className="text-sm text-gray-500">
+              <MdOutlineInfo className="text-red-500" />
+              <span className="text-sm text-red-500">
                 Deleting this discussion will also permanently delete the
                 associated group.
               </span>
@@ -480,7 +489,11 @@ const DiscussionDetails = ({ params }) => {
               >
                 Cancel
               </Button>
-              <Button className="ml-2" variant="danger" onClick={handleDelete}>
+              <Button
+                className="ml-2"
+                variant="destructive"
+                onClick={handleDelete}
+              >
                 Delete
               </Button>
             </div>
