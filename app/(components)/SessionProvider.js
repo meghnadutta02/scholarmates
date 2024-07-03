@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useState, useEffect, useContext, createContext } from "react";
 import { getSession } from "next-auth/react";
 import io from "socket.io-client";
@@ -59,7 +59,6 @@ export const SessionProvider = ({ children }) => {
       socket.emit("setup", data);
 
       socket.on("connectionRequest", (data) => {
-        console.log("Received connection request:", data);
         if (data) {
           setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
@@ -82,7 +81,16 @@ export const SessionProvider = ({ children }) => {
 
   return (
     <SessionContext.Provider
-      value={{ session, request, setRequest, socket, notification, setNotification, unreadCount, clearUnreadCount }}
+      value={{
+        session,
+        request,
+        setRequest,
+        socket,
+        notification,
+        setNotification,
+        unreadCount,
+        clearUnreadCount,
+      }}
     >
       {!loading && children}
     </SessionContext.Provider>

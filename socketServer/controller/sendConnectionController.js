@@ -3,7 +3,6 @@ import Request from "../model/requestModel.js";
 // import { io } from "../path/to/socketServer";
 import { io, activeUsers } from "../server.js";
 
-
 export const sendConnectionController = async (req, resp) => {
   try {
     const { recipientId } = req.body;
@@ -50,11 +49,12 @@ export const sendConnectionController = async (req, resp) => {
     }
 
     const recipientSocketId = activeUsers.get(recipientId);
-    console.log("Id is ", recipientSocketId);
+
     if (recipientSocketId) {
       // Emit a notification event only to the recipient's socket
       io.to(recipientSocketId).emit("connectionRequest", {
         recipientId: recipientId,
+        timestamp: new Date(),
         senderId: senderId,
         sendername: senderUser.name,
         friendRequest: requestdata._id,
@@ -92,13 +92,13 @@ export const receiveConnectionController = async (req, resp) => {
     }
 
     if (!userId || !friendshipRequest.participants.includes(userId)) {
-      return resp.status(403).json({ message: "You do not have permission to accept this request" });
+      return resp
+        .status(403)
+        .json({ message: "You do not have permission to accept this request" });
     }
     const user = await User.findById(friendshipRequest.requestTo);
     const sender = await User.findById(friendshipRequest.user);
-    if (action === 'accept') {
-
-
+    if (action === "accept") {
       if (user && sender) {
         if (!user.connection.includes(sender._id)) {
           user.connection.push(sender._id);
@@ -117,9 +117,9 @@ export const receiveConnectionController = async (req, resp) => {
 
         await friendshipRequest.deleteOne();
 
-        io.to(sender.socketId).emit('friendRequestAccepted', {
+        io.to(sender.socketId).emit("friendRequestAccepted", {
           message: `Your friend request to ${user.name} was accepted.`,
-          userId: user._id
+          userId: user._id,
         });
 
         return resp.status(200).send({
@@ -129,7 +129,7 @@ export const receiveConnectionController = async (req, resp) => {
       } else {
         return resp.status(404).json({ message: "User or sender not found" });
       }
-    } else if (action === 'decline') {
+    } else if (action === "decline") {
       await user.updateOne({ $pull: { requestPending: sender._id } });
       await sender.updateOne({ $pull: { requestPending: user._id } });
       await friendshipRequest.deleteOne();
@@ -153,4 +153,3 @@ export const receiveConnectionController = async (req, resp) => {
     });
   }
 };
-

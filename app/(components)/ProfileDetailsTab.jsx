@@ -115,6 +115,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           <Avatar>
             <AvatarImage alt={user.name} src={user.profilePic} />
           </Avatar>
+
           <h1 className="mt-4 font-bold text-2xl">{user.name}</h1>
           {user.bio && <p className="mt-2 text-gray-600 italic">{user.bio}</p>}
           <div className="gap-4 mt-4">
