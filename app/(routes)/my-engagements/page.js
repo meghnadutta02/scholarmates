@@ -7,9 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const page = () => {
   return (
     <div className="md:mt-7 mt-4 flex flex-col md:px-2 px-0 w-full">
-      <h2 className="text-xl mb-4 text-center font-bold text-gray-800">
-        My Network
-      </h2>
       <Tabs defaultValue="c" className="w-full">
         <TabsList className="flex mx-auto w-min">
           <TabsTrigger value="c">Connections</TabsTrigger>

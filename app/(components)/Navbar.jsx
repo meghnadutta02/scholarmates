@@ -82,11 +82,6 @@ const NavbarClient = () => {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem>
-                <Link href="/my-discussions">My Discussions</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem>
                 <Link
                   href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout?callbackUrl=/`}
                 >

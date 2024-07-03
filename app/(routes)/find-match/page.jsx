@@ -96,7 +96,7 @@ export default function Component() {
             throw new Error("Failed to fetch data");
           }
           const data = await res.json();
-
+          
           setProfiles(data.result);
         }
       } catch (error) {
