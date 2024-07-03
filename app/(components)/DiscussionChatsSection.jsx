@@ -46,7 +46,7 @@ const Page = () => {
             <div className="flex flex-col min-h-[34rem] rounded-lg border my-4">
               <div className="flex flex-1 max-h-[36rem]">
                 {toggleChatView ? (
-                  <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px] border-r py-2 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
+                  <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px]  py-2 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
                     {groups.map((group) => (
                       <div
                         key={group._id}
