@@ -21,15 +21,6 @@ export async function GET(req, { params }) {
       ],
     });
 
-    await UserMessage.updateMany(
-      {
-        sender: recipientID,
-        recipient: currentUserID,
-        status: "delivered",
-      },
-      { $set: { status: "read" } }
-    );
-
     return NextResponse.json({ messages }, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -70,6 +61,29 @@ export async function POST(req, { params }) {
     await newMessage.save();
 
     return NextResponse.json({ result: newMessage }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// Update the status of messages in a chat on view
+export async function PUT(req, { params }) {
+  try {
+    await connect();
+    const session = await getServerSession(options);
+    const currentUserId = new ObjectId(session.user.db_id);
+    const contactId = new ObjectId(params.userID);
+
+    await UserMessage.updateMany(
+      { sender: contactId, recipient: currentUserId, status: "delivered" },
+      { $set: { status: "read" } }
+    );
+
+    return NextResponse.json(
+      { message: "Messages marked as read" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });
