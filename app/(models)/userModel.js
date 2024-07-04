@@ -6,11 +6,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    proficiencies: [
-      {
-        type: String,
-      },
-    ],
+
     bio: {
       type: String,
       default: "",
@@ -48,7 +44,6 @@ const userSchema = new mongoose.Schema(
     },
     yearInCollege: {
       type: Number,
-      default: 1,
     },
     dob: {
       type: Date,

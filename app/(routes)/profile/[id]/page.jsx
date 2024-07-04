@@ -76,7 +76,7 @@ export default function DrawerDialogDemo({ params }) {
           <div className="mt-8 mx-auto">
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
-                <MdEdit className="h-10 w-10 text-gray-600 absolute top-6 right-7 shadow-xl rounded-full cursor-pointer p-2 text-center" />
+                <MdEdit className="h-10 w-10 text-gray-600  absolute top-6 right-7 shadow-xl rounded-full cursor-pointer p-2 text-center" />
               </DialogTrigger>
               <DialogContent className="sm:max-w-[720px]">
                 <DialogHeader>
@@ -85,7 +85,7 @@ export default function DrawerDialogDemo({ params }) {
                     Make changes to your profile here. Click save when done.
                   </DialogDescription>
                 </DialogHeader>
-                <ProfileEdit user={user} />
+                <ProfileEdit user={user} setUser={setUser} />
               </DialogContent>
             </Dialog>
           </div>

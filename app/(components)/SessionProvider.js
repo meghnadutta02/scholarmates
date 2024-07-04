@@ -9,6 +9,7 @@ export const SessionProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [request, setRequest] = useState();
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const [notification, setNotification] = useState([]);
   const [socket, setSocket] = useState(null);
   const [seenNotifications, setSeenNotifications] = useState(new Set());
@@ -68,7 +69,7 @@ export const SessionProvider = ({ children }) => {
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
             setSeenNotifications((prev) => new Set(prev).add(dataString));
-            toast.info("You got a connection request");
+            toast.info("You have got a connection request");
           }
         }
       });
@@ -90,6 +91,8 @@ export const SessionProvider = ({ children }) => {
         setNotification,
         unreadCount,
         clearUnreadCount,
+        user,
+        setUser,
       }}
     >
       {!loading && children}

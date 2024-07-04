@@ -3,6 +3,7 @@ import Spinnersvg from "@/public/Spinner.svg";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import Link from "next/link";
 import { useSession } from "@/app/(components)/SessionProvider";
 import { useState, useEffect } from "react";
 import {
@@ -111,93 +112,119 @@ export default function Component() {
   };
 
   return (
-    <div className="justify-center">
-      <h2 className="my-4 text-center font-semibold text-2xl">
-        Connect with people
-      </h2>
-      {loading ? (
-        <div className="flex justify-center items-center z-50">
-          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-        </div>
-      ) : (
-        <div>
-          <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl">
-            <CarouselContent>
-              {profiles.map((profile) => (
-                <CarouselItem key={profile._id}>
-                  <div className="grid gap-2">
-                    <div className="p-2 grid gap-2">
-                      <div className="flex gap-2 items-center">
-                        <div className="flex gap-2 items-center">
-                          <Image
-                            alt="Thumbnail"
-                            className="rounded-full object-cover aspect-square"
-                            height={80}
-                            src={profile.profilePic}
-                            width={80}
-                          />
-                          <div className="text-sm flex flex-col gap-2">
-                            <div className="font-semibold">
-                              {profile.name}
-                            </div>
-                            <div className="flex flex-col">
-                              <div className="text-sm text-gray-600 dark:text-gray-400">
-                                {profile.collegeName}
+    <>
+      {session.interestCategories.length > 0 &&
+      session.interestSubcategories.length > 0 ? (
+        <div className="justify-center">
+          <h2 className="my-4 text-center font-semibold text-2xl">
+            Connect with people
+          </h2>
+          {loading ? (
+            <div className="flex justify-center items-center z-50">
+              <Image src={Spinnersvg} alt="Loading..." className="h-28" />
+            </div>
+          ) : (
+            <div>
+              <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl">
+                <CarouselContent>
+                  {profiles.map((profile) => (
+                    <CarouselItem key={profile._id}>
+                      <div className="grid gap-2">
+                        <div className="p-2 grid gap-2">
+                          <div className="flex gap-2 items-center">
+                            <div className="flex gap-2 items-center">
+                              <Image
+                                alt="Thumbnail"
+                                className="rounded-full object-cover aspect-square"
+                                height={80}
+                                src={profile.profilePic}
+                                width={80}
+                              />
+                              <div className="text-sm flex flex-col gap-2">
+                                <div className="font-semibold">
+                                  {profile.name}
+                                </div>
+                                <div className="flex flex-col">
+                                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                                    {profile.collegeName}
+                                  </div>
+                                  {profile.department && profile.degree && (
+                                    <>
+                                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                                        {profile.degree} in {profile.department}{" "}
+                                      </div>
+                                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                                        {getYearWithSuffix(
+                                          profile.yearInCollege
+                                        )}{" "}
+                                        year{" "}
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
                               </div>
-                              {profile.department && profile.degree && (
-                                <>
-                                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                                    {profile.degree} in {profile.department}{" "}
-                                  </div>
-                                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                                    {getYearWithSuffix(profile.yearInCollege)}{" "}
-                                    year{" "}
-                                  </div>
-                                </>
+                            </div>
+                            <div className="flex ml-auto gap-4">
+                              {requestPend.includes(profile._id) ? (
+                                <Button disabled>Requested</Button>
+                              ) : (
+                                <Button
+                                  onClick={() =>
+                                    handleConnectClick(profile._id)
+                                  }
+                                  disabled={connectingProfile === profile._id}
+                                >
+                                  {connectingProfile === profile._id ? (
+                                    <Image
+                                      src={Spinnersvg}
+                                      alt="Loading..."
+                                      className="h-4 w-4"
+                                    />
+                                  ) : (
+                                    "Connect"
+                                  )}
+                                </Button>
                               )}
                             </div>
                           </div>
                         </div>
-                        <div className="flex ml-auto gap-4">
-                          {requestPend.includes(profile._id) ? (
-                            <Button disabled>Requested</Button>
-                          ) : (
-                            <Button
-                              onClick={() => handleConnectClick(profile._id)}
-                              disabled={connectingProfile === profile._id}
-                            >
-                              {connectingProfile === profile._id ? (
-                                <Image src={Spinnersvg} alt="Loading..." className="h-4 w-4" />
-                              ) : (
-                                "Connect"
-                              )}
-                            </Button>
-                          )}
+                        <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
+                          <p>{profile.bio}</p>
+                        </div>
+                        <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
+                          <h2 className="font-semibold text-lg">Interests</h2>
+                          <ul className="list-disc list-inside">
+                            {profile.interestCategories.map((interest) => (
+                              <div key={interest._id}>
+                                <li>{interest}</li>
+                              </div>
+                            ))}
+                          </ul>
                         </div>
                       </div>
-                    </div>
-                    <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
-                      <p>{profile.bio}</p>
-                    </div>
-                    <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
-                      <h2 className="font-semibold text-lg">Interests</h2>
-                      <ul className="list-disc list-inside">
-                        {profile.interestCategories.map((interest) => (
-                          <div key={interest._id}>
-                            <li>{interest}</li>
-                          </div>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="text-center my-8 font-sans">
+          <div className="  font-semibold text-2xl mb-2 ">
+            Please complete your profile to find matches.
+          </div>
+          <Link
+            href={`/profile/${session.db_id}`}
+            asChild
+            className="flex justify-center"
+          >
+            <span className="text-gray-600 font-xl ">Go to Profile</span>
+          </Link>
         </div>
       )}
-    </div>
+    </>
   );
 }

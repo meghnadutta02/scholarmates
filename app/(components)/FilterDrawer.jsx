@@ -6,15 +6,18 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaFilter } from "react-icons/fa6";
 import { interests } from "@/app/interests";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useSession } from "./SessionProvider";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 
 const FilterDrawer = ({ applyFilters }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const { session } = useSession();
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [college, setCollege] = useState(false);
   const [selectedType, setSelectedType] = useState([]);
@@ -113,7 +116,20 @@ const FilterDrawer = ({ applyFilters }) => {
                         id="college"
                         name="college"
                         checked={college}
-                        onChange={(e) => setCollege(e.target.checked)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            if (session?.collegeName !== "") {
+                              console.log("Hi");
+                              setCollege(true);
+                            } else {
+                              toast.info(
+                                "Please provide your college name to complete your profile."
+                              );
+                            }
+                          } else {
+                            setCollege(false);
+                          }
+                        }}
                       />
                       <label className="ml-2" htmlFor="college">
                         Yes

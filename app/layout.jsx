@@ -10,6 +10,7 @@ import { SessionProvider } from "@/app/(components)/SessionProvider";
 const inter = Inter({ subsets: ["latin"] });
 import { getServerSession } from "next-auth";
 import { options } from "./api/auth/[...nextauth]/options";
+
 import Header from "./(components)/Header";
 export const metadata = {
   title: "AlikeHub",
@@ -25,8 +26,9 @@ export default async function RootLayout({ children }) {
           <SessionProvider>
             <AuthProvider>
               {session ? <Navbar /> : <Header />}
+
               {session ? (
-                <div className="flex justify-center md:mt-16 mt-8">
+                <div className="flex justify-center md:mt-[69px] mt-9">
                   <LeftSidebar />
                   <div className="flex justify-center min-h-screen md:w-[70%] w-[92%]">
                     {children}

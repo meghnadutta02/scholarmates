@@ -77,9 +77,10 @@ const ProfileDetails = ({ initialUser }) => {
               </div>
               <div className="my-4">
                 <h3 className="text-lg font-semibold">Degree</h3>
-                {user.department && user.degree ? (
+                {user.degree ? (
                   <p className="text-md font-semibold text-gray-600">
-                    {user.degree} in {user.department} (
+                    {user.degree}{" "}
+                    {user.department ? `in ${user.department}` : ""} (
                     {getYearWithSuffix(user.yearInCollege)} year)
                   </p>
                 ) : (

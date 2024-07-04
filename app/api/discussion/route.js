@@ -123,7 +123,6 @@ export async function GET(req) {
           "creatorData.isAdmin": 0,
           "creatorData.connection": 0,
           "creatorData.requestPending": 0,
-          "creatorData.proficiencies": 0,
           "creatorData.groupsJoined": 0,
         },
       }

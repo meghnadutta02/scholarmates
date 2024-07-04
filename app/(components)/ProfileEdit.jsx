@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import Select from "react-select";
+import { useSession } from "./SessionProvider";
 import { interests } from "../interests";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +12,9 @@ import { FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { format, subYears } from "date-fns";
 
-const ProfileEdit = ({ user }) => {
-  const [userState, setUser] = useState(user);
+const ProfileEdit = ({ user, setUser }) => {
+  const [userState, setUserData] = useState(user);
+  const { user: user1, setUser: setUser1 } = useSession();
   const minDate = format(new Date(1975, 0, 1), "yyyy-MM-dd");
   const maxDate = format(subYears(new Date(), 11), "yyyy-MM-dd");
   const [selectedCategories, setSelectedCategories] = useState(
@@ -40,7 +42,7 @@ const ProfileEdit = ({ user }) => {
   }));
 
   const handleChange = (field, value) => {
-    setUser((prevUser) => ({ ...prevUser, [field]: value }));
+    setUserData((prevUser) => ({ ...prevUser, [field]: value }));
   };
 
   const handleCategoryChange = (selectedCategory) => {
@@ -89,6 +91,7 @@ const ProfileEdit = ({ user }) => {
     const interests = selectedSubCategories.map((option) => option.value);
     const categories = selectedCategories;
     let formData = {};
+
     if (categories.length > 0 && interests.length > 0) {
       formData = {
         ...userState,
@@ -99,7 +102,8 @@ const ProfileEdit = ({ user }) => {
     } else {
       formData = {
         ...userState,
-
+        interestSubcategories: [],
+        interestCategories: [],
         dob: date,
       };
     }
@@ -113,9 +117,12 @@ const ProfileEdit = ({ user }) => {
       }
     );
     if (res.ok) {
+      const data = await res.json();
+
+      setUser(data.result);
+      setUser1(data.result);
       setFormOpen(false);
       toast.success("Profile updated successfully");
-      window.location.reload();
     } else {
       toast.error("Profile update failed");
     }

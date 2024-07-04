@@ -13,7 +13,7 @@ export async function GET(req) {
     if (data) {
       const user = await User.findOne({
         _id: data,
-      }).select("-createdAt -updatedAt -__v");
+      }).select("-createdAt -updatedAt -__v -requestPending");
 
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -33,7 +33,6 @@ export async function PUT(req) {
     const id = session?.user?.db_id;
     const updatedData = await req.json();
     const updatedUserData = updatedData.formData;
-    console.log(updatedUserData);
 
     const user = await User.findByIdAndUpdate(
       id,

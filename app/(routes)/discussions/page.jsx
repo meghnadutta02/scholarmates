@@ -107,13 +107,13 @@ const DiscussionsPage = () => {
         {/* discussion list */}
         <div className="flex-1 md:pt-5 pt-0  md:px-6 px-4 ">
           {/* search button */}
-          <div className="flex mb-10 md:justify-center md:flex-row flex-col gap-4 w-full ">
+          <div className="flex mb-8 d:mt-5 mt-2 md:justify-center md:flex-row flex-col gap-4 w-full ">
             <div className="flex gap-2 md:gap-0 md:justify-between">
               <div className=" relative  w-[85%]  ">
                 <input
                   type="text"
                   placeholder="looking for a ml engineer?"
-                  className="w-full pl-10 pr-4 py-2 rounded border"
+                  className="w-full pl-10 pr-4 md:py-2 py-[6px] rounded border"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => {
                     e.target.value.length > 3 && handleSearch();

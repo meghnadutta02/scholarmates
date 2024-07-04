@@ -6,11 +6,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    proficiencies: [
-      {
-        type: String,
-      },
-    ],
+
     bio: {
       type: String,
       default: "",
