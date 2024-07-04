@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React, { useEffect, useState } from "react";
 
 import Notification from "@/app/(components)/Notification";
-import ToastNotification from "@/app/(components)/ToastNotification";
+
 import { useSession } from "@/app/(components)/SessionProvider";
 import GroupRequests from "@/app/(components)/GroupRequests";
 import Loading from "./loading";
