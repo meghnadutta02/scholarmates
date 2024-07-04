@@ -33,22 +33,25 @@ const DiscussionsPage = () => {
     college: false,
     type: [],
   });
+  const [offset, setOffset] = useState(0);
   const [reloadList, setReloadList] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false); // New state variable
-
+  const [hasMore, setHasMore] = useState(true);
   const suggestionsRef = useRef(null);
 
   const handleFilterApplication = (filters) => {
     setSelectedFilters(filters);
     setReloadList(true);
+    setOffset(0);
+    setHasMore(true);
   };
-  const toggleFilter = () => {
-    setIsFilterOpen((prevState) => !prevState);
-  };
+
   const handleSearch = () => {
     setReloadList(true);
+    setOffset(0);
+    setHasMore(true);
   };
 
   const handleClickOutside = (event) => {
@@ -162,6 +165,10 @@ const DiscussionsPage = () => {
             selectedFilters={selectedFilters}
             searchQuery={searchQuery}
             reloadList={reloadList}
+            offset={offset}
+            setOffset={setOffset}
+            setHasMore={setHasMore}
+            hasMore={hasMore}
           />
         </div>
       </div>

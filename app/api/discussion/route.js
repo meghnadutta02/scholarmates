@@ -75,9 +75,8 @@ export async function GET(req) {
     const category = req.nextUrl.searchParams.get("category");
     const subcategory = req.nextUrl.searchParams.get("subcategory");
     const offset = parseInt(req.nextUrl.searchParams.get("offset")) || 0; // Correctly get offset
-    const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 5;
+    const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
 
-    console.log(offset, limit);
     let aggregationPipeline = [];
 
     if (searchQuery) {
@@ -118,9 +117,14 @@ export async function GET(req) {
           "creatorData.degree": 0,
           "creatorData.department": 0,
           "creatorData.yearInCollege": 0,
+          "creatorData.posts": 0,
           "creatorData.connection": 0,
           "creatorData.bio": 0,
           "creatorData.isAdmin": 0,
+          "creatorData.connection": 0,
+          "creatorData.requestPending": 0,
+          "creatorData.proficiencies": 0,
+          "creatorData.groupsJoined": 0,
         },
       }
     );
@@ -143,6 +147,7 @@ export async function GET(req) {
         const subcategories = interests
           .filter((interest) => categories.includes(interest.category))
           .flatMap((interest) => interest.subcategories);
+
         matchQuery.push({ subcategories: { $in: subcategories } });
       }
       if (subcategory) {

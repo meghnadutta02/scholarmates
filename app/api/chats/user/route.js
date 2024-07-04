@@ -1,7 +1,7 @@
 import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
 import UserMessage from "@/app/(models)/userMessageModel";
-import User from "@/app/(models)/userModel";
+
 import { ObjectId } from "mongodb";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";

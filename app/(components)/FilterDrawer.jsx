@@ -305,20 +305,24 @@ const FilterDrawer = ({ applyFilters }) => {
                   </Collapsible>
 
                   <div className="flex justify-center gap-4 my-5">
-                    <Button
-                      variant=""
-                      className="font-semibold py-1 px-4"
-                      onClick={applyFilters1}
-                    >
-                      Apply
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      className="font-semibold py-1 px-4 rounded"
-                      onClick={resetFilters}
-                    >
-                      Reset
-                    </Button>
+                    <Drawer.Close asChild>
+                      <Button
+                        variant=""
+                        className="font-semibold py-1 px-4"
+                        onClick={applyFilters1}
+                      >
+                        Apply
+                      </Button>
+                    </Drawer.Close>
+                    <Drawer.Close asChild>
+                      <Button
+                        variant="destructive"
+                        className="font-semibold py-1 px-4 rounded"
+                        onClick={resetFilters}
+                      >
+                        Reset
+                      </Button>
+                    </Drawer.Close>
                   </div>
                 </aside>
               </section>

@@ -7,9 +7,10 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
 
-const getDiscussions = async (query = "", offset = 0, limit = 5) => {
+const getDiscussions = async (query = "", offset = 0, limit = 10) => {
+  const separator = query !== "" ? "&" : "?";
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/discussion?${query}&offset=${offset}&limit=${limit}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/discussion${query}${separator}offset=${offset}&limit=${limit}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -27,15 +28,22 @@ const getJoinRequests = async () => {
   return response1.json();
 };
 
-const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
+const DiscussionList = ({
+  selectedFilters,
+  searchQuery,
+  reloadList,
+  offset,
+  setOffset,
+  hasMore,
+  setHasMore,
+}) => {
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
   const { data: session } = useSession();
   const [animationState, setAnimationState] = useState({});
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const limit = 5;
+
+  const limit = 10;
   const observer = useRef(null);
 
   useEffect(() => {
@@ -43,6 +51,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
       try {
         let query = "";
         let params = [];
+
         if (selectedFilters.category.length > 0) {
           const categoryString = selectedFilters.category.join(",");
           params.push(`category=${categoryString}`);
@@ -123,6 +132,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
         });
         setLoading(false);
         if (result.length < limit) {
+          console.log(result.length, limit);
           setHasMore(false);
         }
       } catch (error) {
@@ -138,6 +148,7 @@ const DiscussionList = ({ selectedFilters, searchQuery, reloadList }) => {
     // Intersection Observer for lazy loading more discussions
     const observerCallback = (entries) => {
       const target = entries[0];
+      console.log(hasMore);
       if (target.isIntersecting && hasMore) {
         setOffset((prevOffset) => prevOffset + limit);
       }
