@@ -33,30 +33,34 @@ const UserChatbox = ({
   const [inboxMessages, setInboxMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const [filePreviews, setFilePreviews] = useState([]);
+  const userID = selectedUser._id || selectedUser.userId;
 
   useEffect(() => {
-    const fetchInboxMessages = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${selectedUser.userId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch messages");
-        }
-        const data = await response.json();
-        setInboxMessages(data.messages);
-        return data;
-      } catch (error) {
-        console.error(error);
-        return [];
-      } finally {
-        setLoading(false);
-        scrollToLastMessage();
-      }
-    };
+    console.log(userID);
 
-    fetchInboxMessages();
-  }, [selectedUser]);
+    if (userID) {
+      const fetchInboxMessages = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userID}`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch messages");
+          }
+          const data = await response.json();
+          setInboxMessages(data.messages);
+          return data;
+        } catch (error) {
+          console.error(error);
+          return [];
+        } finally {
+          setLoading(false);
+          scrollToLastMessage();
+        }
+      };
+      fetchInboxMessages();
+    }
+  }, [selectedUser, userID]);
 
   const sendMessageHandler = async (e) => {
     e.preventDefault();
@@ -82,7 +86,7 @@ const UserChatbox = ({
       }
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${selectedUser.userId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userID}`,
         {
           method: "POST",
           body: formData,
@@ -109,7 +113,7 @@ const UserChatbox = ({
           prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
         );
       }
-      updateLastMessage(selectedUser.userId, message.text);
+      updateLastMessage(userID, message.text);
       setMessage({
         text: "",
         attachments: [],
@@ -150,11 +154,11 @@ const UserChatbox = ({
           }
           return [...prevMessages, msg];
         });
-        markMessagesAsRead(selectedUser.userId);
+        markMessagesAsRead(userID);
       };
       socket.emit("userchat-setup", {
         sender: session.db_id,
-        receiver: selectedUser.userId,
+        receiver: userID,
       });
       socket.on("userchat-receive", messageHandler);
 
@@ -162,13 +166,7 @@ const UserChatbox = ({
         socket.off("userchat-receive", messageHandler);
       };
     }
-  }, [
-    socket,
-    inboxMessages,
-    session.db_id,
-    selectedUser.userId,
-    updateLastMessage,
-  ]);
+  }, [socket, inboxMessages, session.db_id, updateLastMessage, userID]);
 
   const scrollToLastMessage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -219,16 +217,13 @@ const UserChatbox = ({
                     </div>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <Link
-                      href={`/profile/${selectedUser.userId}`}
-                      className="text-blue-600"
-                    >
+                    <Link href={`/profile/${userID}`} className="text-blue-600">
                       View Profile
                     </Link>
-                    <p>Name : {selectedUser.name}</p>
+                    {/* <p>Name : {selectedUser.name}</p>
                     <p>College : {selectedUser.collegeName}</p>
                     <p>Course : {selectedUser.degree}</p>
-                    <p>Year : {selectedUser.yearInCollege}</p>
+                    <p>Year : {selectedUser.yearInCollege}</p> */}
                   </PopoverContent>
                 </Popover>
 
@@ -251,13 +246,11 @@ const UserChatbox = ({
                 <div
                   key={index}
                   className={`flex ${
-                    msg.sender === selectedUser.userId
-                      ? "justify-start"
-                      : "justify-end"
+                    msg.sender === userID ? "justify-start" : "justify-end"
                   }`}
                 >
                   <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
-                    {msg.sender != selectedUser.userId && (
+                    {msg.sender != userID && (
                       <p className="text-sm font-medium">{msg.senderName}</p>
                     )}
                     {msg.attachments != null && (

@@ -15,7 +15,10 @@ export async function GET(req) {
       throw new Error("User not found");
     }
 
-    const connections = await User.find({ _id: { $in: user.connection } });
+    const connections = await User.find(
+      { _id: { $in: user.connection } },
+      { name: 1, id: 1, profilePic: 1 }
+    );
 
     return NextResponse.json({ connections }, { status: 200 });
   } catch (error) {
