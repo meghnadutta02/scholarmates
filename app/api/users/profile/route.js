@@ -13,7 +13,7 @@ export async function GET(req) {
     if (data) {
       const user = await User.findOne({
         _id: data,
-      }).select("-createdAt -updatedAt -__v -requestPending");
+      }).select("-createdAt -updatedAt -__v");
 
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });

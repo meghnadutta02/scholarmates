@@ -117,6 +117,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           </Avatar>
 
           <h1 className="mt-4 font-bold text-2xl">{user.name}</h1>
+          <h3 className="mt-1 font-semibold text-gray-700 text-base">
+            {user.connection.length}{" "}
+            {user.connection.length > 1 ? "connections" : "connection"}
+          </h3>
           {user.bio && <p className="mt-2 text-gray-600 italic">{user.bio}</p>}
           <div className="gap-4 mt-4">
             {user.isConnected ? (
