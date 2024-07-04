@@ -17,13 +17,13 @@ export default function Chats() {
   const fetchConnections = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/connection`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch connections");
       }
       const data = await response.json();
-      setConnections(data.connections);
+      setConnections(data.messages);
     } catch (error) {
       console.error(error);
     } finally {
@@ -31,8 +31,31 @@ export default function Chats() {
     }
   };
 
+  const handleUserSelection = async (user) => {
+    setSelectedUser(user);
+    setToggleChatView(false);
+    setConnections((prevConnections) =>
+      prevConnections.map((connection) =>
+        connection.userId === user.userId
+          ? { ...connection, unreadMessagesCount: 0, unreadMessages: [] }
+          : connection
+      )
+    );
+  };
+
+  const updateLastMessage = (userId, message) => {
+    setConnections((prevConnections) =>
+      prevConnections.map((connection) =>
+        connection.userId === userId
+          ? { ...connection, lastMessageText: message }
+          : connection
+      )
+    );
+  };
+
   useEffect(() => {
     fetchConnections();
+    updateLastMessage();
   }, []);
 
   return (
@@ -55,37 +78,48 @@ export default function Chats() {
                     <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px] px-1 flex flex-col overflow-y-auto scrollbar-thin">
                       {connections.map((connection) => (
                         <div
-                          key={connection._id}
+                          key={connection.userId}
                           className="border-b py-2 hover:bg-gray-100"
                         >
                           <Button
-                            onClick={() => {
-                              setSelectedUser(connection);
-                              setToggleChatView(false);
-                            }}
+                            onClick={() => handleUserSelection(connection)}
                             variant="icon"
-                            className="flex h-12 w-full justify-start gap-4"
+                            className="flex h-12 w-full justify-between gap-4"
                           >
-                            <div className=" w-10 h-10 relative">
-                              <Image
-                                alt="User avatar"
-                                className="rounded-full"
-                                height="48"
-                                src={connection.profilePic}
-                                style={{
-                                  aspectRatio: "48/48",
-                                  objectFit: "cover",
-                                }}
-                                width="48"
-                              />
-                            </div>
-                            <div className="flex flex-col">
-                              <h1 className="font-semibold">
-                                {connection.name}
-                              </h1>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Last message{" "}
-                              </p>
+                            <Image
+                              alt="User avatar"
+                              className="rounded-full"
+                              height="48"
+                              src={connection.profilePic}
+                              style={{
+                                aspectRatio: "48/48",
+                                objectFit: "cover",
+                              }}
+                              width="48"
+                            />
+                            <div className="flex flex-wrap w-full items-center justify-between">
+                              <h2 className="font-semibold lg:text-base">
+                                {connection.userName}
+                              </h2>
+                              <div className="flex w-full items-center justify-between">
+                                <div>
+                                  <>{connection.lastMessageText}</>
+                                </div>
+
+                                <div className="font-normal text-xs ">
+                                  {connection.unreadMessagesCount > 0 && (
+                                    <span className="font-bold mr-2 text-white rounded-full shadow-sm py-1 mt-1 px-2 shadow-blue-300  bg-blue-800">
+                                      {connection.unreadMessagesCount}
+                                    </span>
+                                  )}
+                                  {new Date(
+                                    connection.lastMessageTime
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </div>
+                              </div>
                             </div>
                           </Button>
                         </div>
@@ -96,9 +130,10 @@ export default function Chats() {
                       {selectedUser ? (
                         <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px]">
                           <UserChatbox
-                            key={selectedUser._id}
+                            key={selectedUser.userId}
                             selectedUser={selectedUser}
                             setToggleChatView={setToggleChatView}
+                            updateLastMessage={updateLastMessage}
                           />
                         </div>
                       ) : (

@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
+import { RiShareForwardLine } from "react-icons/ri";
 
 const getDiscussions = async () => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
@@ -154,6 +155,23 @@ const DiscussionList = () => {
     }, 300);
   };
 
+  const handleShare = (discussion) => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: discussion.title,
+          text: discussion.content,
+          url: `${window.location.origin}/discussions/${discussion._id}`,
+        })
+        .catch(console.error);
+    } else {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/discussions/${discussion._id}`
+      );
+      toast.success("Link copied to clipboard!");
+    }
+  };
+
   return (
     <div>
       {loading ? (
@@ -212,6 +230,14 @@ const DiscussionList = () => {
                         />
                         <span className="sr-only">Like</span>
                         <span className="ml-2">{discussion.likes}</span>
+                      </Button>{" "}
+                      <Button
+                        className="h-10"
+                        size="icon"
+                        variant="icon"
+                        onClick={() => handleShare(discussion)}
+                      >
+                        <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
                       </Button>
                     </div>
                   </div>

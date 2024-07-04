@@ -17,7 +17,11 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
-const UserChatbox = ({ selectedUser, setToggleChatView }) => {
+const UserChatbox = ({
+  selectedUser,
+  setToggleChatView,
+  updateLastMessage,
+}) => {
   const { socket, session } = useSession();
   const [message, setMessage] = useState({
     text: "",
@@ -34,7 +38,7 @@ const UserChatbox = ({ selectedUser, setToggleChatView }) => {
     const fetchInboxMessages = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${selectedUser._id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${selectedUser.userId}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch messages");
@@ -78,7 +82,7 @@ const UserChatbox = ({ selectedUser, setToggleChatView }) => {
       }
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${selectedUser._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${selectedUser.userId}`,
         {
           method: "POST",
           body: formData,
@@ -105,7 +109,7 @@ const UserChatbox = ({ selectedUser, setToggleChatView }) => {
           prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
         );
       }
-
+      updateLastMessage(selectedUser.userId, message.text);
       setMessage({
         text: "",
         attachments: [],
@@ -116,9 +120,29 @@ const UserChatbox = ({ selectedUser, setToggleChatView }) => {
     }
   };
 
+  const markMessagesAsRead = async (userId) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to mark messages as read");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
+        updateLastMessage(msg.sender, msg.text);
         setInboxMessages((prevMessages) => {
           // Check if the message already exists to avoid duplicates
           if (prevMessages.some((m) => m._id === msg._id)) {
@@ -126,10 +150,11 @@ const UserChatbox = ({ selectedUser, setToggleChatView }) => {
           }
           return [...prevMessages, msg];
         });
+        markMessagesAsRead(selectedUser.userId);
       };
       socket.emit("userchat-setup", {
         sender: session.db_id,
-        receiver: selectedUser._id,
+        receiver: selectedUser.userId,
       });
       socket.on("userchat-receive", messageHandler);
 
@@ -137,7 +162,13 @@ const UserChatbox = ({ selectedUser, setToggleChatView }) => {
         socket.off("userchat-receive", messageHandler);
       };
     }
-  }, [socket, inboxMessages, session.db_id, selectedUser._id]);
+  }, [
+    socket,
+    inboxMessages,
+    session.db_id,
+    selectedUser.userId,
+    updateLastMessage,
+  ]);
 
   const scrollToLastMessage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -189,7 +220,7 @@ const UserChatbox = ({ selectedUser, setToggleChatView }) => {
                   </PopoverTrigger>
                   <PopoverContent>
                     <Link
-                      href={`/profile/${selectedUser._id}`}
+                      href={`/profile/${selectedUser.userId}`}
                       className="text-blue-600"
                     >
                       View Profile
@@ -215,18 +246,18 @@ const UserChatbox = ({ selectedUser, setToggleChatView }) => {
               </div>
             </div>
 
-            <div className="flex flex-col border rounded-md bg-white h-[32rem] overflow-y-auto scrollbar-none">
+            <div className="flex flex-col border rounded-md bg-white h-[32rem] overflow-y-auto scrollbar-none p-1">
               {inboxMessages.map((msg, index) => (
                 <div
                   key={index}
                   className={`flex ${
-                    msg.sender === selectedUser._id
+                    msg.sender === selectedUser.userId
                       ? "justify-start"
                       : "justify-end"
                   }`}
                 >
                   <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
-                    {msg.sender != selectedUser._id && (
+                    {msg.sender != selectedUser.userId && (
                       <p className="text-sm font-medium">{msg.senderName}</p>
                     )}
                     {msg.attachments != null && (
