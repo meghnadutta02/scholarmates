@@ -36,39 +36,20 @@ export default function Component() {
     }
   }, [session]);
 
-  const fetchUserData = async () => {
-    try {
-      const res = await fetch(`/api/users/profile?id=${userId.db_id}`, {
-        cache: "no-cache",
-      });
-      if (!res.ok) {
-        throw new Error("Failed to fetch data");
-      }
-      const data = await res.json();
-      setRequestPen(data.result.requestPending);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
-
-  useEffect(() => {
-    if (userId) {
-      fetchUserData();
-    }
-  }, [userId]);
-
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
         if (userId) {
           setLoading(true);
-          const res = await fetch(`/api/users/matching`, {
+          const res = await fetch(`/api/users/matching?id=${userId.db_id}`, {
             cache: "no-cache",
           });
           if (!res.ok) {
             throw new Error("Failed to fetch data");
           }
           const data = await res.json();
+          setRequestPen(data.requests);
+
           setProfiles(data.result);
         }
       } catch (error) {
@@ -114,7 +95,8 @@ export default function Component() {
 
   return (
     <>
-      {user &&
+      {session &&
+      user &&
       user.interestCategories.length > 0 &&
       user.interestSubcategories.length > 0 ? (
         <div className="">
@@ -128,7 +110,7 @@ export default function Component() {
                 Our website is growing, and while there are no matches with your
                 interests yet, you can still connect with others.
               </div>
-              <ProfileCarousel />
+              <ProfileCarousel user={userId} />
             </div>
           ) : (
             <div>

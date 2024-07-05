@@ -7,7 +7,7 @@ export async function GET(req) {
     await connect();
     const id = req.nextUrl.searchParams.get("id");
 
-    const user = await User.findById(id).select("connection");
+    const user = await User.findById(id).select("connection requestPending");
     const connections = user.connection;
     connections.push(id);
 
@@ -16,7 +16,10 @@ export async function GET(req) {
     ]);
 
     if (users.length > 0)
-      return NextResponse.json({ result: users }, { status: 200 });
+      return NextResponse.json(
+        { result: users, requests: user.requestPending },
+        { status: 200 }
+      );
     else
       return NextResponse.json(
         { result: [], message: "No user profiles" },

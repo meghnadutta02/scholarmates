@@ -1,6 +1,3 @@
-import { getServerSession } from "next-auth";
-
-import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";
@@ -9,11 +6,10 @@ import connect from "@/app/config/db";
 export async function GET(req) {
   try {
     await connect();
-    const session = await getServerSession(options);
-    const id = session?.user?.db_id;
+    const id = req.nextUrl.searchParams.get("id");
 
     const user = await User.findById(id).select(
-      "interestCategories connection"
+      "interestCategories connection requestPending"
     );
 
     if (user.interestCategories.length > 0) {
@@ -28,7 +24,10 @@ export async function GET(req) {
       ]);
 
       if (users.length > 0)
-        return NextResponse.json({ result: users }, { status: 200 });
+        return NextResponse.json(
+          { result: users, requests: user.requestPending },
+          { status: 200 }
+        );
       else
         return NextResponse.json(
           { result: [], message: "No matching user profiles" },

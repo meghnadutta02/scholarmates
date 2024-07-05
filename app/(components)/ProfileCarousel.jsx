@@ -3,8 +3,8 @@ import Spinnersvg from "@/public/Spinner.svg";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import Link from "next/link";
 
-import { useSession } from "@/app/(components)/SessionProvider";
 import { useState, useEffect } from "react";
 import {
   Carousel,
@@ -21,47 +21,18 @@ const getYearWithSuffix = (year) => {
   return `${year}${suffix}`;
 };
 
-export default function ProfileCarousel() {
-  const { session } = useSession();
+export default function ProfileCarousel({ user }) {
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
-  const [userId, setUserId] = useState();
   const [requestPend, setRequestPen] = useState([]);
   const [connectingProfile, setConnectingProfile] = useState(null);
 
   useEffect(() => {
-    if (session) {
-      setUserId(session);
-    }
-  }, [session]);
-
-  const fetchUserData = async () => {
-    try {
-      const res = await fetch(`/api/users/profile?id=${userId.db_id}`, {
-        cache: "no-cache",
-      });
-      if (!res.ok) {
-        throw new Error("Failed to fetch data");
-      }
-      const data = await res.json();
-      setRequestPen(data.result.requestPending);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
-
-  useEffect(() => {
-    if (userId) {
-      fetchUserData();
-    }
-  }, [userId]);
-
-  useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        if (userId) {
+        if (user) {
           setLoading(true);
-          const res = await fetch(`/api/users/find-people?id=${userId.db_id}`, {
+          const res = await fetch(`/api/users/find-people?id=${user.db_id}`, {
             cache: "no-cache",
           });
           if (!res.ok) {
@@ -69,6 +40,7 @@ export default function ProfileCarousel() {
           }
           const data = await res.json();
           setProfiles(data.result);
+          setRequestPen(data.requests);
         }
       } catch (error) {
         console.error("Error fetching profiles:", error.message);
@@ -77,14 +49,14 @@ export default function ProfileCarousel() {
       }
     };
     fetchProfiles();
-  }, [userId]);
+  }, [user]);
 
   const handleConnectClick = async (profileId) => {
     try {
       setConnectingProfile(profileId);
-      if (profileId && userId) {
+      if (profileId && user) {
         const res = await fetch(
-          `http://localhost:5001/sendconnection/${userId.db_id}`,
+          `http://localhost:5001/sendconnection/${user.db_id}`,
           {
             method: "POST",
             headers: {
@@ -163,6 +135,7 @@ export default function ProfileCarousel() {
                             {profile.connection.length} connection
                             {profile.connection.length > 1 ? "s" : ""}
                           </p>
+
                           {requestPend.includes(profile._id) ? (
                             <Button disabled>Requested</Button>
                           ) : (
