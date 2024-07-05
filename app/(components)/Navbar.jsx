@@ -46,7 +46,7 @@ const NavbarClient = () => {
                   variant="icon"
                 >
                   {unreadCount > 0 && (
-                    <span className="absolute z-10 inline-flex items-center justify-center p-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                    <span className="absolute z-10  items-center justify-center p-1 w-4 h-4 text-[10px] font-bold leading-none top-[13px] text-red-100 bg-red-600 rounded-full">
                       {unreadCount}
                     </span>
                   )}
