@@ -44,4 +44,10 @@ export const degrees = [
   "MPT",
   "BAMS",
   "BHMS",
+  "BFTech",
+  "BOD",
+  "BDes",
+  "BStat",
+  "BMath",
+  "MStat",
 ];

@@ -127,5 +127,3 @@ export const departments = [
   "Medical Ethics",
   "Medical Informatics",
 ];
-
-module.exports = departments;

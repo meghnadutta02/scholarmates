@@ -8,13 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { departments } from "../department_list";
+import { colleges } from "../college_list";
+import { degrees } from "../degree_list";
 import { FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { format, subYears } from "date-fns";
 
 const ProfileEdit = ({ user, setUser }) => {
-  const [userState, setUserData] = useState(user);
-  const { user: user1, setUser: setUser1 } = useSession();
+  const [userState, setUserState] = useState(user);
+  const { setUser: setSessionUser } = useSession();
   const minDate = format(new Date(1975, 0, 1), "yyyy-MM-dd");
   const maxDate = format(subYears(new Date(), 11), "yyyy-MM-dd");
   const [selectedCategories, setSelectedCategories] = useState(
@@ -40,9 +43,21 @@ const ProfileEdit = ({ user, setUser }) => {
     label: category,
     value: category,
   }));
+  const degreesOptions = degrees.map((degree) => ({
+    label: degree,
+    value: degree,
+  }));
+  const departmentsOptions = departments.map((department) => ({
+    label: department,
+    value: department,
+  }));
+  const collegesOptions = colleges.map((college) => ({
+    label: college,
+    value: college,
+  }));
 
   const handleChange = (field, value) => {
-    setUserData((prevUser) => ({ ...prevUser, [field]: value }));
+    setUserState((prevUser) => ({ ...prevUser, [field]: value }));
   };
 
   const handleCategoryChange = (selectedCategory) => {
@@ -61,19 +76,9 @@ const ProfileEdit = ({ user, setUser }) => {
   };
 
   const handleSubcategoryChange = (selectedSubCategories) => {
-    const updatedSubCategories = [
-      ...selectedSubCategories,
-      ...selectedSubCategories.filter(
-        (subcategory) =>
-          !selectedSubCategories.some(
-            (selected) => selected.value === subcategory.value
-          )
-      ),
-    ];
+    setSelectedSubCategories(selectedSubCategories);
 
-    setSelectedSubCategories(updatedSubCategories);
-
-    const newSelectedCategories = updatedSubCategories.map((subCategory) => {
+    const newSelectedCategories = selectedSubCategories.map((subCategory) => {
       return interests.find((interest) =>
         interest.subcategories.includes(subCategory.value)
       ).category;
@@ -84,6 +89,18 @@ const ProfileEdit = ({ user, setUser }) => {
     ];
 
     setSelectedCategories(uniqueSelectedCategories);
+  };
+
+  const handleCollegeChange = (selectedOption) => {
+    handleChange("collegeName", selectedOption.value);
+  };
+
+  const handleDegreeChange = (selectedOption) => {
+    handleChange("degree", selectedOption.value);
+  };
+
+  const handleDepartmentChange = (selectedOption) => {
+    handleChange("department", selectedOption.value);
   };
 
   const submitHandler = async (e) => {
@@ -120,7 +137,7 @@ const ProfileEdit = ({ user, setUser }) => {
       const data = await res.json();
 
       setUser(data.result);
-      setUser1(data.result);
+      setSessionUser(data.result);
       setFormOpen(false);
       toast.success("Profile updated successfully");
     } else {
@@ -142,32 +159,39 @@ const ProfileEdit = ({ user, setUser }) => {
         </div>
         <div className="grid gap-2">
           <Label htmlFor="collegeName">College Name</Label>
-          <Input
-            id="collegeName"
+          <Select
             name="collegeName"
-            value={userState.collegeName}
-            onChange={(e) => handleChange("collegeName", e.target.value)}
+            options={collegesOptions}
+            value={collegesOptions.find(
+              (option) => option.value === userState.collegeName
+            )}
+            onChange={handleCollegeChange}
           />
         </div>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-[4fr,6fr,2fr] gap-4 w-full">
           <div>
             <Label htmlFor="degree">Degree</Label>
-            <Input
-              id="degree"
+            <Select
               name="degree"
-              value={userState.degree}
-              onChange={(e) => handleChange("degree", e.target.value)}
+              options={degreesOptions}
+              value={degreesOptions.find(
+                (option) => option.value === userState.degree
+              )}
+              onChange={handleDegreeChange}
             />
           </div>
           <div>
             <Label htmlFor="department">Department</Label>
-            <Input
-              id="department"
+            <Select
               name="department"
-              value={userState.department}
-              onChange={(e) => handleChange("department", e.target.value)}
+              options={departmentsOptions}
+              value={departmentsOptions.find(
+                (option) => option.value === userState.department
+              )}
+              onChange={handleDepartmentChange}
             />
           </div>
+
           <div>
             <Label htmlFor="yearInCollege">Year</Label>
             <Input
@@ -178,10 +202,10 @@ const ProfileEdit = ({ user, setUser }) => {
             />
           </div>
         </div>
+
         <div className="grid gap-2">
           <Label htmlFor="bio">Bio</Label>
           <Textarea
-            as="textarea"
             id="bio"
             name="bio"
             value={userState.bio}
@@ -194,9 +218,6 @@ const ProfileEdit = ({ user, setUser }) => {
             <Select
               name="interests"
               options={categoryOptions}
-              className="basic-multi-select"
-              classNamePrefix="select"
-              defaultValue={userState.interests}
               value={selectedCategory}
               onChange={handleCategoryChange}
             />
@@ -224,9 +245,6 @@ const ProfileEdit = ({ user, setUser }) => {
             isMulti
             name="interests"
             options={subCategoryOptions}
-            className="basic-multi-select"
-            classNamePrefix="select"
-            defaultValue={userState.interests}
             value={selectedSubCategories}
             onChange={handleSubcategoryChange}
             placeholder="Select a category first"
