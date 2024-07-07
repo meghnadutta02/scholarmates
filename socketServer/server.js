@@ -12,9 +12,8 @@ import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
 import Request from "./model/requestModel.js";
-//CONFIG ENV
 
-console.log(process.env.MONGO_URI);
+dotenv.config();
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());

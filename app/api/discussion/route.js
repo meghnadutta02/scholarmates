@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { ObjectId } from "mongodb";
-import { interests } from "@/app/interests";
+import { interests } from "@/app/(data)/interests";
 import Group from "@/app/(models)/groupModel";
 import User from "@/app/(models)/userModel";
 import { postObject } from "@/app/config/s3";

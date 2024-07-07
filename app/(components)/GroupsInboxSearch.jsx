@@ -1,36 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-export default function Component({ setSelectedUser, setToggleChatView }) {
+export default function Component({ setRoomID, setToggleChatView }) {
   const [showList, setShowList] = useState(false);
-  const [connections, setConnections] = useState([]);
-  const [filteredConnections, setFilteredConnections] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [filteredGroups, setFilteredGroups] = useState([]);
 
   useEffect(() => {
-    const fetchConnections = async () => {
-      const response = await fetch("/api/connection");
+    const fetchGroups = async () => {
+      const response = await fetch("/api/groups");
       const data = await response.json();
-      setConnections(data.connections);
-      setFilteredConnections(data.connections);
+      console.log(data);
+      setGroups(data.groups);
+      setFilteredGroups(data.groups);
     };
-    fetchConnections();
+    fetchGroups();
   }, []);
 
   const handleSearch = (e) => {
     const searchTerm = e.target.value.trim();
     setShowList(searchTerm !== "");
 
-    const filtered = connections.filter((connection) =>
-      connection.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = groups.filter((group) =>
+      group.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    setFilteredConnections(filtered);
+    setFilteredGroups(filtered);
   };
 
   return (
@@ -48,29 +47,21 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
       </div>
       {showList && (
         <CardContent className="pt-4 overflow-y-auto scrollbar-none bg-gray-50 max-h-[400px]">
-          {filteredConnections.map((connection) => (
+          {filteredGroups.map((group) => (
             <Button
               variant="icon"
-              key={connection._id}
+              key={group._id}
               href="#"
               onClick={(e) => {
-                setSelectedUser(connection);
-                console.log(connection._id);
+                setRoomID(setRoomID);
+                console.log(group._id);
                 setToggleChatView(false);
                 setShowList(false);
               }}
               className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"
             >
-              <div>
-                <Avatar className="w-10 h-10 border">
-                  <AvatarImage src={connection.profilePic} />
-                  <AvatarFallback>SD</AvatarFallback>
-                </Avatar>
-              </div>
               <div className="">
-                <p className="text-sm font-medium leading-none">
-                  {connection.name}
-                </p>
+                <p className="text-sm font-medium leading-none">{group.name}</p>
               </div>
             </Button>
           ))}

@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import Select from "react-select";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
-import { interests } from "../interests";
+import { interests } from "../(data)/interests";
 import { PaperclipIcon } from "lucide-react";
 
 const EditDiscussion = ({ discussion, setDiscussion }) => {
