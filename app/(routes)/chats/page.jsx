@@ -104,7 +104,7 @@ export default function Chats() {
                   <div className="flex flex-col min-h-[32rem] rounded-b-lg border my-4">
                     <div className="flex flex-1 max-h-[32rem] min-w-[300px]">
                       {toggleChatView ? (
-                        <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px] px-1 flex flex-col overflow-y-auto scrollbar-thin">
+                        <div className="min-w-[320px] sm:min-w-[480px] md:min-w-[720px] px-1 flex flex-col overflow-y-auto scrollbar-thin">
                           {connections.map((connection) => (
                             <div
                               key={connection.userId}
@@ -191,7 +191,7 @@ export default function Chats() {
             </div>
           </TabsContent>
 
-          <TabsContent value="g" className="w-full ">
+          <TabsContent value="g" className="w-full">
             <DiscussionChatsSection />
           </TabsContent>
         </Tabs>
