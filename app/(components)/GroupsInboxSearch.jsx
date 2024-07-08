@@ -14,7 +14,6 @@ export default function Component({ setRoomID, setToggleChatView }) {
     const fetchGroups = async () => {
       const response = await fetch("/api/groups");
       const data = await response.json();
-      console.log(data);
       setGroups(data.groups);
       setFilteredGroups(data.groups);
     };
