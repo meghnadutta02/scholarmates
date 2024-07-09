@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Spinnersvg from "@/public/Spinner.svg";
+import Loading from "@/app/(components)/Loading";
 import Image from "next/image";
 import { FaTimes, FaCheck } from "react-icons/fa";
 import {
@@ -104,13 +104,15 @@ const GroupRequests = () => {
   return (
     <div className="w-full">
       {loading ? (
-        <div className="flex justify-center items-center">
-          <Image src={Spinnersvg} alt="Loading..." className="md:h-28 h-24" />
-        </div>
+        <Loading />
       ) : (
         <div className="flex flex-col gap-4 p-2 w-full">
           {mergedRequests.length === 0 ? (
-            <p>No requests to display</p>
+            <div className="flex flex-col items-center justify-center">
+              <p className="text-lg text-gray-500 dark:text-gray-400 ">
+                You have no group requests.
+              </p>
+            </div>
           ) : (
             mergedRequests.map((request) => (
               <div key={request._id} className="md:text-base text-[14px]">

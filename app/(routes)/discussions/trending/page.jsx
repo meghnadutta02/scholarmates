@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Loading from "../loading";
+import Loading from "@/app/(components)/Loading";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -181,13 +181,15 @@ const Trending = () => {
       toast.error("Error sending request");
     }
   };
-
+  if (loading) return <Loading />;
   return (
     <div className="pt-5 px-6">
-      {loading ? (
-        <Loading />
-      ) : discussions.length === 0 ? (
-        <p>No discussions found .</p>
+      {discussions.length === 0 ? (
+        <div className="flex  items-center justify-center h-full ">
+          <p className="text-lg text-gray-500 dark:text-gray-400 ">
+            Discussion not found
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-1  gap-6 ">
           {discussions.map((discussion) => (

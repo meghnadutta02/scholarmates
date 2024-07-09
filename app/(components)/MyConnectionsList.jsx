@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { useSession } from "@/app/(components)/SessionProvider";
 import Link from "next/link";
-import Spinnersvg from "@/public/Spinner.svg";
+import Loading from "@/app/(components)/Loading";
 const Connection = () => {
   const session = useSession();
   const [isVisible, setIsVisible] = useState(true);
@@ -45,11 +45,19 @@ const Connection = () => {
   return (
     <>
       {loading ? (
-        <div className="flex justify-center items-center z-50">
-          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-        </div>
+        <Loading />
       ) : data.length == 0 ? (
-        "You have no connections."
+        <div className="flex flex-col items-center justify-center h-full mt-4">
+          <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
+            You have no connections.
+          </p>
+          <Link
+            href="/connect"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
+          >
+            Find Connections
+          </Link>
+        </div>
       ) : (
         <div className="w-full md:mt-7 mt-4 font-sans">
           <h2 className="text-xl font-semibold">

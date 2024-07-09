@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FaTimes, FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -34,7 +34,7 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
           toast.success(
             action === "accept" ? "Request accepted" : "Request declined"
           );
-          // localStorage.removeItem("request");
+
           setIsVisible(false);
           if (action === "accept") {
             setIsConnected(true);
@@ -53,7 +53,6 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
     }
   };
 
-  
   const profile = (id) => {
     alert(id);
   };

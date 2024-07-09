@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { RiShareForwardLine } from "react-icons/ri";
 import { MdDeleteOutline } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
-import Loading from "../loading";
+import Loading from "@/app/(components)/Loading";
 import TimeAgo from "javascript-time-ago";
 import EditDiscussion from "@/app/(components)/EditDiscussion";
 import {
@@ -216,7 +216,13 @@ const DiscussionDetails = ({ params }) => {
   }
 
   if (!discussion) {
-    return <div>Discussion not found</div>;
+    return (
+      <div className="flex  items-center justify-center h-full mt-5">
+        <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
+          Discussion not found
+        </p>
+      </div>
+    );
   }
 
   return (

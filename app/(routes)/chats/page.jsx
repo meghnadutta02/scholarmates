@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import DiscussionChatsSection from "@/app/(components)/DiscussionChatsSection";
 import UserInboxSearch from "@/app/(components)/UserInboxSearch";
 import Link from "next/link";
-import Spinnersvg from "@/public/Spinner.svg";
+import Loading from "@/app/(components)/Loading";
 
 export default function Chats() {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -82,9 +82,7 @@ export default function Chats() {
   return (
     <div>
       {loading ? (
-        <div className="flex justify-center items-center z-50">
-          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-        </div>
+        <Loading />
       ) : (
         <Tabs defaultValue="c" className="mt-6 flex flex-col items-center">
           <TabsList>

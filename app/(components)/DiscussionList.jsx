@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import Loading from "../(routes)/discussions/loading";
+
 import { Button } from "@/components/ui/button";
+import Loading from "./Loading";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
@@ -132,7 +133,6 @@ const DiscussionList = ({
         });
         setLoading(false);
         if (result.length < limit) {
-          console.log(result.length, limit);
           setHasMore(false);
         }
       } catch (error) {
@@ -316,7 +316,11 @@ const DiscussionList = ({
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
-        <p>No discussions found for the selected filters.</p>
+        <div className="flex  items-center justify-center h-full ">
+          <p className="text-lg text-gray-500 dark:text-gray-400 ">
+            No discussions found for the selected filters.
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-1  gap-6 ">
           {discussions.map((discussion) => (

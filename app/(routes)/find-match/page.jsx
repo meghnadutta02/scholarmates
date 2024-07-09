@@ -1,5 +1,5 @@
 "use client";
-import Spinnersvg from "@/public/Spinner.svg";
+import Loading from "@/app/(components)/Loading";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -29,8 +29,6 @@ export default function Component() {
   const [userId, setUserId] = useState();
   const [requestPend, setRequestPen] = useState([]);
   const [connectingProfile, setConnectingProfile] = useState(null);
-
-
 
   useEffect(() => {
     if (session) {
@@ -66,7 +64,7 @@ export default function Component() {
   const handleConnectClick = async (profileId) => {
     try {
       setConnectingProfile(profileId);
-      console.log(process.env.NEXT_PUBLIC_NODE_SERVER)
+      console.log(process.env.NEXT_PUBLIC_NODE_SERVER);
       if (profileId && userId) {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${userId.db_id}`,
@@ -99,14 +97,12 @@ export default function Component() {
   return (
     <>
       {session &&
-        user &&
-        user.interestCategories.length > 0 &&
-        user.interestSubcategories.length > 0 ? (
+      user &&
+      user.interestCategories.length > 0 &&
+      user.interestSubcategories.length > 0 ? (
         <div className="">
           {loading ? (
-            <div className="flex justify-center items-center z-50">
-              <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-            </div>
+            <Loading />
           ) : profiles.length === 0 ? (
             <div className=" md:my-8 my-6 font-sans gap-2 flex flex-col justify-center">
               <div className=" text-md italic text-gray-600 mb-2 text-center">

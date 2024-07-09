@@ -1,11 +1,10 @@
 "use client";
 import React from "react";
-import Spinnersvg from "@/public/Spinner.svg";
+
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "./SessionProvider";
 import ProfileDetailsTab from "./ProfileDetailsTab";
-import Image from "next/image";
 
 const getYearWithSuffix = (year) => {
   const suffixes = ["th", "st", "nd", "rd"];
