@@ -17,7 +17,7 @@ import { CaretSortIcon } from "@radix-ui/react-icons";
 
 const FilterDrawer = ({ applyFilters }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const { session } = useSession();
+  const { session, user } = useSession();
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [college, setCollege] = useState(false);
   const [selectedType, setSelectedType] = useState([]);
@@ -118,8 +118,7 @@ const FilterDrawer = ({ applyFilters }) => {
                         checked={college}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            if (session?.collegeName !== "") {
-                              console.log("Hi");
+                            if (user?.collegeName !== "") {
                               setCollege(true);
                             } else {
                               toast.info(

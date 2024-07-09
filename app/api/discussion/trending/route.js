@@ -25,13 +25,78 @@ const calculateTrendScore = (discussion) => {
 export async function GET(req) {
   try {
     await connect();
-    const discussions = await Discussion.find({ isActive: true }).populate(
-      "groupId creator",
-      "participants name profilePic _id"
-    );
+
+    const college = req.nextUrl.searchParams.get("college");
+    const aggregationPipeline = [
+      {
+        $match: { isActive: true },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "creator",
+          foreignField: "_id",
+          as: "creator",
+        },
+      },
+      {
+        $unwind: "$creator",
+      },
+      {
+        $project: {
+          "creator.interestCategories": 0,
+          "creator.interestSubcategories": 0,
+          "creator.email": 0,
+          "creator.createdAt": 0,
+          "creator.updatedAt": 0,
+          "creator.__v": 0,
+          "creator.dob": 0,
+          "creator.degree": 0,
+          "creator.department": 0,
+          "creator.yearInCollege": 0,
+          "creator.posts": 0,
+          "creator.connection": 0,
+          "creator.bio": 0,
+          "creator.isAdmin": 0,
+          "creator.connection": 0,
+          "creator.requestPending": 0,
+          "creator.groupsJoined": 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "groups",
+          localField: "groupId",
+          foreignField: "_id",
+          as: "groupId",
+        },
+      },
+      {
+        $unwind: "$groupId",
+      },
+      {
+        $project: {
+          "groupId.createdAt": 0,
+          "groupId.updatedAt": 0,
+          "groupId.__v": 0,
+          "groupId.isPublic": 0,
+          "groupId.description": 0,
+          "groupId.moderators": 0,
+          "groupId.creator": 0,
+        },
+      },
+    ];
+
+    if (college) {
+      aggregationPipeline.push({
+        $match: { "creator.collegeName": college },
+      });
+    }
+
+    const discussions = await Discussion.aggregate(aggregationPipeline);
 
     const discussionsWithScores = discussions.map((discussion) => ({
-      ...discussion.toObject(),
+      ...discussion,
       trendScore: calculateTrendScore(discussion),
     }));
 

@@ -213,6 +213,7 @@ export const interests = [
       "Jazz ",
       "Folk Dance",
       "Bollywood Dance",
+      "Classical Dance",
       "Irish Dance",
       "Flamenco",
       "Salsa",
