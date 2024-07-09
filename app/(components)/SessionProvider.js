@@ -61,7 +61,7 @@ export const SessionProvider = ({ children }) => {
 
       socket.on("connectionRequest", (data) => {
         if (data) {
-          console.log("datakjsnnsk",data);
+          
           setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
             setUnreadCount(newNotifications.length);
@@ -76,7 +76,19 @@ export const SessionProvider = ({ children }) => {
       });
 
       socket.on("friendRequestAccepted", (data) => {
-        console.log("My data", data);
+        if (data) {
+          
+          setNotification((prev) => {
+        const newNotifications = removeDuplicates([...prev, data]);
+        setUnreadCount(newNotifications.length);
+        return newNotifications;
+          });
+          const dataString = JSON.stringify(data);
+          if (!seenNotifications.has(dataString)) {
+        setSeenNotifications((prev) => new Set(prev).add(dataString));
+        toast.info("Friend request accepted");
+          }
+        }
       });
     }
   }, [socket, session, seenNotifications]);

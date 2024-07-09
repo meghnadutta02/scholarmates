@@ -177,9 +177,17 @@ const DiscussionList = () => {
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
-        <p className="md:mt-7 mt-4">
-          You have no discussions. Create a discussion..
-        </p>
+        <div className="flex flex-col items-center justify-center h-full mt-4">
+          <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
+            You have no discussions.
+          </p>
+          <Link
+            href="/discussions"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
+          >
+            Create Discussion
+          </Link>
+        </div>
       ) : (
         <div className="md:mt-7 mt-4">
           <h2 className="text-xl font-semibold">

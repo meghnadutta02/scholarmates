@@ -4,7 +4,8 @@ import GroupsInboxSearch from "@/app/(components)/GroupsInboxSearch";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import Spinnersvg from "@/public/Spinner.svg";
+import Loading from "@/app/(components)/Loading";
+
 import Link from "next/link";
 
 const Page = () => {
@@ -87,9 +88,7 @@ const Page = () => {
   return (
     <div className="flex flex-col">
       {loading ? (
-        <div className="flex justify-center items-center z-50">
-          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-        </div>
+        <Loading />
       ) : (
         <div className="relative">
           <div className="absolute top-0 left-0 right-0 z-10">

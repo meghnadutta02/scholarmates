@@ -1,16 +1,19 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Loading from "../loading";
+import Loading from "@/app/(components)/Loading";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { InfoIcon } from "lucide-react";
 import { toast } from "react-toastify";
+import { useSession } from "@/app/(components)/SessionProvider";
 import { LuTrendingDown } from "react-icons/lu";
-const getDiscussions = async () => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/trending`,
-    { next: { revalidate: 1800 } }
-  );
+const getDiscussions = async (college, c) => {
+  let url = `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/trending`;
+  if (college) {
+    url += `?college=${c}`;
+  }
+  const response = await fetch(url, { next: { revalidate: 1800 } });
 
   return response.json();
 };
@@ -22,8 +25,20 @@ const getJoinRequests = async () => {
 };
 
 const Trending = () => {
-  const { data: session } = useSession();
+  const { user, session } = useSession();
+  const [expandedDiscussion, setExpandedDiscussion] = useState([]);
   const [animationState, setAnimationState] = useState({});
+  const [college, setCollege] = useState(false);
+  const toggleDiscussion = (id) => {
+    setExpandedDiscussion((prev) => {
+      const isIdPresent = prev.includes(id);
+      if (isIdPresent) {
+        return prev.filter((item) => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
 
   const toggleLike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "like" }));
@@ -92,8 +107,12 @@ const Trending = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const collegeName = session?.collegeName;
         const [joinRequestsResult, discussionsResult] =
-          await Promise.allSettled([getJoinRequests(), getDiscussions()]);
+          await Promise.allSettled([
+            getJoinRequests(),
+            getDiscussions(college, collegeName),
+          ]);
         let result = [];
         let accepted = [];
         let pending = [];
@@ -106,7 +125,7 @@ const Trending = () => {
           result = discussionsResult.value.discussions;
         }
 
-        const userId = session?.user?.db_id;
+        const userId = session?.db_id;
 
         const updatedResult = result.map((discussion) => {
           const isLiked = discussion.likedBy?.includes(userId);
@@ -144,7 +163,7 @@ const Trending = () => {
     };
 
     fetchData();
-  }, [session]);
+  }, [session, user, college]);
 
   const handleButtonClick = async (discussion) => {
     try {
@@ -181,13 +200,34 @@ const Trending = () => {
       toast.error("Error sending request");
     }
   };
-
+  if (loading) return <Loading />;
   return (
-    <div className="pt-5 px-6">
-      {loading ? (
-        <Loading />
-      ) : discussions.length === 0 ? (
-        <p>No discussions found .</p>
+    <div className="pt-5 md:px-6 px-1 relative w-full">
+      {user?.collegeName !== "" ? (
+        <div className="absolute items-center  space-x-2 md:right-5 right-0 top-[-6px] md:top-0">
+          <input
+            type="checkbox"
+            id="college"
+            name="college"
+            className="rounded-md h-[14px] w-[14px] accent-zinc-700"
+            onChange={(e) => setCollege(e.target.checked)}
+          />
+          <label htmlFor="college" className="text-md font-medium ">
+            My college
+          </label>
+        </div>
+      ) : (
+        <>
+          toast.info( "Please provide your college name to complete your
+          profile." );
+        </>
+      )}
+      {discussions.length === 0 ? (
+        <div className="flex   justify-center  ">
+          <p className="text-lg text-gray-500 dark:text-gray-400 ">
+            No discussions found.
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-1  gap-6 ">
           {discussions.map((discussion) => (
@@ -197,7 +237,7 @@ const Trending = () => {
             >
               <Image
                 alt="Avatar"
-                className="rounded-full"
+                className="rounded-full hidden sm:block"
                 height="48"
                 src={discussion.creator.profilePic}
                 style={{
@@ -206,17 +246,53 @@ const Trending = () => {
                 }}
                 width="48"
               />
+              <Image
+                alt="Avatar"
+                className="rounded-full sm:hidden block"
+                height="38"
+                src={discussion.creator.profilePic}
+                style={{
+                  aspectRatio: "38/38",
+                  objectFit: "cover",
+                }}
+                width="38"
+              />
+
               <div className="flex-1 grid gap-2">
                 <div className="flex flex-col  gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {discussion.creator.name}
-                  </span>{" "}
-                  <h4 className="font-semibold text-base">
-                    {discussion.title}
+                  <div className="flex justify-between items-center w-full ">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {discussion.creator.name}
+                    </div>
+                    <Link href={`/discussions/${discussion._id}`}>
+                      <Button className=" md:hidden p-0 " variant="icon">
+                        <InfoIcon className="w-5 h-5" />
+                      </Button>
+                    </Link>
+                  </div>
+                  <h4 className="font-semibold text-base cursor-pointer">
+                    <Link href={`/discussions/${discussion._id}`}>
+                      {discussion.title}
+                    </Link>
                   </h4>
                 </div>
-                <div className="prose max-w-none">
-                  <p>{discussion.content}</p>
+                <div
+                  className={`prose max-w-none cursor-pointer md:hidden ${
+                    expandedDiscussion.includes(discussion._id)
+                      ? ""
+                      : "line-clamp-2"
+                  }`}
+                  onClick={() => toggleDiscussion(discussion._id)}
+                >
+                  <p className="cursor-pointer">{discussion.content}</p>
+                </div>
+                <div className="prose max-w-none  md:block hidden ">
+                  <p className="cursor-pointer">
+                    {" "}
+                    <Link href={`/discussions/${discussion._id}`}>
+                      {discussion.content}
+                    </Link>
+                  </p>
                 </div>
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">
@@ -259,7 +335,7 @@ const Trending = () => {
                     </span>
                   </Button>
                   <Button
-                    className="w-24"
+                    className="md:w-24 w-[70px]"
                     variant="secondary"
                     disabled={
                       discussion.isMember ||

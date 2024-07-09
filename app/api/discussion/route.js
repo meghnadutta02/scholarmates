@@ -157,6 +157,7 @@ export async function GET(req) {
     }
 
     aggregationPipeline.push({ $match: { isActive: true } });
+    aggregationPipeline.push({ $sort: { createdAt: -1 } });
 
     // Apply pagination
     aggregationPipeline.push({ $skip: offset }, { $limit: limit });

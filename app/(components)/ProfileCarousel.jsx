@@ -1,5 +1,5 @@
 "use client";
-import Spinnersvg from "@/public/Spinner.svg";
+import Loading from "@/app/(components)/Loading";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -86,9 +86,7 @@ export default function ProfileCarousel({ user }) {
   return (
     <>
       {loading ? (
-        <div className="flex justify-center items-center z-50">
-          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-        </div>
+        <Loading />
       ) : (
         <div className="flex justify-center">
           <Carousel className="border-2 border-gray-300 rounded-lg md:p-4 p-2 w-full max-w-xs md:max-w-md lg:max-w-2xl">

@@ -1,8 +1,8 @@
 "use client";
 import { MdEdit } from "react-icons/md";
 import React, { useEffect, useState } from "react";
-import Spinnersvg from "@/public/Spinner.svg";
-import Image from "next/image";
+import Loading from "@/app/(components)/Loading";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -61,11 +61,7 @@ export default function DrawerDialogDemo({ params }) {
   }, [session]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center z-50">
-        <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-      </div>
-    );
+    return <Loading />;
   }
 
   if (isDesktop) {

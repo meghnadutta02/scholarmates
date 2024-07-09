@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import React, { useState, useEffect, useRef } from "react";
 import GroupDetails from "@/app/(components)/GroupDetails";
 import DisplayMedia from "./DisplayMedia";
-import Spinnersvg from "@/public/Spinner.svg";
+import Loading from "@/app/(components)/Loading";
 import { toast } from "react-toastify";
 
 import { VscSend } from "react-icons/vsc";
@@ -186,9 +186,7 @@ const GroupChatbox = ({
   return (
     <>
       {loading ? (
-        <div className="flex justify-center items-center z-50">
-          <Image src={Spinnersvg} alt="Loading..." className="h-28" />
-        </div>
+        <Loading />
       ) : showGroupDetails ? (
         <GroupDetails
           groupDetails={groupDetails}

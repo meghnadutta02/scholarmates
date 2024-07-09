@@ -47,7 +47,6 @@ const Request = () => {
 
   useEffect(() => {
     fetchRequests();
-    
   }, [userId]);
 
   return (
@@ -62,11 +61,13 @@ const Request = () => {
             {loading ? (
               <Loading />
             ) : data.length === 0 ? (
-              <div className="flex justify-center">
-                You have no connection requests.
+              <div className="flex items-center justify-center">
+                <p className="text-lg text-gray-500 dark:text-gray-400 ">
+                  You have no connection requests.
+                </p>
               </div>
             ) : (
-              <div className="items-center flex-col gap-4 w-full">
+              <div className="items-center flex-col space-y-4 w-full">
                 {data.map((item, index) => (
                   <Notification
                     key={index}
