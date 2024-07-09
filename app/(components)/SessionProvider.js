@@ -40,7 +40,7 @@ export const SessionProvider = ({ children }) => {
 
     fetchData();
 
-    const newSocket = io("http://localhost:5001");
+    const newSocket = io(`${process.env.NEXT_PUBLIC_NODE_SERVER}`);
 
     newSocket.on("connect", () => {
       console.log("Successfully connected in socket context!");
@@ -61,6 +61,7 @@ export const SessionProvider = ({ children }) => {
 
       socket.on("connectionRequest", (data) => {
         if (data) {
+          console.log("datakjsnnsk",data);
           setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
             setUnreadCount(newNotifications.length);
@@ -69,7 +70,7 @@ export const SessionProvider = ({ children }) => {
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
             setSeenNotifications((prev) => new Set(prev).add(dataString));
-            toast.info("You have got a connection request");
+            toast.info("You have a connection request");
           }
         }
       });

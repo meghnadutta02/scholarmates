@@ -11,7 +11,7 @@ const setupSocket = async () => {
       throw new Error("No session or session user found.");
     }
 
-    const socket = io("http://localhost:5001");
+    const socket = io(`${process.env.NEXT_PUBLIC_NODE_SERVER}`);
 
     socket.on("connection", () => {
       console.log("Successfully connected!");
