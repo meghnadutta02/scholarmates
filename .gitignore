@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 socketServer/node_modules
+socketServer/.env
 /.pnp
 .pnp.js
 .yarn/install-state.gz
