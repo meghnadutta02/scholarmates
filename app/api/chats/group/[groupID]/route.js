@@ -2,7 +2,7 @@ import connect from "@/app/config/db";
 import User from "@/app/(models)/userModel";
 import { NextResponse } from "next/server";
 import Message from "@/app/(models)/messageModel";
-import Discussion from "@/app/(models)/discussionModel";
+import ReadStatus from "@/app/(models)/readStatusModel";
 import { ObjectId } from "mongodb";
 import Group from "@/app/(models)/groupModel";
 import { options } from "@/app/api/auth/[...nextauth]/options";
@@ -87,6 +87,49 @@ export async function POST(req, { params }) {
     await newMessage.save();
 
     return NextResponse.json({ result: newMessage }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// Update the read status for a user for a specific group
+export async function PUT(req, { params }) {
+  try {
+    await connect();
+
+    const session = await getServerSession(options);
+    const userId = session?.user?.db_id;
+    const groupId = params.groupID;
+
+    // Find the existing read status
+    let readStatus = await ReadStatus.findOne({ userId });
+
+    if (readStatus) {
+      const groupStatusIndex = readStatus.groups.findIndex(
+        (status) => status.groupId.toString() === groupId.toString()
+      );
+
+      if (groupStatusIndex > -1) {
+        readStatus.groups[groupStatusIndex].lastReadAt = new Date();
+      } else {
+        // Add a new group read status entry
+        readStatus.groups.push({ groupId, lastReadAt: new Date() });
+      }
+    } else {
+      // Create a new read status entry
+      readStatus = new ReadStatus({
+        userId,
+        groups: [{ groupId, lastReadAt: new Date() }],
+      });
+    }
+
+    await readStatus.save();
+
+    return NextResponse.json(
+      { message: "Read status updated" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });

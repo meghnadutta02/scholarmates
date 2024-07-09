@@ -21,6 +21,7 @@ const GroupChatbox = ({
   setIsRoomSelected,
   setRoomID,
   setToggleChatView,
+  updateLastMessage,
 }) => {
   const { socket, session } = useSession();
   const [loading, setLoading] = useState(true);
@@ -36,6 +37,25 @@ const GroupChatbox = ({
   const [groupDetails, setGroupDetails] = useState({});
   const messagesEndRef = useRef(null);
   const [filePreviews, setFilePreviews] = useState([]);
+
+  const updateReadStatus = async (gid) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${gid}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to mark messages as read");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const getGroupMessages = async (groupId) => {
     try {
@@ -105,13 +125,14 @@ const GroupChatbox = ({
           prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
         );
       }
-
+      updateLastMessage(groupId, message.text, session.name);
       setMessage({
         text: "",
         groupId: roomID,
         attachments: [],
       });
       setFilePreviews([]);
+      updateReadStatus(groupId);
     }
   };
 
@@ -122,11 +143,13 @@ const GroupChatbox = ({
     };
 
     fetchData();
+    updateReadStatus(groupId);
   }, [groupId]);
 
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
+        updateLastMessage(groupId, msg.text, session.name);
         setInboxMessages((prevMessages) => {
           // Check if the message already exists to avoid duplicates
           if (prevMessages.some((m) => m._id === msg._id)) {
@@ -134,6 +157,7 @@ const GroupChatbox = ({
           }
           return [...prevMessages, msg];
         });
+        updateReadStatus(groupId);
       };
       socket.emit("groupchat-setup", groupId);
       socket.on("receive-message", messageHandler);

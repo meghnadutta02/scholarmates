@@ -17,7 +17,7 @@ const Page = () => {
   const fetchGroups = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/groups`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch requests");
@@ -29,6 +29,55 @@ const Page = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const updateReadStatus = async (gid) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${gid}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to mark messages as read");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleGroupSelection = async (gid) => {
+    setRoomID(gid);
+    setIsRoomSelected(true);
+    setToggleChatView(false);
+    setGroups((prevGroups) =>
+      prevGroups.map((group) =>
+        group.groupId === gid ? { ...group, unreadCount: 0 } : group
+      )
+    );
+    updateReadStatus(gid);
+  };
+
+  const updateLastMessage = (gid, message, name) => {
+    setGroups((prevGroups) =>
+      prevGroups.map((group) =>
+        group.groupId === gid
+          ? {
+              ...group,
+              latestMessage: {
+                ...group.latestMessage,
+                text: message,
+                senderName: name,
+                time: new Date().getTime(),
+              },
+            }
+          : group
+      )
+    );
   };
 
   useEffect(() => {
@@ -51,25 +100,54 @@ const Page = () => {
           </div>
           <div className="pt-12">
             {groups.length > 0 ? (
-              <div className="flex flex-col min-h-[34rem] rounded-lg border my-4">
+              <div className="flex flex-col min-h-[34rem] rounded-b-lg border my-4">
                 <div className="flex flex-1 max-h-[36rem]">
                   {toggleChatView ? (
-                    <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[720px]  py-2 px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
+                    <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[720px] px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
                       {groups.map((group) => (
                         <div
-                          key={group._id}
+                          key={group.groupId}
                           className="border-b py-2 hover:bg-gray-100"
                         >
                           <Button
-                            onClick={() => {
-                              setRoomID(group._id);
-                              setIsRoomSelected(true);
-                              setToggleChatView(false);
-                            }}
+                            onClick={() => handleGroupSelection(group.groupId)}
                             variant="icon"
-                            className={`flex h-10 w-full justify-start truncate `}
+                            className="flex h-12 w-full justify-between items-center truncate"
                           >
-                            {group.name}
+                            <div className="flex flex-col items-start">
+                              <p className="text-base font-semibold">
+                                {group.groupName}
+                              </p>
+                              <p className="text-gray-800 text-[13px] max-w-[200px] md:max-w-[400px] truncate">
+                                {group.latestMessage?.senderName} :{" "}
+                                {group.latestMessage?.text}{" "}
+                              </p>
+                            </div>
+
+                            <div className="flex gap-3 text-xs font-normal">
+                              {group.unreadCount > 0 ? (
+                                <div className="relative inline-block">
+                                  <p
+                                    className="font-bold text-white rounded-full shadow-sm shadow-blue-300 bg-blue-800 flex items-center justify-center"
+                                    style={{
+                                      width: "1.5rem",
+                                      height: "1.5rem",
+                                      lineHeight: "1.5rem",
+                                    }}
+                                  >
+                                    {group.unreadCount}
+                                  </p>
+                                </div>
+                              ) : null}
+                              <p className="">
+                                {new Date(
+                                  group.latestMessage?.time
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </p>
+                            </div>
                           </Button>
                         </div>
                       ))}
@@ -85,6 +163,7 @@ const Page = () => {
                             setIsRoomSelected={setIsRoomSelected}
                             setRoomID={setRoomID}
                             setToggleChatView={setToggleChatView}
+                            updateLastMessage={updateLastMessage}
                           />
                         </div>
                       ) : (

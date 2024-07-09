@@ -29,15 +29,12 @@ const UserChatbox = ({
     sender: session.db_id,
   });
   const [loading, setLoading] = useState(true);
-
   const [inboxMessages, setInboxMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const [filePreviews, setFilePreviews] = useState([]);
   const userID = selectedUser._id || selectedUser.userId;
 
   useEffect(() => {
-    console.log(userID);
-
     if (userID) {
       const fetchInboxMessages = async () => {
         try {
@@ -220,7 +217,7 @@ const UserChatbox = ({
                     <Link href={`/profile/${userID}`} className="text-blue-600">
                       View Profile
                     </Link>
-                    {/* <p>Name : {selectedUser.name}</p>
+                    {/* <p>Name : {selectedUser.userName}</p>
                     <p>College : {selectedUser.collegeName}</p>
                     <p>Course : {selectedUser.degree}</p>
                     <p>Year : {selectedUser.yearInCollege}</p> */}
@@ -228,7 +225,9 @@ const UserChatbox = ({
                 </Popover>
 
                 <div className="flex flex-col">
-                  <h1 className="text-lg font-semibold">{selectedUser.name}</h1>
+                  <h1 className="text-lg font-semibold">
+                    {selectedUser.userName}
+                  </h1>
                 </div>
               </div>
 
