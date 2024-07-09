@@ -56,7 +56,7 @@ export default function ProfileCarousel({ user }) {
       setConnectingProfile(profileId);
       if (profileId && user) {
         const res = await fetch(
-          `http://localhost:5001/sendconnection/${user.db_id}`,
+          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${user.db_id}`,
           {
             method: "POST",
             headers: {

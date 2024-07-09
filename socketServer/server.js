@@ -53,9 +53,10 @@ io.on("connection", async (socket) => {
       });
       for (let request of pendingRequests) {
         const sender = await User.findById(request.user);
+        console.log("kjkjjk",sender)
         io.to(socket.id).emit("connectionRequest", {
           recipientId: request.requestTo,
-          timestamp: new Date(),
+          timestamp: request.createdAt,
           senderId: request.user,
           sendername: sender.name,
           friendRequest: request._id,

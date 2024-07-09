@@ -1,48 +1,29 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React, { useEffect, useState } from "react";
-
 import Notification from "@/app/(components)/Notification";
-
 import { useSession } from "@/app/(components)/SessionProvider";
 import GroupRequests from "@/app/(components)/GroupRequests";
 import Loading from "./loading";
+
 const Request = () => {
-  const { session, request, setRequest, notification } = useSession();
+  const { session } = useSession();
   const [userId, setUserId] = useState();
-  const [requestdata, setRequestData] = useState([]);
   const [data, setData] = useState([]);
-  const [requestnot, setRequestNot] = useState([]);
-  const [check, setCheck] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (session) {
       setUserId(session.db_id);
     }
-  }, [userId]);
+  }, [session]);
 
-  useEffect(() => {
-    const storedData = localStorage.getItem("request");
-    const parsedData = storedData ? JSON.parse(storedData) : null;
-    console.log("pasr:", parsedData);
-    if (parsedData) {
-      setData(parsedData);
-      setLoading(false);
-    }
-  }, [check]);
+  const fetchRequests = async () => {
+    if (!userId) return;
 
-  // notification call
-  const dataExistsInLocalStorage = (id) => {
-    const storedData = localStorage.getItem("request");
-    const parsedData = storedData ? JSON.parse(storedData) : [];
-    return parsedData.some((item) => item.id === id);
-  };
-
-  const requestnoti = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5001/notification/${userId}`,
+        `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/${userId}`,
         {
           method: "GET",
           headers: {
@@ -50,35 +31,24 @@ const Request = () => {
           },
         }
       );
+
       if (response.ok) {
         const data = await response.json();
-
-        const newData = data.data.filter(
-          (item) => !dataExistsInLocalStorage(item.id)
-        );
-        setRequestNot((prevData) => [...prevData, ...newData]);
+        setData(data.data);
       } else {
         console.log("Error:", response.statusText);
-        setLoading(false);
       }
     } catch (error) {
       console.log(error);
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (userId) {
-      requestnoti();
-    }
+    fetchRequests();
+    
   }, [userId]);
-
-  useEffect(() => {
-    if (requestnot.length > 0) {
-      localStorage.setItem("request", JSON.stringify(requestnot));
-      setCheck(true);
-    }
-  }, [requestnot]);
 
   return (
     <div className="md:mt-7 mt-4 flex md:px-2 px-0 w-full">
@@ -91,20 +61,20 @@ const Request = () => {
           <TabsContent value="c" className="md:w-[80%] w-full m-auto">
             {loading ? (
               <Loading />
-            ) : data.length == 0 ? (
+            ) : data.length === 0 ? (
               <div className="flex justify-center">
                 You have no connection requests.
               </div>
             ) : (
-              <div class="items-center flex-col gap-4 w-full">
-                {data?.map((item, index) => (
+              <div className="items-center flex-col gap-4 w-full">
+                {data.map((item, index) => (
                   <Notification
                     key={index}
-                    data={item.requestData}
-                    sender={item.requestData.user}
-                    receive={item.requestData.requestTo}
-                    frndId={item.requestData._id}
-                    user={item.userData}
+                    data={item?.requestData}
+                    sender={item.requestData?.user}
+                    receive={item.requestData?.requestTo}
+                    frndId={item.requestData?._id}
+                    user={item?.userData}
                   />
                 ))}
               </div>

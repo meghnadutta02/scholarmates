@@ -79,7 +79,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
     try {
       if (profileId && session) {
         const res = await fetch(
-          `http://localhost:5001/sendconnection/${session.db_id}`,
+          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${session.db_id}`,
           {
             method: "POST",
             headers: {

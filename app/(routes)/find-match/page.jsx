@@ -30,6 +30,8 @@ export default function Component() {
   const [requestPend, setRequestPen] = useState([]);
   const [connectingProfile, setConnectingProfile] = useState(null);
 
+
+
   useEffect(() => {
     if (session) {
       setUserId(session);
@@ -64,9 +66,10 @@ export default function Component() {
   const handleConnectClick = async (profileId) => {
     try {
       setConnectingProfile(profileId);
+      console.log(process.env.NEXT_PUBLIC_NODE_SERVER)
       if (profileId && userId) {
         const res = await fetch(
-          `http://localhost:5001/sendconnection/${userId.db_id}`,
+          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${userId.db_id}`,
           {
             method: "POST",
             headers: {
@@ -96,9 +99,9 @@ export default function Component() {
   return (
     <>
       {session &&
-      user &&
-      user.interestCategories.length > 0 &&
-      user.interestSubcategories.length > 0 ? (
+        user &&
+        user.interestCategories.length > 0 &&
+        user.interestSubcategories.length > 0 ? (
         <div className="">
           {loading ? (
             <div className="flex justify-center items-center z-50">

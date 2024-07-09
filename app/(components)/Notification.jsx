@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { FaTimes, FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -15,15 +15,15 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
     try {
       if (sender && receive) {
         const res = await fetch(
-          "http://localhost:5001/sendconnection/receive",
+          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/receive`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              friendshipId: data._id,
-              userId: data.requestTo,
+              friendshipId: data?._id,
+              userId: data?.requestTo,
               action: action,
             }),
             cache: "no-cache",
@@ -34,7 +34,7 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
           toast.success(
             action === "accept" ? "Request accepted" : "Request declined"
           );
-          localStorage.removeItem("request");
+          // localStorage.removeItem("request");
           setIsVisible(false);
           if (action === "accept") {
             setIsConnected(true);
@@ -53,6 +53,7 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
     }
   };
 
+  
   const profile = (id) => {
     alert(id);
   };
@@ -63,14 +64,14 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
         <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px]">
           <div className="flex items-center font-sans">
             <Image
-              src={user.profilePic}
-              alt={user.name}
+              src={user?.profilePic}
+              alt={user?.name}
               width={36}
               height={36}
               className="rounded-full mr-2"
             />
-            <div className="cursor-pointer" onClick={() => profile(user._id)}>
-              <span className="font-semibold">{user.name}</span> has sent you a
+            <div className="cursor-pointer" onClick={() => profile(user?._id)}>
+              <span className="font-semibold">{user?.name}</span> has sent you a
               connection request.
             </div>
           </div>
@@ -96,14 +97,14 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
         <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px]">
           <div className="flex items-center font-sans">
             <Image
-              src={user.profilePic}
-              alt={user.name}
+              src={user?.profilePic}
+              alt={user?.name}
               width={36}
               height={36}
               className="rounded-full mr-2"
             />
             <div>
-              <span className="font-semibold">{user.name}</span> is now a
+              <span className="font-semibold">{user?.name}</span> is now a
               connection.
             </div>
           </div>
