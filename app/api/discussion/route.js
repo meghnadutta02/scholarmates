@@ -54,7 +54,22 @@ export async function POST(req) {
     await user.save();
     await discussion.save();
     return NextResponse.json(
-      { result: discussion },
+      {
+        result: {
+          ...discussion.toJSON(),
+          creatorData: {
+            _id: session?.user?.db_id,
+            name: session?.user?.name,
+            profilePic: session?.user?.profilePic,
+            collegeName: session?.user?.collegeName,
+          },
+          isLiked: false,
+          isDisliked: false,
+          isMember: true,
+          isRequested: false,
+          isRejected: false,
+        },
+      },
       { status: 200 },
       { groupId: group._id }
     );
@@ -117,7 +132,7 @@ export async function GET(req) {
           "creatorData.degree": 0,
           "creatorData.department": 0,
           "creatorData.yearInCollege": 0,
-          "creatorData.posts": 0,
+          "creatorData.posts": 0, //
           "creatorData.connection": 0,
           "creatorData.bio": 0,
           "creatorData.isAdmin": 0,

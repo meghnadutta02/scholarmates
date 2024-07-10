@@ -37,11 +37,13 @@ const DiscussionList = ({
   setOffset,
   hasMore,
   setHasMore,
+  discussions,
+  setDiscussions,
 }) => {
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
   const { data: session } = useSession();
   const [animationState, setAnimationState] = useState({});
-  const [discussions, setDiscussions] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   const limit = 10;
@@ -148,7 +150,7 @@ const DiscussionList = ({
     // Intersection Observer for lazy loading more discussions
     const observerCallback = (entries) => {
       const target = entries[0];
-      console.log(hasMore);
+
       if (target.isIntersecting && hasMore) {
         setOffset((prevOffset) => prevOffset + limit);
       }
@@ -316,7 +318,7 @@ const DiscussionList = ({
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
-        <div className="flex  items-center justify-center h-full ">
+        <div className="flex  items-center justify-center mt-2 ">
           <p className="text-lg text-gray-500 dark:text-gray-400 ">
             No discussions found for the selected filters.
           </p>
@@ -353,9 +355,16 @@ const DiscussionList = ({
 
               <div className="flex-1 grid gap-2">
                 <div className="flex flex-col  gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {discussion.creatorData.name}
-                  </span>{" "}
+                  <div className="flex md:flex-row flex-col justify-between md:items-center items-start">
+                    <Link href={`/profile/${discussion.creatorData._id}`}>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {discussion.creatorData.name}
+                      </span>{" "}
+                    </Link>
+                    <span className="md:text-sm text-[13px] text-gray-500 dark:text-gray-400">
+                      {discussion.creatorData.collegeName}
+                    </span>
+                  </div>
                   <h4 className="font-semibold text-base cursor-pointer">
                     <Link href={`/discussions/${discussion._id}`}>
                       {discussion.title}

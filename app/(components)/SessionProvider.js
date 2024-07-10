@@ -84,7 +84,6 @@ export const SessionProvider = ({ children }) => {
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
             setSeenNotifications((prev) => new Set(prev).add(dataString));
-            toast.info("Friend request accepted");
           }
         }
       });

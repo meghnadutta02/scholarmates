@@ -261,8 +261,15 @@ const Trending = () => {
               <div className="flex-1 grid gap-2">
                 <div className="flex flex-col  gap-2">
                   <div className="flex justify-between items-center w-full ">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {discussion.creator.name}
+                    <div className="flex md:flex-row flex-col justify-between md:items-center items-start md:w-full">
+                      <Link href={`/profile/${discussion.creator._id}`}>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          {discussion.creator.name}
+                        </span>{" "}
+                      </Link>
+                      <span className="md:text-sm text-[13px] text-gray-500 dark:text-gray-400">
+                        {discussion.creator.collegeName}
+                      </span>
                     </div>
                     <Link href={`/discussions/${discussion._id}`}>
                       <Button className=" md:hidden p-0 " variant="icon">

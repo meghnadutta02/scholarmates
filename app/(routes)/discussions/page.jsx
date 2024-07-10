@@ -39,6 +39,7 @@ const DiscussionsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false); // New state variable
   const [hasMore, setHasMore] = useState(true);
+  const [discussions, setDiscussions] = useState([]);
   const suggestionsRef = useRef(null);
 
   const handleFilterApplication = (filters) => {
@@ -155,7 +156,7 @@ const DiscussionsPage = () => {
                       Start a new discussion and interact with your peers.
                     </DialogDescription>
                   </DialogHeader>
-                  <CreateDiscussion />
+                  <CreateDiscussion setDiscussions={setDiscussions} />
                 </DialogContent>
               </Dialog>
             </div>
@@ -169,6 +170,8 @@ const DiscussionsPage = () => {
             setOffset={setOffset}
             setHasMore={setHasMore}
             hasMore={hasMore}
+            discussions={discussions}
+            setDiscussions={setDiscussions}
           />
         </div>
       </div>

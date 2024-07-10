@@ -14,7 +14,7 @@ export async function GET(req) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const user = await User.findById(id).select(
-      "-groupsJoined -createdAt -updatedAt -posts -connection -requestPending -__v -isAdmin"
+      "-groupsJoined -createdAt -updatedAt -posts   -__v -isAdmin"
     );
 
     if (!user) {

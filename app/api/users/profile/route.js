@@ -55,7 +55,7 @@ export async function POST(req, resp) {
   try {
     await connect();
     const secondUserId = req.nextUrl.searchParams.get("seconduserId");
-    console.log("second user", secondUserId);
+
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
 

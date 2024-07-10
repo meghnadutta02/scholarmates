@@ -2,6 +2,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import change from "@/public/change.mp4";
+import createDiscussions from "@/public/create-discussions.mp4";
+import findFriends from "@/public/find-friends.mp4";
 import { TypeAnimation } from "react-type-animation";
 import puzzle from "@/public/puzzle.png";
 import Image from "next/image";
@@ -24,14 +26,14 @@ const Services = () => {
       title: ["", "Start", "Start Discussions"],
       description:
         "Create or join discussions to find opportunities, share opinions, seek advice and stay updated on what's happening around campus. Share your thoughts on various topics and connect with others who share your interests.",
-      video: change,
+      video: createDiscussions,
       rotation: "rotate-12",
     },
     {
-      title: ["", "Form", "Form Groups"],
+      title: ["", "Find", "Find Partners"],
       description:
-        "Connect with like-minded individuals, share your views, and collaborate on projects. Whether it's a study group, a project team, or a club, find and form groups to work together, foster innovation, and achieve your goals.",
-      video: change,
+        "Update your profile to include your interests and then find like-minded individuals to connect with. Share your views, collaborate on projects, join study groups, project teams, or clubs. Work together, foster innovation, and achieve your goals.",
+      video: findFriends,
       rotation: "-rotate-6",
     },
     {

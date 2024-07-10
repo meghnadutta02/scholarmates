@@ -8,7 +8,6 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 import { useSession } from "./SessionProvider";
 import { Button } from "@/components/ui/button";
-import { Disc } from "lucide-react";
 
 const ProfileDetailsTab = ({ user: initialUser }) => {
   const [loading, setLoading] = useState(true);
@@ -63,7 +62,13 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           autoClose: 4000,
           closeOnClick: true,
         });
-        setUser((prevUser) => ({ ...prevUser, isConnected: false }));
+        setUser((prevUser) => ({
+          ...prevUser,
+          isConnected: false,
+          connection: prevUser.connection.filter(
+            (conn) => conn !== session?.db_id
+          ),
+        }));
       } else {
         toast.error("Failed to remove connection");
       }
