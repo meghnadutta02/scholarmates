@@ -3,12 +3,10 @@ import GroupChatbox from "@/app/(components)/GroupChatbox";
 import GroupsInboxSearch from "@/app/(components)/GroupsInboxSearch";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Loading from "@/app/(components)/Loading";
-
 import Link from "next/link";
 
-const Page = () => {
+const Page = ({ selectDiscussion }) => {
   const [roomID, setRoomID] = useState("");
   const [isRoomSelected, setIsRoomSelected] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -83,7 +81,10 @@ const Page = () => {
 
   useEffect(() => {
     fetchGroups();
-  }, []);
+    // if (selectDiscussion) {
+    //   handleGroupSelection(selectDiscussion);
+    // }
+  });
 
   return (
     <div className="flex flex-col">

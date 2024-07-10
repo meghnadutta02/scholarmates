@@ -8,12 +8,17 @@ import DiscussionChatsSection from "@/app/(components)/DiscussionChatsSection";
 import UserInboxSearch from "@/app/(components)/UserInboxSearch";
 import Link from "next/link";
 import Loading from "@/app/(components)/Loading";
+import { useSearchParams } from "next/navigation";
 
 export default function Chats() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toggleChatView, setToggleChatView] = useState(true);
+  const [tabValue, setTabValue] = useState("c");
+
+  const searchParams = useSearchParams();
+  const selectDiscussion = searchParams.get("discussionId");
 
   const fetchConnections = async () => {
     try {
@@ -75,16 +80,24 @@ export default function Chats() {
   };
 
   useEffect(() => {
+    console.log(selectDiscussion);
+    if (selectDiscussion) {
+      setTabValue("g");
+    }
     fetchConnections();
     updateLastMessage();
-  }, []);
+  }, [searchParams, selectDiscussion]);
 
   return (
     <div>
       {loading ? (
         <Loading />
       ) : (
-        <Tabs defaultValue="c" className="mt-6 flex flex-col items-center">
+        <Tabs
+          value={tabValue}
+          onValueChange={setTabValue}
+          className="mt-6 flex flex-col items-center"
+        >
           <TabsList>
             <TabsTrigger value="c">Connections</TabsTrigger>
             <TabsTrigger value="g">Groups</TabsTrigger>
@@ -190,7 +203,7 @@ export default function Chats() {
           </TabsContent>
 
           <TabsContent value="g" className="w-full">
-            <DiscussionChatsSection />
+            <DiscussionChatsSection selectDiscussion={selectDiscussion} />
           </TabsContent>
         </Tabs>
       )}
