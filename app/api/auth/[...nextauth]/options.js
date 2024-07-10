@@ -60,7 +60,7 @@ export const options = {
       user.isAdmin = currentUser.isAdmin;
       user.profilePic = currentUser.profilePic;
       user.interestCategories = currentUser.interestCategories;
-
+      user.name = currentUser.name;
       user.interestSubcategories = currentUser.interestSubcategories;
       user.requestPending = currentUser.requestPending;
       user.connection = currentUser.connection;
@@ -73,7 +73,7 @@ export const options = {
         token.interestCategories = user.interestCategories;
         token.interestSubcategories = user.interestSubcategories;
         token.profilePic = user.profilePic;
-
+        token.name = user.name;
         token.collegeName = user.collegeName;
         token.db_id = user.db_id;
         token.requestPending = user.requestPending;
@@ -90,7 +90,7 @@ export const options = {
         session.user.interestSubcategories = token.interestSubcategories;
         session.user.collegeName = token.collegeName;
         session.user.profilePic = token.profilePic;
-
+        session.user.name = token.name;
         session.user.requestPending = token.requestPending;
         session.user.connection = token.connection;
       }

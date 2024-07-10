@@ -26,9 +26,11 @@ const Page = () => {
   return (
     <div className="md:mt-7 mt-4 w-full mx-auto md:w-[85%]">
       {notifications.length === 0 ? (
-        <p className="flex justify-center md:text-lg text-md font-semibold font-sans">
-          You have caught up with everything.
-        </p>
+        <div className="flex  items-center justify-center ">
+          <p className="text-lg text-gray-500 dark:text-gray-400 ">
+            You have caught up with everything!
+          </p>
+        </div>
       ) : (
         <div className="flex flex-col gap-3">
           {notifications.map((item, index) => (

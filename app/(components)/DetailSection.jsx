@@ -25,10 +25,7 @@ const DetailSection = ({ user }) => {
       )}
       <section className="bg-white rounded-lg shadow-lg p-4 md:p-6 w-full mt-4">
         <h2 className="text-xl font-bold md:mb-6 mb-4">Details</h2>
-        <div className="my-4">
-          <h3 className="text-lg font-semibold">Email</h3>
-          <p className="text-md font-semibold text-gray-600">{user.email}</p>
-        </div>
+
         {user.collegeName && (
           <div className="my-4">
             <h3 className="text-lg font-semibold">College</h3>

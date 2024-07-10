@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 import { interests } from "../(data)/interests";
 
 import { PaperclipIcon } from "lucide-react";
-function NewDiscussion() {
+function NewDiscussion({ setDiscussions }) {
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
@@ -108,6 +108,12 @@ function NewDiscussion() {
       );
 
       if (result.ok) {
+        const discussion = await result.json();
+
+        setDiscussions((prevDiscussions) => [
+          discussion.result,
+          ...prevDiscussions,
+        ]);
         toast.update(toastId, {
           render: "Discussion created! Go to chat room.",
           type: "success",

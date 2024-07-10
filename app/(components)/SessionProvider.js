@@ -61,7 +61,6 @@ export const SessionProvider = ({ children }) => {
 
       socket.on("connectionRequest", (data) => {
         if (data) {
-          
           setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
             setUnreadCount(newNotifications.length);
@@ -79,9 +78,9 @@ export const SessionProvider = ({ children }) => {
         if (data) {
           console.log("receive noti:",data);
           setNotification((prev) => {
-        const newNotifications = removeDuplicates([...prev, data]);
-        setUnreadCount(newNotifications.length);
-        return newNotifications;
+            const newNotifications = removeDuplicates([...prev, data]);
+            setUnreadCount(newNotifications.length);
+            return newNotifications;
           });
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {

@@ -2,6 +2,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import change from "@/public/change.mp4";
+import createDiscussions from "@/public/create-discussions.mp4";
+import groupChat from "@/public/group-chat.mp4";
+import findFriends from "@/public/find-friends.mp4";
 import { TypeAnimation } from "react-type-animation";
 import puzzle from "@/public/puzzle.png";
 import Image from "next/image";
@@ -24,21 +27,21 @@ const Services = () => {
       title: ["", "Start", "Start Discussions"],
       description:
         "Create or join discussions to find opportunities, share opinions, seek advice and stay updated on what's happening around campus. Share your thoughts on various topics and connect with others who share your interests.",
-      video: change,
+      video: createDiscussions,
       rotation: "rotate-12",
-    },
-    {
-      title: ["", "Form", "Form Groups"],
-      description:
-        "Connect with like-minded individuals, share your views, and collaborate on projects. Whether it's a study group, a project team, or a club, find and form groups to work together, foster innovation, and achieve your goals.",
-      video: change,
-      rotation: "-rotate-6",
     },
     {
       title: ["", "Find", "Find Partners"],
       description:
-        "Look for partners with the required skill sets for hackathons, study groups, or any other collaborative activities. Meet peers who complement your skills, inspire innovation, and collaborate on exciting, transformative projects.",
-      video: change,
+        "Update your profile to include your interests and then find like-minded individuals to connect with. Share your views, collaborate on projects, join study groups, project teams, or clubs. Work together, foster innovation, and achieve your goals.",
+      video: findFriends,
+      rotation: "-rotate-6",
+    },
+    {
+      title: ["", "Join", "Join Groups"],
+      description:
+        "Join groups that match your interests and share your opinions on various topics. Engage in meaningful discussions, learn from diverse perspectives, and build a community of like-minded individuals. Collaborate, innovate, and grow together.",
+      video: groupChat,
       rotation: "rotate-30",
     },
   ];

@@ -386,4 +386,17 @@ export const interests = [
       "Grand Theft Auto (GTA)",
     ],
   },
+  {
+    category: "Education",
+    subcategories: [
+      "Primary Education",
+      "Secondary Education",
+      "Higher Education",
+      "Vocational Training",
+      "Online Learning",
+      "Schools",
+      "Colleges",
+      "Universities",
+    ],
+  },
 ];

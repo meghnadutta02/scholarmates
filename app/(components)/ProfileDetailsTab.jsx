@@ -77,7 +77,13 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           autoClose: 4000,
           closeOnClick: true,
         });
-        setUser((prevUser) => ({ ...prevUser, isConnected: false }));
+        setUser((prevUser) => ({
+          ...prevUser,
+          isConnected: false,
+          connection: prevUser.connection.filter(
+            (conn) => conn !== session?.db_id
+          ),
+        }));
       } else {
         toast.error("Failed to remove connection");
       }
@@ -126,8 +132,8 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
     <div className="md:px-8 px-4 py-4 md:w-[85%] w-full mx-auto">
       <section className="bg-white rounded-lg shadow-lg md:p-6 p-4 w-full relative">
         <div className="flex flex-col items-center text-center">
-          <Avatar>
-            <AvatarImage alt={user.name} src={user.profilePic} />
+          <Avatar className="w-24 h-24">
+            <AvatarImage alt={user.name} src={user?.profilePic} />
           </Avatar>
           <ProfileUpdate>
                   <ProfileUpdateTrigger>

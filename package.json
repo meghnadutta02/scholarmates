@@ -59,6 +59,7 @@
     "nodemailer": "^6.9.8",
     "npm": "^10.8.1",
     "react": "^18.2.0",
+    "react-avatar-editor": "^13.0.2",
     "react-date-picker": "^10.6.0",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18",
