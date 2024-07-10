@@ -96,6 +96,7 @@ export const SessionProvider = ({ children }) => {
   return (
     <SessionContext.Provider
       value={{
+        setSession,
         session,
         request,
         setRequest,

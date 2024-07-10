@@ -22,7 +22,7 @@ const getYearWithSuffix = (year) => {
 
 const ProfileDetails = ({ initialUser }) => {
   const [user,setUser] = useState(initialUser);
-  const { session } = useSession();
+  const { session,setSession } = useSession();
   const [isProfileUpdateOpen, setIsProfileUpdateOpen] = useState(false);
   const [isImageViewOpen, setIsImageViewOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(user?.profilePic);
@@ -76,6 +76,10 @@ const ProfileDetails = ({ initialUser }) => {
           ...prevUser,
           profilePic: data.result.profilePic,
         }));
+        setSession((prevUser)=>({
+          ...prevUser,
+          profilePic: data.result.profilePic,
+        }))
         setIsProfileUpdateOpen(false);
         toast.success("Profile updated successfully");
       } else {
@@ -219,7 +223,7 @@ const ProfileDetails = ({ initialUser }) => {
             </Dialog.Description>
            {isLoading?(
             <Button className="absolute bottom-2 w-11/12 py-1 focus:outline-none" disabled onClick={handleImageViewDialogClose}>
-             loading... <Loading/>
+             loading  <Loading/>
             </Button>
            
            ):(
