@@ -11,6 +11,8 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { Button } from "@/components/ui/button";
 
+
+
 const getYearWithSuffix = (year) => {
   const suffixes = ["th", "st", "nd", "rd"];
   const lastDigit = year % 10;
@@ -90,8 +92,8 @@ const ProfileDetails = ({ initialUser }) => {
 
   return (
     <>
-      {isLoading?("loading"):
-      (session.db_id === user._id?(
+      {
+      session.db_id === user._id?(
         <div className="md:px-8 px-3 py-4 md:w-[85%] w-full mx-auto">
           <div className="flex flex-col justify-evenly gap-4">
             <section className="bg-white rounded-lg shadow-lg md:p-6 p-4 w-full relative">
@@ -99,6 +101,9 @@ const ProfileDetails = ({ initialUser }) => {
                 <Avatar>
                   <AvatarImage alt={user.name} src={user.profilePic} />
                 </Avatar>
+                <div className=" text-md italic text-gray-600 mb-2 text-center">
+                Default profile, please update
+              </div>
                 <ProfileUpdate>
                   <ProfileUpdateTrigger>
                     <div className="cursor-pointer absolute top-20 bg-white p-1 rounded-full">
@@ -191,7 +196,7 @@ const ProfileDetails = ({ initialUser }) => {
         </div>
       ) : (
         <ProfileDetailsTab user={user} />
-      ))}
+      )}
       {/* Update Profile Dialog */}
       <Dialog.Root open={isProfileUpdateOpen} onOpenChange={setIsProfileUpdateOpen}>
         <Dialog.Portal>
@@ -203,7 +208,6 @@ const ProfileDetails = ({ initialUser }) => {
                 src={selectedImage}
                 width={500}
                 height={500}
-                className="rounded-full"
                 alt="Picture of user"
               />
               <input
@@ -213,15 +217,23 @@ const ProfileDetails = ({ initialUser }) => {
                 className="mt-4"
               />
             </Dialog.Description>
+           {isLoading?(
+            <Button className="absolute bottom-2 w-11/12 py-1 focus:outline-none" disabled onClick={handleImageViewDialogClose}>
+             loading... <Loading/>
+            </Button>
+           
+           ):(
             <Button className="absolute bottom-2 w-11/12 py-1 focus:outline-none" onClick={handleImageViewDialogClose}>
               update
             </Button>
+           )}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
 
       {/* View Profile Dialog */}
-      <Dialog.Root open={isImageViewOpen} onOpenChange={setIsImageViewOpen}>
+      {!user?(<Loading/>):(
+          <Dialog.Root open={isImageViewOpen} onOpenChange={setIsImageViewOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50" />
           <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded shadow-lg" style={{ maxWidth: "32rem" }}>
@@ -230,7 +242,6 @@ const ProfileDetails = ({ initialUser }) => {
                 src={user.profilePic}
                 width={500}
                 height={500}
-                className="rounded-full"
                 alt="Picture of user"
               />
             </Dialog.Description>
@@ -242,10 +253,35 @@ const ProfileDetails = ({ initialUser }) => {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
+        )
+      }
     </>
   
 )};
-
+function Loading (props){
+  return (
+    <svg
+      className="animate-spin h-5 w-5 text-white"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      ></circle>
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v8H4z"
+      ></path>
+    </svg>
+  );
+}
 function ImageUpdateIcon(props) {
   return (
     <svg
