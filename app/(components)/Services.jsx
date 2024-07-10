@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import change from "@/public/change.mp4";
 import createDiscussions from "@/public/create-discussions.mp4";
+import groupChat from "@/public/group-chat.mp4";
 import findFriends from "@/public/find-friends.mp4";
 import { TypeAnimation } from "react-type-animation";
 import puzzle from "@/public/puzzle.png";
@@ -37,10 +38,10 @@ const Services = () => {
       rotation: "-rotate-6",
     },
     {
-      title: ["", "Find", "Find Partners"],
+      title: ["", "Join", "Join Groups"],
       description:
-        "Look for partners with the required skill sets for hackathons, study groups, or any other collaborative activities. Meet peers who complement your skills, inspire innovation, and collaborate on exciting, transformative projects.",
-      video: change,
+        "Join groups that match your interests and share your opinions on various topics. Engage in meaningful discussions, learn from diverse perspectives, and build a community of like-minded individuals. Collaborate, innovate, and grow together.",
+      video: groupChat,
       rotation: "rotate-30",
     },
   ];
