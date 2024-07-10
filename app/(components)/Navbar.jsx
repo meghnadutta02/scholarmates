@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NavbarClient = () => {
-  const { session, unreadCount } = useSession();
+  const { session, unreadCount, user } = useSession();
 
   return (
     <>
@@ -65,7 +65,7 @@ const NavbarClient = () => {
                       alt="Avatar"
                       className="rounded-full"
                       height="32"
-                      src={session?.profilePic}
+                      src={user?.profilePic}
                       style={{
                         aspectRatio: "32/32",
                         objectFit: "cover",
