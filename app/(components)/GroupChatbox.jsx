@@ -166,7 +166,7 @@ const GroupChatbox = ({
         socket.off("receive-message", messageHandler);
       };
     }
-  }, [groupId, socket]);
+  }, [groupId, socket, session.name, updateLastMessage]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

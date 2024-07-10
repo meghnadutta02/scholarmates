@@ -99,8 +99,8 @@ export default function Chats() {
               </div>
               <div className="pt-12">
                 {connections.length > 0 ? (
-                  <div className="flex flex-col   rounded-b-lg border my-4">
-                    <div className="flex flex-1  min-w-[300px]">
+                  <div className="flex flex-col rounded-b-lg border my-4">
+                    <div className="flex flex-1 min-w-[300px]">
                       {toggleChatView ? (
                         <div className="min-w-[320px] sm:min-w-[480px] md:min-w-[720px] h-[32rem] px-1 flex flex-col overflow-y-auto scrollbar-thin">
                           {connections.map((connection) => (

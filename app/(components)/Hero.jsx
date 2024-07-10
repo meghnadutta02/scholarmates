@@ -13,7 +13,7 @@ const Hero = () => {
     <div className="mt-8 px-4">
       <div className="flex flex-col lg:flex-row md:gap-8 gap-6 w-full px-4 md:px-8 mt-8">
         <div className="w-full lg:w-1/2 flex justify-center mx-auto md:mt-8 pt-8">
-          <Image src={main} alt="jumbotron" height={460} width={460} />
+          <Image src={main} alt="jumbotron" height={420} width={420} />
         </div>
         <div className="w-full lg:w-1/2 flex flex-col justify-center">
           <div className="justify-start mr-4 mb-4 flex">
@@ -74,7 +74,7 @@ const Hero = () => {
               hidden: { opacity: 0, x: -60 },
               visible: { opacity: 1, x: 0 },
             }}
-            className="text-md md:text-xl relative hidden md:block text-gray-600 dark:text-gray-400 md:mt-2 mt-4"
+            className="text-md md:text-xl relative hidden md:block text-gray-600 dark:text-gray-400 md:mt-2 mt-4 md:pr-16"
           >
             At AlikeHub, we believe in the power of connection. Our platform is
             designed to bring together people who share similar interests,
