@@ -22,6 +22,11 @@ app.use(express.json());
 app.use("/sendconnection", sendConnection);
 app.use("/joinrequest", joinRequest);
 app.use("/notification", notification);
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "success", message: "Service is running" });
+});
+
 const socketServer = http.createServer(app);
 
 connection();
@@ -53,7 +58,7 @@ io.on("connection", async (socket) => {
       });
       for (let request of pendingRequests) {
         const sender = await User.findById(request.user);
-        console.log("kjkjjk",sender)
+        console.log("kjkjjk", sender);
         io.to(socket.id).emit("connectionRequest", {
           recipientId: request.requestTo,
           timestamp: request.createdAt,
