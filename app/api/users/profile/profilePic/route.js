@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import connect from "@/app/config/db";
 import { postObject } from "@/app/config/s3";
+import { v4 as uuidv4 } from "uuid";
 
 // Update user profile picture
 export async function PUT(req) {
@@ -12,7 +13,7 @@ export async function PUT(req) {
 
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
-
+    const name = session?.user?.name;
     if (!id) {
       return NextResponse.json({ result: "User not found" }, { status: 401 });
     }
@@ -26,7 +27,8 @@ export async function PUT(req) {
 
     const byteData = await updatedUserData.arrayBuffer();
     const buffer = Buffer.from(byteData);
-    const path = `public/${updatedUserData.name}`;
+    const uniqueFileName = `${uuidv4()}_${name}`;
+    const path = `public/${uniqueFileName}.jpg`;
     const coverImage = await postObject(path, buffer);
 
     const user = await User.findByIdAndUpdate(

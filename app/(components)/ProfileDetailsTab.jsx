@@ -113,7 +113,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
       <section className="bg-white rounded-lg shadow-lg md:p-6 p-4 w-full relative">
         <div className="flex flex-col items-center text-center">
           <Avatar className="w-24 h-24">
-            <AvatarImage alt={user.name} src={user.profilePic} />
+            <AvatarImage alt={user.name} src={user?.profilePic} />
           </Avatar>
 
           <h1 className="mt-4 font-bold text-2xl">{user.name}</h1>

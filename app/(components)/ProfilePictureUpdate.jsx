@@ -152,7 +152,7 @@ const ProfilePictureUpdate = ({ user, setUser, setUser1 }) => {
             )}
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg"
               onChange={handleImageViewDialog}
               className="w-full mt-2"
             />

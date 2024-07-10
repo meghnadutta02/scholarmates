@@ -26,7 +26,7 @@ const ProfileDetails = ({ initialUser }) => {
               <div className="flex flex-col items-center text-center ">
                 <div className="relative max-h-[97px] ">
                   <Avatar className="w-24 h-24">
-                    <AvatarImage alt={user.name} src={user.profilePic} />
+                    <AvatarImage alt={user.name} src={user?.profilePic} />
                   </Avatar>
                   <ProfilePictureUpdate
                     user={user}

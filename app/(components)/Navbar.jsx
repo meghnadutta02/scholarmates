@@ -65,7 +65,7 @@ const NavbarClient = () => {
                       alt="Avatar"
                       className="rounded-full"
                       height="32"
-                      src={user?.profilePic}
+                      src={user ? user.profilePic : session?.profilePic}
                       style={{
                         aspectRatio: "32/32",
                         objectFit: "cover",
