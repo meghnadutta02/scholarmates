@@ -12,7 +12,7 @@ import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
 import Request from "./model/requestModel.js";
-
+import { handleNotificationFunction } from "./controller/handleNotificationFunction.js"
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -45,32 +45,7 @@ const activeUsers = new Map();
 io.on("connection", async (socket) => {
   console.log("Connected to socket.io");
   socket.on("setup", async (userData) => {
-    const user = await User.findById(userData);
-    if (user) {
-      socket.join(userData._id);
-      activeUsers.set(userData, socket.id);
-      console.log("Active users:", activeUsers);
-      socket.emit("connected");
-
-      const pendingRequests = await Request.find({
-        requestTo: user._id,
-        notification: true,
-      });
-      for (let request of pendingRequests) {
-        const sender = await User.findById(request.user);
-        console.log("kjkjjk", sender);
-        io.to(socket.id).emit("connectionRequest", {
-          recipientId: request.requestTo,
-          timestamp: request.createdAt,
-          senderId: request.user,
-          sendername: sender.name,
-          friendRequest: request._id,
-          interest: sender.interest,
-        });
-        request.notification = false;
-        await request.save();
-      }
-    }
+    await handleNotificationFunction(userData, socket);
   });
   // ========END============
 

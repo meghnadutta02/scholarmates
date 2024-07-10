@@ -14,7 +14,11 @@ const requestSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
-        notification:{
+        notificationRecipt:{
+            type:Boolean,
+            default:false
+        },
+        notificationSend:{
             type:Boolean,
             default:false
         },

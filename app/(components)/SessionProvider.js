@@ -70,14 +70,14 @@ export const SessionProvider = ({ children }) => {
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
             setSeenNotifications((prev) => new Set(prev).add(dataString));
-            toast.info("You have a connection request");
+           
           }
         }
       });
 
-      socket.on("friendRequestAccepted", (data) => {
+      socket.on("receiveRequest", (data) => {
         if (data) {
-          
+          console.log("receive noti:",data);
           setNotification((prev) => {
         const newNotifications = removeDuplicates([...prev, data]);
         setUnreadCount(newNotifications.length);
@@ -86,7 +86,7 @@ export const SessionProvider = ({ children }) => {
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
         setSeenNotifications((prev) => new Set(prev).add(dataString));
-        toast.info("Friend request accepted");
+       
           }
         }
       });

@@ -67,6 +67,10 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
               alt={user?.name}
               width={36}
               height={36}
+              style={{
+                        aspectRatio: "32/32",
+                        objectFit: "cover",
+                      }}
               className="rounded-full mr-2"
             />
             <div className="cursor-pointer" onClick={() => profile(user?._id)}>
