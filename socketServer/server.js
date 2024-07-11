@@ -45,7 +45,16 @@ const activeUsers = new Map();
 io.on("connection", async (socket) => {
   console.log("Connected to socket.io");
   socket.on("setup", async (userData) => {
-    await handleNotificationFunction(userData, socket);
+    const user = await User.findById(userData);
+    if (user) {
+      socket.join(userData);
+      activeUsers.set(userData, socket.id);
+      console.log("Active users:", activeUsers);
+      socket.emit("connected");
+
+      await handleNotificationFunction(user, socket);
+    }
+
   });
   // ========END============
 
@@ -92,7 +101,12 @@ io.on("connection", async (socket) => {
 
   socket.on("disconnect", () => {
     activeUserChatrooms.delete(socket.id);
-    activeUsers.delete(socket.id);
+    activeUsers.forEach((value, key) => {
+      if (value === socket.id) {
+        activeUsers.delete(key);
+      }
+    });
+    console.log("User from activeUser disconnected");
     console.log("user disconnected");
   });
 });

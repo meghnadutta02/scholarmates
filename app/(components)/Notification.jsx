@@ -4,7 +4,7 @@ import { FaTimes, FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Image from "next/image";
 
-const Notification = ({ sender, receive, name, frndId, user, data }) => {
+const Notification = ({ sender, receive, name, frndId, user, data,status }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +59,7 @@ const Notification = ({ sender, receive, name, frndId, user, data }) => {
 
   return (
     <>
-      {isVisible && (
+      {isVisible && status==false &&(
         <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px]">
           <div className="flex items-center font-sans">
             <Image

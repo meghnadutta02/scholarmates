@@ -52,14 +52,14 @@ const Page = () => {
                       }}
               className="rounded-full mr-2"
             />
-                  <span className="font-semibold text-gray-900 dark:text-white">
+                  <span className="font-semibold text-gray-900 mr-4 dark:text-white">
                     {item.sendername}{" "}
                   </span>
                  {item.status=="requestSend"&&(
                   <span>sent a connection request.</span>
                  )}
                  {item.status=="requestaccept"&&(
-                  <span>connection {item.message} .</span>
+                  <span>{" "}{item.message} .</span>
                  )}
                 </Link>
                 <button
