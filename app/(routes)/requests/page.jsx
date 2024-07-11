@@ -74,6 +74,7 @@ const Request = () => {
                     data={item?.requestData}
                     sender={item.requestData?.user}
                     receive={item.requestData?.requestTo}
+                    status={item.requestData.notificationRecipt}
                     frndId={item.requestData?._id}
                     user={item?.userData}
                   />

@@ -1,5 +1,6 @@
 "use client";
 import TimeAgo from "javascript-time-ago";
+import Image from "next/image";
 import ReactTimeAgo from "react-time-ago";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -37,12 +38,29 @@ const Page = () => {
               key={index}
               className="md:p-3 p-1  bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             >
-              <div className="flex items-center justify-between mb-1">
-                <Link href="/requests">
-                  <span className="font-semibold text-gray-900 dark:text-white">
+              <div className="flex flex-row items-center justify-between mb-1">
+              
+<Link href="/requests" className="flex">
+<Image
+              src={item.profilePic}
+              alt={item.sendername}
+              width={36}
+              height={36}
+              style={{
+                        aspectRatio: "32/32",
+                        objectFit: "cover",
+                      }}
+              className="rounded-full mr-2"
+            />
+                  <span className="font-semibold text-gray-900 mr-4 dark:text-white">
                     {item.sendername}{" "}
                   </span>
+                 {item.status=="requestSend"&&(
                   <span>sent a connection request.</span>
+                 )}
+                 {item.status=="requestaccept"&&(
+                  <span>{" "}{item.message} .</span>
+                 )}
                 </Link>
                 <button
                   type="button"

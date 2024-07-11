@@ -39,6 +39,10 @@ const discussionSchema = new mongoose.Schema(
     coverImage: { type: String, default: "" },
     groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group" },
     previousRank: { type: Number, default: 21 },
+    notification: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import React,{useEffect} from "react";
 import { Button } from "@/components/ui/button";
 import MenuDrawer from "@/app/(components)/MenuDrawer";
 import { useSession } from "@/app/(components)/SessionProvider";
@@ -19,7 +19,65 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NavbarClient = () => {
-  const { session, unreadCount, user } = useSession();
+  const { 
+    setSession,
+        session,
+        request,
+        setRequest,
+        socket,
+        seenNotifications,
+        setSeenNotifications,
+        notification,
+        setNotification,
+        setUnreadCount,
+        unreadCount,
+        clearUnreadCount,
+        user,
+        setUser, } = useSession();
+
+  const removeDuplicates = (array) => {
+    const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
+    return Array.from(uniqueSet).map((item) => JSON.parse(item));
+  };
+
+  useEffect(() => {
+    if (socket && session) {
+      const data = session.db_id;
+
+      socket.emit("setup", data);
+
+      socket.on("connectionRequest", (data) => {
+        if (data) {
+          setNotification((prev) => {
+            const newNotifications = removeDuplicates([...prev, data]);
+            setUnreadCount(newNotifications.length);
+            return newNotifications;
+          });
+          const dataString = JSON.stringify(data);
+          if (!seenNotifications.has(dataString)) {
+            setSeenNotifications((prev) => new Set(prev).add(dataString));
+           
+          }
+        }
+      });
+
+      socket.on("receiveRequest", (data) => {
+        if (data) {
+          console.log("receive noti:",data);
+          setNotification((prev) => {
+            const newNotifications = removeDuplicates([...prev, data]);
+            setUnreadCount(newNotifications.length);
+            return newNotifications;
+          });
+          const dataString = JSON.stringify(data);
+          if (!seenNotifications.has(dataString)) {
+        setSeenNotifications((prev) => new Set(prev).add(dataString));
+       
+          }
+        }
+      });
+    }
+  }, [socket, session, seenNotifications]);
 
   return (
     <>

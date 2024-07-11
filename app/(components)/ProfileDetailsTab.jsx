@@ -5,14 +5,29 @@ import { toast } from "react-toastify";
 import DetailSection from "./DetailSection";
 import DiscussionSection from "./DiscussionSection";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-
+import { ProfileUpdate, ProfileUpdateTrigger, ProfileUpdateContentData, ProfileUpdateArrow } from "@/components/ui/profileupdate";
 import { useSession } from "./SessionProvider";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { Disc } from "lucide-react";
+import * as Dialog from '@radix-ui/react-dialog';
+import { Cross2Icon } from '@radix-ui/react-icons';
+
 
 const ProfileDetailsTab = ({ user: initialUser }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(initialUser);
+  const [isProfileUpdateOpen, setIsProfileUpdateOpen] = useState(false);
+  const [isImageViewOpen, setIsImageViewOpen] = useState(false);
   const { session } = useSession();
+
+  const handleViewProfileClick = () => {
+    setIsImageViewOpen(true);
+  };
+  const handleProfileUpdateDialogClose = () => {
+    setIsImageViewOpen(false);
+   
+  };
 
   useEffect(() => {
     const fetchCurrentUser = async (id) => {
@@ -120,7 +135,20 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           <Avatar className="w-24 h-24">
             <AvatarImage alt={user.name} src={user?.profilePic} />
           </Avatar>
-
+          <ProfileUpdate>
+                  <ProfileUpdateTrigger>
+                    <div className="cursor-pointer absolute top-20 bg-white p-1 rounded-full">
+                      <ImageUpdateIcon />
+                    </div>
+                  </ProfileUpdateTrigger>
+                  <ProfileUpdateContentData>
+                    <ProfileUpdateArrow />
+                    <div className="flex flex-col">
+                     
+                      <p className="m-auto m-2 p-2 cursor-pointer" onClick={handleViewProfileClick}>View Profile</p>
+                    </div>
+                  </ProfileUpdateContentData>
+                </ProfileUpdate>
           <h1 className="mt-4 font-bold text-2xl">{user.name}</h1>
           <h3 className="mt-1 font-semibold text-gray-700 text-base">
             {user.connection.length}{" "}
@@ -166,8 +194,49 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           <DiscussionSection user={user} />
         </TabsContent>
       </Tabs>
+
+      <Dialog.Root open={isImageViewOpen} onOpenChange={setIsImageViewOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded shadow-lg" style={{ maxWidth: "32rem" }}>
+            <Dialog.Description className="mt-2">
+              <Image
+                src={user.profilePic}
+                width={500}
+                height={500}
+                alt="Picture of user"
+              />
+            </Dialog.Description>
+            <Dialog.Close asChild>
+              <button className="absolute top-2 right-2 p-1 focus:outline-none" onClick={handleProfileUpdateDialogClose}>
+                <Cross2Icon />
+              </button>
+            </Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };
+
+function ImageUpdateIcon(props) {
+  return (
+    <svg
+      {...props}
+      width="15"
+      height="15"
+      viewBox="0 0 15 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1 1C0.447715 1 0 1.44772 0 2V13C0 13.5523 0.447715 14 1 14H14C14.5523 14 15 13.5523 15 13V2C15 1.44772 14.5523 1 14 1H1ZM7.5 10.625C9.22589 10.625 10.625 9.22589 10.625 7.5C10.625 5.77411 9.22589 4.375 7.5 4.375C5.77411 4.375 4.375 5.77411 4.375 7.5C4.375 9.22589 5.77411 10.625 7.5 10.625Z"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      ></path>
+    </svg>
+  );
+}
 
 export default ProfileDetailsTab;

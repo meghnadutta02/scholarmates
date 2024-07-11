@@ -15,11 +15,7 @@ export const SessionProvider = ({ children }) => {
   const [seenNotifications, setSeenNotifications] = useState(new Set());
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const removeDuplicates = (array) => {
-    const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
-    return Array.from(uniqueSet).map((item) => JSON.parse(item));
-  };
-
+  
   const clearUnreadCount = () => {
     setUnreadCount(0);
   };
@@ -53,43 +49,7 @@ export const SessionProvider = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (socket && session) {
-      const data = session.db_id;
-
-      socket.emit("setup", data);
-
-      socket.on("connectionRequest", (data) => {
-        if (data) {
-          setNotification((prev) => {
-            const newNotifications = removeDuplicates([...prev, data]);
-            setUnreadCount(newNotifications.length);
-            return newNotifications;
-          });
-          const dataString = JSON.stringify(data);
-          if (!seenNotifications.has(dataString)) {
-            setSeenNotifications((prev) => new Set(prev).add(dataString));
-            toast.info("You have a connection request");
-          }
-        }
-      });
-
-      socket.on("friendRequestAccepted", (data) => {
-        if (data) {
-          setNotification((prev) => {
-            const newNotifications = removeDuplicates([...prev, data]);
-            setUnreadCount(newNotifications.length);
-            return newNotifications;
-          });
-          const dataString = JSON.stringify(data);
-          if (!seenNotifications.has(dataString)) {
-            setSeenNotifications((prev) => new Set(prev).add(dataString));
-          }
-        }
-      });
-    }
-  }, [socket, session, seenNotifications]);
-
+ 
   return (
     <SessionContext.Provider
       value={{
@@ -98,8 +58,11 @@ export const SessionProvider = ({ children }) => {
         request,
         setRequest,
         socket,
+        seenNotifications,
+        setSeenNotifications,
         notification,
         setNotification,
+        setUnreadCount,
         unreadCount,
         clearUnreadCount,
         user,
