@@ -53,11 +53,11 @@ const Services = () => {
           initial={{ scale: 1 }}
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="font-semibold text-gray-600 text-xl sm:text-3xl font-serif dark:text-gray-400 text-center"
+          className="font-semibold text-gray-700 text-xl sm:text-3xl md:mt-[-24px] font-serif dark:text-gray-400 text-center"
         >
           Sign up to explore!
         </motion.div>
-        <Button className="py-2 px-4 md:py-6 md:px-8 max-w-[200px] text-md lg:text-lg bg-blue-700 transition-transform hover:scale-110 hover:bg-pink-700">
+        <Button className="py-2 px-4 md:py-6 md:px-8 max-w-[200px] text-md lg:text-lg bg-pink-700 transition-transform hover:scale-110 hover:bg-teal-700">
           Join Now
         </Button>
       </div>
@@ -91,7 +91,7 @@ const Services = () => {
               <video
                 src={service.video}
                 alt={service.title}
-                className="w-[88%] md:w-2/5 mb-4 md:mb-0 rounded-md"
+                className="w-[88%] md:w-2/5 mb-4 md:mb-0 rounded-lg shadow-lg shadow-blue-600"
                 loop
                 muted
                 autoPlay

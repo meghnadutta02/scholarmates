@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
+import { IoChatboxOutline } from "react-icons/io5";
 
 const getDiscussions = async (query = "", offset = 0, limit = 10) => {
   const separator = query !== "" ? "&" : "?";
@@ -43,7 +44,6 @@ const DiscussionList = ({
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
   const { data: session } = useSession();
   const [animationState, setAnimationState] = useState({});
-
   const [loading, setLoading] = useState(true);
 
   const limit = 10;
@@ -144,7 +144,15 @@ const DiscussionList = ({
     };
 
     fetchData();
-  }, [selectedFilters, searchQuery, reloadList, session, offset]);
+  }, [
+    selectedFilters,
+    searchQuery,
+    reloadList,
+    session,
+    offset,
+    setDiscussions,
+    setHasMore,
+  ]);
 
   useEffect(() => {
     // Intersection Observer for lazy loading more discussions
@@ -172,7 +180,7 @@ const DiscussionList = ({
         observer.current.unobserve(observerTarget);
       }
     };
-  }, [discussions, hasMore]);
+  }, [discussions, hasMore, setOffset]);
 
   const toggleDiscussion = (id) => {
     setExpandedDiscussion((prev) => {
@@ -435,11 +443,19 @@ const DiscussionList = ({
                       ? "Rejected"
                       : "Join"}
                   </Button>
-                  <Link href={`/discussions/${discussion._id}`}>
-                    <Button className="w-24 md:hidden" variant="icon">
-                      <InfoIcon className="w-5 h-5" />
-                    </Button>
-                  </Link>
+                  {discussion.isMember ? (
+                    <Link href={`/chats/?discussionId=${discussion._id}`}>
+                      <Button variant="icon">
+                        <IoChatboxOutline className="h-6 w-6" />
+                      </Button>{" "}
+                    </Link>
+                  ) : (
+                    <Link href={`/discussions/${discussion._id}`}>
+                      <Button className="w-24" variant="icon">
+                        <InfoIcon className="w-5 h-5" />
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

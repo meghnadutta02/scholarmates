@@ -187,7 +187,7 @@ const UserChatbox = ({
   return (
     <div>
       {loading ? (
-        <div className="flex justify-center items-center h-[32rem]">
+        <div className="flex justify-center items-center">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
         </div>
       ) : (
@@ -240,7 +240,7 @@ const UserChatbox = ({
               </div>
             </div>
 
-            <div className="flex flex-col border rounded-md bg-white h-[32rem] overflow-y-auto scrollbar-none p-1">
+            <div className="flex flex-col h-[32rem] border rounded-md bg-white overflow-y-auto scrollbar-none p-1">
               {inboxMessages.map((msg, index) => (
                 <div
                   key={index}
@@ -268,7 +268,7 @@ const UserChatbox = ({
                         <>Sending...</>
                       ) : (
                         <>
-                          {new Date(msg.updatedAt).toLocaleTimeString([], {
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}

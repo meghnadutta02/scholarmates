@@ -39,7 +39,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
         )}
         <Input
           type="search"
-          placeholder="Search contacts..."
+          placeholder="Search groups..."
           className="pl-10 pr-4 py-2 rounded-full bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
           onChange={handleSearch}
         />

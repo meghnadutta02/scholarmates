@@ -3,12 +3,10 @@ import GroupChatbox from "@/app/(components)/GroupChatbox";
 import GroupsInboxSearch from "@/app/(components)/GroupsInboxSearch";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Loading from "@/app/(components)/Loading";
-
 import Link from "next/link";
 
-const Page = () => {
+const Page = ({ selectDiscussion }) => {
   const [roomID, setRoomID] = useState("");
   const [isRoomSelected, setIsRoomSelected] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -83,7 +81,10 @@ const Page = () => {
 
   useEffect(() => {
     fetchGroups();
-  }, []);
+    // if (selectDiscussion) {
+    //   handleGroupSelection(selectDiscussion);
+    // }
+  });
 
   return (
     <div className="flex flex-col">
@@ -99,10 +100,10 @@ const Page = () => {
           </div>
           <div className="pt-12">
             {groups.length > 0 ? (
-              <div className="flex flex-col min-h-[34rem] rounded-b-lg border my-4">
-                <div className="flex flex-1 max-h-[36rem]">
+              <div className="flex flex-col  rounded-b-lg border my-4">
+                <div className="flex flex-1">
                   {toggleChatView ? (
-                    <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[720px] px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
+                    <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[720px] h-[32rem] px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
                       {groups.map((group) => (
                         <div
                           key={group.groupId}
@@ -117,14 +118,17 @@ const Page = () => {
                               <p className="text-base font-semibold">
                                 {group.groupName}
                               </p>
-                              <p className="text-gray-800 text-[13px] max-w-[200px] md:max-w-[400px] truncate">
-                                {group.latestMessage?.senderName} :{" "}
-                                {group.latestMessage?.text}{" "}
-                              </p>
+                              {group.latestMessage && (
+                                <p className="text-gray-800 text-[13px] max-w-[200px] md:max-w-[400px] truncate">
+                                  {group.latestMessage?.senderName}
+                                  {group.latestMessage.text && " : "}
+                                  {group.latestMessage?.text}{" "}
+                                </p>
+                              )}
                             </div>
 
                             <div className="flex gap-3 text-xs font-normal">
-                              {group.unreadCount > 0 ? (
+                              {group.unreadCount > 0 && (
                                 <div className="relative inline-block">
                                   <p
                                     className="font-bold text-white rounded-full shadow-sm shadow-blue-300 bg-blue-800 flex items-center justify-center"
@@ -137,15 +141,17 @@ const Page = () => {
                                     {group.unreadCount}
                                   </p>
                                 </div>
-                              ) : null}
-                              <p className="">
-                                {new Date(
-                                  group.latestMessage?.time
-                                ).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                              </p>
+                              )}
+                              {group.latestMessage.time && (
+                                <p>
+                                  {new Date(
+                                    group.latestMessage?.time
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </p>
+                              )}
                             </div>
                           </Button>
                         </div>
@@ -154,7 +160,7 @@ const Page = () => {
                   ) : (
                     <>
                       {isRoomSelected ? (
-                        <div className="min-w-[340px] md:min-w-[750px]">
+                        <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[750px]">
                           <GroupChatbox
                             key={roomID}
                             roomID={roomID}

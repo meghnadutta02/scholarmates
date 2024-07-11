@@ -166,7 +166,7 @@ const GroupChatbox = ({
         socket.off("receive-message", messageHandler);
       };
     }
-  }, [groupId, socket]);
+  }, [groupId, socket, session.name, updateLastMessage]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -196,8 +196,8 @@ const GroupChatbox = ({
           setRoomID={setRoomID}
         />
       ) : (
-        <div className="flex flex-col h-[100%] justify-between bg-gray-50 dark:bg-gray-800">
-          <div className="flex items-center justify-between px-4">
+        <div className="flex flex-col justify-between bg-gray-50 p-2 dark:bg-gray-800">
+          <div className="flex items-center justify-between p-3">
             <h2
               className="text-center font-semibold text-xl py-4 cursor-pointer"
               onClick={() => setShowGroupDetails(true)}
@@ -213,7 +213,7 @@ const GroupChatbox = ({
             </div>
           </div>
 
-          <div className="p-4 mx-2 border h-[32rem] rounded-md overflow-y-auto bg-white scrollbar-none">
+          <div className="p-1 mx-2 border h-[32rem] rounded-md overflow-y-auto bg-white scrollbar-none">
             {inboxMessages.map((msg, index) => (
               <div
                 key={index}

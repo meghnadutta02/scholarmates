@@ -8,12 +8,17 @@ import DiscussionChatsSection from "@/app/(components)/DiscussionChatsSection";
 import UserInboxSearch from "@/app/(components)/UserInboxSearch";
 import Link from "next/link";
 import Loading from "@/app/(components)/Loading";
+import { useSearchParams } from "next/navigation";
 
 export default function Chats() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toggleChatView, setToggleChatView] = useState(true);
+  const [tabValue, setTabValue] = useState("c");
+
+  const searchParams = useSearchParams();
+  const selectDiscussion = searchParams.get("discussionId");
 
   const fetchConnections = async () => {
     try {
@@ -75,16 +80,24 @@ export default function Chats() {
   };
 
   useEffect(() => {
+    console.log(selectDiscussion);
+    if (selectDiscussion) {
+      setTabValue("g");
+    }
     fetchConnections();
     updateLastMessage();
-  }, []);
+  }, [searchParams, selectDiscussion]);
 
   return (
     <div>
       {loading ? (
         <Loading />
       ) : (
-        <Tabs defaultValue="c" className="mt-6 flex flex-col items-center">
+        <Tabs
+          value={tabValue}
+          onValueChange={setTabValue}
+          className="mt-6 flex flex-col items-center"
+        >
           <TabsList>
             <TabsTrigger value="c">Connections</TabsTrigger>
             <TabsTrigger value="g">Groups</TabsTrigger>
@@ -99,10 +112,10 @@ export default function Chats() {
               </div>
               <div className="pt-12">
                 {connections.length > 0 ? (
-                  <div className="flex flex-col min-h-[32rem] rounded-b-lg border my-4">
-                    <div className="flex flex-1 max-h-[32rem] min-w-[300px]">
+                  <div className="flex flex-col rounded-b-lg border my-4">
+                    <div className="flex flex-1 min-w-[300px]">
                       {toggleChatView ? (
-                        <div className="min-w-[320px] sm:min-w-[480px] md:min-w-[720px] px-1 flex flex-col overflow-y-auto scrollbar-thin">
+                        <div className="min-w-[320px] sm:min-w-[480px] md:min-w-[720px] h-[32rem] px-1 flex flex-col overflow-y-auto scrollbar-thin">
                           {connections.map((connection) => (
                             <div
                               key={connection.userId}
@@ -155,7 +168,7 @@ export default function Chats() {
                       ) : (
                         <>
                           {selectedUser ? (
-                            <div className="min-w-[320px] sm:min-w-[480px]: md:min-w-[720px]">
+                            <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[750px]">
                               <UserChatbox
                                 key={selectedUser.userId}
                                 selectedUser={selectedUser}
@@ -190,7 +203,7 @@ export default function Chats() {
           </TabsContent>
 
           <TabsContent value="g" className="w-full">
-            <DiscussionChatsSection />
+            <DiscussionChatsSection selectDiscussion={selectDiscussion} />
           </TabsContent>
         </Tabs>
       )}
