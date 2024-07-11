@@ -76,15 +76,7 @@ export async function DELETE(req, { params }) {
         return NextResponse.json({ result: "Unauthorized" }, { status: 403 });
       }
 
-      const group = await Group.findById(discussion.groupId);
-      if (!group) {
-        return NextResponse.json(
-          { result: "Discussion group not found" },
-          { status: 404 }
-        );
-      }
-      await Discussion.findByIdAndDelete(id);
-      await Group.findByIdAndDelete(discussion.groupId);
+      await discussion.deleteOne();
 
       return NextResponse.json(
         { result: "Discussion deleted successfully" },

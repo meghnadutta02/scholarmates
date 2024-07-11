@@ -27,14 +27,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    "/CreateUser",
-    "/AdminRoute1",
-    "/api/users/profile",
-    "/AdminRoute2",
-    "/AdminRoute3",
-    "/posts",
-    "/chats",
-    "/discussions/:path*",
-  ],
+  matcher: ["/api/:path*", "/posts", "/chats", "/discussions/:path*"],
 };

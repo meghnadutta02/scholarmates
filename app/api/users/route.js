@@ -16,7 +16,7 @@ export async function GET(req) {
 
     const myDiscussion = await Discussion.find({
       creator: session?.user?.db_id,
-    });
+    }).sort({ createdAt: -1 });
 
     return NextResponse.json({ result: myDiscussion }, { status: 200 });
   } catch (error) {

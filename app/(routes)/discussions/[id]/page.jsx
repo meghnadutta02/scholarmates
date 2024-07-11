@@ -34,6 +34,7 @@ const DiscussionDetails = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const [animationState, setAnimationState] = useState({});
   const [status, setStatus] = useState("");
+  const [disabled, setDisabled] = useState(false);
   const [isLikedByUser, setIsLikedByUser] = useState(false);
   const [isDislikedByUser, setIsDislikedByUser] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -41,8 +42,7 @@ const DiscussionDetails = ({ params }) => {
 
   const handleDelete = async () => {
     try {
-      console.log(deleteDiscussionId);
-      // Call your delete API here
+      setDisabled(true);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${deleteDiscussionId}`,
         {
@@ -64,12 +64,12 @@ const DiscussionDetails = ({ params }) => {
         closeOnClick: true,
       });
     } finally {
+      setDisabled(false);
       setShowConfirmDelete(false);
     }
   };
 
   const handleGetDiscussionId = (id) => {
-    console.log("myid", id);
     setShowConfirmDelete(true);
     setDeleteDiscussionId(id);
   };
@@ -217,7 +217,7 @@ const DiscussionDetails = ({ params }) => {
 
   if (!discussion) {
     return (
-      <div className="flex  items-center justify-center h-full mt-5">
+      <div className="flex   justify-center  mt-5">
         <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
           Discussion not found
         </p>
@@ -271,7 +271,7 @@ const DiscussionDetails = ({ params }) => {
               <div className=" flex flex-col gap-7 ">
                 {/* discussion controls */}
                 {session?.db_id == discussion.creator._id && (
-                  <div className="  flex justify-end gap-2">
+                  <div className="  flex justify-end gap-2 ">
                     <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
                         <MdEdit className="h-6 w-6 cursor-pointer" />
@@ -290,7 +290,7 @@ const DiscussionDetails = ({ params }) => {
                       </DialogContent>
                     </Dialog>
                     <button
-                      className=" "
+                      className="p-0"
                       onClick={() => handleGetDiscussionId(discussion._id)}
                     >
                       <MdDeleteOutline className="w-6 h-6" />
@@ -499,6 +499,7 @@ const DiscussionDetails = ({ params }) => {
                 className="ml-2"
                 variant="destructive"
                 onClick={handleDelete}
+                disabled={disabled}
               >
                 Delete
               </Button>
