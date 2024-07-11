@@ -53,6 +53,10 @@ const discussionSchema = new mongoose.Schema(
       type: Number,
       default: 21,
     },
+    notification:{
+      type:Boolean,
+      default:false
+    },
   },
   { timestamps: true }
 );
