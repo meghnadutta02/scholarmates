@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 import Group from "@/app/(models)/groupModel";
+import DiscussionNotification from "@/app/(models)/discussionNotification"
 import { ObjectId } from "mongodb";
 import User from "@/app/(models)/userModel";
 import groupRequest from "@/app/(models)/groupRequestModel";
@@ -65,7 +66,12 @@ export async function DELETE(req, { params }) {
 
     if (id && session) {
       const discussion = await Discussion.findById(id);
-      if (!discussion) {
+      const discussionNotification=await DiscussionNotification.findOne({
+        discussionId:id
+      })
+      console.log("discussionNotification",discussionNotification)
+      
+      if (!discussion && !discussionNotification) {
         return NextResponse.json(
           { result: "Discussion not found" },
           { status: 404 }
@@ -83,6 +89,7 @@ export async function DELETE(req, { params }) {
           { status: 404 }
         );
       }
+      await discussionNotification.deleteOne();
       await Discussion.findByIdAndDelete(id);
       await Group.findByIdAndDelete(discussion.groupId);
 

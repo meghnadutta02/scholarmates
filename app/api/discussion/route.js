@@ -1,6 +1,7 @@
 import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/app/config/db";
 import { getServerSession } from "next-auth";
+import DiscussionNotification from "@/app/(models)/discussionNotification"
 import { NextResponse } from "next/server";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { ObjectId } from "mongodb";
@@ -52,7 +53,16 @@ export async function POST(req) {
     const user = await User.findById(session?.user?.db_id);
     user.groupsJoined.push(group._id);
     await user.save();
+    discussion.notification=true;
+
     await discussion.save();
+    await DiscussionNotification.create({
+      discussionId: discussion._id,
+      content: `A new discussion titled "${title}" has been created.`,
+      creator: session?.user?.db_id,
+      connection: user.connection.map(conn => conn._id),  // Add any relevant connections here
+      status:true,
+    });
     return NextResponse.json(
       {
         result: {
@@ -230,16 +240,16 @@ export async function DELETE(req) {
       _id: id,
       creator: session?.user?.db_id,
     });
-
+   
     if (!discussion) {
       return NextResponse.json(
         { error: "Discussion not found or unauthorized" },
         { status: 404 }
       );
     }
-
+ 
     const deletedDiscussion = await Discussion.findByIdAndDelete(id);
-
+    
     return NextResponse.json({ result: deletedDiscussion }, { status: 200 });
   } catch (err) {
     console.error(err);

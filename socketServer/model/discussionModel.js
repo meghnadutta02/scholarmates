@@ -48,6 +48,10 @@ const discussionSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    notification:{
+      type:Boolean,
+      default:false
+    },
     //chat group
     groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group" },
   },

@@ -13,6 +13,7 @@ import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
 import Request from "./model/requestModel.js";
 import { handleNotificationFunction } from "./controller/handleNotificationFunction.js"
+import { discussionNotification } from './controller/discussionNotification.js'
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -53,6 +54,7 @@ io.on("connection", async (socket) => {
       socket.emit("connected");
 
       await handleNotificationFunction(user, socket);
+      await discussionNotification(user,socket)
     }
 
   });

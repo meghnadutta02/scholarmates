@@ -7,6 +7,7 @@ import Link from "next/link";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import { useSession } from "@/app/(components)/SessionProvider";
+
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
@@ -26,8 +27,8 @@ const Page = () => {
   return (
     <div className="md:mt-7 mt-4 w-full mx-auto md:w-[85%]">
       {notifications.length === 0 ? (
-        <div className="flex  items-center justify-center ">
-          <p className="text-lg text-gray-500 dark:text-gray-400 ">
+        <div className="flex items-center justify-center">
+          <p className="text-lg text-gray-500 dark:text-gray-400">
             You have caught up with everything!
           </p>
         </div>
@@ -36,31 +37,33 @@ const Page = () => {
           {notifications.map((item, index) => (
             <div
               key={index}
-              className="md:p-3 p-1  bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              className="md:p-3 p-1 bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             >
               <div className="flex flex-row items-center justify-between mb-1">
-              
-<Link href="/requests" className="flex">
-<Image
-              src={item.profilePic}
-              alt={item.sendername}
-              width={36}
-              height={36}
-              style={{
-                        aspectRatio: "32/32",
-                        objectFit: "cover",
-                      }}
-              className="rounded-full mr-2"
-            />
+                <Link href={item.status === "discussNotify" ? `/discussions/${item.discussionId}` : "/requests"} className="flex">
+                  <Image
+                    src={item.profilePic}
+                    alt={item.sendername}
+                    width={36}
+                    height={36}
+                    style={{
+                      aspectRatio: "32/32",
+                      objectFit: "cover",
+                    }}
+                    className="rounded-full mr-2"
+                  />
                   <span className="font-semibold text-gray-900 mr-4 dark:text-white">
                     {item.sendername}{" "}
                   </span>
-                 {item.status=="requestSend"&&(
-                  <span>sent a connection request.</span>
-                 )}
-                 {item.status=="requestaccept"&&(
-                  <span>{" "}{item.message} .</span>
-                 )}
+                  {item.status === "requestSend" && (
+                    <span>sent a connection request.</span>
+                  )}
+                  {item.status === "requestaccept" && (
+                    <span>{" "}{item.message}.</span>
+                  )}
+                  {item.status === "discussNotify" && (
+                    <span>{" "}{item.message}.</span>
+                  )}
                 </Link>
                 <button
                   type="button"
@@ -85,8 +88,12 @@ const Page = () => {
                 </button>
               </div>
 
-              <span className="text-xs text-gray-700 ">
-                <ReactTimeAgo date={item.timestamp} locale="en-US" />
+              <span className="text-xs text-gray-700">
+                {item.timestamp ? (
+                  <ReactTimeAgo date={new Date(item.timestamp)} locale="en-US" />
+                ) : (
+                  "Invalid date"
+                )}
               </span>
             </div>
           ))}

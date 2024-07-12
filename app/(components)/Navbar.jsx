@@ -20,20 +20,17 @@ import {
 
 const NavbarClient = () => {
   const { 
-    setSession,
+  
         session,
-        request,
-        setRequest,
         socket,
         seenNotifications,
-        setSeenNotifications,
         notification,
+        setSeenNotifications,
         setNotification,
         setUnreadCount,
         unreadCount,
-        clearUnreadCount,
         user,
-        setUser, } = useSession();
+        } = useSession();
 
   const removeDuplicates = (array) => {
     const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
@@ -76,8 +73,24 @@ const NavbarClient = () => {
           }
         }
       });
+
+      socket.on("dicussionNotification", (data) => {
+        if (data) {
+          console.log("receive noti:",data);
+          setNotification((prev) => {
+            const newNotifications = removeDuplicates([...prev, data]);
+            setUnreadCount(newNotifications.length);
+            return newNotifications;
+          });
+          const dataString = JSON.stringify(data);
+          if (!seenNotifications.has(dataString)) {
+        setSeenNotifications((prev) => new Set(prev).add(dataString));
+       
+          }
+        }
+      });
     }
-  }, [socket, session, seenNotifications]);
+  }, [socket,notification, session, seenNotifications]);
 
   return (
     <>
