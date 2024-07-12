@@ -363,15 +363,25 @@ const DiscussionList = ({
 
               <div className="flex-1 grid gap-2">
                 <div className="flex flex-col  gap-2">
-                  <div className="flex md:flex-row flex-col justify-between md:items-center items-start">
-                    <Link href={`/profile/${discussion.creatorData._id}`}>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {discussion.creatorData.name}
-                      </span>{" "}
+                  <div className="flex justify-between">
+                    <div className="flex md:flex-row flex-col justify-between md:items-center w-full items-start">
+                      <Link href={`/profile/${discussion.creatorData._id}`}>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          {discussion.creatorData.name}
+                        </span>{" "}
+                      </Link>
+                      <span className="md:text-sm text-[13px] text-gray-500 dark:text-gray-400">
+                        {discussion.creatorData.collegeName}
+                      </span>
+                    </div>
+                    <Link
+                      href={`/discussions/${discussion._id}`}
+                      className="md:hidden"
+                    >
+                      <Button className="p-0" variant="icon">
+                        <InfoIcon className="w-5 h-5" />
+                      </Button>
                     </Link>
-                    <span className="md:text-sm text-[13px] text-gray-500 dark:text-gray-400">
-                      {discussion.creatorData.collegeName}
-                    </span>
                   </div>
                   <h4 className="font-semibold text-base cursor-pointer">
                     <Link href={`/discussions/${discussion._id}`}>
@@ -425,36 +435,25 @@ const DiscussionList = ({
                     <span className="ml-2">{discussion.dislikes}</span>
                   </Button>
 
-                  <Button
-                    className="md:w-24 w-[70px]"
-                    variant="secondary"
-                    disabled={
-                      discussion.isMember ||
-                      discussion.isRequested ||
-                      discussion.isRejected
-                    }
-                    onClick={() => handleButtonClick(discussion)}
-                  >
-                    {discussion.isMember
-                      ? "Member"
-                      : discussion.isRequested
-                      ? "Requested"
-                      : discussion.isRejected
-                      ? "Rejected"
-                      : "Join"}
-                  </Button>
                   {discussion.isMember ? (
                     <Link href={`/chats/?discussionId=${discussion._id}`}>
-                      <Button variant="icon">
+                      <Button variant="icon" className="flex ml-4">
                         <IoChatboxOutline className="h-6 w-6" />
                       </Button>{" "}
                     </Link>
                   ) : (
-                    <Link href={`/discussions/${discussion._id}`}>
-                      <Button className="w-24" variant="icon">
-                        <InfoIcon className="w-5 h-5" />
-                      </Button>
-                    </Link>
+                    <Button
+                      className="md:w-24 w-[70px]"
+                      variant="secondary"
+                      disabled={discussion.isRequested || discussion.isRejected}
+                      onClick={() => handleButtonClick(discussion)}
+                    >
+                      {discussion.isRequested
+                        ? "Requested"
+                        : discussion.isRejected
+                        ? "Rejected"
+                        : "Join"}
+                    </Button>
                   )}
                 </div>
               </div>

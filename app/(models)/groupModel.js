@@ -1,31 +1,17 @@
 import mongoose from "mongoose";
 import User from "./userModel.js";
+import GroupRequest from "./groupRequestModel";
+import Message from "./messageModel";
+import Discussion from "./discussionModel";
+
 const groupSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-
-    isPublic: {
-      type: Boolean,
-      default: true,
-    },
+    name: { type: String, required: true },
+    isPublic: { type: Boolean, default: true },
     participants: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
+      { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     ],
-    moderators: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-
-        //by default the creator of the discussion is a moderator
-      },
-    ],
+    moderators: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     description: String,
   },
   { timestamps: true }

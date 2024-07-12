@@ -40,7 +40,7 @@ const Services = () => {
     {
       title: ["", "Join", "Join Groups"],
       description:
-        "Join groups that match your interests and share your opinions on various topics. Engage in meaningful discussions, learn from diverse perspectives, and build a community of like-minded individuals. Collaborate, innovate, and grow together.",
+        "Discover trending topics at your college and join relevant groups to engage in meaningful discussions. Share your opinions, learn from diverse perspectives, and build a community of like-minded individuals. Collaborate and innovate.",
       video: groupChat,
       rotation: "rotate-30",
     },
@@ -57,7 +57,7 @@ const Services = () => {
         >
           Sign up to explore!
         </motion.div>
-        <Button className="py-2 px-4 md:py-6 md:px-8 max-w-[200px] text-md lg:text-lg bg-pink-700 transition-transform hover:scale-110 hover:bg-teal-700">
+        <Button className="py-2 px-4 md:py-6 md:px-8 max-w-[200px] text-md lg:text-lg bg-blue-700 transition-transform hover:scale-110 hover:bg-pink-700">
           Join Now
         </Button>
       </div>
@@ -91,7 +91,7 @@ const Services = () => {
               <video
                 src={service.video}
                 alt={service.title}
-                className="w-[88%] md:w-2/5 mb-4 md:mb-0 rounded-lg shadow-lg shadow-blue-600"
+                className="w-[88%] md:w-2/5 mb-4 md:mb-0 rounded-lg shadow-xl shadow-blue-300"
                 loop
                 muted
                 autoPlay
