@@ -103,16 +103,14 @@ export default function Chats() {
             <TabsTrigger value="g">Groups</TabsTrigger>
           </TabsList>
           <TabsContent value="c">
-            <div className="relative">
-              <div className="absolute top-0 left-0 right-0 z-10">
-                <UserInboxSearch
-                  setSelectedUser={setSelectedUser}
-                  setToggleChatView={setToggleChatView}
-                />
-              </div>
-              <div className="pt-12">
+            <div>
+              <UserInboxSearch
+                setSelectedUser={setSelectedUser}
+                setToggleChatView={setToggleChatView}
+              />
+              <div>
                 {connections.length > 0 ? (
-                  <div className="flex flex-col rounded-b-lg border my-4">
+                  <div className="flex flex-col rounded-b-lg border mb-4">
                     <div className="flex flex-1 min-w-[300px]">
                       {toggleChatView ? (
                         <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] px-1 flex flex-col overflow-y-auto scrollbar-thin">

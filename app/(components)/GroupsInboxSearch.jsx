@@ -32,11 +32,8 @@ export default function Component({ setRoomID, setToggleChatView }) {
   };
 
   return (
-    <Card className="w-full rounded-t-lg rounded-b-none shadow-none">
+    <Card className="relative w-full rounded-t-lg rounded-b-none shadow-none">
       <div className="flex mx-auto py-3 px-4 w-3/4 justify-center items-center">
-        {!showList && (
-          <SearchIcon className="absolute left-2/3 md:left-3/4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        )}
         <Input
           type="search"
           placeholder="Search groups..."
@@ -45,25 +42,35 @@ export default function Component({ setRoomID, setToggleChatView }) {
         />
       </div>
       {showList && (
-        <CardContent className="pt-4 overflow-y-auto scrollbar-none bg-gray-50 max-h-[400px]">
-          {filteredGroups.map((group) => (
-            <Button
-              variant="icon"
-              key={group._id}
-              href="#"
-              onClick={(e) => {
-                setRoomID(setRoomID);
-                console.log(group._id);
-                setToggleChatView(false);
-                setShowList(false);
-              }}
-              className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"
-            >
-              <div className="">
-                <p className="text-sm font-medium leading-none">{group.name}</p>
-              </div>
-            </Button>
-          ))}
+        <CardContent className="absolute w-full pt-4 overflow-y-auto scrollbar-none bg-gray-100 max-h-[400px]">
+          {filteredGroups.length === 0 ? (
+            <p className="text-red-400 mt-4 text-center">
+              No discussion matched your search
+            </p>
+          ) : (
+            <>
+              {filteredGroups.map((group) => (
+                <Button
+                  variant="icon"
+                  key={group._id}
+                  href="#"
+                  onClick={(e) => {
+                    setRoomID(setRoomID);
+                    console.log(group._id);
+                    setToggleChatView(false);
+                    setShowList(false);
+                  }}
+                  className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"
+                >
+                  <div className="">
+                    <p className="text-sm font-medium leading-none">
+                      {group.name}
+                    </p>
+                  </div>
+                </Button>
+              ))}
+            </>
+          )}
         </CardContent>
       )}
     </Card>

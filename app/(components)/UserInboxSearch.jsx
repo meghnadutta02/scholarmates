@@ -52,11 +52,8 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
   };
 
   return (
-    <Card className="w-full rounded-t-lg rounded-b-none shadow-none">
+    <Card className="relative w-full rounded-t-lg rounded-b-none shadow-none">
       <div className="flex mx-auto py-3 px-4 w-3/4 justify-center items-center">
-        {!showList && (
-          <SearchIcon className="absolute left-2/3 md:left-3/4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        )}
         <Input
           type="search"
           placeholder="Search contacts..."
@@ -67,7 +64,7 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
       {showList && (
         <CardContent
           ref={componentRef}
-          className="pt-4 overflow-y-auto scrollbar-none bg-gray-50 max-h-[400px]"
+          className="absolute w-full pt-4 overflow-y-auto scrollbar-none bg-gray-100 max-h-[400px]"
         >
           {connections.length > 0 ? (
             <div>

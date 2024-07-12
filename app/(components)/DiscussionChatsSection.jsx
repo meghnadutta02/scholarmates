@@ -91,16 +91,14 @@ const Page = ({ selectDiscussion }) => {
       {loading ? (
         <Loading />
       ) : (
-        <div className="relative">
-          <div className="top-0 left-0 right-0 z-10">
-            <GroupsInboxSearch
-              setRoomID={setRoomID}
-              setToggleChatView={setToggleChatView}
-            />
-          </div>
-          <div className="pt-12">
+        <div>
+          <GroupsInboxSearch
+            setRoomID={setRoomID}
+            setToggleChatView={setToggleChatView}
+          />
+          <div>
             {groups.length > 0 ? (
-              <div className="flex flex-col  rounded-b-lg border my-4">
+              <div className="flex flex-col rounded-b-lg border">
                 <div className="flex flex-1">
                   {toggleChatView ? (
                     <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
