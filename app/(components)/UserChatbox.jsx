@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useSession } from "./SessionProvider";
 import {
@@ -14,7 +14,6 @@ import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
 import DisplayMedia from "./DisplayMedia";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import Loading from "./Loading";
 
@@ -29,36 +28,73 @@ const UserChatbox = ({
     attachments: [],
     sender: session.db_id,
   });
+
+  const userID = selectedUser._id || selectedUser.userId;
+
   const [loading, setLoading] = useState(true);
   const [inboxMessages, setInboxMessages] = useState([]);
-  const messagesEndRef = useRef(null);
   const [filePreviews, setFilePreviews] = useState([]);
-  const userID = selectedUser._id || selectedUser.userId;
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [page, setPage] = useState(0);
+
+  const messagesEndRef = useRef(null);
+  const observerRef = useRef(null);
+  const lastMessageRef = useRef(null);
+
+  const fetchInboxMessages = useCallback(
+    async (page) => {
+      try {
+        const limit = 10;
+        const skip = page * limit;
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userID}?limit=${limit}&skip=${skip}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch messages");
+        }
+        const data = await response.json();
+        if (data.messages.length < limit) {
+          setHasMoreMessages(false);
+        }
+        // Reverse only the new fetched messages
+        const newMessages = data.messages.reverse();
+        setInboxMessages((prevMessages) => {
+          // Avoid duplicate messages
+          const newMessageIds = newMessages.map((msg) => msg._id);
+          const filteredMessages = prevMessages.filter(
+            (msg) => !newMessageIds.includes(msg._id)
+          );
+          return [...newMessages, ...filteredMessages];
+        });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [userID]
+  );
 
   useEffect(() => {
     if (userID) {
-      const fetchInboxMessages = async () => {
-        try {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userID}`
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch messages");
-          }
-          const data = await response.json();
-          setInboxMessages(data.messages);
-          return data;
-        } catch (error) {
-          console.error(error);
-          return [];
-        } finally {
-          setLoading(false);
-          scrollToLastMessage();
-        }
-      };
-      fetchInboxMessages();
+      setPage(0);
+      setHasMoreMessages(true);
+      setInboxMessages([]);
+      fetchInboxMessages(0);
     }
-  }, [selectedUser, userID]);
+  }, [selectedUser, userID, fetchInboxMessages]);
+
+  const handleScroll = useCallback(() => {
+    if (observerRef.current && hasMoreMessages) {
+      observerRef.current.observe(lastMessageRef.current);
+    }
+  }, [hasMoreMessages]);
+
+  useEffect(() => {
+    if (page > 0) {
+      fetchInboxMessages(page);
+    }
+  }, [page, fetchInboxMessages]);
 
   const sendMessageHandler = async (e) => {
     e.preventDefault();
@@ -66,11 +102,10 @@ const UserChatbox = ({
     if (message.text.trim() !== "" || message.attachments.length > 0) {
       const tempMessage = {
         ...message,
-        tempId: Date.now(), // Generate a temporary ID
+        tempId: Date.now(),
         sending: true,
       };
 
-      // Add the temporary message to the state to ensure the messages get updated only once
       setInboxMessages((prevMessages) => [...prevMessages, tempMessage]);
 
       const formData = new FormData();
@@ -78,7 +113,7 @@ const UserChatbox = ({
       formData.append("sender", session.db_id);
 
       if (message.attachments != null) {
-        message.attachments.forEach((file, index) => {
+        message.attachments.forEach((file) => {
           formData.append(`attachments`, file);
         });
       }
@@ -93,7 +128,6 @@ const UserChatbox = ({
 
       if (res.ok) {
         const data = await res.json();
-        // console.log(data);
         setInboxMessages((prevMessages) =>
           prevMessages.map((msg) =>
             msg.tempId === tempMessage.tempId ? data.result : msg
@@ -106,7 +140,6 @@ const UserChatbox = ({
         });
       } else {
         toast.error("Message not sent");
-        // Remove the temporary message if the API call fails
         setInboxMessages((prevMessages) =>
           prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
         );
@@ -146,7 +179,6 @@ const UserChatbox = ({
       const messageHandler = (msg) => {
         updateLastMessage(msg.sender, msg.text);
         setInboxMessages((prevMessages) => {
-          // Check if the message already exists to avoid duplicates
           if (prevMessages.some((m) => m._id === msg._id)) {
             return prevMessages;
           }
@@ -185,6 +217,25 @@ const UserChatbox = ({
     setFilePreviews(previews);
   };
 
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    });
+
+    if (lastMessageRef.current) {
+      observerRef.current.observe(lastMessageRef.current);
+    }
+
+    return () => {
+      if (observerRef.current && lastMessageRef.current) {
+        observerRef.current.unobserve(lastMessageRef.current);
+      }
+    };
+  }, [lastMessageRef.current, hasMoreMessages]);
+  // Don't remove the above lastmessageRef.current dependancy to remove the warning
+
   return (
     <div>
       {loading ? (
@@ -192,7 +243,6 @@ const UserChatbox = ({
       ) : (
         <div className="flex flex-col h-[100%] bg-gray-50 justify-between p-4">
           <div>
-            {/* chat info header */}
             <div className="flex px-2 mb-4 items-center gap-4 justify-between">
               <div className="flex items-center justify-start gap-2">
                 <Popover>
@@ -216,10 +266,6 @@ const UserChatbox = ({
                     <Link href={`/profile/${userID}`} className="text-blue-600">
                       View Profile
                     </Link>
-                    {/* <p>Name : {selectedUser.userName}</p>
-                    <p>College : {selectedUser.collegeName}</p>
-                    <p>Course : {selectedUser.degree}</p>
-                    <p>Year : {selectedUser.yearInCollege}</p> */}
                   </PopoverContent>
                 </Popover>
 
@@ -246,6 +292,13 @@ const UserChatbox = ({
                   className={`flex ${
                     msg.sender === userID ? "justify-start" : "justify-end"
                   }`}
+                  ref={
+                    index === 0
+                      ? (el) => {
+                          lastMessageRef.current = el;
+                        }
+                      : null
+                  }
                 >
                   <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
                     {msg.sender != userID && (
