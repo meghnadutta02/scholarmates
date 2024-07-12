@@ -75,7 +75,7 @@ function NewDiscussion({ setDiscussions }) {
   const handlePostSubmit = async (e) => {
     e.preventDefault();
     setIsDisabled(true);
-    const toastId = toast.loading("Creating discussion...");
+
     formData.append("groupTitle", groupTitle);
     formData.append("title", title);
     formData.append("content", content);
@@ -97,7 +97,7 @@ function NewDiscussion({ setDiscussions }) {
     selectedSubCategories.forEach((subcategory) => {
       formData.append("subcategories", subcategory.value);
     });
-
+    const toastId = toast.loading("Creating discussion...");
     try {
       const result = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/discussion`,

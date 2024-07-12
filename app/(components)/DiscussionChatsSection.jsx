@@ -92,7 +92,7 @@ const Page = ({ selectDiscussion }) => {
         <Loading />
       ) : (
         <div className="relative">
-          <div className="absolute top-0 left-0 right-0 z-10">
+          <div className="top-0 left-0 right-0 z-10">
             <GroupsInboxSearch
               setRoomID={setRoomID}
               setToggleChatView={setToggleChatView}

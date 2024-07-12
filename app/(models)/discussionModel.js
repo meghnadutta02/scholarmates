@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Group from "./groupModel";
 import User from "./userModel";
 import GroupRequest from "./groupRequestModel";
+import DiscussionNotification from "@/socketServer/model/discussionNotification";
 import Message from "./messageModel";
 
 const discussionSchema = new mongoose.Schema(
@@ -57,6 +58,10 @@ discussionSchema.pre(
     session.startTransaction();
 
     try {
+      await DiscussionNotification.deleteOne({
+        discussionId: discussion._id,
+      }).session(session);
+
       const group = await Group.findByIdAndDelete(discussion.groupId).session(
         session
       );

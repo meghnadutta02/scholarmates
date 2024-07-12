@@ -2,9 +2,11 @@
 "use client";
 
 import Link from "next/link";
-import React,{useEffect} from "react";
+import React, { useEffect, useState } from "react";
+import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import MenuDrawer from "@/app/(components)/MenuDrawer";
+import NavbarSearch from "./NavbarSearch";
 import { useSession } from "@/app/(components)/SessionProvider";
 import logo from "@/public/logo.png";
 import Image from "next/image";
@@ -19,19 +21,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NavbarClient = () => {
-  const { 
-  
-        session,
-        socket,
-        seenNotifications,
-        notification,
-        setSeenNotifications,
-        setNotification,
-        setUnreadCount,
-        unreadCount,
-        user,
-        } = useSession();
-
+  const {
+    session,
+    socket,
+    seenNotifications,
+    notification,
+    setSeenNotifications,
+    setNotification,
+    setUnreadCount,
+    unreadCount,
+    user,
+  } = useSession();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const removeDuplicates = (array) => {
     const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
     return Array.from(uniqueSet).map((item) => JSON.parse(item));
@@ -53,14 +54,13 @@ const NavbarClient = () => {
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
             setSeenNotifications((prev) => new Set(prev).add(dataString));
-           
           }
         }
       });
 
       socket.on("receiveRequest", (data) => {
         if (data) {
-          console.log("receive noti:",data);
+          console.log("receive noti:", data);
           setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
             setUnreadCount(newNotifications.length);
@@ -68,15 +68,14 @@ const NavbarClient = () => {
           });
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
-        setSeenNotifications((prev) => new Set(prev).add(dataString));
-       
+            setSeenNotifications((prev) => new Set(prev).add(dataString));
           }
         }
       });
 
       socket.on("dicussionNotification", (data) => {
         if (data) {
-          console.log("receive noti:",data);
+          console.log("receive noti:", data);
           setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
             setUnreadCount(newNotifications.length);
@@ -84,13 +83,12 @@ const NavbarClient = () => {
           });
           const dataString = JSON.stringify(data);
           if (!seenNotifications.has(dataString)) {
-        setSeenNotifications((prev) => new Set(prev).add(dataString));
-       
+            setSeenNotifications((prev) => new Set(prev).add(dataString));
           }
         }
       });
     }
-  }, [socket,notification, session, seenNotifications]);
+  }, [socket, notification, session, seenNotifications]);
 
   return (
     <>
@@ -109,21 +107,22 @@ const NavbarClient = () => {
                 <span>AlikeHub</span>
               </Link>
             </div>
-            <div className="flex h-14 px-6 items-center justify-between gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
-              <Link href="/notification">
-                <Button
-                  className=" h-8 w-8 md:block hidden "
-                  size="icon"
-                  variant="icon"
-                >
-                  {unreadCount > 0 && (
-                    <span className="absolute z-10  items-center justify-center p-1 w-4 h-4 text-[10px] font-bold leading-none top-[13px] text-red-100 bg-red-600 rounded-full">
-                      {unreadCount}
-                    </span>
-                  )}
-                  <BellIcon className="relative  h-5 w-5 text-white" />
-                </Button>
+            <div className="flex h-14 px-6 items-center justify-between gap-5 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
+              <Link href="/notification" className="md:block hidden">
+                {unreadCount > 0 && (
+                  <span className="absolute z-10 hidden md:block  items-center justify-center p-1 w-4 h-4 text-[10px] font-bold leading-none top-[13px] text-red-100 bg-red-600 rounded-full right-[110px]">
+                    {unreadCount}
+                  </span>
+                )}
+
+                <BellIcon className="relative  h-5 w-5 text-white cursor-pointer" />
               </Link>
+
+              <AiOutlineSearch
+                className="h-5 w-5 text-white cursor-pointer"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+              />
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -167,9 +166,16 @@ const NavbarClient = () => {
             </div>
           </div>
           <ProfileProgress />
+          {isSearchOpen && <NavbarSearch setIsSearchOpen={setIsSearchOpen} />}
         </header>
-        <Link className="  md:hidden mt-5 mr-2" href="/discussions/trending">
+        <Link className=" relative md:hidden mt-5 mr-2" href="/notification">
           <BellIcon className="h-6 w-6" />
+
+          {unreadCount > 0 && (
+            <span className="absolute z-10  items-center justify-center p-1 w-4 h-4 text-[10px] font-bold leading-none top-[-8px] text-red-100 bg-red-600 rounded-full right-[-4px]">
+              {unreadCount}
+            </span>
+          )}
         </Link>
       </div>
     </>

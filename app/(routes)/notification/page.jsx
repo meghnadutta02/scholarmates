@@ -37,10 +37,17 @@ const Page = () => {
           {notifications.map((item, index) => (
             <div
               key={index}
-              className="md:p-3 p-1 bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              className="md:p-2 p-1 bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 my-auto"
             >
-              <div className="flex flex-row items-center justify-between mb-1">
-                <Link href={item.status === "discussNotify" ? `/discussions/${item.discussionId}` : "/requests"} className="flex">
+              <div className="flex flex-row items-center justify-between  ">
+                <Link
+                  href={
+                    item.status === "discussNotify"
+                      ? `/discussions/${item.discussionId}`
+                      : "/requests"
+                  }
+                  className="flex items-center"
+                >
                   <Image
                     src={item.profilePic}
                     alt={item.sendername}
@@ -52,17 +59,17 @@ const Page = () => {
                     }}
                     className="rounded-full mr-2"
                   />
-                  <span className="font-semibold text-gray-900 mr-4 dark:text-white">
+                  <span className="font-semibold text-gray-900 mr-1 dark:text-white">
                     {item.sendername}{" "}
                   </span>
                   {item.status === "requestSend" && (
                     <span>sent a connection request.</span>
                   )}
                   {item.status === "requestaccept" && (
-                    <span>{" "}{item.message}.</span>
+                    <span> {item.message}.</span>
                   )}
                   {item.status === "discussNotify" && (
-                    <span>{" "}{item.message}.</span>
+                    <span> {item.message}.</span>
                   )}
                 </Link>
                 <button
@@ -88,9 +95,12 @@ const Page = () => {
                 </button>
               </div>
 
-              <span className="text-xs text-gray-700">
+              <span className="text-xs text-gray-700 flex justify-end">
                 {item.timestamp ? (
-                  <ReactTimeAgo date={new Date(item.timestamp)} locale="en-US" />
+                  <ReactTimeAgo
+                    date={new Date(item.timestamp)}
+                    locale="en-US"
+                  />
                 ) : (
                   "Invalid date"
                 )}
