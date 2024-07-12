@@ -16,6 +16,7 @@ import DisplayMedia from "./DisplayMedia";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import Loading from "./Loading";
 
 const UserChatbox = ({
   selectedUser,
@@ -187,9 +188,7 @@ const UserChatbox = ({
   return (
     <div>
       {loading ? (
-        <div className="flex justify-center items-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
-        </div>
+        <Loading />
       ) : (
         <div className="flex flex-col h-[100%] bg-gray-50 justify-between p-4">
           <div>

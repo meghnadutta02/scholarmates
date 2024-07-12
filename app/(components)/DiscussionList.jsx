@@ -435,30 +435,25 @@ const DiscussionList = ({
                     <span className="ml-2">{discussion.dislikes}</span>
                   </Button>
 
-                  <Button
-                    className="md:w-24 w-[70px]"
-                    variant="secondary"
-                    disabled={
-                      discussion.isMember ||
-                      discussion.isRequested ||
-                      discussion.isRejected
-                    }
-                    onClick={() => handleButtonClick(discussion)}
-                  >
-                    {discussion.isMember
-                      ? "Member"
-                      : discussion.isRequested
-                      ? "Requested"
-                      : discussion.isRejected
-                      ? "Rejected"
-                      : "Join"}
-                  </Button>
-                  {discussion.isMember && (
+                  {discussion.isMember ? (
                     <Link href={`/chats/?discussionId=${discussion._id}`}>
-                      <Button variant="icon">
+                      <Button variant="icon" className="flex ml-4">
                         <IoChatboxOutline className="h-6 w-6" />
                       </Button>{" "}
                     </Link>
+                  ) : (
+                    <Button
+                      className="md:w-24 w-[70px]"
+                      variant="secondary"
+                      disabled={discussion.isRequested || discussion.isRejected}
+                      onClick={() => handleButtonClick(discussion)}
+                    >
+                      {discussion.isRequested
+                        ? "Requested"
+                        : discussion.isRejected
+                        ? "Rejected"
+                        : "Join"}
+                    </Button>
                   )}
                 </div>
               </div>
