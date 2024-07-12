@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import GroupDetails from "@/app/(components)/GroupDetails";
 import DisplayMedia from "./DisplayMedia";
 import Loading from "@/app/(components)/Loading";
@@ -33,10 +33,15 @@ const GroupChatbox = ({
     attachments: [],
   });
   const [groupId, setGroupId] = useState(roomID);
-  const [inboxMessages, setInboxMessages] = useState([]);
+  const [inboxMessages, setInboxMessages] = useState(new Map());
   const [groupDetails, setGroupDetails] = useState({});
   const messagesEndRef = useRef(null);
   const [filePreviews, setFilePreviews] = useState([]);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [page, setPage] = useState(0);
+  const observerRef = useRef(null);
+  const lastMessageRef = useRef(null);
+  const limit = 20;
 
   const updateReadStatus = async (gid) => {
     try {
@@ -57,24 +62,34 @@ const GroupChatbox = ({
     }
   };
 
-  const getGroupMessages = async (groupId) => {
+  const getGroupMessages = useCallback(async (groupId, page) => {
     try {
+      const skip = page * limit;
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${groupId}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${groupId}?limit=${limit}&skip=${skip}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch messages");
       }
       const data = await response.json();
       setGroupDetails(data.groupDetails);
-      return data;
+
+      setInboxMessages((prevMessages) => {
+        const newMessages = new Map(prevMessages);
+        data.messagesWithSenderName.forEach((message) => {
+          newMessages.set(message._id, message);
+        });
+        return newMessages;
+      });
+
+      setHasMoreMessages(data.messagesWithSenderName.length === limit);
     } catch (error) {
       console.error(error);
-      return [];
+      setHasMoreMessages(false);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const sendMessageHandler = async (e) => {
     e.preventDefault();
@@ -85,7 +100,11 @@ const GroupChatbox = ({
         sending: true,
       };
       // Add the temporary message to the state to ensure the messages get updated only once
-      setInboxMessages((prevMessages) => [...prevMessages, tempMessage]);
+      setInboxMessages((prevMessages) => {
+        const newMessages = new Map(prevMessages);
+        newMessages.set(tempMessage.tempId, tempMessage);
+        return newMessages;
+      });
 
       const formData = new FormData();
       formData.append("text", message.text);
@@ -94,8 +113,8 @@ const GroupChatbox = ({
       formData.append("senderName", session.name);
 
       if (message.attachments != null) {
-        message.attachments.forEach((file, index) => {
-          formData.append(`attachments`, file);
+        message.attachments.forEach((file) => {
+          formData.append("attachments", file);
         });
       }
 
@@ -108,12 +127,12 @@ const GroupChatbox = ({
       );
       if (res.ok) {
         const data = await res.json();
-        // console.log(data);
-        setInboxMessages((prevMessages) =>
-          prevMessages.map((msg) =>
-            msg.tempId === tempMessage.tempId ? data.result : msg
-          )
-        );
+        setInboxMessages((prevMessages) => {
+          const newMessages = new Map(prevMessages);
+          newMessages.delete(tempMessage.tempId); // Remove the temporary message
+          newMessages.set(data.result._id, data.result); // Add the new message
+          return newMessages;
+        });
         socket.emit("send-message", {
           message: data.result,
           roomID: roomID,
@@ -121,9 +140,11 @@ const GroupChatbox = ({
       } else {
         toast.error("Message not sent");
         // Remove the temporary message if the API call fails
-        setInboxMessages((prevMessages) =>
-          prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
-        );
+        setInboxMessages((prevMessages) => {
+          const newMessages = new Map(prevMessages);
+          newMessages.delete(tempMessage.tempId);
+          return newMessages;
+        });
       }
       updateLastMessage(groupId, message.text, session.name);
       setMessage({
@@ -138,24 +159,23 @@ const GroupChatbox = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const groupMessages = await getGroupMessages(groupId);
-      setInboxMessages(groupMessages.messagesWithSenderName);
+      setLoading(true);
+      setPage(0);
+      await getGroupMessages(groupId, 0);
     };
 
     fetchData();
     updateReadStatus(groupId);
-  }, [groupId]);
+  }, [groupId, getGroupMessages]);
 
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
         updateLastMessage(groupId, msg.text, session.name);
         setInboxMessages((prevMessages) => {
-          // Check if the message already exists to avoid duplicates
-          if (prevMessages.some((m) => m._id === msg._id)) {
-            return prevMessages;
-          }
-          return [...prevMessages, msg];
+          const newMessages = new Map(prevMessages);
+          newMessages.set(msg._id, msg);
+          return newMessages;
         });
         updateReadStatus(groupId);
       };
@@ -182,6 +202,34 @@ const GroupChatbox = ({
     const previews = files.map((file) => URL.createObjectURL(file));
     setFilePreviews(previews);
   };
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMoreMessages) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    });
+
+    if (lastMessageRef.current) {
+      observerRef.current.observe(lastMessageRef.current);
+    }
+
+    return () => {
+      if (observerRef.current && lastMessageRef.current) {
+        observerRef.current.unobserve(lastMessageRef.current);
+      }
+    };
+  }, [lastMessageRef.current, hasMoreMessages]);
+
+  useEffect(() => {
+    if (page > 0) {
+      getGroupMessages(groupId, page);
+    }
+  }, [page, groupId, getGroupMessages]);
+
+  const sortedMessages = Array.from(inboxMessages.values()).sort(
+    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+  );
 
   return (
     <>
@@ -214,7 +262,8 @@ const GroupChatbox = ({
           </div>
 
           <div className="p-1 mx-2 border h-[32rem] rounded-md overflow-y-auto bg-white scrollbar-none">
-            {inboxMessages.map((msg, index) => (
+            <div ref={lastMessageRef}></div>
+            {sortedMessages.map((msg, index) => (
               <div
                 key={index}
                 className={`flex ${
@@ -223,9 +272,17 @@ const GroupChatbox = ({
                     : "justify-start"
                 }`}
               >
-                <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
+                <div
+                  className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
+                    msg.sender === session?.db_id
+                      ? "bg-blue-100"
+                      : "bg-gray-100"
+                  }`}
+                >
                   {msg.sender != session?.db_id && (
-                    <p className="text-sm font-medium">{msg.senderName}</p>
+                    <p className="text-sm font-medium border-b border-gray-300">
+                      {msg.senderName}
+                    </p>
                   )}
                   {msg.attachments != null && (
                     <div className="flex flex-wrap justify-evenly max-w-lg gap-2">

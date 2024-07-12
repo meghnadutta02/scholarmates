@@ -17,7 +17,14 @@ export async function GET(req, { params }) {
 
     const groupID = params.groupID;
     const session = await getServerSession(options);
-    const messages = await Message.find({ conversationId: groupID });
+    const skip = parseInt(req.nextUrl.searchParams.get("skip")) || 0;
+    const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
+
+    const messages = await Message.find({ conversationId: groupID })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
     const messagesWithSenderName = await Promise.all(
       messages.map(async (message) => {
         const sender = await User.findById(message.sender);

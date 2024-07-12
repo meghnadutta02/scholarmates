@@ -44,7 +44,7 @@ const UserChatbox = ({
   const fetchInboxMessages = useCallback(
     async (page) => {
       try {
-        const limit = 10;
+        const limit = 20;
         const skip = page * limit;
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userID}?limit=${limit}&skip=${skip}`
@@ -83,12 +83,6 @@ const UserChatbox = ({
       fetchInboxMessages(0);
     }
   }, [selectedUser, userID, fetchInboxMessages]);
-
-  const handleScroll = useCallback(() => {
-    if (observerRef.current && hasMoreMessages) {
-      observerRef.current.observe(lastMessageRef.current);
-    }
-  }, [hasMoreMessages]);
 
   useEffect(() => {
     if (page > 0) {
@@ -198,12 +192,8 @@ const UserChatbox = ({
     }
   }, [socket, inboxMessages, session.db_id, updateLastMessage, userID]);
 
-  const scrollToLastMessage = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToLastMessage();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [inboxMessages]);
 
   const handleFileChange = (e) => {
@@ -300,9 +290,15 @@ const UserChatbox = ({
                       : null
                   }
                 >
-                  <div className="py-1 px-2 mt-1 min-w-[10rem] border rounded-lg bg-gray-100">
+                  <div
+                    className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
+                      msg.sender === userID ? "bg-gray-100" : "bg-blue-100"
+                    }`}
+                  >
                     {msg.sender != userID && (
-                      <p className="text-sm font-medium">{msg.senderName}</p>
+                      <p className="text-sm font-medium border-b border-gray-300">
+                        {msg.senderName}
+                      </p>
                     )}
                     {msg.attachments != null && (
                       <div className="flex flex-wrap justify-evenly max-w-lg gap-2">

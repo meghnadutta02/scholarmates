@@ -25,8 +25,8 @@ export async function GET(req, { params }) {
     })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
-    // .lean();
+      .limit(limit)
+      .lean();
 
     return NextResponse.json({ messages }, { status: 200 });
   } catch (error) {
