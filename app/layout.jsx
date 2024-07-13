@@ -13,7 +13,7 @@ import { options } from "./api/auth/[...nextauth]/options";
 
 import Header from "./(components)/Header";
 export const metadata = {
-  title: "AlikeHub",
+  title: "ScholarMates",
   description: "By Half Prayash",
 };
 

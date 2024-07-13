@@ -191,7 +191,7 @@ const Page = ({ selectDiscussion }) => {
                 </Link>
               </div>
             )}
-          </div>{" "}
+          </div>
         </div>
       )}
     </div>

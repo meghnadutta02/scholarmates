@@ -18,7 +18,7 @@ const Header = async () => {
             alt="Likeminds"
             className="md:h-16 md:w-16 h-10 w-10"
           />
-          <span className="text-lg md:text-md">AlikeHub</span>
+          <span className="text-lg md:text-md">ScholarMates</span>
         </Link>
       </div>
       <div className="flex  px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">

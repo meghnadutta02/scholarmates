@@ -261,7 +261,10 @@ const GroupDetails = ({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleExitGroup}>
+              <AlertDialogAction
+                className="bg-red-500"
+                onClick={handleExitGroup}
+              >
                 Continue
               </AlertDialogAction>
             </AlertDialogFooter>

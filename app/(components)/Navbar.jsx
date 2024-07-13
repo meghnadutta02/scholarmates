@@ -104,7 +104,7 @@ const NavbarClient = () => {
                 className="flex items-center gap-2 font-semibold md:mr-0 mr-10"
               >
                 <Image src={logo} alt="Likeminds" className="h-10 w-10" />
-                <span>AlikeHub</span>
+                <span>ScholarMates</span>
               </Link>
             </div>
             <div className="flex h-14 px-6 items-center justify-between gap-5 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">

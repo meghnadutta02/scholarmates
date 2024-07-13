@@ -224,7 +224,7 @@ const UserChatbox = ({
       }
     };
   }, [lastMessageRef.current, hasMoreMessages]);
-  // Don't remove the above lastmessageRef.current dependancy to remove the warning
+  // Don't remove the above lastmessageRef.current dependency to remove the warning
 
   return (
     <div>
@@ -249,7 +249,7 @@ const UserChatbox = ({
                         }}
                         width="48"
                       />
-                      <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" />
+                      {/* <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" /> */}
                     </div>
                   </PopoverTrigger>
                   <PopoverContent>
@@ -295,11 +295,6 @@ const UserChatbox = ({
                       msg.sender === userID ? "bg-gray-100" : "bg-blue-100"
                     }`}
                   >
-                    {msg.sender != userID && (
-                      <p className="text-sm font-medium border-b border-gray-300">
-                        {msg.senderName}
-                      </p>
-                    )}
                     {msg.attachments != null && (
                       <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
                         {msg.attachments.map((attachment, index) => (

@@ -8,6 +8,7 @@ import { InfoIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import { useSession } from "@/app/(components)/SessionProvider";
 import { LuTrendingDown } from "react-icons/lu";
+import { IoChatboxOutline } from "react-icons/io5";
 const getDiscussions = async (college, c) => {
   let url = `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/trending`;
   if (college) {
@@ -204,7 +205,7 @@ const Trending = () => {
   return (
     <div className="pt-5 md:px-6 px-1 relative w-full">
       {user?.collegeName !== "" ? (
-        <div className="absolute items-center  space-x-2 md:right-5 right-0 top-[-6px] md:top-0">
+        <div className="flex justify-end gap-2 items-center mt-6">
           <input
             type="checkbox"
             id="college"
@@ -217,10 +218,7 @@ const Trending = () => {
           </label>
         </div>
       ) : (
-        <>
-          toast.info( "Please provide your college name to complete your
-          profile." );
-        </>
+        toast.info("Please provide your college name to complete your profile.")
       )}
       {discussions.length === 0 ? (
         <div className="flex   justify-center  ">
@@ -263,7 +261,7 @@ const Trending = () => {
                   <div className="flex justify-between items-center w-full ">
                     <div className="flex md:flex-row flex-col justify-between md:items-center items-start md:w-full">
                       <Link href={`/profile/${discussion.creator._id}`}>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="text-sm text-gray-500 font-medium dark:text-gray-400">
                           {discussion.creator.name}
                         </span>{" "}
                       </Link>
@@ -341,24 +339,26 @@ const Trending = () => {
                       <p className="font-normal ml-2"> {discussion.rankJump}</p>
                     </span>
                   </Button>
-                  <Button
-                    className="md:w-24 w-[70px]"
-                    variant="secondary"
-                    disabled={
-                      discussion.isMember ||
-                      discussion.isRequested ||
-                      discussion.isRejected
-                    }
-                    onClick={() => handleButtonClick(discussion)}
-                  >
-                    {discussion.isMember
-                      ? "Member"
-                      : discussion.isRequested
-                      ? "Requested"
-                      : discussion.isRejected
-                      ? "Rejected"
-                      : "Join"}
-                  </Button>
+                  {discussion.isMember ? (
+                    <Link href={`/chats/?discussionId=${discussion._id}`}>
+                      <Button variant="icon" className="flex ml-4">
+                        <IoChatboxOutline className="h-6 w-6" />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button
+                      className="w-16 md:w-20 h-8 md:h-10"
+                      variant="secondary"
+                      disabled={discussion.isRequested || discussion.isRejected}
+                      onClick={() => handleButtonClick(discussion)}
+                    >
+                      {discussion.isRequested
+                        ? "Requested"
+                        : discussion.isRejected
+                        ? "Rejected"
+                        : "Join"}
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import Loading from "../(routes)/discussions/loading";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import { InfoIcon } from "lucide-react";
 import { RiShareForwardLine } from "react-icons/ri";
+import { InfoIcon } from "lucide-react";
 
 const getDiscussions = async () => {
   const response = await fetch(
@@ -39,14 +38,10 @@ const DiscussionList = () => {
           getDiscussions(),
         ]);
         let result = [];
-        let accepted = [];
-        let pending = [];
-        let rejected = [];
 
         if (discussionsResult.status === "fulfilled") {
           result = discussionsResult.value.result;
         }
-        console.log("Join Requests:", { accepted, pending, rejected });
         console.log("Discussions:", result);
 
         const userId = session?.user?.db_id;
@@ -228,7 +223,7 @@ const DiscussionList = () => {
                         </Link>
                       </p>
                     </div>
-                    <div className="grid grid-cols-2 items-center text-center">
+                    <div className="w-full grid grid-cols-3 items-center text-center">
                       <Button className="h-10" size="icon" variant="icon">
                         <ThumbsUpIcon
                           className={`w-4 h-4 cursor-pointer ${
@@ -250,6 +245,14 @@ const DiscussionList = () => {
                       >
                         <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
                       </Button>
+                      <Link
+                        href={`/discussions/${discussion._id}`}
+                        className="md:hidden"
+                      >
+                        <Button variant="icon">
+                          <InfoIcon className="w-4 h-4" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -264,26 +267,6 @@ const DiscussionList = () => {
 };
 
 export default DiscussionList;
-
-function ThumbsDownIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17 14V2" />
-      <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z" />
-    </svg>
-  );
-}
 
 function ThumbsUpIcon(props) {
   return (

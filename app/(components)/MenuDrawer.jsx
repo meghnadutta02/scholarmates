@@ -14,12 +14,20 @@ import { MdPeopleAlt } from "react-icons/md";
 import { MessageSquareIcon, UsersIcon } from "lucide-react";
 import { MdOutlineConnectWithoutContact, MdGroupAdd } from "react-icons/md";
 import { TrendingUp } from "lucide-react";
+import { useState } from "react";
 
 const MenuDrawer = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const closeDrawer = () => {
+    setIsOpen(false);
+  };
   return (
-    <Drawer>
-      <DrawerTrigger className="ml-2 mt-5">
-        <IoMdMenu className="w-6 h-6" />
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <DrawerTrigger asChild className="">
+        {/* <Button variant="icon" onClick={() => setIsOpen(true)}> */}
+        <IoMdMenu className="w-6 h-6 text-white" />
+        {/* </Button> */}
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
@@ -27,6 +35,7 @@ const MenuDrawer = () => {
         </DrawerHeader>
         <nav className="flex flex-col items-start gap-4 p-4">
           <Link
+            onClick={closeDrawer}
             href="/chats"
             className="flex items-center gap-2 rounded-lg px-2 py-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           >
@@ -34,6 +43,7 @@ const MenuDrawer = () => {
             <span>Chats</span>
           </Link>
           <Link
+            onClick={closeDrawer}
             href="/discussions"
             className="flex items-center gap-2 rounded-lg px-2 py-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           >
@@ -41,6 +51,7 @@ const MenuDrawer = () => {
             <span>Discussions</span>
           </Link>
           <Link
+            onClick={closeDrawer}
             href="/find-match"
             className="flex items-center gap-3 rounded-lg px-2 py-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           >
@@ -48,6 +59,7 @@ const MenuDrawer = () => {
             <span>Find People</span>
           </Link>
           <Link
+            onClick={closeDrawer}
             className="flex items-center gap-3 rounded-lg px-2 py-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
             href="/my-engagements"
           >
@@ -55,6 +67,7 @@ const MenuDrawer = () => {
             Engagements
           </Link>
           <Link
+            onClick={closeDrawer}
             href="/requests"
             className="flex items-center gap-3 rounded-lg px-2 py-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           >
@@ -62,6 +75,7 @@ const MenuDrawer = () => {
             <span>Requests</span>
           </Link>
           <Link
+            onClick={closeDrawer}
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
             href="/discussions/trending"
           >

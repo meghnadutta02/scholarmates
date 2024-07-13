@@ -18,7 +18,12 @@ const Hero = () => {
         <div className="w-full lg:w-1/2 flex flex-col justify-center">
           <div className="justify-start mr-4 mb-4 flex">
             <TypeAnimation
-              sequence={["", "Welcome", "Welcome to", "Welcome to AlikeHub"]}
+              sequence={[
+                "",
+                "Welcome",
+                "Welcome to",
+                "Welcome to ScholarMates",
+              ]}
               wrapper="span"
               speed={2}
               className="font-bold  md:pt-16 pt-6  text-blue-800 text-2xl md:text-5xl font-serif dark:text-gray-200"
@@ -58,10 +63,10 @@ const Hero = () => {
             }}
             className="text-md md:hidden relative text-gray-600 dark:text-gray-400  mt-1"
           >
-            At AlikeHub, we harness the power of connection. Our platform unites
-            individuals with shared interests and goals. Whether for
+            At ScholarMates, we harness the power of connection. Our platform
+            unites individuals with shared interests and goals. Whether for
             professional networking, study groups, or making new friends,
-            AlikeHub is your go-to. Join today, connect with like-minded
+            ScholarMates is your go-to. Join today, connect with like-minded
             individuals, and foster collaboration, inspiration, and growth.
             Welcome to your new hub!
           </motion.div>
@@ -76,15 +81,15 @@ const Hero = () => {
             }}
             className="text-md md:text-xl relative hidden md:block text-gray-600 dark:text-gray-400 md:mt-2 mt-4 md:pr-16"
           >
-            At AlikeHub, we believe in the power of connection. Our platform is
-            designed to bring together people who share similar interests,
+            At ScholarMates, we believe in the power of connection. Our platform
+            is designed to bring together people who share similar interests,
             passions, and goals. Whether you&apos;re looking to network
             professionally, find a study group, or simply make new friends who
-            understand your hobbies, AlikeHub is your go-to destination. Join
-            our community today and discover the joy of connecting with others
-            who truly get you. Together, we can build a network that fosters
-            collaboration, inspiration, and growth. Welcome to your new hub of
-            like-minded connections!
+            understand your hobbies, ScholarMates is your go-to destination.
+            Join our community today and discover the joy of connecting with
+            others who truly get you. Together, we can build a network that
+            fosters collaboration, inspiration, and growth. Welcome to your new
+            hub of like-minded connections!
             <Image
               src={puzzle}
               alt="Puzzle"

@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
 import { IoChatboxOutline } from "react-icons/io5";
+import { RiShareForwardLine } from "react-icons/ri";
 
 const getDiscussions = async (query = "", offset = 0, limit = 10) => {
   const separator = query !== "" ? "&" : "?";
@@ -321,6 +322,23 @@ const DiscussionList = ({
     }
   };
 
+  const handleShare = (discussion) => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: discussion.title,
+          text: discussion.content,
+          url: `${window.location.origin}/discussions/${discussion._id}`,
+        })
+        .catch(console.error);
+    } else {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/discussions/${discussion._id}`
+      );
+      toast.success("Link copied to clipboard!");
+    }
+  };
+
   return (
     <div>
       {loading ? (
@@ -366,7 +384,7 @@ const DiscussionList = ({
                   <div className="flex justify-between">
                     <div className="flex md:flex-row flex-col justify-between md:items-center w-full items-start">
                       <Link href={`/profile/${discussion.creatorData._id}`}>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="text-sm text-gray-500 font-medium dark:text-gray-400">
                           {discussion.creatorData.name}
                         </span>{" "}
                       </Link>
@@ -443,7 +461,7 @@ const DiscussionList = ({
                     </Link>
                   ) : (
                     <Button
-                      className="md:w-24 w-[70px]"
+                      className="w-16 md:w-20 h-8 md:h-10"
                       variant="secondary"
                       disabled={discussion.isRequested || discussion.isRejected}
                       onClick={() => handleButtonClick(discussion)}
@@ -455,6 +473,14 @@ const DiscussionList = ({
                         : "Join"}
                     </Button>
                   )}
+                  <Button
+                    className="h-10"
+                    size="icon"
+                    variant="icon"
+                    onClick={() => handleShare(discussion)}
+                  >
+                    <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
+                  </Button>
                 </div>
               </div>
             </div>
