@@ -3,6 +3,7 @@ import Group from "@/app/(models)/groupModel";
 import GroupRequest from "@/app/(models)/groupRequestModel";
 import Message from "@/app/(models)/messageModel";
 import Discussion from "@/app/(models)/discussionModel";
+import DiscussionNotification from "@/app/(models)/discussionNotification";
 import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";
 import { getServerSession } from "next-auth";
@@ -17,7 +18,16 @@ async function cleanupOrphanedDocuments(session) {
     // Cleanup orphaned Groups
     const allGroups = await Group.find();
     const orphanedGroups = [];
-
+    const orphanedDiscussionNotifications = [];
+    const allDiscussionNotifications = await DiscussionNotification.find();
+    for (const notification of allDiscussionNotifications) {
+      const discussion = await Discussion.findOne({
+        _id: notification.discussionId,
+      }).session(transactionSession);
+      if (!discussion) {
+        orphanedDiscussionNotifications.push(notification._id);
+      }
+    }
     for (const group of allGroups) {
       const discussion = await Discussion.findOne({
         groupId: group._id,
@@ -26,7 +36,12 @@ async function cleanupOrphanedDocuments(session) {
         orphanedGroups.push(group._id);
       }
     }
-
+    if (orphanedDiscussionNotifications.length > 0) {
+      await DiscussionNotification.deleteMany(
+        { _id: { $in: orphanedDiscussionNotifications } },
+        { session: transactionSession }
+      );
+    }
     if (orphanedGroups.length > 0) {
       await Group.deleteMany(
         { _id: { $in: orphanedGroups } },

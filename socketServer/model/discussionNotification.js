@@ -5,7 +5,7 @@ const discussionNotificationSchema = new mongoose.Schema(
     discussionId: { type: mongoose.Schema.Types.ObjectId, ref: "Discussion" },
     content: { type: String, required: true, default: "" },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-   connection: [
+    connection: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -13,13 +13,15 @@ const discussionNotificationSchema = new mongoose.Schema(
     ],
     status: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   { timestamps: true }
 );
 
+discussionNotificationSchema.index({ discussionId: 1 });
 const DiscussionNotification =
-  mongoose.models.DiscussionNotification || mongoose.model("DiscussionNotification", discussionNotificationSchema);
+  mongoose.models.DiscussionNotification ||
+  mongoose.model("DiscussionNotification", discussionNotificationSchema);
 
 export default DiscussionNotification;

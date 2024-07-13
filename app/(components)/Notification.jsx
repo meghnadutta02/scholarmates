@@ -1,10 +1,19 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaTimes, FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import Link from "next/link";
 
-const Notification = ({ sender, receive, name, frndId, user, data,status }) => {
+const Notification = ({
+  sender,
+  receive,
+  name,
+  frndId,
+  user,
+  data,
+  status,
+}) => {
   const [isVisible, setIsVisible] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -53,31 +62,30 @@ const Notification = ({ sender, receive, name, frndId, user, data,status }) => {
     }
   };
 
-  const profile = (id) => {
-    alert(id);
-  };
-
   return (
     <>
-      {isVisible && status==false &&(
+      {isVisible && status == false && (
         <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px]">
-          <div className="flex items-center font-sans">
-            <Image
-              src={user?.profilePic}
-              alt={user?.name}
-              width={36}
-              height={36}
-              style={{
-                        aspectRatio: "32/32",
-                        objectFit: "cover",
-                      }}
-              className="rounded-full mr-2"
-            />
-            <div className="cursor-pointer" onClick={() => profile(user?._id)}>
-              <span className="font-semibold">{user?.name}</span> has sent you a
-              connection request.
+          <Link href={`/profile/${user?._id}`}>
+            <div className="flex items-center font-sans">
+              <Image
+                src={user?.profilePic}
+                alt={user?.name}
+                width={36}
+                height={36}
+                style={{
+                  aspectRatio: "32/32",
+                  objectFit: "cover",
+                }}
+                className="rounded-full mr-2"
+              />
+              <div className="cursor-pointer">
+                <span className="font-semibold">{user?.name}</span> has sent you
+                a connection request.
+              </div>
             </div>
-          </div>
+          </Link>
+
           <div className="flex items-center gap-1">
             <button
               onClick={() => acceptHandle("accept")}

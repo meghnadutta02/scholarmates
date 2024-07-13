@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Group from "./groupModel";
 import User from "./userModel";
 import GroupRequest from "./groupRequestModel";
-import DiscussionNotification from "@/socketServer/model/discussionNotification";
+import DiscussionNotification from "./discussionNotification";
 import Message from "./messageModel";
 
 const discussionSchema = new mongoose.Schema(
@@ -58,7 +58,7 @@ discussionSchema.pre(
     session.startTransaction();
 
     try {
-      await DiscussionNotification.deleteOne({
+      await DiscussionNotification.deleteMany({
         discussionId: discussion._id,
       }).session(session);
 
@@ -79,6 +79,10 @@ discussionSchema.pre(
           { groupsJoined: discussion.groupId },
           { $pull: { groupsJoined: discussion.groupId } }
         ).session(session);
+
+        await DiscussionNotification.deleteMany({
+          discussionId: discussion._id,
+        }).session(session);
 
         await session.commitTransaction();
         session.endSession();

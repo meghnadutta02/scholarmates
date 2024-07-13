@@ -9,12 +9,15 @@ import { InfoIcon } from "lucide-react";
 import { RiShareForwardLine } from "react-icons/ri";
 
 const getDiscussions = async () => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "GET",
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/my-discussions`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "GET",
+    }
+  );
   return response.json();
 };
 
