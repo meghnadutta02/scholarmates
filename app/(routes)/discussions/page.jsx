@@ -106,7 +106,7 @@ const DiscussionsPage = () => {
         {/* filter section */}
 
         {/* discussion list */}
-        <div className="flex-1 md:pt-5 pt-0  md:px-6 px-4 ">
+        <div className="flex-1 md:pt-5 pt-0  md:px-6 px-3 ">
           {/* search button */}
           <div className="flex mb-8 d:mt-5 mt-2 md:justify-center md:flex-row flex-col gap-4 w-full ">
             <div className="flex gap-2 md:gap-0 md:justify-between">

@@ -14,12 +14,19 @@ export async function GET(req, { params }) {
     const session = await getServerSession(options);
     const currentUserID = session.user.db_id;
     const recipientID = params.userID;
+    const skip = parseInt(req.nextUrl.searchParams.get("skip")) || 0;
+    const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
+
     const messages = await UserMessage.find({
       $or: [
         { sender: currentUserID, recipient: recipientID },
         { sender: recipientID, recipient: currentUserID },
       ],
-    });
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
     return NextResponse.json({ messages }, { status: 200 });
   } catch (error) {
