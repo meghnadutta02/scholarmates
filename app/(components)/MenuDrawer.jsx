@@ -25,9 +25,9 @@ const MenuDrawer = () => {
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild className="">
-        {/* <Button variant="icon" onClick={() => setIsOpen(true)}> */}
-        <IoMdMenu className="w-6 h-6 text-white" />
-        {/* </Button> */}
+        <Button className="mt-2" variant="icon" onClick={() => setIsOpen(true)}>
+          <IoMdMenu className="w-6 h-6" />
+        </Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
