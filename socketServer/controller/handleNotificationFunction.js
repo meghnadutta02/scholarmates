@@ -1,10 +1,10 @@
 import User from "../model/userModel.js";
 import Request from "../model/requestModel.js";
-import { io, activeUsers } from "../server.js";
-
+import { io } from "../server.js";
+import ActiveUsers from "../activeUser.js"
 export const handleNotificationFunction = async (user, socket) => {
   try {
-    console.log("get data", user)
+    
     if (user) {
       const pendingRequests = await Request.find({
         requestTo: user._id,

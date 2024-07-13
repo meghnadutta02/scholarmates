@@ -1,6 +1,7 @@
 import DiscussionNotification from "../model/discussionNotification.js";
 import User from "../model/userModel.js";
-import { io, activeUsers } from "../server.js";
+import { io } from "../server.js";
+import ActiveUsers from "../activeUser.js"
 
 export const discussionNotification = async (user, socket) => {
   try {
@@ -14,8 +15,8 @@ export const discussionNotification = async (user, socket) => {
     for (const notification of notifications) {
       // Notify the user
       const creator=await User.findById(notification.creator);
-      if (activeUsers.has(user._id.toString())) {
-        const socketId = activeUsers.get(user._id.toString());
+      if (ActiveUsers.getActiveUsers().has(user._id.toString())) {
+        const socketId =ActiveUsers.getActiveUsers(user._id.toString());
         console.log("sdndsm",socketId);
         io.to(socketId).emit("dicussionNotification", {
             discussionId:notification.discussionId.toString(),

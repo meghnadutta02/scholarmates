@@ -1,8 +1,8 @@
 import User from "../model/userModel.js";
 import Request from "../model/requestModel.js";
 // import { io } from "../path/to/socketServer";
-import { io, activeUsers } from "../server.js";
-
+import { io } from "../server.js";
+import ActiveUsers from '../activeUser.js'
 export const sendConnectionController = async (req, resp) => {
   try {
     const { recipientId } = req.body;
@@ -48,9 +48,9 @@ export const sendConnectionController = async (req, resp) => {
       // console.log("first", senderUser)
     }
     console.log("kuchnhi",recipientId)
-    console.log(activeUsers.has(recipientId))
-    const recipientSocketId = activeUsers.get(recipientId);
-    console.log("active user send",recipientSocketId)
+    console.log(ActiveUsers.getActiveUsers().has(recipientId));
+    const recipientSocketId = ActiveUsers.getUserSocketId(recipientId);
+    console.log("active user send", recipientSocketId);
     if (recipientSocketId) {
       // Emit a notification event only to the recipient's socket
       io.to(recipientSocketId).emit("connectionRequest", {
@@ -83,7 +83,7 @@ export const sendConnectionController = async (req, resp) => {
 };
 
 export const receiveConnectionController = async (req, resp) => {
-  console.log("actibednfds",activeUsers);
+ 
   try {
     const { userId, friendshipId, action } = req.body;
     console.log(userId, friendshipId, action);
@@ -121,7 +121,7 @@ export const receiveConnectionController = async (req, resp) => {
 
         // await friendshipRequest.deleteOne();
 
-        const senderSocketId = activeUsers.get(friendshipRequest.user.toString());
+        const senderSocketId = ActiveUsers.getActiveUsers(friendshipRequest.user.toString());
         if (senderSocketId) {
           // Emit a notification event only to the recipient's socket
           io.to(senderSocketId).emit("receiveRequest", {
@@ -153,7 +153,7 @@ export const receiveConnectionController = async (req, resp) => {
       await user.updateOne({ $pull: { requestPending: sender._id } });
       await sender.updateOne({ $pull: { requestPending: user._id } });
       console.log("friend id",friendshipRequest.user.toString())
-      const senderSocketId = activeUsers.get(friendshipRequest.user.toString());
+      const senderSocketId = ActiveUsers.getUserSocketId(friendshipRequest.user.toString());
      
         console.log("active user",senderSocketId)
         if (senderSocketId) {

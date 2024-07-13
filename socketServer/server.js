@@ -14,6 +14,7 @@ import User from "./model/userModel.js";
 import Request from "./model/requestModel.js";
 import { handleNotificationFunction } from "./controller/handleNotificationFunction.js"
 import { discussionNotification } from './controller/discussionNotification.js'
+import ActiveUsers from './activeUser.js'
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -39,7 +40,7 @@ const io = new Server(socketServer, {
 });
 
 const activeUserChatrooms = new Map();
-const activeUsers = new Map();
+
 
 // GROUP CREATION AND SEND NOTIFICATION STARTED
 
@@ -49,8 +50,8 @@ io.on("connection", async (socket) => {
     const user = await User.findById(userData);
     if (user) {
       socket.join(userData);
-      activeUsers.set(userData, socket.id);
-      console.log("Active users:", activeUsers);
+      ActiveUsers.setActiveUser(userData, socket.id);
+      console.log("Active users:", ActiveUsers.getActiveUsers());
       socket.emit("connected");
 
       await handleNotificationFunction(user, socket);
@@ -103,11 +104,7 @@ io.on("connection", async (socket) => {
 
   socket.on("disconnect", () => {
     activeUserChatrooms.delete(socket.id);
-    activeUsers.forEach((value, key) => {
-      if (value === socket.id) {
-        activeUsers.delete(key);
-      }
-    });
+    ActiveUsers.removeActiveUser(socket.id);
     console.log("User from activeUser disconnected");
     console.log("user disconnected");
   });
@@ -119,4 +116,4 @@ socketServer.listen(5001, () => {
   console.log("Socket server listening on PORT:5001...");
 });
 
-export { io, activeUsers };
+export { io};
