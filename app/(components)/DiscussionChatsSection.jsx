@@ -2,7 +2,7 @@
 import GroupChatbox from "@/app/(components)/GroupChatbox";
 import GroupsInboxSearch from "@/app/(components)/GroupsInboxSearch";
 import { Button } from "@/components/ui/button";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Loading from "@/app/(components)/Loading";
 import Link from "next/link";
 
@@ -12,7 +12,7 @@ const Page = ({ selectDiscussion }) => {
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
   const [toggleChatView, setToggleChatView] = useState(true);
-
+  const linktoChatRef = useRef("");
   const fetchGroups = async () => {
     try {
       const response = await fetch(
@@ -49,8 +49,9 @@ const Page = ({ selectDiscussion }) => {
     }
   };
 
-  const handleGroupSelection = async (gid) => {
+  const handleGroupSelection = useCallback(async (gid) => {
     setRoomID(gid);
+    linktoChatRef.current = gid;
     setIsRoomSelected(true);
     setToggleChatView(false);
     setGroups((prevGroups) =>
@@ -59,7 +60,7 @@ const Page = ({ selectDiscussion }) => {
       )
     );
     updateReadStatus(gid);
-  };
+  }, []);
 
   const updateLastMessage = (gid, message, name) => {
     setGroups((prevGroups) =>
@@ -81,6 +82,7 @@ const Page = ({ selectDiscussion }) => {
 
   useEffect(() => {
     fetchGroups();
+
     // if (selectDiscussion) {
     //   handleGroupSelection(selectDiscussion);
     // }
@@ -157,21 +159,17 @@ const Page = ({ selectDiscussion }) => {
                     </div>
                   ) : (
                     <>
-                      {isRoomSelected ? (
+                      {isRoomSelected && (
                         <div className="min-h-[34rem] min-w-[340px] sm:min-w-[480px] md:min-w-[750px]">
                           <GroupChatbox
-                            key={roomID}
-                            roomID={roomID}
+                            key={roomID || linktoChatRef.current}
+                            roomID={roomID || linktoChatRef.current}
                             setGroups={setGroups}
                             setIsRoomSelected={setIsRoomSelected}
                             setRoomID={setRoomID}
                             setToggleChatView={setToggleChatView}
                             updateLastMessage={updateLastMessage}
                           />
-                        </div>
-                      ) : (
-                        <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
-                          <p>Choose a conversation</p>
                         </div>
                       )}
                     </>

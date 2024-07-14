@@ -93,12 +93,9 @@ const NavbarClient = () => {
   return (
     <>
       <div className=" flex justify-between ">
-        <span className="md:hidden">
-          <MenuDrawer />
-        </span>
         <header className="fixed z-10 top-0 left-1/2 transform -translate-x-1/2  flex flex-col gap-[5px] pt-1 ">
           <div className="flex flex-row md:justify-center justify ">
-            <div className="flex  items-center  px-4 rounded-s-xl border-2 border-zinc-600 bg-white">
+            <div className="flex  items-center px-2 rounded-s-xl border-2 border-zinc-700 bg-white">
               <Link
                 href="#"
                 className="flex items-center gap-2 font-semibold md:mr-0 mr-10"
@@ -107,10 +104,10 @@ const NavbarClient = () => {
                 <span>ScholarMates</span>
               </Link>
             </div>
-            <div className="flex h-14 px-6 items-center justify-between gap-5 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
-              <Link href="/notification" className="md:block hidden">
+            <div className="flex h-14 px-3 items-center justify-between gap-3 md:gap-5 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
+              <Link href="/notification">
                 {unreadCount > 0 && (
-                  <span className="absolute z-10 hidden md:block  items-center justify-center p-1 w-4 h-4 text-[10px] font-bold leading-none top-[13px] text-red-100 bg-red-600 rounded-full right-[110px]">
+                  <span className="z-10  md:block  items-center justify-center p-1 w-4 h-4 text-[10px] font-bold leading-none top-[13px] text-red-100 bg-red-600 rounded-full right-[110px]">
                     {unreadCount}
                   </span>
                 )}
@@ -122,6 +119,9 @@ const NavbarClient = () => {
                 className="h-5 w-5 text-white cursor-pointer"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
               />
+              <span className="md:hidden">
+                <MenuDrawer />
+              </span>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -168,15 +168,6 @@ const NavbarClient = () => {
           <ProfileProgress />
           {isSearchOpen && <NavbarSearch setIsSearchOpen={setIsSearchOpen} />}
         </header>
-        <Link className=" relative md:hidden mt-5 mr-2" href="/notification">
-          <BellIcon className="h-6 w-6" />
-
-          {unreadCount > 0 && (
-            <span className="absolute z-10  items-center justify-center p-1 w-4 h-4 text-[10px] font-bold leading-none top-[-8px] text-red-100 bg-red-600 rounded-full right-[-4px]">
-              {unreadCount}
-            </span>
-          )}
-        </Link>
       </div>
     </>
   );
