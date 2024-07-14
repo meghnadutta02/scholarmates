@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useSession } from "@/app/(components)/SessionProvider";
 import { useState, useEffect } from "react";
 import ProfileCarousel from "@/app/(components)/ProfileCarousel";
+import { useRouter } from 'next/navigation';
+ 
 import {
   Carousel,
   CarouselContent,
@@ -23,12 +25,14 @@ const getYearWithSuffix = (year) => {
 };
 
 export default function Component() {
+  const router = useRouter();
   const { session, user } = useSession();
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState();
   const [requestPend, setRequestPen] = useState([]);
   const [connectingProfile, setConnectingProfile] = useState(null);
+  const [requestGet,setRequestGet]=useState([]);
 
   useEffect(() => {
     if (session) {
@@ -48,6 +52,8 @@ export default function Component() {
             throw new Error("Failed to fetch data");
           }
           const data = await res.json();
+          console.log("result:",data.result);
+          setRequestGet(data.requestGet)
           setRequestPen(data.requests);
 
           setProfiles(data.result);
@@ -162,7 +168,12 @@ export default function Component() {
                               </p>
                               {requestPend.includes(profile._id) ? (
                                 <Button disabled>Requested</Button>
-                              ) : (
+                              ): requestGet.includes(profile._id)?(
+                            <Button
+                              onClick={() =>router.push('/requests') }
+                              disabled={connectingProfile === profile._id}
+                            > Accept Request</Button>
+                          ): (
                                 <Button
                                   onClick={() =>
                                     handleConnectClick(profile._id)
@@ -182,7 +193,12 @@ export default function Component() {
                               </p>
                               {requestPend.includes(profile._id) ? (
                                 <Button disabled>Requested</Button>
-                              ) : (
+                              ): requestGet.includes(profile._id)?(
+                            <Button
+                              onClick={() =>router.push('/requests') }
+                              disabled={connectingProfile === profile._id}
+                            > Accept Request</Button>
+                          ) : (
                                 <Button
                                   onClick={() =>
                                     handleConnectClick(profile._id)

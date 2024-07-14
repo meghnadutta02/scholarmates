@@ -6,11 +6,12 @@ import DetailSection from "./DetailSection";
 import DiscussionSection from "./DiscussionSection";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import ProfilePictureView from "./ProfilePictureView";
-
+import {useRouter} from "next/navigation";
 import { useSession } from "./SessionProvider";
 import { Button } from "@/components/ui/button";
 
 const ProfileDetailsTab = ({ user: initialUser }) => {
+  const router=useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(initialUser);
 
@@ -27,12 +28,16 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           const isConnected = currentUser.result.connection.includes(
             initialUser._id
           );
+          const isrequestGet=currentUser.result.requestGet.includes(
+            initialUser._id
+          );
           const isRequestPending = currentUser.result.requestPending.includes(
             initialUser._id
           );
           setUser((prevUser) => ({
             ...prevUser,
             isConnected,
+            isrequestGet,
             isRequestPending,
           }));
           setLoading(false);
@@ -132,7 +137,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             {user.connection.length > 1 ? "connections" : "connection"}
           </h3>
           {user.bio && <p className="mt-2 text-gray-600 italic">{user.bio}</p>}
-          <div className="gap-4 mt-4">
+          <div className="flex justify-between gap-4 mt-4">
             {user.isConnected ? (
               <Button
                 onClick={() => handleremoveClick(user._id)}
@@ -142,7 +147,14 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
               </Button>
             ) : user.isRequestPending ? (
               <Button disabled={true}>Requested</Button>
-            ) : (
+            ): user.isrequestGet ?(
+              <Button
+                onClick={() => router.push('/requests')}
+                disabled={loading}
+              >
+               Accept Request
+              </Button>
+            ): (
               <Button
                 onClick={() => handleConnectClick(user._id)}
                 disabled={loading}
@@ -150,6 +162,17 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
                 Connect
               </Button>
             )}
+
+          {
+            user.isConnected ? (
+              <Button className="bg-blue-600"
+                onClick={() => router.push('/chats')}
+                disabled={loading}
+              >
+               Message
+              </Button>
+            ):''
+          }
           </div>
         </div>
       </section>

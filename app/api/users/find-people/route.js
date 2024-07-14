@@ -8,6 +8,7 @@ export async function GET(req) {
     const id = req.nextUrl.searchParams.get("id");
 
     const user = await User.findById(id).select("connection requestPending");
+    const getReq=await User.findById(id).select("requestGet");
     const connections = user.connection;
     connections.push(id);
 
@@ -17,7 +18,7 @@ export async function GET(req) {
 
     if (users.length > 0)
       return NextResponse.json(
-        { result: users, requests: user.requestPending },
+        { result: users, requests: user.requestPending,requestGet:getReq.requestGet },
         { status: 200 }
       );
     else
