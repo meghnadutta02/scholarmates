@@ -44,13 +44,13 @@ export const sendConnectionController = async (req, resp) => {
     // / Send a notification to the recipient using Socket.io
     if (requestdata) {
       senderUser.requestPending.push(recipientId);
+      receiverUser.requestGet.push(senderId);
+      await receiverUser.save();
       await senderUser.save();
-      // console.log("first", senderUser)
     }
-    console.log("kuchnhi",recipientId)
-    console.log(ActiveUsers.getActiveUsers().has(recipientId));
+    
     const recipientSocketId = ActiveUsers.getUserSocketId(recipientId);
-    console.log("active user send", recipientSocketId);
+ 
     if (recipientSocketId) {
       // Emit a notification event only to the recipient's socket
       io.to(recipientSocketId).emit("connectionRequest", {
@@ -111,7 +111,7 @@ export const receiveConnectionController = async (req, resp) => {
         if (!sender.connection.includes(user._id)) {
           sender.connection.push(user._id);
         }
-        await user.updateOne({ $pull: { requestPending: sender._id } });
+        await user.updateOne({ $pull: { requestGet: sender._id } });
         await sender.updateOne({ $pull: { requestPending: user._id } });
 
         await user.save();
@@ -150,7 +150,7 @@ export const receiveConnectionController = async (req, resp) => {
         return resp.status(404).json({ message: "User or sender not found" });
       }
     } else if (action === "decline") {
-      await user.updateOne({ $pull: { requestPending: sender._id } });
+      await user.updateOne({ $pull: { requestGet: sender._id } });
       await sender.updateOne({ $pull: { requestPending: user._id } });
       console.log("friend id",friendshipRequest.user.toString())
       const senderSocketId = ActiveUsers.getUserSocketId(friendshipRequest.user.toString());
