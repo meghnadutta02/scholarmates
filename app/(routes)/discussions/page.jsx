@@ -4,6 +4,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import DiscussionList from "@/app/(components)/DiscussionList";
 import { IoIosCreate } from "react-icons/io";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import FilterDrawer from "@/app/(components)/FilterDrawer";
 
 import CreateDiscussion from "@/app/(components)/NewDiscussion";
@@ -130,9 +131,17 @@ const DiscussionsPage = () => {
                     className="absolute top-11 w-full bg-gray-200 rounded shadow-lg "
                   >
                     {suggestions.map((suggestion, index) => (
-                      <div key={index} className="p-2 truncate">
-                        {suggestion.title}
-                      </div>
+                      <Link
+                        href={`/discussions/${suggestion._id}`}
+                        className="hover:bg-gray-400"
+                      >
+                        <div
+                          key={index}
+                          className="p-2 truncate cursor-pointer"
+                        >
+                          {suggestion.title}
+                        </div>
+                      </Link>
                     ))}
                   </div>
                 )}

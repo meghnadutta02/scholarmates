@@ -28,7 +28,7 @@ export async function PUT(req) {
     const byteData = await updatedUserData.arrayBuffer();
     const buffer = Buffer.from(byteData);
     const uniqueFileName = `${uuidv4()}_${name}`;
-    const path = `public/${uniqueFileName}.jpg`;
+    const path = `public/profilePicture/${uniqueFileName}.jpg`;
     const coverImage = await postObject(path, buffer);
 
     const user = await User.findByIdAndUpdate(

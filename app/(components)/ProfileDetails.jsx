@@ -23,6 +23,10 @@ const ProfileDetails = ({ initialUser }) => {
         <div className="md:px-8 px-3 py-4 md:w-[85%] w-full mx-auto">
           <div className="flex flex-col justify-evenly gap-4">
             <section className="bg-white rounded-lg shadow-lg md:p-6 p-4 w-full ">
+              <h3 className="mt-1 font-semibold text-gray-700 text-base justify-end flex">
+                {user.connection.length}{" "}
+                {user.connection.length > 1 ? "connections" : "connection"}
+              </h3>
               <div className="flex flex-col items-center text-center ">
                 <div className="relative max-h-[97px] ">
                   <Avatar className="w-24 h-24">
