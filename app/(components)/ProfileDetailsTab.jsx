@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "./SessionProvider";
 import { Button } from "@/components/ui/button";
 import { FaTimes, FaCheck } from "react-icons/fa";
+import { connection } from "mongoose";
 
 const ProfileDetailsTab = ({ user: initialUser }) => {
   const router = useRouter();
@@ -26,7 +27,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
         );
         if (res.ok) {
           const currentUser = await res.json();
-          console.log(currentUser);
+
           const isConnected = currentUser.result.connection.includes(
             initialUser._id
           );
@@ -41,11 +42,18 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
 
           if (isRequestReceived) {
             const requestRes = await fetch(
-              `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/requests/${session.db_id}/${initialUser._id}`
+              `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/requests/${session.db_id}/${initialUser._id}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
             );
-            console.log(requestRes.data);
+
             if (requestRes.ok) {
               const requestData = await requestRes.json();
+
               requestId = requestData.data[0]?._id;
             }
           }
@@ -163,7 +171,12 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           );
 
           if (action === "accept") {
-            setUser((prevUser) => ({ ...prevUser, isConnected: true }));
+            setUser((prevUser) => ({
+              ...prevUser,
+              isConnected: true,
+              isRequestReceived: false,
+              connection: [...prevUser.connection, session.db_id],
+            }));
           } else {
             setUser((prevUser) => ({
               ...prevUser,
@@ -239,15 +252,15 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
               </Button>
             ) : user.isRequestPending ? (
               <Button disabled={true}>Requested</Button>
+            ) : !user.isRequestReceived ? (
+              <Button
+                onClick={() => handleConnectClick(user._id)}
+                disabled={loading}
+              >
+                Connect
+              </Button>
             ) : (
-              !user.isRequestReceived && (
-                <Button
-                  onClick={() => handleConnectClick(user._id)}
-                  disabled={loading}
-                >
-                  Connect
-                </Button>
-              )
+              ""
             )}
 
             {user.isConnected ? (

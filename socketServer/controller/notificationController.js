@@ -57,7 +57,7 @@ export const requestNotificationController = async (req, resp) => {
 export const userRequestsController = async (req, res) => {
   try {
     const { userId, recipientId } = req.params;
-
+    console.log(userId);
     if (!userId || !recipientId) {
       return res.status(400).send({
         success: false,
