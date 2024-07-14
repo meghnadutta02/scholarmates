@@ -67,8 +67,8 @@ export const userRequestsController = async (req, res) => {
 
     // Find requests made by the user to the recipient
     const requests = await Request.find({
-      user: userId,
-      requestTo: recipientId,
+      user: recipientId,
+      requestTo: userId,
     }).populate("requestTo", "_id name profilePic");
 
     if (!requests.length) {

@@ -30,17 +30,32 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           const isConnected = currentUser.result.connection.includes(
             initialUser._id
           );
-          const isrequestReceived = currentUser.result.requestReceived.includes(
+          const isRequestReceived = currentUser.result.requestReceived.includes(
             initialUser._id
           );
           const isRequestPending = currentUser.result.requestPending.includes(
             initialUser._id
           );
+
+          let requestId = null;
+
+          if (isRequestReceived) {
+            const requestRes = await fetch(
+              `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/requests/${session.db_id}/${initialUser._id}`
+            );
+            console.log(requestRes.data);
+            if (requestRes.ok) {
+              const requestData = await requestRes.json();
+              requestId = requestData.data[0]?._id;
+            }
+          }
+
           setUser((prevUser) => ({
             ...prevUser,
             isConnected,
-            isrequestReceived,
+            isRequestReceived,
             isRequestPending,
+            requestId,
           }));
           setLoading(false);
         } else {
@@ -125,7 +140,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   const acceptHandle = async (action) => {
     setLoading(true);
     try {
-      if (session.db_id && user._id) {
+      if (session.db_id && user.requestId) {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/receive`,
           {
@@ -134,7 +149,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              friendshipId: user._id,
+              friendshipId: user.requestId,
               userId: session.db_id,
               action: action,
             }),
@@ -153,14 +168,14 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             setUser((prevUser) => ({
               ...prevUser,
               isRequestPending: false,
-              isrequestReceived: false,
+              isRequestReceived: false,
             }));
           }
         } else {
           throw new Error("Failed to update request");
         }
       } else {
-        console.log("No session or user id found");
+        console.log("No session or request id found");
       }
     } catch (error) {
       console.error(error.message);
@@ -173,7 +188,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   return (
     <div className="md:px-8 px-4 py-[14px] md:w-[85%] w-full mx-auto font-sans">
       <div>
-        {user.isrequestReceived && (
+        {user.isRequestReceived && (
           <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px] mb-4">
             <span>
               <span className="font-semibold">{user.name}</span> has sent you a
@@ -225,7 +240,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             ) : user.isRequestPending ? (
               <Button disabled={true}>Requested</Button>
             ) : (
-              !user.isrequestReceived && (
+              !user.isRequestReceived && (
                 <Button
                   onClick={() => handleConnectClick(user._id)}
                   disabled={loading}
