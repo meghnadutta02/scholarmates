@@ -6,12 +6,12 @@ import DetailSection from "./DetailSection";
 import DiscussionSection from "./DiscussionSection";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import ProfilePictureView from "./ProfilePictureView";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSession } from "./SessionProvider";
 import { Button } from "@/components/ui/button";
 
 const ProfileDetailsTab = ({ user: initialUser }) => {
-  const router=useRouter();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(initialUser);
 
@@ -25,10 +25,11 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
         );
         if (res.ok) {
           const currentUser = await res.json();
+          console.log(currentUser);
           const isConnected = currentUser.result.connection.includes(
             initialUser._id
           );
-          const isrequestGet=currentUser.result.requestGet.includes(
+          const isrequestReceived = currentUser.result.requestReceived.includes(
             initialUser._id
           );
           const isRequestPending = currentUser.result.requestPending.includes(
@@ -37,7 +38,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           setUser((prevUser) => ({
             ...prevUser,
             isConnected,
-            isrequestGet,
+            isrequestReceived,
             isRequestPending,
           }));
           setLoading(false);
@@ -147,14 +148,14 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
               </Button>
             ) : user.isRequestPending ? (
               <Button disabled={true}>Requested</Button>
-            ): user.isrequestGet ?(
+            ) : user.isrequestReceived ? (
               <Button
-                onClick={() => router.push('/requests')}
+                onClick={() => router.push("/requests")}
                 disabled={loading}
               >
-               Accept Request
+                Accept Request
               </Button>
-            ): (
+            ) : (
               <Button
                 onClick={() => handleConnectClick(user._id)}
                 disabled={loading}
@@ -163,16 +164,17 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
               </Button>
             )}
 
-          {
-            user.isConnected ? (
-              <Button className="bg-blue-600"
-                onClick={() => router.push('/chats')}
+            {user.isConnected ? (
+              <Button
+                className="bg-blue-600"
+                onClick={() => router.push("/chats")}
                 disabled={loading}
               >
-               Message
+                Message
               </Button>
-            ):''
-          }
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </section>

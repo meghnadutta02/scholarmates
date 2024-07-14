@@ -2,7 +2,7 @@ import User from "../model/userModel.js";
 import Request from "../model/requestModel.js";
 // import { io } from "../path/to/socketServer";
 import { io } from "../server.js";
-import ActiveUsers from '../activeUser.js'
+import ActiveUsers from "../activeUser.js";
 export const sendConnectionController = async (req, resp) => {
   try {
     const { recipientId } = req.body;
@@ -39,18 +39,17 @@ export const sendConnectionController = async (req, resp) => {
     });
 
     const requestdata = await friendshipRequest.save();
-    
 
     // / Send a notification to the recipient using Socket.io
     if (requestdata) {
       senderUser.requestPending.push(recipientId);
-      receiverUser.requestGet.push(senderId);
+      receiverUser.requestReceived.push(senderId);
       await receiverUser.save();
       await senderUser.save();
     }
-    
+
     const recipientSocketId = ActiveUsers.getUserSocketId(recipientId);
- 
+
     if (recipientSocketId) {
       // Emit a notification event only to the recipient's socket
       io.to(recipientSocketId).emit("connectionRequest", {
@@ -58,8 +57,8 @@ export const sendConnectionController = async (req, resp) => {
         timestamp: new Date(),
         senderId: senderId,
         sendername: senderUser.name,
-        profilePic:senderUser.profilePic,
-        status:"requestSend",
+        profilePic: senderUser.profilePic,
+        status: "requestSend",
         friendRequest: requestdata._id,
         interest: senderUser.interest,
       });
@@ -83,13 +82,12 @@ export const sendConnectionController = async (req, resp) => {
 };
 
 export const receiveConnectionController = async (req, resp) => {
- 
   try {
     const { userId, friendshipId, action } = req.body;
     console.log(userId, friendshipId, action);
 
     const friendshipRequest = await Request.findById(friendshipId);
-    console.log("request friend",friendshipRequest);
+    console.log("request friend", friendshipRequest);
 
     if (!friendshipRequest) {
       return resp.status(404).json({ message: "Friendship request not found" });
@@ -111,7 +109,7 @@ export const receiveConnectionController = async (req, resp) => {
         if (!sender.connection.includes(user._id)) {
           sender.connection.push(user._id);
         }
-        await user.updateOne({ $pull: { requestGet: sender._id } });
+        await user.updateOne({ $pull: { requestReceived: sender._id } });
         await sender.updateOne({ $pull: { requestPending: user._id } });
 
         await user.save();
@@ -121,15 +119,16 @@ export const receiveConnectionController = async (req, resp) => {
 
         // await friendshipRequest.deleteOne();
 
-        const senderSocketId = ActiveUsers.getActiveUsers(friendshipRequest.user.toString());
+        const senderSocketId = ActiveUsers.getActiveUsers(
+          friendshipRequest.user.toString()
+        );
         if (senderSocketId) {
           // Emit a notification event only to the recipient's socket
           io.to(senderSocketId).emit("receiveRequest", {
-            
             timestamp: new Date(),
             senderId: userId,
             sendername: user.name,
-            status:"requestaccept",
+            status: "requestaccept",
             profilePic: user.profilePic,
             message: "accept your connection request",
           });
@@ -140,7 +139,6 @@ export const receiveConnectionController = async (req, resp) => {
           // Handle case where recipient is not connected
           // This could involve queuing the notification or other logic based on your app's needs
         }
-    
 
         return resp.status(200).send({
           message: "accepted",
@@ -150,31 +148,31 @@ export const receiveConnectionController = async (req, resp) => {
         return resp.status(404).json({ message: "User or sender not found" });
       }
     } else if (action === "decline") {
-      await user.updateOne({ $pull: { requestGet: sender._id } });
+      await user.updateOne({ $pull: { requestReceived: sender._id } });
       await sender.updateOne({ $pull: { requestPending: user._id } });
-      console.log("friend id",friendshipRequest.user.toString())
-      const senderSocketId = ActiveUsers.getUserSocketId(friendshipRequest.user.toString());
-     
-        console.log("active user",senderSocketId)
-        if (senderSocketId) {
-          // Emit a notification event only to the recipient's socket
-          io.to(senderSocketId).emit("receiveRequest", {
-            
-            timestamp: new Date(),
-            senderId: userId,
-            sendername: user.name,
-            status:"requestaccept",
-            profilePic: user.profilePic,
-            message: "decline your connection request",
-          });
-          await friendshipRequest.deleteOne();
-        } else {
-          friendshipRequest.notificationRecipt = true;
-          await friendshipRequest.save();
-          // Handle case where recipient is not connected
-          // This could involve queuing the notification or other logic based on your app's needs
-        }
-    
+      console.log("friend id", friendshipRequest.user.toString());
+      const senderSocketId = ActiveUsers.getUserSocketId(
+        friendshipRequest.user.toString()
+      );
+
+      console.log("active user", senderSocketId);
+      if (senderSocketId) {
+        // Emit a notification event only to the recipient's socket
+        io.to(senderSocketId).emit("receiveRequest", {
+          timestamp: new Date(),
+          senderId: userId,
+          sendername: user.name,
+          status: "requestaccept",
+          profilePic: user.profilePic,
+          message: "decline your connection request",
+        });
+        await friendshipRequest.deleteOne();
+      } else {
+        friendshipRequest.notificationRecipt = true;
+        await friendshipRequest.save();
+        // Handle case where recipient is not connected
+        // This could involve queuing the notification or other logic based on your app's needs
+      }
 
       return resp.status(200).send({
         message: "declined",

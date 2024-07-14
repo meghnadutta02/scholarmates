@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    requestGet: [
+    requestReceived: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
