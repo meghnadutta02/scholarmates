@@ -255,7 +255,9 @@ export default function Component() {
             asChild
             className="flex justify-center"
           >
-            <span className="text-gray-600 font-xl">Go to Profile</span>
+            <span className="text-blue-600 font-xl">
+              <u> Go to Profile</u>
+            </span>
           </Link>
         </div>
       )}

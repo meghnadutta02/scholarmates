@@ -177,15 +177,15 @@ const Page = ({ selectDiscussion }) => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center w-full py-16">
-                <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
-                  You haven&apos;t started any discussions yet.
+              <div className="flex flex-col items-center justify-start w-full px-4 min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] border">
+                <p className="text-lg text-gray-500 dark:text-gray-400 my-12">
+                  You haven&apos;t started or joined any discussions yet.
                 </p>
                 <Link
                   href="/discussions"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
                 >
-                  Start a discussion
+                  Go to discussions
                 </Link>
               </div>
             )}

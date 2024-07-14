@@ -1,7 +1,7 @@
 import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
 import UserMessage from "@/app/(models)/userMessageModel";
-
+import User from "@/app/(models)/userModel"; // Import the User model
 import { ObjectId } from "mongodb";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
@@ -13,10 +13,18 @@ export async function GET() {
     const session = await getServerSession(options);
     const currentUserId = new ObjectId(session.user.db_id);
 
+    const currentUser = await User.findById(currentUserId)
+      .select("connection")
+      .lean();
+    const connectionIds = currentUser.connection;
+
     const messages = await UserMessage.aggregate([
       {
         $match: {
-          $or: [{ recipient: currentUserId }, { sender: currentUserId }],
+          $or: [
+            { recipient: currentUserId, sender: { $in: connectionIds } },
+            { sender: currentUserId, recipient: { $in: connectionIds } },
+          ],
         },
       },
       {

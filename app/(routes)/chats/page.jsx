@@ -96,7 +96,7 @@ export default function Chats() {
         <Tabs
           value={tabValue}
           onValueChange={setTabValue}
-          className="mt-6 flex flex-col items-center"
+          className="md:mt-8 mt-14 flex flex-col items-center"
         >
           <TabsList>
             <TabsTrigger value="c">Connections</TabsTrigger>
@@ -184,16 +184,12 @@ export default function Chats() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full mt-5">
-                    <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
-                      You have no connections.
+                  <div className="flex flex-col px-4 justify-start min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] border border-t-0">
+                    <p className="text-lg text-center text-gray-500 dark:text-gray-400 my-12">
+                      You have no chats.
+                      <br />
+                      Search among your connections to start a conversation.
                     </p>
-                    <Link
-                      href="/connect"
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
-                    >
-                      Find Connections
-                    </Link>
                   </div>
                 )}
               </div>

@@ -19,7 +19,7 @@ const Connection = () => {
   }, [session]);
 
   useEffect(() => {
-    const acceptHandle = async () => {
+    const fetchConnections = async () => {
       try {
         const res = await fetch(`/api/users/connection/${userId}`, {
           method: "GET",
@@ -38,7 +38,7 @@ const Connection = () => {
     };
 
     if (userId && !dataFetched) {
-      acceptHandle();
+      fetchConnections();
     }
   }, [userId, dataFetched]);
 
@@ -52,7 +52,7 @@ const Connection = () => {
             You have no connections.
           </p>
           <Link
-            href="/connect"
+            href="/find-match"
             className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
           >
             Find Connections
