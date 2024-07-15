@@ -10,7 +10,7 @@ import { InfoIcon } from "lucide-react";
 
 const getDiscussions = async (id, offset = 0, limit = 5) => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}?offset=${offset}&limit=${limit}`,
+    `/api/users/${id}?offset=${offset}&limit=${limit}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -22,9 +22,7 @@ const getDiscussions = async (id, offset = 0, limit = 5) => {
 };
 
 const getJoinRequests = async () => {
-  const response1 = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/status`
-  );
+  const response1 = await fetch(`/api/join-group/status`);
   return response1.json();
 };
 
@@ -153,10 +151,9 @@ const DiscussionSection = ({ user }) => {
   const toggleLike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "like" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/like`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${id}/like`, {
+      method: "PUT",
+    });
 
     if (response.ok) {
       setDiscussions((prevDiscussions) =>
@@ -186,10 +183,9 @@ const DiscussionSection = ({ user }) => {
   const toggleDislike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/dislike`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${id}/dislike`, {
+      method: "PUT",
+    });
 
     if (response.ok) {
       setDiscussions((prevDiscussions) =>
@@ -221,7 +217,7 @@ const DiscussionSection = ({ user }) => {
       const toastId = toast.loading("Sending request...");
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
+        `/api/join-group?discussionId=${discussion._id}`,
         {
           method: "GET",
         }

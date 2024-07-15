@@ -11,9 +11,7 @@ const ProfileProgress = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile/currentUser`
-        );
+        const response = await fetch(`/api/users/profile/currentUser`);
 
         if (response.ok) {
           const data = await response.json();

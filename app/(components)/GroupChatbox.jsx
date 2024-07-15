@@ -45,15 +45,12 @@ const GroupChatbox = ({
 
   const updateReadStatus = async (gid) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${gid}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`/api/chats/group/${gid}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error("Failed to mark messages as read");
       }
@@ -66,7 +63,7 @@ const GroupChatbox = ({
     try {
       const skip = page * limit;
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${groupId}?limit=${limit}&skip=${skip}`
+        `/api/chats/group/${groupId}?limit=${limit}&skip=${skip}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch messages");
@@ -118,13 +115,10 @@ const GroupChatbox = ({
         });
       }
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${groupId}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch(`/api/chats/group/${groupId}`, {
+        method: "POST",
+        body: formData,
+      });
       if (res.ok) {
         const data = await res.json();
         setInboxMessages((prevMessages) => {

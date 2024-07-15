@@ -22,9 +22,7 @@ export default function Chats() {
 
   const fetchConnections = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user`
-      );
+      const response = await fetch(`/api/chats/user`);
       if (!response.ok) {
         throw new Error("Failed to fetch connections");
       }
@@ -39,15 +37,12 @@ export default function Chats() {
 
   const markMessagesAsRead = async (userId) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`/api/chats/user/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error("Failed to mark messages as read");
       }

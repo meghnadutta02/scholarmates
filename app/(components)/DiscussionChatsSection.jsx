@@ -15,9 +15,7 @@ const Page = ({ selectDiscussion }) => {
 
   const fetchGroups = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group`
-      );
+      const response = await fetch(`/api/chats/group`);
       if (!response.ok) {
         throw new Error("Failed to fetch requests");
       }
@@ -32,15 +30,12 @@ const Page = ({ selectDiscussion }) => {
 
   const updateReadStatus = async (gid) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/group/${gid}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`/api/chats/group/${gid}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error("Failed to mark messages as read");
       }

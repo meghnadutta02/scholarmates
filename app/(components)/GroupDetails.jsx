@@ -50,12 +50,9 @@ const GroupDetails = ({
   const [name, setName] = useState(groupDetails.name);
   const handleKickMember = async (memberId) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${group._id}/${memberId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`/api/groups/${group._id}/${memberId}`, {
+        method: "DELETE",
+      });
 
       if (response.ok) {
         setGroup((prevGroup) => ({
@@ -73,15 +70,12 @@ const GroupDetails = ({
   };
   const handleExitGroup = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${group._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`/api/groups/${group._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response.ok) {
         setGroups((prevGroups) =>
@@ -101,7 +95,7 @@ const GroupDetails = ({
   const handleModeratorStatus = async (memberId, action) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${group._id}/${memberId}?action=${action}`,
+        `/api/groups/${group._id}/${memberId}?action=${action}`,
         {
           method: "PUT",
         }
@@ -133,16 +127,13 @@ const GroupDetails = ({
   };
   const handleUpdateName = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${group._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name }),
-        }
-      );
+      const response = await fetch(`/api/groups/${group._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
 
       if (response.ok) {
         setGroup((prevGroup) => ({ ...prevGroup, name }));
@@ -157,16 +148,13 @@ const GroupDetails = ({
   };
   const handleUpdateDescription = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${group._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ description }),
-        }
-      );
+      const response = await fetch(`/api/groups/${group._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ description }),
+      });
 
       if (response.ok) {
         setGroup((prevGroup) => ({ ...prevGroup, description }));
@@ -182,16 +170,13 @@ const GroupDetails = ({
 
   const togglePrivacy = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/groups/${group._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ isPrivate: !isPrivate }),
-        }
-      );
+      const response = await fetch(`/api/groups/${group._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isPrivate: !isPrivate }),
+      });
 
       if (response.ok) {
         setGroup((prevGroup) => ({ ...prevGroup, isPrivate: !isPrivate }));

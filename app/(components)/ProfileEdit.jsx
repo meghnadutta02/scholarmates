@@ -125,14 +125,11 @@ const ProfileEdit = ({ user, setUser }) => {
       };
     }
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`,
-      {
-        method: "PUT",
-        body: JSON.stringify({ formData }),
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    const res = await fetch(`/api/users/profile`, {
+      method: "PUT",
+      body: JSON.stringify({ formData }),
+      headers: { "Content-Type": "application/json" },
+    });
     if (res.ok) {
       const data = await res.json();
 

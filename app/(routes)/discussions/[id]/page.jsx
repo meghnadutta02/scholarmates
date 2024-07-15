@@ -43,12 +43,9 @@ const DiscussionDetails = ({ params }) => {
   const handleDelete = async () => {
     try {
       setDisabled(true);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${deleteDiscussionId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`/api/discussion/${deleteDiscussionId}`, {
+        method: "DELETE",
+      });
 
       if (res.ok) {
         toast.success("Discussion deleted successfully", {
@@ -77,12 +74,9 @@ const DiscussionDetails = ({ params }) => {
   useEffect(() => {
     if (id) {
       const fetchDiscussion = async () => {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}`,
-          {
-            method: "GET",
-          }
-        );
+        const res = await fetch(`/api/discussion/${id}`, {
+          method: "GET",
+        });
         const data = await res.json();
 
         setDiscussion(data.discussion);
@@ -99,10 +93,9 @@ const DiscussionDetails = ({ params }) => {
   const toggleLike = async (discussionId) => {
     setAnimationState((prev) => ({ ...prev, [discussionId]: "like" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${discussionId}/like`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${discussionId}/like`, {
+      method: "PUT",
+    });
 
     if (response.ok) {
       setDiscussion((prevDiscussion) => ({
@@ -131,10 +124,9 @@ const DiscussionDetails = ({ params }) => {
   const toggleDislike = async (discussionId) => {
     setAnimationState((prev) => ({ ...prev, [discussionId]: "dislike" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${discussionId}/dislike`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${discussionId}/dislike`, {
+      method: "PUT",
+    });
 
     if (response.ok) {
       setDiscussion((prevDiscussion) => ({
@@ -163,7 +155,7 @@ const DiscussionDetails = ({ params }) => {
       const toastId = toast.loading("Sending request...");
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
+        `/api/join-group?discussionId=${discussion._id}`,
         {
           method: "GET",
         }
@@ -258,17 +250,17 @@ const DiscussionDetails = ({ params }) => {
               </div>
             </div>
 
-            <div className="flex flex-col justify-center gap-6 mt-3 md:flex-row">
+            <div className="flex flex-col justify-center gap-6 mt-3 md:flex-row ">
               <Image
                 alt="Cover"
-                className="w-full"
+                className="w-full h-[200px] md:w-[520px] md:h-[358px]"
                 src={discussion.coverImage}
                 style={{ aspectRatio: "1", objectFit: "cover" }}
-                width={380}
-                height={150}
+                width={280}
+                height={200}
               />
 
-              <div className=" flex flex-col gap-7 ">
+              <div className=" flex flex-col gap-7  ">
                 {/* discussion controls */}
                 {session?.db_id == discussion.creator._id && (
                   <div className="  flex justify-end gap-2 ">
@@ -297,9 +289,9 @@ const DiscussionDetails = ({ params }) => {
                     </button>
                   </div>
                 )}
-                <div className="flex flex-col justify-between h-full ">
+                <div className="flex flex-col md:justify-between h-full  gap-3">
                   <div className="flex flex-col gap-2 md:gap-4  ">
-                    <h4 className=" text-base font-semibold">
+                    <h4 className=" text-md font-semibold">
                       {discussion.title}
                     </h4>
                     <div className="prose max-w-none">
@@ -335,7 +327,7 @@ const DiscussionDetails = ({ params }) => {
                       <span className="ml-2">{discussion.dislikes}</span>
                     </Button>
                     <Button
-                      className="w-24"
+                      className="w-16 md:w-20 h-8 md:h-10"
                       variant="secondary"
                       disabled={status === "accepted" || status === "pending"}
                       onClick={() => handleButtonClick(discussion)}
@@ -376,7 +368,7 @@ const DiscussionDetails = ({ params }) => {
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       {discussion.creator.name}
                     </span>
-                    <h4 className="text-base font-semibold">
+                    <h4 className="text-md font-semibold">
                       {discussion.title}
                     </h4>
                   </div>

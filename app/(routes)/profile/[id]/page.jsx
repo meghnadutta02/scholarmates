@@ -37,10 +37,9 @@ export default function DrawerDialogDemo({ params }) {
   const fetchData = async () => {
     try {
       if (session) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile?id=${id}`,
-          { cache: "no-cache" }
-        );
+        const res = await fetch(`/api/users/profile?id=${id}`, {
+          cache: "no-cache",
+        });
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }

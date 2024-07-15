@@ -8,15 +8,12 @@ import { RiShareForwardLine } from "react-icons/ri";
 import { InfoIcon } from "lucide-react";
 
 const getDiscussions = async () => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/users/my-discussions`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "GET",
-    }
-  );
+  const response = await fetch(`/api/users/my-discussions`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "GET",
+  });
   return response.json();
 };
 
@@ -123,10 +120,9 @@ const DiscussionList = () => {
   const toggleLike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "like" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/like`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${id}/like`, {
+      method: "PUT",
+    });
 
     if (response.ok) {
       setDiscussions((prevDiscussions) =>

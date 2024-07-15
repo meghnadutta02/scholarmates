@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { useSession } from "./SessionProvider";
 import { Button } from "@/components/ui/button";
 import { FaTimes, FaCheck } from "react-icons/fa";
-import { connection } from "mongoose";
 
 const ProfileDetailsTab = ({ user: initialUser }) => {
   const router = useRouter();
@@ -22,9 +21,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   useEffect(() => {
     const fetchCurrentUser = async (id) => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile?id=${id}`
-        );
+        const res = await fetch(`/api/users/profile?id=${id}`);
         if (res.ok) {
           const currentUser = await res.json();
 
@@ -82,12 +79,9 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   const handleremoveClick = async (id) => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile?seconduserId=${id}`,
-        {
-          method: "POST",
-        }
-      );
+      const res = await fetch(`/api/users/profile?seconduserId=${id}`, {
+        method: "POST",
+      });
 
       if (res.ok) {
         toast.success("Connection removed", {

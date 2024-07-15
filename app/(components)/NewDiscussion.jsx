@@ -99,13 +99,10 @@ function NewDiscussion({ setDiscussions }) {
     });
     const toastId = toast.loading("Creating discussion...");
     try {
-      const result = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/discussion`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const result = await fetch(`/api/discussion`, {
+        method: "POST",
+        body: formData,
+      });
 
       if (result.ok) {
         const discussion = await result.json();

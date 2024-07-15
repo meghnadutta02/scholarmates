@@ -45,13 +45,10 @@ const ProfilePictureUpdate = ({ user, setUser, setUser1 }) => {
     try {
       const img = await getCroppedImage();
       formData.append("profilePic", img);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/profile/profilePic`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
+      const res = await fetch(`/api/users/profile/profilePic`, {
+        method: "PUT",
+        body: formData,
+      });
 
       if (res.ok) {
         setUser((prevUser) => ({

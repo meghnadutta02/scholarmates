@@ -18,9 +18,7 @@ const GroupRequests = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/requests`
-      );
+      const response = await fetch(`/api/join-group/requests`);
       if (!response.ok) {
         throw new Error("Failed to fetch requests");
       }
@@ -48,7 +46,7 @@ const GroupRequests = () => {
   const handleAcceptRequest = async (request) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/${request._id}?action=accept`,
+        `/api/join-group/${request._id}?action=accept`,
         {
           method: "PUT",
         }
@@ -76,7 +74,7 @@ const GroupRequests = () => {
   const handleRejectRequest = async (request) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/${request._id}?action=reject`,
+        `/api/join-group/${request._id}?action=reject`,
         {
           method: "PUT",
         }

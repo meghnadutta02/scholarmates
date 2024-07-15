@@ -13,7 +13,7 @@ import { RiShareForwardLine } from "react-icons/ri";
 const getDiscussions = async (query = "", offset = 0, limit = 10) => {
   const separator = query !== "" ? "&" : "?";
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/discussion${query}${separator}offset=${offset}&limit=${limit}`,
+    `/api/discussion${query}${separator}offset=${offset}&limit=${limit}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -25,9 +25,7 @@ const getDiscussions = async (query = "", offset = 0, limit = 10) => {
 };
 
 const getJoinRequests = async () => {
-  const response1 = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/status`
-  );
+  const response1 = await fetch(`/api/join-group/status`);
   return response1.json();
 };
 
@@ -197,10 +195,9 @@ const DiscussionList = ({
   const toggleLike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "like" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/like`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${id}/like`, {
+      method: "PUT",
+    });
 
     if (response.ok) {
       setDiscussions((prevDiscussions) =>
@@ -230,10 +227,9 @@ const DiscussionList = ({
   const toggleDislike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/dislike`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${id}/dislike`, {
+      method: "PUT",
+    });
 
     if (response.ok) {
       setDiscussions((prevDiscussions) =>
@@ -265,7 +261,7 @@ const DiscussionList = ({
       const toastId = toast.loading("Sending request...");
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
+        `/api/join-group?discussionId=${discussion._id}`,
         {
           method: "GET",
         }

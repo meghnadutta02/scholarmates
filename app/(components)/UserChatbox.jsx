@@ -47,7 +47,7 @@ const UserChatbox = ({
         const limit = 20;
         const skip = page * limit;
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userID}?limit=${limit}&skip=${skip}`
+          `/api/chats/user/${userID}?limit=${limit}&skip=${skip}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch messages");
@@ -112,13 +112,10 @@ const UserChatbox = ({
         });
       }
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userID}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch(`/api/chats/user/${userID}`, {
+        method: "POST",
+        body: formData,
+      });
 
       if (res.ok) {
         const data = await res.json();
@@ -151,15 +148,12 @@ const UserChatbox = ({
 
   const markMessagesAsRead = async (userId) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chats/user/${userId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`/api/chats/user/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error("Failed to mark messages as read");
       }

@@ -10,7 +10,7 @@ import { useSession } from "@/app/(components)/SessionProvider";
 import { LuTrendingDown } from "react-icons/lu";
 import { IoChatboxOutline } from "react-icons/io5";
 const getDiscussions = async (college, c) => {
-  let url = `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/trending`;
+  let url = `/api/discussion/trending`;
   if (college) {
     url += `?college=${c}`;
   }
@@ -19,9 +19,7 @@ const getDiscussions = async (college, c) => {
   return response.json();
 };
 const getJoinRequests = async () => {
-  const response1 = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/join-group/status`
-  );
+  const response1 = await fetch(`/api/join-group/status`);
   return response1.json();
 };
 
@@ -44,10 +42,9 @@ const Trending = () => {
   const toggleLike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "like" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/like`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${id}/like`, {
+      method: "PUT",
+    });
 
     if (response.ok)
       setDiscussions((prevDiscussions) =>
@@ -75,10 +72,9 @@ const Trending = () => {
   const toggleDislike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${id}/dislike`,
-      { method: "PUT" }
-    );
+    const response = await fetch(`/api/discussion/${id}/dislike`, {
+      method: "PUT",
+    });
 
     if (response.ok)
       setDiscussions((prevDiscussions) =>
@@ -170,7 +166,7 @@ const Trending = () => {
     try {
       const promise = new Promise(async (resolve, reject) => {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/join-group?discussionId=${discussion._id}`,
+          `/api/join-group?discussionId=${discussion._id}`,
           {
             method: "GET",
           }

@@ -117,13 +117,10 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
     });
 
     try {
-      const result = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/discussion/${discussion._id}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
+      const result = await fetch(`/api/discussion/${discussion._id}`, {
+        method: "PUT",
+        body: formData,
+      });
 
       if (result.ok) {
         const updatedDiscussion = await result.json();
