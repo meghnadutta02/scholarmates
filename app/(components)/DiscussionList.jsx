@@ -384,13 +384,13 @@ const DiscussionList = ({
                           {discussion.creatorData.name}
                         </span>{" "}
                       </Link>
-                      <span className="md:text-sm text-[13px] text-gray-500 dark:text-gray-400">
+                      <span className="md:text-sm text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
                         {discussion.creatorData.collegeName}
                       </span>
                     </div>
                     <Link
                       href={`/discussions/${discussion._id}`}
-                      className="md:hidden"
+                      className="md:hidden mr-6"
                     >
                       <Button className="p-0" variant="icon">
                         <InfoIcon className="w-5 h-5" />
@@ -451,7 +451,7 @@ const DiscussionList = ({
 
                   {discussion.isMember ? (
                     <Link href={`/chats/?discussionId=${discussion._id}`}>
-                      <Button variant="icon" className="flex ml-4">
+                      <Button variant="icon" className="flex md:ml-4">
                         <IoChatboxOutline className="h-6 w-6" />
                       </Button>{" "}
                     </Link>

@@ -23,8 +23,8 @@ const UserChatbox = ({
   setToggleChatView,
   updateLastMessage,
 }) => {
-  const { socket } = useSession();
-  const { data: session } = useCustomSession();
+  const { data: session } = useSession();
+  const { socket } = useCustomSession();
   const [message, setMessage] = useState({
     text: "",
     attachments: [],
@@ -275,51 +275,86 @@ const UserChatbox = ({
             </div>
 
             <div className="flex flex-col h-[32rem] border rounded-md bg-white overflow-y-auto scrollbar-none p-1">
-              {inboxMessages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${
-                    msg.sender === userID ? "justify-start" : "justify-end"
-                  }`}
-                  ref={
-                    index === 0
-                      ? (el) => {
-                          lastMessageRef.current = el;
-                        }
-                      : null
+              {inboxMessages.map((msg, index) => {
+                const currentDate = new Date(msg.createdAt).toLocaleDateString(
+                  [],
+                  {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
                   }
-                >
-                  <div
-                    className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
-                      msg.sender === userID ? "bg-gray-100" : "bg-blue-100"
-                    }`}
-                  >
-                    {msg.attachments != null && (
-                      <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
-                        {msg.attachments.map((attachment, index) => (
-                          <DisplayMedia key={index} fileUrl={attachment} />
-                        ))}
+                );
+
+                const previousDate =
+                  index > 0
+                    ? new Date(
+                        inboxMessages[index - 1].createdAt
+                      ).toLocaleDateString([], {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : null;
+
+                const showDateSeparator = currentDate !== previousDate;
+
+                return (
+                  <div key={index}>
+                    {showDateSeparator && (
+                      <div className="text-center text-sm my-4 text-gray-500">
+                        {currentDate}
                       </div>
                     )}
-                    <Interweave
-                      content={msg.text}
-                      matchers={[new UrlMatcher("url")]}
-                    />
-                    <p className="text-[10px] flex justify-end font-light">
-                      {msg.sending ? (
-                        <>Sending...</>
-                      ) : (
-                        <>
-                          {new Date(msg.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </>
-                      )}
-                    </p>
+                    <div
+                      id={`msg-${index}`}
+                      data-date={msg.createdAt}
+                      className={`flex ${
+                        msg.sender === userID ? "justify-start" : "justify-end"
+                      }`}
+                      ref={
+                        index === 0
+                          ? (el) => {
+                              lastMessageRef.current = el;
+                            }
+                          : null
+                      }
+                    >
+                      <div
+                        className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
+                          msg.sender === userID ? "bg-gray-100" : "bg-blue-100"
+                        }`}
+                      >
+                        {msg.attachments != null && (
+                          <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
+                            {msg.attachments.map((attachment, index) => (
+                              <DisplayMedia key={index} fileUrl={attachment} />
+                            ))}
+                          </div>
+                        )}
+                        <Interweave
+                          content={msg.text}
+                          matchers={[new UrlMatcher("url")]}
+                        />
+                        <p className="text-[10px] flex justify-end font-light">
+                          {msg.sending ? (
+                            <>Sending...</>
+                          ) : (
+                            <>
+                              {new Date(msg.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+
               <div ref={messagesEndRef} />
             </div>
           </div>
