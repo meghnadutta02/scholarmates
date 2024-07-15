@@ -22,7 +22,7 @@ const UserChatbox = ({
   setToggleChatView,
   updateLastMessage,
 }) => {
-  const { socket, session } = useSession();
+  const { socket, user, session } = useSession();
   const [message, setMessage] = useState({
     text: "",
     attachments: [],
@@ -318,7 +318,6 @@ const UserChatbox = ({
               <div ref={messagesEndRef} />
             </div>
           </div>
-
           <div className="flex-shrink-0">
             {filePreviews.length > 0 && (
               <div className="flex gap-2 mb-2">
@@ -352,37 +351,52 @@ const UserChatbox = ({
                 ))}
               </div>
             )}
-            <form
-              onSubmit={sendMessageHandler}
-              className="flex items-center p-2 gap-2"
-            >
-              <Input
-                className="flex-1"
-                placeholder="Type a message"
-                value={message.text}
-                onChange={(e) =>
-                  setMessage((prevMessage) => ({
-                    ...prevMessage,
-                    text: e.target.value,
-                  }))
-                }
-              />
-              <div>
-                <label className="relative cursor-pointer m-2">
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                  <PaperclipIcon className="w-5 h-5 mx-2 cursor-pointer" />
-                </label>
-              </div>
+            {user.connection.includes(userID) ? (
+              <form
+                onSubmit={sendMessageHandler}
+                className="flex items-center p-2 gap-2"
+              >
+                <Input
+                  className="flex-1"
+                  placeholder="Type a message"
+                  value={message.text}
+                  onChange={(e) =>
+                    setMessage((prevMessage) => ({
+                      ...prevMessage,
+                      text: e.target.value,
+                    }))
+                  }
+                />
+                <div>
+                  <label className="relative cursor-pointer m-2">
+                    <input
+                      type="file"
+                      multiple
+                      onChange={handleFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                    <PaperclipIcon className="w-5 h-5 mx-2 cursor-pointer" />
+                  </label>
+                </div>
 
-              <Button className="h-8" type="submit">
-                <VscSend height={50} />
-              </Button>
-            </form>
+                <Button className="h-8" type="submit">
+                  <VscSend height={50} />
+                </Button>
+              </form>
+            ) : (
+              <div className="p-2 text-center mb-2 mt-[-4px] rounded-b-lg bg-red-100">
+                <p> You are not connected with this user anymore</p>
+                <p className="text-sm">
+                  <Link
+                    href={`/profile/${userID}`}
+                    className="font-semibold text-blue-700"
+                  >
+                    Send a request{" "}
+                  </Link>
+                  to start chatting again
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
