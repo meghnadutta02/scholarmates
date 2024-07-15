@@ -6,15 +6,15 @@ import { useSession } from "@/app/(components)/SessionProvider";
 import Link from "next/link";
 import Loading from "@/app/(components)/Loading";
 const Connection = () => {
-  const session = useSession();
-  const [isVisible, setIsVisible] = useState(true);
+  const { session } = useSession();
+
   const [userId, setUserId] = useState();
   const [data, setData] = useState([]);
   const [dataFetched, setDataFetched] = useState(false);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (session) {
-      setUserId(session.session.db_id);
+      setUserId(session.db_id);
     }
   }, [session]);
 

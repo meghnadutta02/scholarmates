@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
+import profilePic from "@/public/pfp.png";
 import MenuDrawer from "@/app/(components)/MenuDrawer";
 import NavbarSearch from "./NavbarSearch";
 import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
@@ -40,7 +41,7 @@ const NavbarClient = () => {
 
   useEffect(() => {
     if (socket && session) {
-      const data = session?.user?.user?.db_id;
+      const data = session?.user?.db_id;
 
       socket.emit("setup", data);
 
@@ -114,13 +115,14 @@ const NavbarClient = () => {
             </div>
             <div className="flex h-14 px-3 items-center justify-between gap-3 md:gap-5 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
               <Link href="/notification">
-                {unreadCount > 0 && (
-                  <span className="z-10  md:block  items-center justify-center p-1 w-4 h-4 text-[10px] font-bold leading-none top-[13px] text-red-100 bg-red-600 rounded-full right-[110px]">
-                    {unreadCount}
-                  </span>
-                )}
-
-                <BellIcon className="relative  h-5 w-5 text-white cursor-pointer" />
+                <div className="relative ">
+                  <BellIcon className="relative  h-5 w-5 text-white cursor-pointer" />
+                  {unreadCount > 0 && (
+                    <span className="z-10  md:block  text-center p-[2px] w-4 h-4 text-[11px] font-bold leading-none top-[-9px] text-red-100 bg-red-600 rounded-full right-[-5px] absolute">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
               </Link>
 
               <AiOutlineSearch
@@ -143,7 +145,7 @@ const NavbarClient = () => {
                       alt="Avatar"
                       className="rounded-full"
                       height="32"
-                      src={session?.user?.profilePic}
+                      src={session?.user?.profilePic || profilePic}
                       style={{
                         aspectRatio: "32/32",
                         objectFit: "cover",

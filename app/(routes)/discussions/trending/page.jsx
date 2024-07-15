@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
 import { toast } from "react-toastify";
-import { useSession } from "@/app/(components)/SessionProvider";
+import { useSession } from "next-auth/react";
 import { LuTrendingDown } from "react-icons/lu";
 import { IoChatboxOutline } from "react-icons/io5";
 const getDiscussions = async (college, c) => {
@@ -24,7 +24,7 @@ const getJoinRequests = async () => {
 };
 
 const Trending = () => {
-  const { user, session } = useSession();
+  const { data: session } = useSession();
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
   const [animationState, setAnimationState] = useState({});
   const [college, setCollege] = useState(false);
@@ -104,7 +104,7 @@ const Trending = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const collegeName = session?.collegeName;
+        const collegeName = session?.user?.collegeName;
         const [joinRequestsResult, discussionsResult] =
           await Promise.allSettled([
             getJoinRequests(),
@@ -122,7 +122,7 @@ const Trending = () => {
           result = discussionsResult.value.discussions;
         }
 
-        const userId = session?.db_id;
+        const userId = session?.user?.db_id;
 
         const updatedResult = result.map((discussion) => {
           const isLiked = discussion.likedBy?.includes(userId);
@@ -160,7 +160,7 @@ const Trending = () => {
     };
 
     fetchData();
-  }, [session, user, college]);
+  }, [session, college]);
 
   const handleButtonClick = async (discussion) => {
     try {
@@ -200,7 +200,7 @@ const Trending = () => {
   if (loading) return <Loading />;
   return (
     <div className="pt-5 md:px-6 px-1 relative w-full">
-      {user?.collegeName !== "" ? (
+      {session?.user?.collegeName !== "" ? (
         <div className="flex justify-end gap-2 items-center mt-6">
           <input
             type="checkbox"

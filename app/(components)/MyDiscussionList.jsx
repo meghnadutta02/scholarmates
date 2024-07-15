@@ -39,7 +39,6 @@ const DiscussionList = () => {
         if (discussionsResult.status === "fulfilled") {
           result = discussionsResult.value.result;
         }
-        console.log("Discussions:", session);
 
         const userId = session?.user?.db_id;
 

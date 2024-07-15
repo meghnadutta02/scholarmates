@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
-import { useSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
+import { useSession as useCustomSession } from "./SessionProvider";
 import {
   Popover,
   PopoverContent,
@@ -22,11 +23,12 @@ const UserChatbox = ({
   setToggleChatView,
   updateLastMessage,
 }) => {
-  const { socket, user, session } = useSession();
+  const { socket } = useSession();
+  const { data: session } = useCustomSession();
   const [message, setMessage] = useState({
     text: "",
     attachments: [],
-    sender: session.db_id,
+    sender: session?.user?.db_id,
   });
 
   const userID = selectedUser._id || selectedUser.userId;
@@ -104,7 +106,7 @@ const UserChatbox = ({
 
       const formData = new FormData();
       formData.append("text", message.text);
-      formData.append("sender", session.db_id);
+      formData.append("sender", session?.user?.db_id);
 
       if (message.attachments != null) {
         message.attachments.forEach((file) => {
@@ -127,7 +129,7 @@ const UserChatbox = ({
         socket.emit("userchat-send", {
           message: data.result,
           receiver: selectedUser,
-          sender: session.db_id,
+          sender: session?.user?.db_id,
         });
       } else {
         toast.error("Message not sent");
@@ -175,7 +177,7 @@ const UserChatbox = ({
         markMessagesAsRead(userID);
       };
       socket.emit("userchat-setup", {
-        sender: session.db_id,
+        sender: session?.user?.db_id,
         receiver: userID,
       });
       socket.on("userchat-receive", messageHandler);
@@ -184,7 +186,7 @@ const UserChatbox = ({
         socket.off("userchat-receive", messageHandler);
       };
     }
-  }, [socket, inboxMessages, session.db_id, updateLastMessage, userID]);
+  }, [socket, inboxMessages, session?.user?.db_id, updateLastMessage, userID]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -246,8 +248,11 @@ const UserChatbox = ({
                       {/* <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" /> */}
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent>
-                    <Link href={`/profile/${userID}`} className="text-blue-600">
+                  <PopoverContent className="max-w-[70px]">
+                    <Link
+                      href={`/profile/${userID}`}
+                      className="text-blue-600 "
+                    >
                       View Profile
                     </Link>
                   </PopoverContent>
@@ -351,7 +356,7 @@ const UserChatbox = ({
                 ))}
               </div>
             )}
-            {user.connection.includes(userID) ? (
+            {session?.user?.connection.includes(userID) ? (
               <form
                 onSubmit={sendMessageHandler}
                 className="flex items-center p-2 gap-2"

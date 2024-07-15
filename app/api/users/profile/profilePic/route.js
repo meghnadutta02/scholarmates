@@ -17,7 +17,7 @@ export async function PUT(req) {
     if (!id) {
       return NextResponse.json({ result: "User not found" }, { status: 401 });
     }
-    
+
     const data = await req.formData();
     const updatedUserData = data.get("profilePic");
 
@@ -28,11 +28,7 @@ export async function PUT(req) {
     const byteData = await updatedUserData.arrayBuffer();
     const buffer = Buffer.from(byteData);
     const uniqueFileName = `${uuidv4()}_${name}`;
-<<<<<<< HEAD
     const path = `public/media/profile-image/${uniqueFileName}.jpg`;
-=======
-    const path = `public/profilePicture/${uniqueFileName}.jpg`;
->>>>>>> a8c9123fcf2774f19fdb4c6a34a7228dd978464b
     const coverImage = await postObject(path, buffer);
     const user = await User.findByIdAndUpdate(
       id,

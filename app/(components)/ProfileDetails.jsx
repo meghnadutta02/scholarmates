@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useSession } from "next-auth/react";
+import { useSession } from "./SessionProvider";
 import ProfileDetailsTab from "./ProfileDetailsTab";
 import ProfilePictureUpdate from "./ProfilePictureUpdate";
 
@@ -13,9 +13,8 @@ const getYearWithSuffix = (year) => {
   return `${year}${suffix}`;
 };
 
-const ProfileDetails = ({ initialUser }) => {
-  const [user, setUser] = useState(initialUser);
-  const { data: session } = useSession();
+const ProfileDetails = ({ user, setUser }) => {
+  const { session } = useSession();
 
   return (
     <>

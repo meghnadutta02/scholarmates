@@ -1,37 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
-import { useSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
 
 const ProfileProgress = () => {
   const [completionPercentage, setCompletionPercentage] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const { user, setUser } = useSession();
+  const { data: session } = useSession();
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await fetch(`/api/users/profile/currentUser`);
-
-        if (response.ok) {
-          const data = await response.json();
-
-          setUser(data.result);
-        } else {
-          console.error("Error fetching user details:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserDetails();
-  }, [setUser]);
-
-  useEffect(() => {
-    if (user) {
+    if (session?.user) {
+      console.log(session.user);
+      const user = session.user;
       const fields = [
         "name",
         "collegeName",
@@ -40,11 +19,12 @@ const ProfileProgress = () => {
         "interestSubcategories",
         "dob",
       ];
+
       const filledFields = fields.filter(
         (field) => user[field] && user[field].length > 0
       );
 
-      if (user.yearInCollege) {
+      if (user.yearInCollege !== null) {
         filledFields.push("yearInCollege");
       }
 
@@ -54,9 +34,9 @@ const ProfileProgress = () => {
 
       setCompletionPercentage(percentage);
     }
-  }, [user]);
-
-  if (completionPercentage === 100 || loading) {
+  }, [session]);
+  if (!session) return null;
+  if (completionPercentage === 100) {
     return null;
   }
 

@@ -61,6 +61,10 @@ export const options = {
       user.interestSubcategories = currentUser.interestSubcategories;
       user.requestPending = currentUser.requestPending;
       user.connection = currentUser.connection;
+      user.degree = currentUser.degree;
+      user.yearInCollege = currentUser.yearInCollege;
+      user.bio = currentUser.bio;
+      user.dob = currentUser.dob;
       return user;
     },
 
@@ -75,6 +79,10 @@ export const options = {
         token.db_id = user.db_id;
         token.requestPending = user.requestPending;
         token.connection = user.connection;
+        token.degree = user.degree;
+        token.yearInCollege = user.yearInCollege;
+        token.bio = user.bio;
+        token.dob = user.dob;
       }
 
       if (trigger === "update" && session) {
@@ -88,6 +96,10 @@ export const options = {
         if (session.requestPending)
           token.requestPending = session.requestPending;
         if (session.connection) token.connection = session.connection;
+        if (session.degree) token.degree = session.degree;
+        if (session.yearInCollege) token.yearInCollege = session.yearInCollege;
+        if (session.bio) token.bio = session.bio;
+        if (session.dob) token.dob = session.dob;
       }
 
       return token;
@@ -104,6 +116,10 @@ export const options = {
         session.user.name = token.name;
         session.user.requestPending = token.requestPending;
         session.user.connection = token.connection;
+        session.user.degree = token.degree;
+        session.user.yearInCollege = token.yearInCollege;
+        session.user.bio = token.bio;
+        session.user.dob = token.dob;
       }
       return session;
     },
