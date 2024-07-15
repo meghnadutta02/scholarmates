@@ -1,7 +1,7 @@
 import User from "../model/userModel.js";
 import Request from "../model/requestModel.js";
 import { io } from "../server.js";
-import ActiveUsers from "../activeUser.js"
+
 export const handleNotificationFunction = async (user, socket) => {
   try {
     

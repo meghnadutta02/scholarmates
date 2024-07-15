@@ -4,13 +4,9 @@ import User from "../model/userModel.js";
 export const requestNotificationController = async (req, resp) => {
     try {
         const user = req.params.userId;
-        console.log("first", user);
-        
-        if (user) {
+            if (user) {
             // Find requests directed to the user
             const data = await Request.find({ requestTo: user });
-            console.log("data", data);
-            
             if (data && data.length > 0) {
                 // Extract unique user ids from the requests
                 const userIds = [...new Set(data.map(item => item.user))];

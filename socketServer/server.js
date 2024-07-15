@@ -51,7 +51,6 @@ io.on("connection", async (socket) => {
     if (user) {
       socket.join(userData);
       ActiveUsers.setActiveUser(userData, socket.id);
-      console.log("Active users:", ActiveUsers.getActiveUsers());
       socket.emit("connected");
 
       await handleNotificationFunction(user, socket);
