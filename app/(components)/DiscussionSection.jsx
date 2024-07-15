@@ -109,7 +109,7 @@ const DiscussionSection = ({ user }) => {
     };
 
     fetchData();
-  }, [session, offset]);
+  }, [session, offset, user._id]);
 
   useEffect(() => {
     const observerCallback = (entries) => {

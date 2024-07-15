@@ -10,14 +10,14 @@ import { v4 as uuidv4 } from "uuid";
 export async function PUT(req) {
   try {
     await connect();
-
     const session = await getServerSession(options);
     const id = session?.user?.db_id;
     const name = session?.user?.name;
+
     if (!id) {
       return NextResponse.json({ result: "User not found" }, { status: 401 });
     }
-
+    
     const data = await req.formData();
     const updatedUserData = data.get("profilePic");
 
@@ -28,15 +28,17 @@ export async function PUT(req) {
     const byteData = await updatedUserData.arrayBuffer();
     const buffer = Buffer.from(byteData);
     const uniqueFileName = `${uuidv4()}_${name}`;
+<<<<<<< HEAD
+    const path = `public/media/profile-image/${uniqueFileName}.jpg`;
+=======
     const path = `public/profilePicture/${uniqueFileName}.jpg`;
+>>>>>>> a8c9123fcf2774f19fdb4c6a34a7228dd978464b
     const coverImage = await postObject(path, buffer);
-
     const user = await User.findByIdAndUpdate(
       id,
       { $set: { profilePic: coverImage } },
       { new: true }
     );
-
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }

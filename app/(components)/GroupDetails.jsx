@@ -36,6 +36,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const GroupDetails = ({
   groupDetails,
@@ -43,6 +44,7 @@ const GroupDetails = ({
   setGroups,
   setIsRoomSelected,
   setRoomID,
+  setToggleChatView,
 }) => {
   const [description, setDescription] = useState(groupDetails.description);
   const [isPrivate, setIsPrivate] = useState(groupDetails.isPrivate);
@@ -68,6 +70,8 @@ const GroupDetails = ({
       console.error(error);
     }
   };
+  const router = useRouter();
+
   const handleExitGroup = async () => {
     try {
       const response = await fetch(`/api/groups/${group._id}`, {
@@ -83,6 +87,9 @@ const GroupDetails = ({
         );
         setIsRoomSelected(false);
         setRoomID(null);
+        setToggleChatView(true);
+        router.replace("/chats");
+        window.location.reload();
         toast.success("You are no longer a member", {
           autoClose: 5000,
         });

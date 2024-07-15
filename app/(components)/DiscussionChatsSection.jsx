@@ -2,7 +2,7 @@
 import GroupChatbox from "@/app/(components)/GroupChatbox";
 import GroupsInboxSearch from "@/app/(components)/GroupsInboxSearch";
 import { Button } from "@/components/ui/button";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Loading from "@/app/(components)/Loading";
 import Link from "next/link";
 
@@ -12,7 +12,7 @@ const Page = ({ selectDiscussion }) => {
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
   const [toggleChatView, setToggleChatView] = useState(true);
-
+  const linktoChatRef = useRef("");
   const fetchGroups = async () => {
     try {
       const response = await fetch(`/api/chats/group`);
@@ -44,8 +44,9 @@ const Page = ({ selectDiscussion }) => {
     }
   };
 
-  const handleGroupSelection = async (gid) => {
+  const handleGroupSelection = useCallback(async (gid) => {
     setRoomID(gid);
+    linktoChatRef.current = gid;
     setIsRoomSelected(true);
     setToggleChatView(false);
     setGroups((prevGroups) =>
@@ -54,7 +55,7 @@ const Page = ({ selectDiscussion }) => {
       )
     );
     updateReadStatus(gid);
-  };
+  }, []);
 
   const updateLastMessage = (gid, message, name) => {
     setGroups((prevGroups) =>
@@ -76,6 +77,7 @@ const Page = ({ selectDiscussion }) => {
 
   useEffect(() => {
     fetchGroups();
+
     // if (selectDiscussion) {
     //   handleGroupSelection(selectDiscussion);
     // }
@@ -152,11 +154,11 @@ const Page = ({ selectDiscussion }) => {
                     </div>
                   ) : (
                     <>
-                      {isRoomSelected ? (
+                      {isRoomSelected && (
                         <div className="min-h-[34rem] min-w-[340px] sm:min-w-[480px] md:min-w-[750px]">
                           <GroupChatbox
-                            key={roomID}
-                            roomID={roomID}
+                            key={roomID || linktoChatRef.current}
+                            roomID={roomID || linktoChatRef.current}
                             setGroups={setGroups}
                             setIsRoomSelected={setIsRoomSelected}
                             setRoomID={setRoomID}
@@ -164,25 +166,21 @@ const Page = ({ selectDiscussion }) => {
                             updateLastMessage={updateLastMessage}
                           />
                         </div>
-                      ) : (
-                        <div className="flex flex-wrap justify-center py-16 min-w-[240px] md:min-w-[750px]">
-                          <p>Choose a conversation</p>
-                        </div>
                       )}
                     </>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center w-full py-16">
-                <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
-                  You haven&apos;t started any discussions yet.
+              <div className="flex flex-col items-center justify-start w-full px-4 min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] border">
+                <p className="text-lg text-gray-500 dark:text-gray-400 my-12">
+                  You haven&apos;t started or joined any discussions yet.
                 </p>
                 <Link
                   href="/discussions"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
                 >
-                  Start a discussion
+                  Go to discussions
                 </Link>
               </div>
             )}
