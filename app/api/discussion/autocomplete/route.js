@@ -1,5 +1,5 @@
 import Discussion from "@/app/(models)/discussionModel";
-import connect from "@/socketServer/db";
+import connect from "@/app/config/db";
 
 import { NextResponse } from "next/server";
 
@@ -23,7 +23,6 @@ export async function GET(req) {
       { $limit: 5 },
       {
         $project: {
-          _id: 0,
           title: 1,
         },
       },

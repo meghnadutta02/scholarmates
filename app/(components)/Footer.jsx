@@ -13,7 +13,7 @@ const Footer = () => {
             className="w-32 h-auto mb-4"
           />
           <p className="text-lg">
-            &quot;ScholarMates - Made for the students, by the students.&quot;
+            &quot;ScholarMates - Checkmate your goals. Together. &quot;
           </p>
         </div>
         <div className="flex flex-col items-center md:items-start">

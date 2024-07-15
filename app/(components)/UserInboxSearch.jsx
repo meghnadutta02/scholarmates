@@ -52,7 +52,7 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
   };
 
   return (
-    <Card className="relative w-full rounded-t-lg rounded-b-none shadow-none">
+    <Card className="relative w-full rounded-t-lg rounded-b-none border-b-0 shadow-none">
       <div className="flex mx-auto py-3 px-4 w-3/4 justify-center items-center">
         <Input
           type="search"
@@ -68,32 +68,40 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
         >
           {connections.length > 0 ? (
             <div>
-              {filteredConnections.map((connection) => (
-                <Button
-                  variant="icon"
-                  key={connection._id}
-                  href="#"
-                  onClick={(e) => {
-                    setSelectedUser(connection);
-                    console.log(connection._id);
-                    setToggleChatView(false);
-                    setShowList(false);
-                  }}
-                  className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"
-                >
-                  <div>
-                    <Avatar className="w-10 h-10 border">
-                      <AvatarImage src={connection.profilePic} />
-                      <AvatarFallback>SD</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="">
-                    <p className="text-sm font-medium leading-none">
-                      {connection.name}
-                    </p>
-                  </div>
-                </Button>
-              ))}
+              {filteredConnections.length === 0 ? (
+                <p className="text-red-400 mt-4 text-center">
+                  No users matched your search
+                </p>
+              ) : (
+                <>
+                  {filteredConnections.map((connection) => (
+                    <Button
+                      variant="icon"
+                      key={connection._id}
+                      href="#"
+                      onClick={(e) => {
+                        setSelectedUser(connection);
+                        console.log(connection._id);
+                        setToggleChatView(false);
+                        setShowList(false);
+                      }}
+                      className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"
+                    >
+                      <div>
+                        <Avatar className="w-10 h-10 border">
+                          <AvatarImage src={connection.profilePic} />
+                          <AvatarFallback>SD</AvatarFallback>
+                        </Avatar>
+                      </div>
+                      <div className="">
+                        <p className="text-sm font-medium leading-none">
+                          {connection.name}
+                        </p>
+                      </div>
+                    </Button>
+                  ))}
+                </>
+              )}
             </div>
           ) : (
             <>

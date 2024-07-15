@@ -14,7 +14,7 @@ const About = () => {
             className="w-32 h-auto mb-4"
           />
           <p className="text-md">
-            <i>&quot;Made for the students, by the students.&quot;</i>
+            <i>&quot;Checkmate your goals. Together. &quot;</i>
           </p>
         </div>
       </div>

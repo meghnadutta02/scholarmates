@@ -242,6 +242,7 @@ const GroupChatbox = ({
           setGroups={setGroups}
           setIsRoomSelected={setIsRoomSelected}
           setRoomID={setRoomID}
+          setToggleChatView={setToggleChatView}
         />
       ) : (
         <div className="flex flex-col justify-between bg-gray-50 p-2 dark:bg-gray-800">

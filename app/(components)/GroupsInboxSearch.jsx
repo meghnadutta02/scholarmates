@@ -32,7 +32,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
   };
 
   return (
-    <Card className="relative w-full rounded-t-lg rounded-b-none shadow-none">
+    <Card className="relative w-full rounded-t-lg rounded-b-none border-b-0 shadow-none">
       <div className="flex mx-auto py-3 px-4 w-3/4 justify-center items-center">
         <Input
           type="search"

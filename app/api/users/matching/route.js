@@ -11,9 +11,9 @@ export async function GET(req) {
     const user = await User.findById(id).select(
       "interestCategories connection requestPending"
     );
-    const getReq=await User.findById(id).select("requestGet");
+    const getReq = await User.findById(id).select("requestReceived");
 
-    console.log("user",user);
+    console.log("user", user);
     if (user.interestCategories.length > 0) {
       const interests = user.interestCategories;
 
@@ -24,10 +24,14 @@ export async function GET(req) {
         { $match: { _id: { $nin: connections } } },
         { $match: { interestCategories: { $in: interests } } },
       ]);
-      console.log("user 3",user);
+      console.log("user 3", user);
       if (users.length > 0)
         return NextResponse.json(
-          { result: users, requests: user.requestPending,requestGet:getReq.requestGet },
+          {
+            result: users,
+            requests: user.requestPending,
+            requestReceived: getReq.requestReceived,
+          },
           { status: 200 }
         );
       else
@@ -37,7 +41,6 @@ export async function GET(req) {
         );
     }
 
-    
     return NextResponse.json({ result: [] }, { status: 200 });
   } catch (err) {
     console.error(err);
