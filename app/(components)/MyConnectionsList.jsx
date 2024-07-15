@@ -27,8 +27,8 @@ const Connection = () => {
         });
         if (res.ok) {
           const responseData = await res.json();
-          const dattaa = responseData.result;
-          setData((prevData) => [...prevData, ...dattaa]);
+          const data = responseData.result;
+          setData((prevData) => [...prevData, ...data]);
           setLoading(false);
           setDataFetched(true);
         }
@@ -60,7 +60,7 @@ const Connection = () => {
         </div>
       ) : (
         <div className="w-full md:mt-7 mt-4 font-sans">
-          <h2 className="text-xl font-semibold">
+          <h2 className="md:text-xl text-lg font-semibold">
             {data.length} connection{data.length !== 1 ? "s" : ""}
           </h2>
 

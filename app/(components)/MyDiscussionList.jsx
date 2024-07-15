@@ -184,7 +184,7 @@ const DiscussionList = () => {
         </div>
       ) : (
         <div className="md:mt-7 mt-4">
-          <h2 className="text-xl font-semibold">
+          <h2 className="md:text-xl text-lg font-semibold">
             {discussions.length} discussion{discussions.length !== 1 ? "s" : ""}
           </h2>
           <div className="grid grid-cols-1 gap-6 mt-4">
@@ -211,7 +211,7 @@ const DiscussionList = () => {
                   >
                     <p className="cursor-pointer">{discussion.content}</p>
                   </div>
-                  <div className="flex justify-between my-1">
+                  <div className="flex w-full justify-between my-1 ">
                     <div className="prose max-w-[80%] md:block hidden ">
                       <p className="cursor-pointer pr-2">
                         <Link href={`/discussions/${discussion._id}`}>
@@ -219,7 +219,7 @@ const DiscussionList = () => {
                         </Link>
                       </p>
                     </div>
-                    <div className="w-full grid grid-cols-3 items-center text-center">
+                    <div className="w-full grid grid-cols-3 md:grid-cols-2  text-center  place-items-center">
                       <Button className="h-10" size="icon" variant="icon">
                         <ThumbsUpIcon
                           className={`w-4 h-4 cursor-pointer ${
@@ -243,7 +243,7 @@ const DiscussionList = () => {
                       </Button>
                       <Link
                         href={`/discussions/${discussion._id}`}
-                        className="md:hidden"
+                        className="md:hidden "
                       >
                         <Button variant="icon">
                           <InfoIcon className="w-4 h-4" />

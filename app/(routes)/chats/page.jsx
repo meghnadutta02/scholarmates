@@ -91,7 +91,7 @@ export default function Chats() {
         <Tabs
           value={tabValue}
           onValueChange={setTabValue}
-          className="md:mt-8 mt-14 flex flex-col items-center"
+          className="mt-6 flex flex-col items-center"
         >
           <TabsList>
             <TabsTrigger value="c">Connections</TabsTrigger>
@@ -105,10 +105,10 @@ export default function Chats() {
               />
               <div>
                 {connections.length > 0 ? (
-                  <div className="flex flex-col rounded-b-lg border mb-4">
+                  <div className="flex flex-col rounded-b-lg border mb-4 ">
                     <div className="flex flex-1 min-w-[300px]">
                       {toggleChatView ? (
-                        <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] px-1 flex flex-col overflow-y-auto scrollbar-thin">
+                        <div className="min-w-[375px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] px-1 flex flex-col overflow-y-auto scrollbar-thin">
                           {connections.map((connection) => (
                             <div
                               key={connection.userId}
