@@ -16,7 +16,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(initialUser);
 
-  const { session } = useSession();
+  const { session, setUser: setCurrentUser } = useSession();
 
   useEffect(() => {
     const fetchCurrentUser = async (id) => {
@@ -95,6 +95,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             (conn) => conn !== session?.db_id
           ),
         }));
+        setCurrentUser((prevUser) => ({
+          ...prevUser,
+          connection: prevUser.connection.filter((conn) => conn !== id),
+        }));
       } else {
         toast.error("Failed to remove connection");
       }
@@ -170,6 +174,11 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
               isConnected: true,
               isRequestReceived: false,
               connection: [...prevUser.connection, session.db_id],
+            }));
+            setCurrentUser((prevUser) => ({
+              ...prevUser,
+              isConnected: true,
+              connection: [...prevUser.connection, user._id],
             }));
           } else {
             setUser((prevUser) => ({

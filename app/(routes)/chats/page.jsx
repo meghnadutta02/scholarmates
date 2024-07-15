@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import DiscussionChatsSection from "@/app/(components)/DiscussionChatsSection";
 import UserInboxSearch from "@/app/(components)/UserInboxSearch";
-import Link from "next/link";
 import Loading from "@/app/(components)/Loading";
 import { useSearchParams } from "next/navigation";
 
@@ -75,7 +74,6 @@ export default function Chats() {
   };
 
   useEffect(() => {
-    console.log(selectDiscussion);
     if (selectDiscussion) {
       setTabValue("g");
     }
@@ -91,7 +89,7 @@ export default function Chats() {
         <Tabs
           value={tabValue}
           onValueChange={setTabValue}
-          className="mt-6 flex flex-col items-center"
+          className="mt-4 flex flex-col items-center"
         >
           <TabsList>
             <TabsTrigger value="c">Connections</TabsTrigger>
