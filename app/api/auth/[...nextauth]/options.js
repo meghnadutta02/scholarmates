@@ -1,3 +1,4 @@
+import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import connect from "@/app/config/db";
@@ -7,7 +8,6 @@ export const options = {
   providers: [
     GitHubProvider({
       profile(profile) {
-        //console.log("Profile Github: ", profile);
         let isAdmin = false;
         if (profile?.email === "meghnakha18@gmail.com") {
           isAdmin = true;
@@ -29,7 +29,6 @@ export const options = {
         return {
           ...profile,
           id: profile.sub,
-
           isAdmin,
         };
       },
@@ -53,8 +52,6 @@ export const options = {
         });
       }
 
-      // console.log("Current user:", currentUser);
-
       user.db_id = currentUser._id;
       user.collegeName = currentUser.collegeName;
       user.isAdmin = currentUser.isAdmin;
@@ -67,7 +64,7 @@ export const options = {
       return user;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.isAdmin = user.isAdmin;
         token.interestCategories = user.interestCategories;
@@ -79,9 +76,23 @@ export const options = {
         token.requestPending = user.requestPending;
         token.connection = user.connection;
       }
+
+      if (trigger === "update" && session) {
+        if (session.name) token.name = session.name;
+        if (session.collegeName) token.collegeName = session.collegeName;
+        if (session.profilePic) token.profilePic = session.profilePic;
+        if (session.interestCategories)
+          token.interestCategories = session.interestCategories;
+        if (session.interestSubcategories)
+          token.interestSubcategories = session.interestSubcategories;
+        if (session.requestPending)
+          token.requestPending = session.requestPending;
+        if (session.connection) token.connection = session.connection;
+      }
+
       return token;
     },
-    // for client side
+
     async session({ session, token }) {
       if (session?.user) {
         session.user.isAdmin = token.isAdmin;
@@ -103,3 +114,5 @@ export const options = {
     logo: "/logo.png",
   },
 };
+
+export default NextAuth(options);

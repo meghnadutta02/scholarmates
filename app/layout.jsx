@@ -14,7 +14,7 @@ import { options } from "./api/auth/[...nextauth]/options";
 import Header from "./(components)/Header";
 export const metadata = {
   title: "ScholarMates",
-  description: "By Half Prayash",
+  description: "By Prayash",
 };
 
 export default async function RootLayout({ children }) {

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
 import ProfileDetailsTab from "./ProfileDetailsTab";
 import ProfilePictureUpdate from "./ProfilePictureUpdate";
 
@@ -15,7 +15,7 @@ const getYearWithSuffix = (year) => {
 
 const ProfileDetails = ({ initialUser }) => {
   const [user, setUser] = useState(initialUser);
-  const { session, setUser: setUser1 } = useSession();
+  const { data: session } = useSession();
 
   return (
     <>
@@ -32,11 +32,7 @@ const ProfileDetails = ({ initialUser }) => {
                   <Avatar className="w-24 h-24">
                     <AvatarImage alt={user.name} src={user?.profilePic} />
                   </Avatar>
-                  <ProfilePictureUpdate
-                    user={user}
-                    setUser={setUser}
-                    setUser1={setUser1}
-                  />
+                  <ProfilePictureUpdate user={user} setUser={setUser} />
                 </div>
                 <h1 className="font-bold text-2xl mt-4">{user.name}</h1>
                 {user.bio ? (

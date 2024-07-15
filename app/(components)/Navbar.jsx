@@ -7,8 +7,9 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import MenuDrawer from "@/app/(components)/MenuDrawer";
 import NavbarSearch from "./NavbarSearch";
-import { useSession } from "@/app/(components)/SessionProvider";
+import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
 import logo from "@/public/logo.png";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import ProfileProgress from "./ProfileProgress";
 import {
@@ -22,7 +23,6 @@ import {
 
 const NavbarClient = () => {
   const {
-    session,
     socket,
     seenNotifications,
     notification,
@@ -30,8 +30,8 @@ const NavbarClient = () => {
     setNotification,
     setUnreadCount,
     unreadCount,
-    user,
-  } = useSession();
+  } = useCustomSession();
+  const { data: session } = useSession();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const removeDuplicates = (array) => {
     const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
@@ -40,7 +40,7 @@ const NavbarClient = () => {
 
   useEffect(() => {
     if (socket && session) {
-      const data = session.db_id;
+      const data = session?.user?.user?.db_id;
 
       socket.emit("setup", data);
 
@@ -135,7 +135,7 @@ const NavbarClient = () => {
                       alt="Avatar"
                       className="rounded-full"
                       height="32"
-                      src={user ? user.profilePic : session?.profilePic}
+                      src={session?.user?.profilePic}
                       style={{
                         aspectRatio: "32/32",
                         objectFit: "cover",
@@ -146,11 +146,13 @@ const NavbarClient = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{session?.name}</DropdownMenuLabel>
+                  <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem>
-                    <Link href={`/profile/${session?.db_id}`}>Profile</Link>
+                    <Link href={`/profile/${session?.user?.db_id}`}>
+                      Profile
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
 

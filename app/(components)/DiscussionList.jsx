@@ -350,7 +350,7 @@ const DiscussionList = ({
           {discussions.map((discussion) => (
             <div
               key={discussion._id}
-              className="flex items-start gap-4 rounded-lg shadow-sm p-2"
+              className="flex items-start gap-4 rounded-lg shadow-sm p-2 "
             >
               <Image
                 alt="Avatar"
