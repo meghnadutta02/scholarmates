@@ -209,17 +209,17 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
               <span className="font-semibold">{user.name}</span> has sent you a
               connection request.
             </span>
-            <div className="flex items-center md:gap-2 gap-1">
+            <div className="flex items-center md:gap-3 gap-2">
               <button
                 onClick={() => acceptHandle("accept")}
-                className=" p-1 transform transition-transform hover:scale-125"
+                className="bg-green-500 text-white flex items-center p-2 rounded-lg transform transition-transform hover:scale-125"
                 disabled={loading}
               >
                 <FaCheck className="h-4 w-4" />
               </button>
               <button
                 onClick={() => acceptHandle("decline")}
-                className="p-1 transform transition-transform hover:scale-125"
+                className="bg-red-500 text-white flex items-center p-2 rounded-lg transform transition-transform hover:scale-125"
                 disabled={loading}
               >
                 <FaTimes className="h-[17px] w-[17px]" />

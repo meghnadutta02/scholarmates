@@ -73,7 +73,7 @@ export default function DrawerDialogDemo({ params }) {
               <DialogTrigger asChild>
                 <MdEdit className="h-10 w-10 text-gray-600  absolute top-6 right-7 shadow-xl rounded-full cursor-pointer p-2 text-center" />
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[720px]">
+              <DialogContent className="sm:max-w-[720px] overflow-y-auto max-h-[95%]">
                 <DialogHeader>
                   <DialogTitle>Edit profile</DialogTitle>
                   <DialogDescription>

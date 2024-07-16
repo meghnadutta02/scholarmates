@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { CgPlayListAdd } from "react-icons/cg";
 
 const getSuggestions = async (q) => {
   const response = await fetch(
@@ -109,21 +110,18 @@ const DiscussionsPage = () => {
         {/* discussion list */}
         <div className="flex-1 md:pt-5 pt-0  md:px-6 px-3 ">
           {/* search button */}
-          <div className="flex mb-8 d:mt-5 mt-2 md:justify-center md:flex-row flex-col gap-4 w-full ">
-            <div className="flex gap-2 md:gap-0 md:justify-between">
-              <div className=" relative  w-[85%]  ">
+          <div className="flex mb-8 md:mt-5 mt-2 md:justify-center md:flex-row flex-col gap-4 w-full ">
+            <div className="flex gap-2 md:gap-0 md:justify-between border-2 rounded-full pl-6 items-center">
+              <div className="relative  w-[85%]">
                 <input
                   type="text"
-                  placeholder="looking for a ml engineer?"
-                  className="w-full pl-10 pr-4 md:py-2 py-[6px] rounded border"
+                  placeholder="Looking for a ml engineer?"
+                  className="w-full bg-transparent py-3 rounded-lg outline-none"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => {
                     e.target.value.length > 3 && handleSearch();
                   }}
                 />
-                <div className="absolute top-3 left-1 flex items-center pointer-events-none">
-                  <AiOutlineSearch className="h-5 w-5 text-gray-400" />{" "}
-                </div>
                 {/* search suggestions */}
                 {showSuggestions && suggestions.length > 0 && (
                   <div
@@ -148,18 +146,18 @@ const DiscussionsPage = () => {
                 )}
               </div>
 
-              <Button className="md:ml-4" onClick={handleSearch}>
-                Search
+              <Button variant="icon" onClick={handleSearch}>
+                <AiOutlineSearch className="h-8 w-8 bg-slate-900 text-white rounded-full p-2" />
               </Button>
             </div>
-            <div className="flex justify-between ">
+            <div className="flex justify-between px-4 md:px-0">
               <FilterDrawer applyFilters={handleFilterApplication} />
 
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                  <IoIosCreate className="h-8 w-8 ml-4 mt-1 cursor-pointer" />
+                  <CgPlayListAdd className="h-9 w-9 ml-4 mt-2 cursor-pointer" />
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[720px]">
+                <DialogContent className="sm:max-w-[720px] overflow-y-auto max-h-[95%]">
                   <DialogHeader>
                     <DialogTitle>New Discussion</DialogTitle>
                     <DialogDescription>

@@ -42,28 +42,28 @@ const Trending = () => {
   const toggleLike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "like" }));
 
-    const response = await fetch(`/api/discussion/${id}/like`, {
+    setDiscussions((prevDiscussions) =>
+      prevDiscussions.map((discussion) =>
+        discussion._id === id
+          ? {
+              ...discussion,
+              likes: discussion.isLiked
+                ? discussion.likes - 1
+                : discussion.likes + 1,
+              isLiked: !discussion.isLiked,
+              dislikes: discussion.isDisliked
+                ? discussion.dislikes - 1
+                : discussion.dislikes,
+              isDisliked: false,
+            }
+          : discussion
+      )
+    );
+
+    await fetch(`/api/discussion/${id}/like`, {
       method: "PUT",
     });
 
-    if (response.ok)
-      setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((discussion) =>
-          discussion._id === id
-            ? {
-                ...discussion,
-                likes: discussion.isLiked
-                  ? discussion.likes - 1
-                  : discussion.likes + 1,
-                isLiked: !discussion.isLiked,
-                dislikes: discussion.isDisliked
-                  ? discussion.dislikes - 1
-                  : discussion.dislikes,
-                isDisliked: false,
-              }
-            : discussion
-        )
-      );
     setTimeout(() => {
       setAnimationState((prev) => ({ ...prev, [id]: null }));
     }, 300);
@@ -72,28 +72,28 @@ const Trending = () => {
   const toggleDislike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
 
-    const response = await fetch(`/api/discussion/${id}/dislike`, {
+    setDiscussions((prevDiscussions) =>
+      prevDiscussions.map((discussion) =>
+        discussion._id === id
+          ? {
+              ...discussion,
+              dislikes: discussion.isDisliked
+                ? discussion.dislikes - 1
+                : discussion.dislikes + 1,
+              isDisliked: !discussion.isDisliked,
+              likes: discussion.isLiked
+                ? discussion.likes - 1
+                : discussion.likes,
+              isLiked: false,
+            }
+          : discussion
+      )
+    );
+
+    await fetch(`/api/discussion/${id}/dislike`, {
       method: "PUT",
     });
 
-    if (response.ok)
-      setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((discussion) =>
-          discussion._id === id
-            ? {
-                ...discussion,
-                dislikes: discussion.isDisliked
-                  ? discussion.dislikes - 1
-                  : discussion.dislikes + 1,
-                isDisliked: !discussion.isDisliked,
-                likes: discussion.isLiked
-                  ? discussion.likes - 1
-                  : discussion.likes,
-                isLiked: false,
-              }
-            : discussion
-        )
-      );
     setTimeout(() => {
       setAnimationState((prev) => ({ ...prev, [id]: undefined }));
     }, 300);
@@ -200,22 +200,24 @@ const Trending = () => {
   if (loading) return <Loading />;
   return (
     <div className="pt-5 md:px-6 px-1 relative w-full">
-      {session?.user?.collegeName !== "" ? (
-        <div className="flex justify-end gap-2 items-center mt-6">
-          <input
-            type="checkbox"
-            id="college"
-            name="college"
-            className="rounded-md h-[14px] w-[14px] accent-zinc-700"
-            onChange={(e) => setCollege(e.target.checked)}
-          />
-          <label htmlFor="college" className="text-md font-medium ">
-            My college
-          </label>
-        </div>
-      ) : (
-        toast.info("Please provide your college name to complete your profile.")
-      )}
+      <div className="flex justify-end gap-2 items-center mt-6 mr-4">
+        <input
+          type="checkbox"
+          id="college"
+          name="college"
+          className="rounded-md h-[14px] w-[14px] accent-zinc-700"
+          onChange={(e) =>
+            session?.user?.collegeName !== ""
+              ? setCollege(e.target.checked)
+              : toast.info(
+                  "Please provide your college name to complete your profile."
+                )
+          }
+        />
+        <label htmlFor="college" className="text-md font-medium ">
+          My college
+        </label>
+      </div>
       {discussions.length === 0 ? (
         <div className="flex   justify-center  ">
           <p className="text-lg text-gray-500 dark:text-gray-400 ">
@@ -296,7 +298,12 @@ const Trending = () => {
                   </p>
                 </div>
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
-                  <Button className="h-10" size="icon" variant="icon">
+                  <Button
+                    onClick={() => toggleLike(discussion._id)}
+                    className="h-10"
+                    size="icon"
+                    variant="icon"
+                  >
                     <ThumbsUpIcon
                       className={`w-4 h-4 cursor-pointer ${
                         discussion.isLiked && "text-blue-400"
@@ -304,12 +311,16 @@ const Trending = () => {
                         animationState[discussion._id] === "like" &&
                         "pop text-blue-400"
                       }`}
-                      onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
                     <span className="ml-2">{discussion.likes}</span>
                   </Button>
-                  <Button className="h-10 " size="icon" variant="icon">
+                  <Button
+                    onClick={() => toggleDislike(discussion._id)}
+                    className="h-10 "
+                    size="icon"
+                    variant="icon"
+                  >
                     <ThumbsDownIcon
                       className={`w-4 h-4 cursor-pointer ${
                         discussion.isDisliked && "text-red-400"
@@ -317,7 +328,6 @@ const Trending = () => {
                         animationState[discussion._id] === "dislike" &&
                         "pop text-red-400"
                       }`}
-                      onClick={() => toggleDislike(discussion._id)}
                     />
                     <span className="sr-only">Dislike</span>
                     <span className="ml-2">{discussion.dislikes}</span>

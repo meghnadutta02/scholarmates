@@ -97,9 +97,10 @@ export const options = {
           token.requestPending = session.requestPending;
         if (session.connection) token.connection = session.connection;
         if (session.degree) token.degree = session.degree;
-        if (session.yearInCollege) token.yearInCollege = session.yearInCollege;
-        if (session.bio) token.bio = session.bio;
-        if (session.dob) token.dob = session.dob;
+        if (session.bio !== null) token.bio = session.bio;
+        //Because DOB and Year null value needs to be set
+        token.dob = session.dob;
+        token.yearInCollege = session.yearInCollege;
       }
 
       return token;

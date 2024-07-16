@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/collapsible";
 import { useSession } from "next-auth/react";
 import { CaretSortIcon } from "@radix-ui/react-icons";
+import { FilterIcon } from "lucide-react";
+import { MdFilterAlt } from "react-icons/md";
 
 const FilterDrawer = ({ applyFilters }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -97,52 +99,51 @@ const FilterDrawer = ({ applyFilters }) => {
     <Drawer.Root direction="left">
       <Drawer.Trigger asChild>
         <button className="flex items-center">
-          <FaFilter className="mr-1" />
-          Filter
+          <MdFilterAlt className="mr-1 h-8 w-8" />
         </button>
       </Drawer.Trigger>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 "/>
-        <Drawer.Content className="rounded-se-lg bg-zinc-200 dark:bg-gray-200 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-scroll scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-400 scrollbar-thumb-rounded-full shadow-inner">
-          <div className="p-4 rounded-se-lg bg-zinc-200  dark:bg-gray-800 flex-1 h-full font-sans">
+        <Drawer.Overlay className="fixed inset-0 " />
+        <Drawer.Content className="rounded-se-lg bg-zinc-300 dark:bg-gray-200 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-scroll scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-400 scrollbar-thumb-rounded-full shadow-inner">
+          <div className="p-4 rounded-se-lg bg-zinc-300  dark:bg-gray-800 flex-1 h-full font-sans">
             <div className="max-w-lg mx-auto">
               <section className="flex">
                 <aside className="text-black dark:text-black text-md w-full">
-                 <div className="flex justify-between">
-                 <h2 className="font-semibold text-xl ">My College</h2>
-                  <ul className="border-b-2 border-gray-200 pb-[10px] ">
-                    <li>
-                      <input
-                        type="checkbox"
-                        id="college"
-                        name="college"
-                        checked={college}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            if (session?.user?.collegeName !== "") {
-                              setCollege(true);
+                  <div className="flex justify-between">
+                    <h2 className="font-semibold text-xl ">My College</h2>
+                    <ul className="border-b-2 border-gray-200 pb-[10px] ">
+                      <li>
+                        <input
+                          type="checkbox"
+                          id="college"
+                          name="college"
+                          checked={college}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              if (session?.user?.collegeName !== "") {
+                                setCollege(true);
+                              } else {
+                                toast.info(
+                                  "Please provide your college name to complete your profile."
+                                );
+                              }
                             } else {
-                              toast.info(
-                                "Please provide your college name to complete your profile."
-                              );
+                              setCollege(false);
                             }
-                          } else {
-                            setCollege(false);
-                          }
-                        }}
-                      />
-                      <label className="ml-2" htmlFor="college">
-                        Yes
-                      </label>
-                    </li>
-                  </ul>
-                 </div>
+                          }}
+                        />
+                        <label className="ml-2" htmlFor="college">
+                          Yes
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
 
                   <Collapsible className="border-b-2 border-gray-700 pb-[8px]">
                     <div className="flex my-2 items-center justify-between">
                       <h2 className="text-xl font-semibold">Categories</h2>
                       <CollapsibleTrigger asChild>
-                        <CaretSortIcon className="h-8 w-8 ml-4 hover:bg-slate-600 hover:rounded-full p-1" />
+                        <CaretSortIcon className="h-8 w-8 ml-4 hover:bg-slate-400 hover:rounded-full p-1" />
                       </CollapsibleTrigger>
                     </div>
                     <CollapsibleContent>
@@ -234,7 +235,7 @@ const FilterDrawer = ({ applyFilters }) => {
                     <div className="flex my-2 items-center justify-between">
                       <h2 className="text-xl font-semibold">Type</h2>
                       <CollapsibleTrigger asChild>
-                        <CaretSortIcon className="h-8 w-8 ml-4 hover:bg-slate-600 hover:rounded-full p-1" />
+                        <CaretSortIcon className="h-8 w-8 ml-4 hover:bg-slate-400 hover:rounded-full p-1" />
                       </CollapsibleTrigger>
                     </div>
                     <CollapsibleContent>
