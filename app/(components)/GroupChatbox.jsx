@@ -87,6 +87,9 @@ const GroupChatbox = ({
       setHasMoreMessages(false);
     } finally {
       setLoading(false);
+      if (page === 0) {
+        scrollDown();
+      }
     }
   }, []);
 
@@ -184,9 +187,9 @@ const GroupChatbox = ({
     }
   }, [groupId, socket, session.user.name, updateLastMessage]);
 
-  useEffect(() => {
+  const scrollDown = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [inboxMessages]);
+  };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -227,11 +230,32 @@ const GroupChatbox = ({
     (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
   );
 
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } =
+        chatContainerRef.current;
+      const isScrolledToBottom = scrollTop + clientHeight >= scrollHeight - 10;
+      setShowScrollButton(!isScrolledToBottom);
+    };
+
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      chatContainer.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (chatContainer) {
+        chatContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
   return (
     <>
-      {loading ? (
-        <Loading />
-      ) : showGroupDetails ? (
+      {showGroupDetails ? (
         <GroupDetails
           groupDetails={groupDetails}
           setShowGroupDetails={setShowGroupDetails}
@@ -242,72 +266,135 @@ const GroupChatbox = ({
         />
       ) : (
         <div className="flex flex-col justify-between bg-gray-50 p-2 dark:bg-gray-800">
-          <div className="flex items-center justify-between p-3">
-            <h2
-              className="text-center font-semibold text-xl py-4 cursor-pointer"
-              onClick={() => setShowGroupDetails(true)}
-            >
-              {groupDetails?.name}
-            </h2>
-            <div className=" p-1 rounded-lg">
-              <IoArrowBackCircleOutline
-                className="cursor-pointer hover:text-gray-500 transition-colors duration-200 ease-in-out"
-                onClick={() => setToggleChatView(true)}
-                size={30}
-              />
-            </div>
-          </div>
-
-          <div className="p-1 mx-2 border h-[32rem] rounded-md overflow-y-auto bg-white scrollbar-none">
-            <div ref={lastMessageRef}></div>
-            {sortedMessages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  msg.sender === session?.db_id
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
+          <div className="relative">
+            {showScrollButton && (
+              <button
+                onClick={scrollDown}
+                className="absolute bottom-8 right-8 bg-zinc-800 text-white py-1 px-2 rounded-full shadow-md hover:bg-zinc-600 transition-colors"
               >
-                <div
-                  className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
-                    msg.sender === session?.db_id
-                      ? "bg-blue-100"
-                      : "bg-gray-100"
-                  }`}
-                >
-                  {msg.sender != session?.db_id && (
-                    <p className="text-sm font-medium border-b border-gray-300">
-                      {msg.senderName}
-                    </p>
-                  )}
-                  {msg.attachments != null && (
-                    <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
-                      {msg.attachments.map((attachment, index) => (
-                        <DisplayMedia key={index} fileUrl={attachment} />
-                      ))}
-                    </div>
-                  )}
-                  <Interweave
-                    content={msg.text}
-                    matchers={[new UrlMatcher("url")]}
-                  />
-                  <p className="text-xs flex justify-end font-light">
-                    {msg.sending ? (
-                      <>Sending...</>
-                    ) : (
-                      <>
-                        {new Date(msg.updatedAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </>
-                    )}
-                  </p>
-                </div>
+                ↓
+              </button>
+            )}
+            <div className="flex items-center justify-between p-3">
+              <h2
+                className="text-center font-semibold text-xl py-4 cursor-pointer"
+                onClick={() => setShowGroupDetails(true)}
+              >
+                {groupDetails?.name}
+              </h2>
+              <div className=" p-1 rounded-lg">
+                <IoArrowBackCircleOutline
+                  className="cursor-pointer hover:text-gray-500 transition-colors duration-200 ease-in-out"
+                  onClick={() => setToggleChatView(true)}
+                  size={30}
+                />
               </div>
-            ))}
-            <div ref={messagesEndRef} />
+            </div>
+
+            <div
+              ref={chatContainerRef}
+              className="p-1 mx-2 border h-[32rem] rounded-md overflow-y-auto bg-white scrollbar-none"
+            >
+              {loading ? (
+                <Loading />
+              ) : (
+                <>
+                  {sortedMessages.map((msg, index) => {
+                    const currentDate = new Date(
+                      msg.updatedAt
+                    ).toLocaleDateString([], {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    });
+
+                    const previousDate =
+                      index > 0 && sortedMessages[index - 1]
+                        ? new Date(
+                            sortedMessages[index - 1].updatedAt
+                          ).toLocaleDateString([], {
+                            weekday: "long",
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : null;
+
+                    const showDateSeparator = currentDate !== previousDate;
+
+                    return (
+                      <div key={index}>
+                        {showDateSeparator && (
+                          <div className="text-center text-sm my-4 text-gray-500">
+                            {currentDate}
+                          </div>
+                        )}
+                        <div
+                          key={index}
+                          className={`flex ${
+                            msg.sender === session?.user?.db_id
+                              ? "justify-end"
+                              : "justify-start"
+                          }`}
+                          ref={
+                            index === 0
+                              ? (el) => {
+                                  lastMessageRef.current = el;
+                                }
+                              : null
+                          }
+                        >
+                          <div
+                            className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
+                              msg.sender === session?.user?.db_id
+                                ? "bg-blue-100"
+                                : "bg-gray-100"
+                            }`}
+                          >
+                            {msg.sender != session?.user?.db_id && (
+                              <p className="text-sm font-semibold">
+                                {msg.senderName}
+                              </p>
+                            )}
+                            {msg.attachments.length !== 0 && (
+                              <div className="flex flex-wrap justify-evenly max-w-lg gap-2 my-1 py-1 rounded-md bg-white">
+                                {msg.attachments.map((attachment, index) => (
+                                  <DisplayMedia
+                                    key={index}
+                                    fileUrl={attachment}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                            <Interweave
+                              content={msg.text}
+                              matchers={[new UrlMatcher("url")]}
+                            />
+                            <p className="text-xs flex justify-end font-light">
+                              {msg.sending ? (
+                                <>Sending...</>
+                              ) : (
+                                <>
+                                  {new Date(msg.updatedAt).toLocaleTimeString(
+                                    [],
+                                    {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    }
+                                  )}
+                                </>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
           </div>
           <div>
             {filePreviews.length > 0 && (
@@ -354,8 +441,8 @@ const GroupChatbox = ({
                   setMessage((prevMessage) => ({
                     ...prevMessage,
                     text: e.target.value,
-                    senderName: session?.name,
-                    sender: session?.db_id,
+                    senderName: session?.user?.name,
+                    sender: session?.user?.db_id,
                   }))
                 }
                 placeholder="Type a message"

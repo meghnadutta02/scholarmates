@@ -88,6 +88,7 @@ export async function GET() {
           userId: "$contactInfo._id",
           userName: "$contactInfo.name",
           profilePic: "$contactInfo.profilePic",
+          connections: "$contactInfo.connection",
           unreadMessagesCount: { $size: "$unreadMessages" },
           unreadMessages: 1,
           lastMessageText: "$lastMessageInfo.text",
@@ -98,11 +99,11 @@ export async function GET() {
         $sort: { lastMessageTime: -1 },
       },
     ]);
-
     const result = messages.map((message) => ({
       userId: message.userId,
       userName: message.userName,
       profilePic: message.profilePic,
+      connections: message.connections,
       unreadMessagesCount: message.unreadMessagesCount,
       unreadMessages: message.unreadMessages,
       lastMessageText: message.lastMessageText,

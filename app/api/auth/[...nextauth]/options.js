@@ -98,9 +98,29 @@ export const options = {
         if (session.connection) token.connection = session.connection;
         if (session.degree) token.degree = session.degree;
         if (session.bio !== null) token.bio = session.bio;
-        //Because DOB and Year null value needs to be set
-        token.dob = session.dob;
-        token.yearInCollege = session.yearInCollege;
+
+        // Reverting to the previous version...
+        if (session.dob) token.dob = session.dob;
+        if (session.yearInCollege) token.yearInCollege = session.yearInCollege;
+
+        // 2 cases need to be considered
+        // 1- Profile update  : DOB and Year null value needs to be accessed when user clears the fields
+        // Checking for Eg; "if(session.Year || session.Year === null)" is the same as updating everytime without any condition
+        //  i.e. what i did previously just token.dob = session.dob
+
+        // If we do token.dob=session.dob without conditions, then problem arises on ACCEPT requests & REMOVE users
+        // As only connection object is being sent, the dob & yearInCollege get updated to null
+        // hence the profile progress drops faultily
+
+        // Possible solns. -
+        // -  Spread and send the session dob and year along with the connection array while accept/ remove
+        //     Ofc this requires dob and year to be sent on every update (Probably the easier approach)
+        // -  Use a nested if for the null value cases to update to null values by passing an empty string from profile update
+        //  if (session.dob) {
+        //     if (session.dob === "") token.dob = null;
+        //     else token.dob = session.dob;
+        // Because this null [ Number and Date ] is being used in Profile Progress
+        // Note : date = "" converts to the default value 1970... and must be null on empty unless converted to string
       }
 
       return token;

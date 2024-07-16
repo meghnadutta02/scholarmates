@@ -56,7 +56,7 @@ const FileItem = ({ fileType, fileName, url, onClick }) => {
         <p className="ml-2 w-32 truncate">{fileName}</p>
       </div>
       <button
-        className="p-2 ml-8 rounded-full bg-gray-300"
+        className="p-2 ml-8 mr-2 rounded-full bg-gray-300"
         onClick={() => onClick(url, fileName)}
       >
         <DownloadIcon className="h-4 w-4" />
