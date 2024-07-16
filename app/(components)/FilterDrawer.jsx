@@ -12,12 +12,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 
 const FilterDrawer = ({ applyFilters }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const { session, user } = useSession();
+  const { data: session } = useSession();
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [college, setCollege] = useState(false);
   const [selectedType, setSelectedType] = useState([]);
@@ -118,7 +118,7 @@ const FilterDrawer = ({ applyFilters }) => {
                         checked={college}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            if (user?.collegeName !== "") {
+                            if (session?.user?.collegeName !== "") {
                               setCollege(true);
                             } else {
                               toast.info(

@@ -66,7 +66,7 @@ export default function DrawerDialogDemo({ params }) {
   if (isDesktop) {
     return (
       <div className="flex flex-col w-full relative">
-        <ProfileDetails initialUser={user} />
+        <ProfileDetails user={user} setUser={setUser} />
         {user && session.db_id == user._id && (
           <div className="mt-8 mx-auto">
             <Dialog open={open} onOpenChange={setOpen}>
@@ -91,7 +91,7 @@ export default function DrawerDialogDemo({ params }) {
 
   return (
     <>
-      <ProfileDetails initialUser={user} />
+      <ProfileDetails user={user} />
       {user && session.db_id == user._id && (
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>

@@ -17,7 +17,7 @@ export async function PUT(req) {
     if (!id) {
       return NextResponse.json({ result: "User not found" }, { status: 401 });
     }
-    
+
     const data = await req.formData();
     const updatedUserData = data.get("profilePic");
 

@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import AvatarEditor from "react-avatar-editor";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
-const ProfilePictureUpdate = ({ user, setUser, setUser1 }) => {
+const ProfilePictureUpdate = ({ user, setUser }) => {
   const [selectedImage, setSelectedImage] = useState(user?.profilePic);
   const [loading, setLoading] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { update } = useSession();
   const editorRef = useRef(null);
   const [scale, setScale] = useState(1);
 
@@ -55,10 +57,8 @@ const ProfilePictureUpdate = ({ user, setUser, setUser1 }) => {
           ...prevUser,
           profilePic: URL.createObjectURL(img),
         }));
-        setUser1((prevUser) => ({
-          ...prevUser,
-          profilePic: URL.createObjectURL(img),
-        }));
+        update({ profilePic: URL.createObjectURL(img) });
+
         toast.success("Profile updated successfully");
         setDialogOpen(false);
       } else {

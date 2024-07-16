@@ -4,6 +4,7 @@ import { FaTimes, FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const Notification = ({
   sender,
@@ -18,7 +19,8 @@ const Notification = ({
   const [loading, setLoading] = useState(false);
 
   const [isConnected, setIsConnected] = useState(false);
-
+  const { data: session, update } = useSession();
+  console.log(session);
   const acceptHandle = async (action) => {
     setLoading(true);
     try {
@@ -47,6 +49,9 @@ const Notification = ({
           setIsVisible(false);
           if (action === "accept") {
             setIsConnected(true);
+            update({
+              connection: [...session.user.connection, sender],
+            });
           }
         } else {
           throw new Error("Failed to update request");

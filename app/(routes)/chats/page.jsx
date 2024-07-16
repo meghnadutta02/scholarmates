@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import DiscussionChatsSection from "@/app/(components)/DiscussionChatsSection";
 import UserInboxSearch from "@/app/(components)/UserInboxSearch";
-import Link from "next/link";
 import Loading from "@/app/(components)/Loading";
 import { useSearchParams } from "next/navigation";
 
@@ -75,7 +74,6 @@ export default function Chats() {
   };
 
   useEffect(() => {
-    console.log(selectDiscussion);
     if (selectDiscussion) {
       setTabValue("g");
     }
@@ -91,7 +89,7 @@ export default function Chats() {
         <Tabs
           value={tabValue}
           onValueChange={setTabValue}
-          className="mt-6 flex flex-col items-center"
+          className="mt-4 flex flex-col items-center"
         >
           <TabsList>
             <TabsTrigger value="c">Connections</TabsTrigger>
@@ -108,7 +106,7 @@ export default function Chats() {
                   <div className="flex flex-col rounded-b-lg border mb-4 ">
                     <div className="flex flex-1 min-w-[300px]">
                       {toggleChatView ? (
-                        <div className="min-w-[375px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] px-1 flex flex-col overflow-y-auto scrollbar-thin">
+                        <div className="min-w-[372px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] px-1 flex flex-col overflow-y-auto scrollbar-thin">
                           {connections.map((connection) => (
                             <div
                               key={connection.userId}
@@ -161,7 +159,7 @@ export default function Chats() {
                       ) : (
                         <>
                           {selectedUser ? (
-                            <div className="min-h-[34rem] min-w-[340px] sm:min-w-[480px] md:min-w-[750px]">
+                            <div className="min-h-[34rem] min-w-[372px] sm:min-w-[480px] md:min-w-[750px]">
                               <UserChatbox
                                 key={selectedUser.userId}
                                 selectedUser={selectedUser}
@@ -170,7 +168,7 @@ export default function Chats() {
                               />
                             </div>
                           ) : (
-                            <div className="flex flex-wrap justify-center py-16 min-w-[340px] sm:min-w-[480px] md:min-w-[750px]">
+                            <div className="flex flex-wrap justify-center py-16 min-w-[372px] sm:min-w-[480px] md:min-w-[750px]">
                               <p>Choose conversation</p>
                             </div>
                           )}
@@ -179,7 +177,7 @@ export default function Chats() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col px-4 justify-start min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] border border-t-0">
+                  <div className="flex flex-col px-4 justify-start min-w-[372px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] border border-t-0">
                     <p className="text-lg text-center text-gray-500 dark:text-gray-400 my-12">
                       You have no chats.
                       <br />

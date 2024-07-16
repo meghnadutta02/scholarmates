@@ -7,7 +7,7 @@ import DiscussionSection from "./DiscussionSection";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import ProfilePictureView from "./ProfilePictureView";
 import { useRouter } from "next/navigation";
-import { useSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { FaTimes, FaCheck } from "react-icons/fa";
 
@@ -16,7 +16,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(initialUser);
 
-  const { session } = useSession();
+  const { data: session, update } = useSession();
 
   useEffect(() => {
     const fetchCurrentUser = async (id) => {
@@ -39,7 +39,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
 
           if (isRequestReceived) {
             const requestRes = await fetch(
-              `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/requests/${session.db_id}/${initialUser._id}`,
+              `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/requests/${session.user.db_id}/${initialUser._id}`,
               {
                 method: "GET",
                 headers: {
@@ -73,8 +73,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
         setLoading(false);
       }
     };
-    fetchCurrentUser(session.db_id);
-  }, [session.db_id, initialUser._id]);
+    if (session?.user?.db_id) {
+      fetchCurrentUser(session.user.db_id);
+    }
+  }, [session?.user?.db_id, initialUser._id]);
 
   const handleremoveClick = async (id) => {
     setLoading(true);
@@ -92,9 +94,12 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           ...prevUser,
           isConnected: false,
           connection: prevUser.connection.filter(
-            (conn) => conn !== session?.db_id
+            (conn) => conn !== session?.user?.db_id
           ),
         }));
+        update({
+          connection: session.user.connection.filter((conn) => conn !== id),
+        });
       } else {
         toast.error("Failed to remove connection");
       }
@@ -110,7 +115,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
     try {
       if (profileId && session) {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${session.db_id}`,
+          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${session.user.db_id}`,
           {
             method: "POST",
             headers: {
@@ -142,7 +147,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   const acceptHandle = async (action) => {
     setLoading(true);
     try {
-      if (session.db_id && user.requestId) {
+      if (session.user.db_id && user.requestId) {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/receive`,
           {
@@ -152,7 +157,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             },
             body: JSON.stringify({
               friendshipId: user.requestId,
-              userId: session.db_id,
+              userId: session.user.db_id,
               action: action,
             }),
             cache: "no-cache",
@@ -165,11 +170,14 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           );
 
           if (action === "accept") {
+            update({
+              connection: [...session.user.connection, user._id],
+            });
             setUser((prevUser) => ({
               ...prevUser,
               isConnected: true,
               isRequestReceived: false,
-              connection: [...prevUser.connection, session.db_id],
+              connection: [...prevUser.connection, session.user.db_id],
             }));
           } else {
             setUser((prevUser) => ({
@@ -242,7 +250,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
                 onClick={() => handleremoveClick(user._id)}
                 disabled={loading}
               >
-                Remove Connection
+                Remove
               </Button>
             ) : user.isRequestPending ? (
               <Button disabled={true}>Requested</Button>

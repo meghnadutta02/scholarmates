@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import Link from "next/link";
-import { useSession } from "@/app/(components)/SessionProvider";
+import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import ProfileCarousel from "@/app/(components)/ProfileCarousel";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ const getYearWithSuffix = (year) => {
 
 export default function Component() {
   const router = useRouter();
-  const { session, user } = useSession();
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState();
@@ -36,7 +36,7 @@ export default function Component() {
 
   useEffect(() => {
     if (session) {
-      setUserId(session);
+      setUserId(session.user);
     }
   }, [session]);
 
@@ -52,7 +52,7 @@ export default function Component() {
             throw new Error("Failed to fetch data");
           }
           const data = await res.json();
-          console.log("result:", data.result);
+
           setrequestReceived(data.requestReceived);
           setRequestPen(data.requests);
 
@@ -70,7 +70,7 @@ export default function Component() {
   const handleConnectClick = async (profileId) => {
     try {
       setConnectingProfile(profileId);
-      console.log(process.env.NEXT_PUBLIC_NODE_SERVER);
+
       if (profileId && userId) {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${userId.db_id}`,
@@ -103,9 +103,9 @@ export default function Component() {
   return (
     <>
       {session &&
-      user &&
-      user.interestCategories.length > 0 &&
-      user.interestSubcategories.length > 0 ? (
+      session.user &&
+      session.user.interestCategories.length > 0 &&
+      session.user.interestSubcategories.length > 0 ? (
         <div className="">
           {loading ? (
             <Loading />
@@ -251,7 +251,7 @@ export default function Component() {
             Please complete your profile to find matches.
           </div>
           <Link
-            href={`/profile/${session.db_id}`}
+            href={`/profile/${session?.user?.db_id}`}
             asChild
             className="flex justify-center"
           >

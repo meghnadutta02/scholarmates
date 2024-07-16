@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import Select from "react-select";
-import { useSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
 import { interests } from "../(data)/interests";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ import { format, subYears } from "date-fns";
 
 const ProfileEdit = ({ user, setUser }) => {
   const [userState, setUserState] = useState(user);
-  const { setUser: setSessionUser } = useSession();
+  const { update } = useSession();
   const minDate = format(new Date(1975, 0, 1), "yyyy-MM-dd");
   const maxDate = format(subYears(new Date(), 11), "yyyy-MM-dd");
   const [selectedCategories, setSelectedCategories] = useState(
@@ -134,7 +134,7 @@ const ProfileEdit = ({ user, setUser }) => {
       const data = await res.json();
 
       setUser(data.result);
-      setSessionUser(data.result);
+      update(data.result);
       setFormOpen(false);
       toast.success("Profile updated successfully");
     } else {

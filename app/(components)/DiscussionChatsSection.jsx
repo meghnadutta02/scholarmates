@@ -98,7 +98,7 @@ const Page = ({ selectDiscussion }) => {
               <div className="flex flex-col rounded-b-lg border">
                 <div className="flex flex-1">
                   {toggleChatView ? (
-                    <div className="min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
+                    <div className="min-w-[372px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] px-1 flex flex-col gap-2 overflow-y-auto scrollbar-thin">
                       {groups.map((group) => (
                         <div
                           key={group.groupId}
@@ -155,7 +155,7 @@ const Page = ({ selectDiscussion }) => {
                   ) : (
                     <>
                       {isRoomSelected && (
-                        <div className="min-h-[34rem] min-w-[340px] sm:min-w-[480px] md:min-w-[750px]">
+                        <div className="min-h-[34rem] min-w-[372px] sm:min-w-[480px] md:min-w-[750px]">
                           <GroupChatbox
                             key={roomID || linktoChatRef.current}
                             roomID={roomID || linktoChatRef.current}
@@ -172,7 +172,7 @@ const Page = ({ selectDiscussion }) => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-start w-full px-4 min-w-[340px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] border">
+              <div className="flex flex-col items-center justify-start w-full px-4 min-w-[372px] sm:min-w-[480px] md:min-w-[750px] h-[32rem] border">
                 <p className="text-lg text-gray-500 dark:text-gray-400 my-12">
                   You haven&apos;t started or joined any discussions yet.
                 </p>

@@ -11,7 +11,8 @@ import { VscSend } from "react-icons/vsc";
 
 import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
-import { useSession } from "./SessionProvider";
+import { useSession as useCustomSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 
@@ -23,7 +24,8 @@ const GroupChatbox = ({
   setToggleChatView,
   updateLastMessage,
 }) => {
-  const { socket, session } = useSession();
+  const { socket } = useCustomSession();
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
 
   const [showGroupDetails, setShowGroupDetails] = useState(false);
@@ -105,9 +107,9 @@ const GroupChatbox = ({
 
       const formData = new FormData();
       formData.append("text", message.text);
-      formData.append("sender", session.db_id);
+      formData.append("sender", session.user.db_id);
       formData.append("groupId", groupId);
-      formData.append("senderName", session.name);
+      formData.append("senderName", session.user.name);
 
       if (message.attachments != null) {
         message.attachments.forEach((file) => {
@@ -140,7 +142,7 @@ const GroupChatbox = ({
           return newMessages;
         });
       }
-      updateLastMessage(groupId, message.text, session.name);
+      updateLastMessage(groupId, message.text, session.user.name);
       setMessage({
         text: "",
         groupId: roomID,
@@ -165,7 +167,7 @@ const GroupChatbox = ({
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
-        updateLastMessage(groupId, msg.text, session.name);
+        updateLastMessage(groupId, msg.text, session.user.name);
         setInboxMessages((prevMessages) => {
           const newMessages = new Map(prevMessages);
           newMessages.set(msg._id, msg);
@@ -180,7 +182,7 @@ const GroupChatbox = ({
         socket.off("receive-message", messageHandler);
       };
     }
-  }, [groupId, socket, session.name, updateLastMessage]);
+  }, [groupId, socket, session.user.name, updateLastMessage]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

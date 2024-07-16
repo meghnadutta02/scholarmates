@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
-import { useSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
+import { useSession as useCustomSession } from "./SessionProvider";
 import {
   Popover,
   PopoverContent,
@@ -22,11 +23,12 @@ const UserChatbox = ({
   setToggleChatView,
   updateLastMessage,
 }) => {
-  const { socket, session } = useSession();
+  const { data: session } = useSession();
+  const { socket } = useCustomSession();
   const [message, setMessage] = useState({
     text: "",
     attachments: [],
-    sender: session.db_id,
+    sender: session?.user?.db_id,
   });
 
   const userID = selectedUser._id || selectedUser.userId;
@@ -104,7 +106,7 @@ const UserChatbox = ({
 
       const formData = new FormData();
       formData.append("text", message.text);
-      formData.append("sender", session.db_id);
+      formData.append("sender", session?.user?.db_id);
 
       if (message.attachments != null) {
         message.attachments.forEach((file) => {
@@ -127,7 +129,7 @@ const UserChatbox = ({
         socket.emit("userchat-send", {
           message: data.result,
           receiver: selectedUser,
-          sender: session.db_id,
+          sender: session?.user?.db_id,
         });
       } else {
         toast.error("Message not sent");
@@ -175,7 +177,7 @@ const UserChatbox = ({
         markMessagesAsRead(userID);
       };
       socket.emit("userchat-setup", {
-        sender: session.db_id,
+        sender: session?.user?.db_id,
         receiver: userID,
       });
       socket.on("userchat-receive", messageHandler);
@@ -184,7 +186,7 @@ const UserChatbox = ({
         socket.off("userchat-receive", messageHandler);
       };
     }
-  }, [socket, inboxMessages, session.db_id, updateLastMessage, userID]);
+  }, [socket, inboxMessages, session?.user?.db_id, updateLastMessage, userID]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -246,8 +248,11 @@ const UserChatbox = ({
                       {/* <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" /> */}
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent>
-                    <Link href={`/profile/${userID}`} className="text-blue-600">
+                  <PopoverContent className="max-w-[70px]">
+                    <Link
+                      href={`/profile/${userID}`}
+                      className="text-blue-600 "
+                    >
                       View Profile
                     </Link>
                   </PopoverContent>
@@ -270,55 +275,89 @@ const UserChatbox = ({
             </div>
 
             <div className="flex flex-col h-[32rem] border rounded-md bg-white overflow-y-auto scrollbar-none p-1">
-              {inboxMessages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${
-                    msg.sender === userID ? "justify-start" : "justify-end"
-                  }`}
-                  ref={
-                    index === 0
-                      ? (el) => {
-                          lastMessageRef.current = el;
-                        }
-                      : null
+              {inboxMessages.map((msg, index) => {
+                const currentDate = new Date(msg.createdAt).toLocaleDateString(
+                  [],
+                  {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
                   }
-                >
-                  <div
-                    className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
-                      msg.sender === userID ? "bg-gray-100" : "bg-blue-100"
-                    }`}
-                  >
-                    {msg.attachments != null && (
-                      <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
-                        {msg.attachments.map((attachment, index) => (
-                          <DisplayMedia key={index} fileUrl={attachment} />
-                        ))}
+                );
+
+                const previousDate =
+                  index > 0
+                    ? new Date(
+                        inboxMessages[index - 1].createdAt
+                      ).toLocaleDateString([], {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : null;
+
+                const showDateSeparator = currentDate !== previousDate;
+
+                return (
+                  <div key={index}>
+                    {showDateSeparator && (
+                      <div className="text-center text-sm my-4 text-gray-500">
+                        {currentDate}
                       </div>
                     )}
-                    <Interweave
-                      content={msg.text}
-                      matchers={[new UrlMatcher("url")]}
-                    />
-                    <p className="text-[10px] flex justify-end font-light">
-                      {msg.sending ? (
-                        <>Sending...</>
-                      ) : (
-                        <>
-                          {new Date(msg.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </>
-                      )}
-                    </p>
+                    <div
+                      id={`msg-${index}`}
+                      data-date={msg.createdAt}
+                      className={`flex ${
+                        msg.sender === userID ? "justify-start" : "justify-end"
+                      }`}
+                      ref={
+                        index === 0
+                          ? (el) => {
+                              lastMessageRef.current = el;
+                            }
+                          : null
+                      }
+                    >
+                      <div
+                        className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
+                          msg.sender === userID ? "bg-gray-100" : "bg-blue-100"
+                        }`}
+                      >
+                        {msg.attachments != null && (
+                          <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
+                            {msg.attachments.map((attachment, index) => (
+                              <DisplayMedia key={index} fileUrl={attachment} />
+                            ))}
+                          </div>
+                        )}
+                        <Interweave
+                          content={msg.text}
+                          matchers={[new UrlMatcher("url")]}
+                        />
+                        <p className="text-[10px] flex justify-end font-light">
+                          {msg.sending ? (
+                            <>Sending...</>
+                          ) : (
+                            <>
+                              {new Date(msg.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+
               <div ref={messagesEndRef} />
             </div>
           </div>
-
           <div className="flex-shrink-0">
             {filePreviews.length > 0 && (
               <div className="flex gap-2 mb-2">
@@ -352,37 +391,52 @@ const UserChatbox = ({
                 ))}
               </div>
             )}
-            <form
-              onSubmit={sendMessageHandler}
-              className="flex items-center p-2 gap-2"
-            >
-              <Input
-                className="flex-1"
-                placeholder="Type a message"
-                value={message.text}
-                onChange={(e) =>
-                  setMessage((prevMessage) => ({
-                    ...prevMessage,
-                    text: e.target.value,
-                  }))
-                }
-              />
-              <div>
-                <label className="relative cursor-pointer m-2">
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                  <PaperclipIcon className="w-5 h-5 mx-2 cursor-pointer" />
-                </label>
-              </div>
+            {session?.user?.connection.includes(userID) ? (
+              <form
+                onSubmit={sendMessageHandler}
+                className="flex items-center p-2 gap-2"
+              >
+                <Input
+                  className="flex-1"
+                  placeholder="Type a message"
+                  value={message.text}
+                  onChange={(e) =>
+                    setMessage((prevMessage) => ({
+                      ...prevMessage,
+                      text: e.target.value,
+                    }))
+                  }
+                />
+                <div>
+                  <label className="relative cursor-pointer m-2">
+                    <input
+                      type="file"
+                      multiple
+                      onChange={handleFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                    <PaperclipIcon className="w-5 h-5 mx-2 cursor-pointer" />
+                  </label>
+                </div>
 
-              <Button className="h-8" type="submit">
-                <VscSend height={50} />
-              </Button>
-            </form>
+                <Button className="h-8" type="submit">
+                  <VscSend height={50} />
+                </Button>
+              </form>
+            ) : (
+              <div className="p-2 text-center mb-2 mt-[-4px] rounded-b-lg bg-red-100">
+                <p> You are not connected with this user anymore</p>
+                <p className="text-sm">
+                  <Link
+                    href={`/profile/${userID}`}
+                    className="font-semibold text-blue-700"
+                  >
+                    Send a request{" "}
+                  </Link>
+                  to start chatting again
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
