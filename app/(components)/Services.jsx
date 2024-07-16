@@ -9,8 +9,10 @@ import { TypeAnimation } from "react-type-animation";
 import puzzle from "@/public/puzzle.png";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-
+import {useRouter} from "next/navigation"
 const Services = () => {
+ 
+  const router=useRouter();
   const item = {
     hidden: { opacity: 0, scale: 0.6 },
     visible: {
@@ -57,7 +59,8 @@ const Services = () => {
         >
           Sign up to explore!
         </motion.div>
-        <Button className="py-2 px-4 md:py-6 md:px-8 max-w-[200px] text-md lg:text-lg bg-blue-700 transition-transform hover:scale-110 hover:bg-pink-700">
+        <Button onClick={() => router.push('/api/auth/signin?callbackUrl=/discussions')}
+      className="py-2 px-4 md:py-6 md:px-8 max-w-[200px] text-md lg:text-lg bg-blue-700 transition-transform hover:scale-110 hover:bg-pink-700">
           Join Now
         </Button>
       </div>

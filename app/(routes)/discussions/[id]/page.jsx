@@ -3,6 +3,7 @@ import { MdOutlineInfo } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { RiShareForwardLine } from "react-icons/ri";
@@ -227,7 +228,9 @@ const DiscussionDetails = ({ params }) => {
         {discussion.coverImage !== "" ? (
           <div className="flex flex-col gap-2 md:gap-4">
             <div className="flex justify-between py-1 px-2 shadow-sm rounded-md md:py-[10px] md:px-4">
+            <Link href={`/profile/${discussion.creator._id}`}>
               <div className="flex items-center gap-2 rounded-md">
+             
                 <Image
                   alt="Avatar"
                   className="w-10 h-10 rounded-full md:w-[54px] md:h-[54px]"
@@ -240,6 +243,7 @@ const DiscussionDetails = ({ params }) => {
                   {discussion.creator.name}
                 </span>
               </div>
+              </Link>
               <div className="flex items-center text-gray-500 dark:text-gray-400">
                 <span>
                   <ReactTimeAgo
@@ -354,7 +358,8 @@ const DiscussionDetails = ({ params }) => {
         ) : (
           <div className="container mx-auto p-4">
             <div className="flex items-start gap-4 p-2 bg-white dark:bg-gray-800 md:p-4">
-              <Image
+             <Link href={`/profile/${discussion.creator._id}`}>
+             <Image
                 alt="Avatar"
                 className="w-12 h-12 rounded-full md:w-[54px] md:h-[54px]"
                 height="48"
@@ -362,17 +367,20 @@ const DiscussionDetails = ({ params }) => {
                 style={{ aspectRatio: "48/48", objectFit: "cover" }}
                 width="48"
               />
+              </Link>
               <div className="flex-1 grid gap-2">
                 <div className="flex justify-between">
                   <div className="flex flex-col gap-2">
+                  <Link href={`/profile/${discussion.creator._id}`}>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       {discussion.creator.name}
                     </span>
+                    </Link>
                     <h4 className="text-md font-semibold">
                       {discussion.title}
                     </h4>
                   </div>
-
+                 
                   <div className="flex flex-col items-center gap-2 ">
                     {session?.db_id == discussion.creator._id && (
                       <div className="  flex justify-end gap-2">
@@ -461,6 +469,7 @@ const DiscussionDetails = ({ params }) => {
                   </Button>
                 </div>
               </div>
+           
             </div>
           </div>
         )}
