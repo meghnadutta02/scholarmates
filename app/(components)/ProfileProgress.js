@@ -43,7 +43,7 @@ const ProfileProgress = () => {
   return (
     <div className="z-50 relative w-full">
       <Progress value={completionPercentage} className="h-4" />
-      <span className="absolute transform top-0 left-[76px] text-red-400 text-[11.5px]">
+      <span className="absolute transform top-0 left-[76px] text-white text-[11.5px]">
         {completionPercentage}% profile completed
       </span>
     </div>
