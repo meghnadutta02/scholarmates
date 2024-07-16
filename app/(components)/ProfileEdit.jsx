@@ -113,7 +113,7 @@ const ProfileEdit = ({ user, setUser }) => {
       formData = {
         ...userState,
         interestSubcategories: interests,
-        dob: date,
+        dob: date ? date.toISOString() : null,
         interestCategories: categories,
       };
     } else {
@@ -121,7 +121,7 @@ const ProfileEdit = ({ user, setUser }) => {
         ...userState,
         interestSubcategories: [],
         interestCategories: [],
-        dob: date,
+        dob: date ? date.toISOString() : null,
       };
     }
 
@@ -132,7 +132,6 @@ const ProfileEdit = ({ user, setUser }) => {
     });
     if (res.ok) {
       const data = await res.json();
-
       setUser(data.result);
       update(data.result);
       setFormOpen(false);
@@ -151,6 +150,7 @@ const ProfileEdit = ({ user, setUser }) => {
             id="name"
             name="name"
             value={userState.name}
+            required
             onChange={(e) => handleChange("name", e.target.value)}
           />
         </div>
@@ -223,11 +223,19 @@ const ProfileEdit = ({ user, setUser }) => {
             <Label htmlFor="dob">Date of Birth</Label>
             <input
               type="date"
-              value={date.toISOString().split("T")[0]}
-              min={minDate}
+              value={
+                date && !isNaN(Date.parse(date))
+                  ? new Date(date).toISOString().split("T")[0]
+                  : ""
+              }
               max={maxDate}
               className="w-full p-1 rounded-sm border border-gray-350"
-              onChange={(e) => setDate(new Date(e.target.value))}
+              onChange={(e) => {
+                const newDate = e.target.value
+                  ? new Date(e.target.value)
+                  : null;
+                setDate(newDate);
+              }}
             />
           </div>
         </div>
