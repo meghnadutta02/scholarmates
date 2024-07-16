@@ -102,13 +102,14 @@ const FilterDrawer = ({ applyFilters }) => {
         </button>
       </Drawer.Trigger>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-        <Drawer.Content className="rounded-se-lg bg-zinc-700 dark:bg-gray-800 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-scroll scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-400 scrollbar-thumb-rounded-full shadow-inner">
-          <div className="p-4 rounded-se-lg bg-zinc-700  dark:bg-gray-800 flex-1 h-full font-sans">
+        <Drawer.Overlay className="fixed inset-0 "/>
+        <Drawer.Content className="rounded-se-lg bg-zinc-200 dark:bg-gray-200 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-scroll scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-400 scrollbar-thumb-rounded-full shadow-inner">
+          <div className="p-4 rounded-se-lg bg-zinc-200  dark:bg-gray-800 flex-1 h-full font-sans">
             <div className="max-w-lg mx-auto">
               <section className="flex">
-                <aside className="text-gray-200 dark:text-white text-md w-full">
-                  <h2 className="font-semibold text-xl ">My College</h2>
+                <aside className="text-black dark:text-black text-md w-full">
+                 <div className="flex justify-between">
+                 <h2 className="font-semibold text-xl ">My College</h2>
                   <ul className="border-b-2 border-gray-200 pb-[10px] ">
                     <li>
                       <input
@@ -135,8 +136,9 @@ const FilterDrawer = ({ applyFilters }) => {
                       </label>
                     </li>
                   </ul>
+                 </div>
 
-                  <Collapsible className="border-b-2 border-gray-200 pb-[8px]">
+                  <Collapsible className="border-b-2 border-gray-700 pb-[8px]">
                     <div className="flex my-2 items-center justify-between">
                       <h2 className="text-xl font-semibold">Categories</h2>
                       <CollapsibleTrigger asChild>
@@ -228,7 +230,7 @@ const FilterDrawer = ({ applyFilters }) => {
                     </CollapsibleContent>
                   </Collapsible>
 
-                  <Collapsible className="border-b-2 border-gray-200 pb-[8px]">
+                  <Collapsible className="border-b-2 border-gray-700 pb-[8px]">
                     <div className="flex my-2 items-center justify-between">
                       <h2 className="text-xl font-semibold">Type</h2>
                       <CollapsibleTrigger asChild>
