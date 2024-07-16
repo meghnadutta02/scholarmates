@@ -132,6 +132,7 @@ const DiscussionsPage = () => {
                   >
                     {suggestions.map((suggestion, index) => (
                       <Link
+                        key={index}
                         href={`/discussions/${suggestion._id}`}
                         className="hover:bg-gray-400"
                       >

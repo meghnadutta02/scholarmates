@@ -49,7 +49,7 @@ export const SessionProvider = ({ children }) => {
     return () => {
       newSocket.close();
     };
-  }, []);
+  }, [session?.db_id]);
 
  
   return (

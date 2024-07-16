@@ -97,10 +97,10 @@ const NavbarClient = () => {
           <div className="flex flex-row md:justify-center justify ">
             <div className="flex  items-center px-2 rounded-s-xl border-2 border-zinc-700 bg-white">
               <Link
-                href="#"
+                href="/discussions"
                 className="flex items-center gap-2 font-semibold md:mr-0 mr-10"
               >
-                <Image src={logo} alt="Likeminds" className="h-10 w-10" />
+                <Image src={logo} alt="ScholarMates" className="h-10 w-10" />
                 <span>ScholarMates</span>
               </Link>
             </div>
