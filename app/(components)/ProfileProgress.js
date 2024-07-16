@@ -31,7 +31,7 @@ const ProfileProgress = () => {
       const percentage = Math.round(
         (filledFields.length / (fields.length + 1)) * 100
       );
-
+      console.log(percentage);
       setCompletionPercentage(percentage);
     }
   }, [session]);
