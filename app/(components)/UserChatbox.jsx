@@ -248,7 +248,7 @@ const UserChatbox = ({
                       {/* <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" /> */}
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent className="max-w-[70px]">
+                  <PopoverContent className="max-w-[132px]">
                     <Link
                       href={`/profile/${userID}`}
                       className="text-blue-600 "

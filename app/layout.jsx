@@ -30,7 +30,7 @@ export default async function RootLayout({ children }) {
               {session ? (
                 <div className="flex justify-center md:mt-[69px] mt-[75px] ">
                   <LeftSidebar />
-                  <div className="flex justify-center min-h-screen md:w-[70%] w-[95%]">
+                  <div className="flex justify-center min-h-screen md:w-[70%] w-[95%] scrollbar-hide">
                     {children}
                   </div>
                   <RightSidebar />

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const About = () => {
   return (
-    <section className="text-gray-800 flex flex-col space-y-[70%]">
+    <section className="text-gray-800 flex flex-col justify-between h-full">
       <div className="   p-4">
         <div className="flex flex-col items-center text-center mb-8">
           <p className="font-bold text-lg"> ScholarMates</p>

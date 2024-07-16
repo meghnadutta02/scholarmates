@@ -9,7 +9,6 @@ const ProfileProgress = () => {
 
   useEffect(() => {
     if (session?.user) {
-      console.log(session.user);
       const user = session.user;
       const fields = [
         "name",
@@ -31,7 +30,6 @@ const ProfileProgress = () => {
       const percentage = Math.round(
         (filledFields.length / (fields.length + 1)) * 100
       );
-      console.log(percentage);
       setCompletionPercentage(percentage);
     }
   }, [session]);
@@ -42,7 +40,10 @@ const ProfileProgress = () => {
 
   return (
     <div className="z-50 relative w-full">
-      <Progress value={completionPercentage} className="h-4" />
+      <Progress
+        value={completionPercentage}
+        className="h-4 md:h-5 items-center"
+      />
       <span className="absolute transform top-0 left-[76px] text-white text-[11.5px]">
         {completionPercentage}% profile completed
       </span>

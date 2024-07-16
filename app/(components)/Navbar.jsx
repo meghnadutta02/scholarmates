@@ -129,7 +129,7 @@ const NavbarClient = () => {
                 className="h-5 w-5 text-white cursor-pointer"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
               />
-              <span className="md:hidden">
+              <span className="lg:hidden">
                 <MenuDrawer />
               </span>
 
@@ -158,19 +158,13 @@ const NavbarClient = () => {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-
-                  <DropdownMenuItem>
-                    <Link href={`/profile/${session?.user?.db_id}`}>
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
+                  <Link href={`/profile/${session?.user?.db_id}`}>
+                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator />
-
-                  <DropdownMenuItem>
-                    <Link href={`/api/auth/signout?callbackUrl=/`}>
-                      Sign Out
-                    </Link>
-                  </DropdownMenuItem>
+                  <Link href={`/api/auth/signout?callbackUrl=/`}>
+                    <DropdownMenuItem>Sign Out</DropdownMenuItem>
+                  </Link>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

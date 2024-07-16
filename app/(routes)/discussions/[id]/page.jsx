@@ -23,6 +23,7 @@ import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import ReactTimeAgo from "react-time-ago";
 import { useSession } from "@/app/(components)/SessionProvider";
+import Link from "next/link";
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 const DiscussionDetails = ({ params }) => {
@@ -93,28 +94,22 @@ const DiscussionDetails = ({ params }) => {
   const toggleLike = async (discussionId) => {
     setAnimationState((prev) => ({ ...prev, [discussionId]: "like" }));
 
-    const response = await fetch(`/api/discussion/${discussionId}/like`, {
-      method: "PUT",
-    });
+    setDiscussion((prevDiscussion) => ({
+      ...prevDiscussion,
+      likes: isLikedByUser
+        ? prevDiscussion.likes - 1
+        : prevDiscussion.likes + 1,
 
-    if (response.ok) {
-      setDiscussion((prevDiscussion) => ({
-        ...prevDiscussion,
-        likes: isLikedByUser
-          ? prevDiscussion.likes - 1
-          : prevDiscussion.likes + 1,
-
-        dislikes: isDislikedByUser
-          ? prevDiscussion.dislikes - 1
-          : prevDiscussion.dislikes,
-      }));
-      setIsLikedByUser(!isLikedByUser);
-      if (isDislikedByUser) {
-        setIsDislikedByUser(false);
-      }
-    } else {
-      toast.error("Action failed due to server error");
+      dislikes: isDislikedByUser
+        ? prevDiscussion.dislikes - 1
+        : prevDiscussion.dislikes,
+    }));
+    setIsLikedByUser(!isLikedByUser);
+    if (isDislikedByUser) {
+      setIsDislikedByUser(false);
     }
+
+    await fetch(`/api/discussion/${discussionId}/like`, { method: "PUT" });
 
     setTimeout(() => {
       setAnimationState((prev) => ({ ...prev, [discussionId]: null }));
@@ -124,26 +119,22 @@ const DiscussionDetails = ({ params }) => {
   const toggleDislike = async (discussionId) => {
     setAnimationState((prev) => ({ ...prev, [discussionId]: "dislike" }));
 
-    const response = await fetch(`/api/discussion/${discussionId}/dislike`, {
+    setDiscussion((prevDiscussion) => ({
+      ...prevDiscussion,
+      dislikes: isDislikedByUser
+        ? prevDiscussion.dislikes - 1
+        : prevDiscussion.dislikes + 1,
+
+      likes: isLikedByUser ? prevDiscussion.likes - 1 : prevDiscussion.likes,
+    }));
+    setIsDislikedByUser(!isDislikedByUser);
+    if (isLikedByUser) {
+      setIsLikedByUser(false);
+    }
+
+    await fetch(`/api/discussion/${discussionId}/dislike`, {
       method: "PUT",
     });
-
-    if (response.ok) {
-      setDiscussion((prevDiscussion) => ({
-        ...prevDiscussion,
-        dislikes: isDislikedByUser
-          ? prevDiscussion.dislikes - 1
-          : prevDiscussion.dislikes + 1,
-
-        likes: isLikedByUser ? prevDiscussion.likes - 1 : prevDiscussion.likes,
-      }));
-      setIsDislikedByUser(!isDislikedByUser);
-      if (isLikedByUser) {
-        setIsLikedByUser(false);
-      }
-    } else {
-      toast.error("Action failed due to server error");
-    }
 
     setTimeout(() => {
       setAnimationState((prev) => ({ ...prev, [discussionId]: null }));
@@ -226,20 +217,22 @@ const DiscussionDetails = ({ params }) => {
       >
         {discussion.coverImage !== "" ? (
           <div className="flex flex-col gap-2 md:gap-4">
-            <div className="flex justify-between py-1 px-2 shadow-sm rounded-md md:py-[10px] md:px-4">
-              <div className="flex items-center gap-2 rounded-md">
-                <Image
-                  alt="Avatar"
-                  className="w-10 h-10 rounded-full md:w-[54px] md:h-[54px]"
-                  height="48"
-                  src={discussion.creator.profilePic}
-                  style={{ aspectRatio: "54/54", objectFit: "cover" }}
-                  width="54"
-                />
-                <span className="text-gray-500 dark:text-gray-400">
-                  {discussion.creator.name}
-                </span>
-              </div>
+            <div className="flex justify-between py-1 px-2 shadow-sm rounded-md md:py-[10px] md:px-8">
+              <Link href={`/profile/${discussion.creator._id}`}>
+                <div className="flex items-center gap-2 rounded-md">
+                  <Image
+                    alt="Avatar"
+                    className="w-10 h-10 rounded-full md:w-[54px] md:h-[54px]"
+                    height="48"
+                    src={discussion.creator.profilePic}
+                    style={{ aspectRatio: "54/54", objectFit: "cover" }}
+                    width="54"
+                  />
+                  <span className="text-gray-700 dark:text-gray-400">
+                    {discussion.creator.name}
+                  </span>
+                </div>
+              </Link>
               <div className="flex items-center text-gray-500 dark:text-gray-400">
                 <span>
                   <ReactTimeAgo
@@ -413,7 +406,12 @@ const DiscussionDetails = ({ params }) => {
                   <p>{discussion.content}</p>
                 </div>
                 <div className="grid items-center w-full gap-4 mb-2 text-center md:gap-8 grid-cols-4">
-                  <Button className="h-10" size="icon" variant="icon">
+                  <Button
+                    onClick={() => toggleLike(discussion._id)}
+                    className="h-10"
+                    size="icon"
+                    variant="icon"
+                  >
                     <ThumbsUpIcon
                       className={`w-4 h-4 cursor-pointer ${
                         isLikedByUser && "text-blue-400"
@@ -421,12 +419,16 @@ const DiscussionDetails = ({ params }) => {
                         animationState[discussion._id] === "like" &&
                         "pop text-blue-400"
                       }`}
-                      onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
                     <span className="ml-2">{discussion.likes}</span>
                   </Button>
-                  <Button className="h-10" size="icon" variant="icon">
+                  <Button
+                    onClick={() => toggleDislike(discussion._id)}
+                    className="h-10"
+                    size="icon"
+                    variant="icon"
+                  >
                     <ThumbsDownIcon
                       className={`w-4 h-4 cursor-pointer ${
                         isDislikedByUser && "text-red-400"
@@ -434,7 +436,6 @@ const DiscussionDetails = ({ params }) => {
                         animationState[discussion._id] === "dislike" &&
                         "pop text-red-400"
                       }`}
-                      onClick={() => toggleDislike(discussion._id)}
                     />
                     <span className="sr-only">Dislike</span>
                     <span className="ml-2">{discussion.dislikes}</span>

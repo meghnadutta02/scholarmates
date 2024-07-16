@@ -195,29 +195,24 @@ const DiscussionList = ({
   const toggleLike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "like" }));
 
-    const response = await fetch(`/api/discussion/${id}/like`, {
-      method: "PUT",
-    });
-
-    if (response.ok) {
-      setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((discussion) =>
-          discussion._id === id
-            ? {
-                ...discussion,
-                likes: discussion.isLiked
-                  ? discussion.likes - 1
-                  : discussion.likes + 1,
-                isLiked: !discussion.isLiked,
-                dislikes: discussion.isDisliked
-                  ? discussion.dislikes - 1
-                  : discussion.dislikes,
-                isDisliked: false,
-              }
-            : discussion
-        )
-      );
-    }
+    setDiscussions((prevDiscussions) =>
+      prevDiscussions.map((discussion) =>
+        discussion._id === id
+          ? {
+              ...discussion,
+              likes: discussion.isLiked
+                ? discussion.likes - 1
+                : discussion.likes + 1,
+              isLiked: !discussion.isLiked,
+              dislikes: discussion.isDisliked
+                ? discussion.dislikes - 1
+                : discussion.dislikes,
+              isDisliked: false,
+            }
+          : discussion
+      )
+    );
+    await fetch(`/api/discussion/${id}/like`, { method: "PUT" });
 
     setTimeout(() => {
       setAnimationState((prev) => ({ ...prev, [id]: null }));
@@ -227,29 +222,25 @@ const DiscussionList = ({
   const toggleDislike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
 
-    const response = await fetch(`/api/discussion/${id}/dislike`, {
-      method: "PUT",
-    });
+    setDiscussions((prevDiscussions) =>
+      prevDiscussions.map((discussion) =>
+        discussion._id === id
+          ? {
+              ...discussion,
+              dislikes: discussion.isDisliked
+                ? discussion.dislikes - 1
+                : discussion.dislikes + 1,
+              isDisliked: !discussion.isDisliked,
+              likes: discussion.isLiked
+                ? discussion.likes - 1
+                : discussion.likes,
+              isLiked: false,
+            }
+          : discussion
+      )
+    );
 
-    if (response.ok) {
-      setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((discussion) =>
-          discussion._id === id
-            ? {
-                ...discussion,
-                dislikes: discussion.isDisliked
-                  ? discussion.dislikes - 1
-                  : discussion.dislikes + 1,
-                isDisliked: !discussion.isDisliked,
-                likes: discussion.isLiked
-                  ? discussion.likes - 1
-                  : discussion.likes,
-                isLiked: false,
-              }
-            : discussion
-        )
-      );
-    }
+    await fetch(`/api/discussion/${id}/dislike`, { method: "PUT" });
 
     setTimeout(() => {
       setAnimationState((prev) => ({ ...prev, [id]: undefined }));
@@ -384,7 +375,7 @@ const DiscussionList = ({
                           {discussion.creatorData.name}
                         </span>{" "}
                       </Link>
-                      <span className="md:text-sm text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
+                      <span className="md:text-sm sm:mr-8 text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
                         {discussion.creatorData.collegeName}
                       </span>
                     </div>
@@ -422,7 +413,12 @@ const DiscussionList = ({
                   </p>
                 </div>
                 <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
-                  <Button className="h-10" size="icon" variant="icon">
+                  <Button
+                    onClick={() => toggleLike(discussion._id)}
+                    className="h-10"
+                    size="icon"
+                    variant="icon"
+                  >
                     <ThumbsUpIcon
                       className={`w-4 h-4 cursor-pointer ${
                         discussion.isLiked && "text-blue-400"
@@ -430,12 +426,16 @@ const DiscussionList = ({
                         animationState[discussion._id] === "like" &&
                         "pop text-blue-400"
                       }`}
-                      onClick={() => toggleLike(discussion._id)}
                     />
                     <span className="sr-only">Like</span>
                     <span className="ml-2">{discussion.likes}</span>
                   </Button>
-                  <Button className="h-10 " size="icon" variant="icon">
+                  <Button
+                    onClick={() => toggleDislike(discussion._id)}
+                    className="h-10"
+                    size="icon"
+                    variant="icon"
+                  >
                     <ThumbsDownIcon
                       className={`w-4 h-4 cursor-pointer ${
                         discussion.isDisliked && "text-red-400"
@@ -443,7 +443,6 @@ const DiscussionList = ({
                         animationState[discussion._id] === "dislike" &&
                         "pop text-red-400"
                       }`}
-                      onClick={() => toggleDislike(discussion._id)}
                     />
                     <span className="sr-only">Dislike</span>
                     <span className="ml-2">{discussion.dislikes}</span>

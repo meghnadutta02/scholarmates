@@ -75,6 +75,10 @@
   }
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
+
 .br {
   border: solid 2px red !important;
 }
@@ -128,10 +132,10 @@
   width: var(--size);
   height: var(--size);
   margin: 6px auto 0px;
-  
+
   border-radius: 50%;
   cursor: pointer;
-  
+
   overflow: hidden;
   z-index: 1;
 }
