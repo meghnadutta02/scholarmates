@@ -93,6 +93,8 @@ const DiscussionsPage = () => {
           setShowSuggestions(true); // Show suggestions when available
         } else if (searchQuery.length === 0) {
           setReloadList(true);
+          setOffset(0);
+          setHasMore(true);
           setShowSuggestions(false); // Hide suggestions when search query is empty
         }
       } catch (error) {
