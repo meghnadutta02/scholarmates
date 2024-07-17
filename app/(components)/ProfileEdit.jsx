@@ -18,7 +18,7 @@ import { format, subYears } from "date-fns";
 const ProfileEdit = ({ user, setUser }) => {
   const [userState, setUserState] = useState(user);
   const { update } = useSession();
-  const minDate = format(new Date(1975, 0, 1), "yyyy-MM-dd");
+
   const maxDate = format(subYears(new Date(), 11), "yyyy-MM-dd");
   const [selectedCategories, setSelectedCategories] = useState(
     user.interestCategories
@@ -32,7 +32,7 @@ const ProfileEdit = ({ user, setUser }) => {
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
-  const [date, setDate] = useState(new Date(user.dob));
+  const [date, setDate] = useState(user.dob ? new Date(user.dob) : "");
   const [formOpen, setFormOpen] = useState(true);
 
   const categories = interests.flatMap(

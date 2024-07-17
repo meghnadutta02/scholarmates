@@ -50,6 +50,7 @@ const DiscussionList = ({
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         let query = "";
         let params = [];
@@ -145,7 +146,7 @@ const DiscussionList = ({
     fetchData();
   }, [
     selectedFilters,
-    searchQuery,
+
     reloadList,
     session,
     offset,
@@ -327,7 +328,7 @@ const DiscussionList = ({
   };
 
   return (
-    <div>
+    <div className="">
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (

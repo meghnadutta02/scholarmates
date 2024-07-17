@@ -99,7 +99,7 @@ export async function GET(req) {
     const discussionType = req.nextUrl.searchParams.get("type");
     const category = req.nextUrl.searchParams.get("category");
     const subcategory = req.nextUrl.searchParams.get("subcategory");
-    const offset = parseInt(req.nextUrl.searchParams.get("offset")) || 0; // Correctly get offset
+    const offset = parseInt(req.nextUrl.searchParams.get("offset")) || 0;
     const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
 
     let aggregationPipeline = [];
@@ -118,6 +118,12 @@ export async function GET(req) {
         },
       };
       aggregationPipeline.push(atlasSearchQuery);
+
+      aggregationPipeline.push({
+        $addFields: {
+          score: { $meta: "searchScore" },
+        },
+      });
     }
 
     aggregationPipeline.push(
@@ -142,7 +148,7 @@ export async function GET(req) {
           "creatorData.degree": 0,
           "creatorData.department": 0,
           "creatorData.yearInCollege": 0,
-          "creatorData.posts": 0, //
+          "creatorData.posts": 0,
           "creatorData.connection": 0,
           "creatorData.bio": 0,
           "creatorData.isAdmin": 0,
@@ -182,7 +188,8 @@ export async function GET(req) {
     }
 
     aggregationPipeline.push({ $match: { isActive: true } });
-    aggregationPipeline.push({ $sort: { createdAt: -1 } });
+
+    aggregationPipeline.push({ $sort: { score: -1, createdAt: -1 } });
 
     // Apply pagination
     aggregationPipeline.push({ $skip: offset }, { $limit: limit });

@@ -55,6 +55,7 @@ const userSchema = new mongoose.Schema(
     },
     yearInCollege: {
       type: Number,
+      default: null,
     },
     dob: {
       type: Date,

@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import DiscussionList from "@/app/(components)/DiscussionList";
-import { IoIosCreate } from "react-icons/io";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import FilterDrawer from "@/app/(components)/FilterDrawer";
@@ -108,25 +108,22 @@ const DiscussionsPage = () => {
         {/* filter section */}
 
         {/* discussion list */}
-        <div className="flex-1 md:pt-5 pt-0  md:px-6 px-3 ">
+        <div className="flex-1 md:pt-3 pt-0  md:px-6 px-3 ">
           {/* search button */}
           <div className="flex mb-8 md:mt-5 mt-2 md:justify-center md:flex-row flex-col gap-4 w-full ">
-            <div className="flex gap-2 md:gap-0 md:justify-between border-2 rounded-full pl-6 items-center">
-              <div className="relative  w-[85%]">
+            <div className="flex gap-2 md:gap-0 md:justify-between border-2 rounded-full pl-6 items-center  relative">
+              <div className=" w-[85%]">
                 <input
                   type="text"
                   placeholder="Looking for a ml engineer?"
                   className="w-full bg-transparent py-3 rounded-lg outline-none"
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    e.target.value.length > 3 && handleSearch();
-                  }}
                 />
                 {/* search suggestions */}
                 {showSuggestions && suggestions.length > 0 && (
                   <div
                     ref={suggestionsRef}
-                    className="absolute top-11 w-full bg-gray-200 rounded shadow-lg "
+                    className="absolute top-13 left-2 right-2  bg-gray-200 rounded shadow-lg "
                   >
                     {suggestions.map((suggestion, index) => (
                       <Link
@@ -146,8 +143,12 @@ const DiscussionsPage = () => {
                 )}
               </div>
 
-              <Button variant="icon" onClick={handleSearch}>
-                <AiOutlineSearch className="h-8 w-8 bg-slate-900 text-white rounded-full p-2" />
+              <Button
+                variant="icon"
+                onClick={handleSearch}
+                className="h-8 w-8 bg-slate-900 rounded-full p-2 mr-2"
+              >
+                <AiOutlineSearch className="h-full w-full  text-white " />
               </Button>
             </div>
             <div className="flex justify-between px-4 md:px-0">

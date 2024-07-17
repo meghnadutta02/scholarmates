@@ -111,7 +111,7 @@ const FilterDrawer = ({ applyFilters }) => {
                 <aside className="text-black dark:text-black text-md w-full">
                   <div className="flex justify-between">
                     <h2 className="font-semibold text-xl ">My College</h2>
-                    <ul className="border-b-2 border-gray-200 pb-[10px] ">
+                    <ul className=" pb-[10px] ">
                       <li>
                         <input
                           type="checkbox"
