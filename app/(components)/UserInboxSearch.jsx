@@ -17,6 +17,7 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
     const fetchConnections = async () => {
       const response = await fetch("/api/connection");
       const data = await response.json();
+      console.log(data);
       setConnections(data.connections);
       setFilteredConnections(data.connections);
     };
