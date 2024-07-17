@@ -25,7 +25,7 @@ const About = () => {
           <p>Ankush Roy</p>
           <p>Jyotiraditya Mishra</p>
         </div>
-        <div className="border-t border-gray-500 mt-2 pt-4 text-center text-sm text-gray-500">
+        <div className="border-t border-gray-500 mb-10 text-center text-sm text-gray-500">
           &copy; 2024 ScholarMates. All rights reserved.
         </div>
       </div>

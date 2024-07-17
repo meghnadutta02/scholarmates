@@ -12,9 +12,9 @@ import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
 import Request from "./model/requestModel.js";
-import { handleNotificationFunction } from "./controller/handleNotificationFunction.js"
-import { discussionNotification } from './controller/discussionNotification.js'
-import ActiveUsers from './activeUser.js'
+import { handleNotificationFunction } from "./controller/handleNotificationFunction.js";
+import { discussionNotification } from "./controller/discussionNotification.js";
+import ActiveUsers from "./activeUser.js";
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -41,7 +41,6 @@ const io = new Server(socketServer, {
 
 const activeUserChatrooms = new Map();
 
-
 // GROUP CREATION AND SEND NOTIFICATION STARTED
 
 io.on("connection", async (socket) => {
@@ -54,9 +53,8 @@ io.on("connection", async (socket) => {
       socket.emit("connected");
 
       await handleNotificationFunction(user, socket);
-      await discussionNotification(user,socket)
+      await discussionNotification(user, socket);
     }
-
   });
   // ========END============
 
@@ -65,7 +63,7 @@ io.on("connection", async (socket) => {
   socket.on("groupchat-setup", async (groupId) => {
     if (groupId) {
       socket.join(groupId);
-      console.log(`Socket ${socket.id} joined group ${groupId}`);
+      console.log(`User ${socket.id} joined group ${groupId}`);
     } else console.log(`Group ${groupId} not found`);
   });
 
@@ -115,4 +113,4 @@ socketServer.listen(5001, () => {
   console.log("Socket server listening on PORT:5001...");
 });
 
-export { io};
+export { io };

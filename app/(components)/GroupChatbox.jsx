@@ -136,6 +136,7 @@ const GroupChatbox = ({
           message: data.result,
           roomID: roomID,
         });
+        scrollDown();
       } else {
         toast.error("Message not sent");
         // Remove the temporary message if the API call fails
@@ -300,34 +301,39 @@ const GroupChatbox = ({
               ) : (
                 <>
                   {sortedMessages.map((msg, index) => {
-                    const currentDate = new Date(
-                      msg.updatedAt
-                    ).toLocaleDateString([], {
-                      weekday: "long",
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    });
+                    const currentDate = new Date(msg.createdAt);
+                    const currentDateString = !isNaN(currentDate)
+                      ? currentDate.toLocaleDateString([], {
+                          weekday: "long",
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "";
 
                     const previousDate =
                       index > 0 && sortedMessages[index - 1]
-                        ? new Date(
-                            sortedMessages[index - 1].updatedAt
-                          ).toLocaleDateString([], {
+                        ? new Date(sortedMessages[index - 1].createdAt)
+                        : null;
+
+                    const previousDateString =
+                      previousDate && !isNaN(previousDate)
+                        ? previousDate.toLocaleDateString([], {
                             weekday: "long",
                             month: "long",
                             day: "numeric",
                             year: "numeric",
                           })
-                        : null;
+                        : "";
 
-                    const showDateSeparator = currentDate !== previousDate;
+                    const showDateSeparator =
+                      currentDateString !== previousDateString;
 
                     return (
                       <div key={index}>
-                        {showDateSeparator && (
+                        {showDateSeparator && currentDateString && (
                           <div className="text-center text-sm my-4 text-gray-500">
-                            {currentDate}
+                            {currentDateString}
                           </div>
                         )}
                         <div
@@ -346,7 +352,7 @@ const GroupChatbox = ({
                           }
                         >
                           <div
-                            className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
+                            className={`py-1 px-2 mt-1 min-w-[10rem] max-w-[16rem] md:max-w-[24rem] rounded-lg ${
                               msg.sender === session?.user?.db_id
                                 ? "bg-blue-100"
                                 : "bg-gray-100"

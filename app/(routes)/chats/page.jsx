@@ -133,13 +133,22 @@ export default function Chats() {
                                     {connection.userName}
                                   </h2>
                                   <div className="flex w-full items-center justify-between">
-                                    <div>
-                                      <>{connection.lastMessageText}</>
+                                    <div className="max-w-[14rem] sm:max-w-[24rem] md:max-w-[28rem] truncate pr-4 text-ellipsis">
+                                      {connection.lastMessageText}
                                     </div>
 
                                     <div className="font-normal text-xs ">
                                       {connection.unreadMessagesCount > 0 && (
-                                        <span className="font-bold mr-2 text-white rounded-full shadow-sm py-1 mt-1 px-2 shadow-blue-300  bg-blue-800">
+                                        <span
+                                          className={`font-bold mr-2 text-white rounded-full shadow-sm py-1 mt-1 shadow-blue-300  bg-blue-600  
+                                             px-${
+                                               (
+                                                 3 -
+                                                 connection.unreadMessagesCount /
+                                                   10
+                                               ).toString()[0]
+                                             }`}
+                                        >
                                           {connection.unreadMessagesCount}
                                         </span>
                                       )}

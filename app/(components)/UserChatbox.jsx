@@ -17,6 +17,8 @@ import DisplayMedia from "./DisplayMedia";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 import Loading from "./Loading";
+import { Clock12Icon } from "lucide-react";
+import { BiCheckDouble } from "react-icons/bi";
 
 const UserChatbox = ({
   selectedUser,
@@ -98,7 +100,12 @@ const UserChatbox = ({
   const sendMessageHandler = async (e) => {
     e.preventDefault();
 
-    if (message.text.trim() !== "" || message.attachments.length > 0) {
+    try {
+      if (message.text.trim() == "" && message.attachments.length === 0) {
+        toast.warning("Message empty");
+        throw new Error("Message empty");
+      }
+      // Temporary message update for the UI
       const tempMessage = {
         ...message,
         tempId: Date.now(),
@@ -106,6 +113,7 @@ const UserChatbox = ({
       };
 
       setInboxMessages((prevMessages) => [...prevMessages, tempMessage]);
+      scrollDown();
 
       const formData = new FormData();
       formData.append("text", message.text);
@@ -123,31 +131,35 @@ const UserChatbox = ({
       });
 
       if (res.ok) {
+        setMessage({
+          text: "",
+          attachments: [],
+        });
+        setFilePreviews([]);
         const data = await res.json();
         setInboxMessages((prevMessages) =>
           prevMessages.map((msg) =>
             msg.tempId === tempMessage.tempId ? data.result : msg
           )
         );
+        console.log(data.result);
         socket.emit("userchat-send", {
           message: data.result,
           receiver: selectedUser,
           sender: session?.user?.db_id,
         });
+        scrollDown();
+        updateLastMessage(userID, message.text);
       } else {
-        toast.error("Message not sent");
+        toast.error("Failed to send message");
+        // Remove the temporary message from the UI on failure
         setInboxMessages((prevMessages) =>
           prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
         );
+        throw new Error("Failed to send message");
       }
-      updateLastMessage(userID, message.text);
-      setMessage({
-        text: "",
-        attachments: [],
-      });
-      setFilePreviews([]);
-    } else {
-      toast.error("Message empty");
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -306,87 +318,125 @@ const UserChatbox = ({
             ref={chatContainerRef}
             className="flex flex-col h-[32rem] border rounded-md bg-white overflow-y-auto scrollbar-none p-1"
           >
-            {loading && <Loading />}
-            {inboxMessages.map((msg, index) => {
-              const currentDate = new Date(msg.createdAt).toLocaleDateString(
-                [],
-                {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                }
-              );
+            {loading ? (
+              <Loading />
+            ) : (
+              <>
+                {inboxMessages.map((msg, index) => {
+                  const currentDate = new Date(msg.createdAt);
+                  const currentDateString = !isNaN(currentDate)
+                    ? currentDate.toLocaleDateString([], {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "";
 
-              const previousDate =
-                index > 0
-                  ? new Date(
-                      inboxMessages[index - 1].createdAt
-                    ).toLocaleDateString([], {
-                      weekday: "long",
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  : null;
+                  const previousDate =
+                    index > 0 && inboxMessages[index - 1]
+                      ? new Date(inboxMessages[index - 1].createdAt)
+                      : null;
 
-              const showDateSeparator = currentDate !== previousDate;
+                  const previousDateString =
+                    previousDate && !isNaN(previousDate)
+                      ? previousDate.toLocaleDateString([], {
+                          weekday: "long",
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "";
 
-              return (
-                <div key={index}>
-                  {showDateSeparator && (
-                    <div className="text-center text-sm my-4 text-gray-500">
-                      {currentDate}
-                    </div>
-                  )}
-                  <div
-                    id={`msg-${index}`}
-                    data-date={msg.createdAt}
-                    className={`flex ${
-                      msg.sender === userID ? "justify-start" : "justify-end"
-                    }`}
-                    ref={
-                      index === 0
-                        ? (el) => {
-                            lastMessageRef.current = el;
-                          }
-                        : null
-                    }
-                  >
-                    <div
-                      className={`py-1 px-2 mt-1 min-w-[10rem] border rounded-lg ${
-                        msg.sender === userID ? "bg-gray-100" : "bg-blue-100"
-                      }`}
-                    >
-                      {msg.attachments != null && (
-                        <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
-                          {msg.attachments.map((attachment, index) => (
-                            <DisplayMedia key={index} fileUrl={attachment} />
-                          ))}
+                  const showDateSeparator =
+                    currentDateString !== previousDateString;
+
+                  return (
+                    <div key={index}>
+                      {showDateSeparator && currentDateString && (
+                        <div className="text-center text-sm my-4 text-gray-500">
+                          {currentDateString}
                         </div>
                       )}
-                      <Interweave
-                        content={msg.text}
-                        matchers={[new UrlMatcher("url")]}
-                      />
-                      <p className="text-[10px] flex justify-end font-light">
-                        {msg.sending ? (
-                          <>Sending...</>
-                        ) : (
-                          <>
-                            {new Date(msg.createdAt).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </>
-                        )}
-                      </p>
+                      <div
+                        id={`msg-${index}`}
+                        data-date={msg.createdAt}
+                        className={`flex ${
+                          msg.sender === userID
+                            ? "justify-start"
+                            : "justify-end"
+                        }`}
+                        ref={
+                          index === 0
+                            ? (el) => {
+                                lastMessageRef.current = el;
+                              }
+                            : null
+                        }
+                      >
+                        <div
+                          className={`py-1 px-3 mt-1 min-w-[10rem] max-w-[16rem] md:max-w-[24rem] rounded-lg ${
+                            msg.sender === userID
+                              ? "bg-gray-100"
+                              : "bg-green-100"
+                          }`}
+                        >
+                          {msg.attachments != null && (
+                            <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
+                              {msg.attachments.map((attachment, index) => (
+                                <DisplayMedia
+                                  key={index}
+                                  fileUrl={attachment}
+                                />
+                              ))}
+                            </div>
+                          )}
+                          <Interweave
+                            content={msg.text}
+                            matchers={[new UrlMatcher("url")]}
+                          />
+                          <p className="text-[10px] max-w-1/2 flex justify-end items-center font-light">
+                            {msg.sending ? (
+                              <Clock12Icon className="w-4 h-4" />
+                            ) : (
+                              <>
+                                <p className="text-[9px]">
+                                  {new Date(msg.createdAt).toLocaleTimeString(
+                                    [],
+                                    {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    }
+                                  )}
+                                </p>
+                                {msg.sender === session.user?.db_id && (
+                                  <span className="ml-1 font-extrabold">
+                                    {msg.status === "delivered" ? (
+                                      <BiCheckDouble
+                                        className="text-gray-700"
+                                        size={16}
+                                      />
+                                    ) : msg.status === "read" ? (
+                                      <BiCheckDouble
+                                        className="text-blue-700"
+                                        size={16}
+                                      />
+                                    ) : (
+                                      <Clock12Icon />
+                                    )}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </>
+            )}
           </div>
         </div>
         <div className="flex-shrink-0">
