@@ -99,6 +99,24 @@ const GroupRequests = () => {
     }
   };
 
+  const handleDeleteRequest = async (id) => {
+    try {
+      const response = await fetch(`/api/join-group/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setMergedRequests((prevRequests) =>
+          prevRequests.filter((r) => r._id !== id)
+        );
+        setRequestsToJoin((prevRequests) =>
+          prevRequests.filter((r) => r._id !== id)
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="w-full">
       {loading ? (
@@ -115,22 +133,30 @@ const GroupRequests = () => {
             mergedRequests.map((request) => (
               <div key={request._id} className="md:text-base text-[14px]">
                 {requestsToJoin.includes(request) && (
-                  <div className="rounded-md shadow md:px-3 px-[6px] md:py-4 py-2 font-sans my-auto">
-                    Your request to join group -{" "}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          #
-                          {request.groupId._id.substring(
-                            request.groupId._id.length - 4
-                          )}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{request.groupId.name}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>{" "}
-                    is {request.status}
+                  <div className="flex items-center justify-between rounded-md shadow md:px-3 px-[6px] md:py-4 py-2 font-sans my-auto">
+                    <div className="flex">
+                      Your request to join group -{" "}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger className="mr-1">
+                            #
+                            {request.groupId._id.substring(
+                              request.groupId._id.length - 4
+                            )}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{request.groupId.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      is {request.status}
+                    </div>
+                    <button
+                      onClick={() => handleDeleteRequest(request._id)}
+                      className="ml-2 text-zinc-700"
+                    >
+                      <FaTimes className="h-4 w-4 transform transition-transform hover:scale-125 text-zinc-700" />
+                    </button>
                   </div>
                 )}
                 {requestsToAccept.includes(request) && (

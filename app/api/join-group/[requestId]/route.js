@@ -54,3 +54,28 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+export async function DELETE(req, { params }) {
+  try {
+    await connect();
+    const requestId = params.requestId;
+    const session = await getServerSession(options);
+
+    const request = await groupRequest.findById(requestId);
+    if (!request) {
+      throw new Error("Request not found");
+    }
+    if (request.status === "pending") {
+      throw new Error("Request is not processed yet");
+    }
+    if (!request.fromUser === new ObjectId(session?.user?.db_id)) {
+      throw new Error("You are not authorized to perform this action");
+    }
+
+    await groupRequest.findByIdAndDelete(requestId);
+
+    return NextResponse.json({ result: "Request deleted" }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
