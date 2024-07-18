@@ -195,7 +195,9 @@ const ProfileEdit = ({ user, setUser }) => {
               id="yearInCollege"
               name="yearInCollege"
               value={userState.yearInCollege}
-              onChange={(e) => handleChange("yearInCollege", e.target.value)}
+              onChange={(e) => {
+                handleChange("yearInCollege", e.target.value);
+              }}
             />
           </div>
         </div>

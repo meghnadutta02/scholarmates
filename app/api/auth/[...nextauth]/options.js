@@ -86,7 +86,6 @@ export const options = {
       }
 
       if (trigger === "update" && session) {
-        console.log("Session here", session);
         if (session.name) token.name = session.name;
         if (session.collegeName) token.collegeName = session.collegeName;
         if (session.profilePic) token.profilePic = session.profilePic;
@@ -101,14 +100,10 @@ export const options = {
         if (session.bio !== null) token.bio = session.bio;
 
         if (session.dob !== undefined) {
-          console.log("DOB here", session.dob);
-          if (session.dob === "") token.dob = null;
-          else token.dob = session.dob;
+          token.dob = session.dob;
         }
         if (session.yearInCollege !== undefined) {
-          console.log("Year here", session.yearInCollege);
-          if (session.yearInCollege === "") token.yearInCollege = null;
-          else token.yearInCollege = session.yearInCollege;
+          token.yearInCollege = session.yearInCollege;
         }
       }
 
