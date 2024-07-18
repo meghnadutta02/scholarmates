@@ -70,7 +70,9 @@ export async function DELETE(req, { params }) {
       );
     }
     const user = await User.findById(userId);
-    user.groupsJoined = user.groupsJoined.filter((id) => id.toString() !== id);
+    user.groupsJoined = user.groupsJoined.filter(
+      (idx) => idx.toString() !== id
+    );
     group.participants = group.participants.filter(
       (id) => id.toString() !== userId
     );

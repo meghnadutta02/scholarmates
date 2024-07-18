@@ -19,7 +19,6 @@ import Link from "next/link";
 import Loading from "./Loading";
 import { Clock12Icon } from "lucide-react";
 import { BiCheckDouble } from "react-icons/bi";
-import { set } from "mongoose";
 
 const UserChatbox = ({
   selectedUser,
@@ -210,7 +209,6 @@ const UserChatbox = ({
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
-        msg.status = "read";
         updateLastMessage(msg.sender, msg.text);
         setInboxMessages((prevMessages) => {
           if (prevMessages.some((m) => m._id === msg._id)) {
@@ -218,7 +216,6 @@ const UserChatbox = ({
           }
           return [...prevMessages, msg];
         });
-        markMessagesAsRead(userID);
       };
       socket.emit("userchat-setup", {
         sender: session?.user?.db_id,
@@ -505,7 +502,7 @@ const UserChatbox = ({
               ))}
             </div>
           )}
-          {selectedUser?.connections?.includes(session?.user?.db_id) ? (
+          {selectedUser?.connection?.includes(session?.user?.db_id) ? (
             <form
               onSubmit={sendMessageHandler}
               className="flex items-center p-2 gap-2"
