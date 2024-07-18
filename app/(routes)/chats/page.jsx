@@ -97,10 +97,12 @@ export default function Chats() {
           </TabsList>
           <TabsContent value="c">
             <div>
-              <UserInboxSearch
-                setSelectedUser={setSelectedUser}
-                setToggleChatView={setToggleChatView}
-              />
+              {toggleChatView && (
+                <UserInboxSearch
+                  setSelectedUser={setSelectedUser}
+                  setToggleChatView={setToggleChatView}
+                />
+              )}
               <div>
                 {connections.length > 0 ? (
                   <div className="flex flex-col rounded-b-lg border mb-4 ">
@@ -128,37 +130,33 @@ export default function Chats() {
                                   }}
                                   width="48"
                                 />
-                                <div className="flex flex-wrap w-full items-center justify-between">
-                                  <h2 className="font-semibold lg:text-base">
-                                    {connection.userName}
-                                  </h2>
-                                  <div className="flex w-full items-center justify-between">
-                                    <div className="max-w-[14rem] sm:max-w-[24rem] md:max-w-[28rem] truncate pr-4 text-ellipsis">
-                                      {connection.lastMessageText}
-                                    </div>
+                                <div className="flex w-full items-center justify-between">
+                                  <div className="w-[80%] items-center text-start max-w-[14rem] sm:max-w-[24rem] md:max-w-[28rem]">
+                                    <h2 className="font-semibold lg:text-base ">
+                                      {connection.userName}
+                                    </h2>
 
-                                    <div className="font-normal text-xs ">
-                                      {connection.unreadMessagesCount > 0 && (
-                                        <span
-                                          className={`font-bold mr-2 text-white rounded-full shadow-sm py-1 mt-1 shadow-blue-300  bg-blue-600  
-                                             px-${
-                                               (
-                                                 3 -
-                                                 connection.unreadMessagesCount /
-                                                   10
-                                               ).toString()[0]
-                                             }`}
-                                        >
-                                          {connection.unreadMessagesCount}
-                                        </span>
-                                      )}
+                                    <p className="font-normal truncate text-ellipsis">
+                                      {connection.lastMessageText}
+                                    </p>
+                                  </div>
+
+                                  <div className="items-end font-normal text-xs flex flex-col gap-1">
+                                    <span>
                                       {new Date(
                                         connection.lastMessageTime
                                       ).toLocaleTimeString([], {
                                         hour: "2-digit",
                                         minute: "2-digit",
                                       })}
-                                    </div>
+                                    </span>
+                                    {connection.unreadMessagesCount > 0 && (
+                                      <div className="font-bold w-5 h-5 text-white rounded-full shadow-sm shadow-blue-300  bg-blue-600">
+                                        <p className="mt-0.5">
+                                          {connection.unreadMessagesCount}
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </Button>

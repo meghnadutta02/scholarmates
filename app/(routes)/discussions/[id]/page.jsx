@@ -24,7 +24,6 @@ import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import ReactTimeAgo from "react-time-ago";
 import { useSession } from "@/app/(components)/SessionProvider";
-import Link from "next/link";
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 const DiscussionDetails = ({ params }) => {
@@ -219,21 +218,20 @@ const DiscussionDetails = ({ params }) => {
         {discussion.coverImage !== "" ? (
           <div className="flex flex-col gap-2 md:gap-4">
             <div className="flex justify-between py-1 px-2 shadow-sm rounded-md md:py-[10px] md:px-4">
-            <Link href={`/profile/${discussion.creator._id}`}>
-              <div className="flex items-center gap-2 rounded-md">
-             
-                <Image
-                  alt="Avatar"
-                  className="w-10 h-10 rounded-full md:w-[54px] md:h-[54px]"
-                  height="48"
-                  src={discussion.creator.profilePic}
-                  style={{ aspectRatio: "54/54", objectFit: "cover" }}
-                  width="54"
-                />
-                <span className="text-gray-500 dark:text-gray-400">
-                  {discussion.creator.name}
-                </span>
-              </div>
+              <Link href={`/profile/${discussion.creator._id}`}>
+                <div className="flex items-center gap-2 rounded-md">
+                  <Image
+                    alt="Avatar"
+                    className="w-10 h-10 rounded-full md:w-[54px] md:h-[54px]"
+                    height="48"
+                    src={discussion.creator.profilePic}
+                    style={{ aspectRatio: "54/54", objectFit: "cover" }}
+                    width="54"
+                  />
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {discussion.creator.name}
+                  </span>
+                </div>
               </Link>
               <div className="flex items-center text-gray-500 dark:text-gray-400">
                 <span>
@@ -349,29 +347,29 @@ const DiscussionDetails = ({ params }) => {
         ) : (
           <div className="container mx-auto p-4">
             <div className="flex items-start gap-4 p-2 bg-white dark:bg-gray-800 md:p-4">
-             <Link href={`/profile/${discussion.creator._id}`}>
-             <Image
-                alt="Avatar"
-                className="w-12 h-12 rounded-full md:w-[54px] md:h-[54px]"
-                height="48"
-                src={discussion.creator.profilePic}
-                style={{ aspectRatio: "48/48", objectFit: "cover" }}
-                width="48"
-              />
+              <Link href={`/profile/${discussion.creator._id}`}>
+                <Image
+                  alt="Avatar"
+                  className="w-12 h-12 rounded-full md:w-[54px] md:h-[54px]"
+                  height="48"
+                  src={discussion.creator.profilePic}
+                  style={{ aspectRatio: "48/48", objectFit: "cover" }}
+                  width="48"
+                />
               </Link>
               <div className="flex-1 grid gap-2">
                 <div className="flex justify-between">
                   <div className="flex flex-col gap-2">
-                  <Link href={`/profile/${discussion.creator._id}`}>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {discussion.creator.name}
-                    </span>
+                    <Link href={`/profile/${discussion.creator._id}`}>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {discussion.creator.name}
+                      </span>
                     </Link>
                     <h4 className="text-md font-semibold">
                       {discussion.title}
                     </h4>
                   </div>
-                 
+
                   <div className="flex flex-col items-center gap-2 ">
                     {session?.db_id == discussion.creator._id && (
                       <div className="  flex justify-end gap-2">
@@ -468,7 +466,6 @@ const DiscussionDetails = ({ params }) => {
                   </Button>
                 </div>
               </div>
-           
             </div>
           </div>
         )}

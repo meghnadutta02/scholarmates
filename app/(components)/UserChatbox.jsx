@@ -84,6 +84,7 @@ const UserChatbox = ({
     [userID]
   );
 
+  //Initial load of messages
   useEffect(() => {
     const fetchUserStatus = async () => {
       try {
@@ -117,6 +118,7 @@ const UserChatbox = ({
     }
   }, [selectedUser, userID, fetchInboxMessages]);
 
+  // Lazy loading next batch messages fetch
   useEffect(() => {
     if (page > 0) {
       fetchInboxMessages(page);
@@ -150,6 +152,10 @@ const UserChatbox = ({
           formData.append(`attachments`, file);
         });
       }
+      setMessage({
+        text: "",
+        attachments: [],
+      });
 
       const res = await fetch(`/api/chats/user/${userID}`, {
         method: "POST",
@@ -157,10 +163,6 @@ const UserChatbox = ({
       });
 
       if (res.ok) {
-        setMessage({
-          text: "",
-          attachments: [],
-        });
         setFilePreviews([]);
         const data = await res.json();
         setInboxMessages((prevMessages) =>
@@ -168,7 +170,6 @@ const UserChatbox = ({
             msg.tempId === tempMessage.tempId ? data.result : msg
           )
         );
-        console.log(data.result);
         socket.emit("userchat-send", {
           message: data.result,
           receiver: selectedUser,
@@ -205,9 +206,11 @@ const UserChatbox = ({
     }
   };
 
+  // Socket events for message send/receive
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
+        msg.status = "read";
         updateLastMessage(msg.sender, msg.text);
         setInboxMessages((prevMessages) => {
           if (prevMessages.some((m) => m._id === msg._id)) {
@@ -244,6 +247,7 @@ const UserChatbox = ({
     setFilePreviews(previews);
   };
 
+  // To trigger lazy loading fetch on up-scrolling
   useEffect(() => {
     observerRef.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
@@ -263,6 +267,7 @@ const UserChatbox = ({
   }, [lastMessageRef.current, hasMoreMessages]);
   // Don't remove the above lastmessageRef.current dependency to remove the warning
 
+  // TO track the scrolling and display scroll down button
   const [showScrollButton, setShowScrollButton] = useState(false);
   const chatContainerRef = useRef(null);
 

@@ -41,7 +41,7 @@ const io = new Server(socketServer, {
 });
 
 const activeUserChatrooms = new Map();
-
+var userId = null;
 // GROUP CREATION AND SEND NOTIFICATION STARTED
 
 io.on("connection", async (socket) => {
@@ -49,8 +49,11 @@ io.on("connection", async (socket) => {
   socket.on("setup", async (userData) => {
     const user = await User.findById(userData);
     if (user) {
+      userId = userData;
       socket.join(userData);
       ActiveUsers.setActiveUser(userData, socket.id);
+      const data = ActiveUsers.getActiveUsers();
+      console.log(data);
       socket.emit("connected");
 
       await handleNotificationFunction(user, socket);

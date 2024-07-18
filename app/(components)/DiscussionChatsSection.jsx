@@ -89,10 +89,12 @@ const Page = ({ selectDiscussion }) => {
         <Loading />
       ) : (
         <div>
-          <GroupsInboxSearch
-            setRoomID={setRoomID}
-            setToggleChatView={setToggleChatView}
-          />
+          {toggleChatView && (
+            <GroupsInboxSearch
+              setRoomID={setRoomID}
+              setToggleChatView={setToggleChatView}
+            />
+          )}
           <div>
             {groups.length > 0 ? (
               <div className="flex flex-col rounded-b-lg border">

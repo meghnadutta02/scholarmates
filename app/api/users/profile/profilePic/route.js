@@ -3,7 +3,7 @@ import User from "@/app/(models)/userModel";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import connect from "@/app/config/db";
-import { postObject } from "@/app/config/s3";
+import { postObject,deleteObject} from "@/app/config/s3";
 import { v4 as uuidv4 } from "uuid";
 
 // Update user profile picture
@@ -25,19 +25,31 @@ export async function PUT(req) {
       return NextResponse.json({ result: "No request data" }, { status: 400 });
     }
 
+    const user = await User.findById(id);
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Extract the current profile picture key from the URL
+    const currentProfilePicUrl = user.profilePic;
+    const currentProfilePicKey = currentProfilePicUrl
+      ?decodeURIComponent(currentProfilePicUrl.split("/").slice(-3).join("/")) // Adjust the slice as necessary based on your URL structure
+      : null;
+
+    // Delete the current profile picture from S3 if it exists
+    if (currentProfilePicKey) {
+      await deleteObject(currentProfilePicKey);
+    }
+
     const byteData = await updatedUserData.arrayBuffer();
     const buffer = Buffer.from(byteData);
     const uniqueFileName = `${uuidv4()}_${name}`;
     const path = `public/profilePicture/${uniqueFileName}.jpg`;
     const coverImage = await postObject(path, buffer);
-    const user = await User.findByIdAndUpdate(
-      id,
-      { $set: { profilePic: coverImage } },
-      { new: true }
-    );
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    user.profilePic = coverImage;
+    await user.save();
+   
 
     return NextResponse.json({ result: user }, { status: 200 });
   } catch (err) {

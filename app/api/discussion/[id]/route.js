@@ -8,7 +8,7 @@ import DiscussionNotification from "@/app/(models)/discussionNotification";
 import { ObjectId } from "mongodb";
 import User from "@/app/(models)/userModel";
 import groupRequest from "@/app/(models)/groupRequestModel";
-import { postObject } from "@/app/config/s3";
+import { postObject,deleteObject } from "@/app/config/s3";
 
 //get a discussion
 export async function GET(req, { params }) {
@@ -77,6 +77,17 @@ export async function DELETE(req, { params }) {
       if (discussion.creator.toString() !== session.user.db_id) {
         return NextResponse.json({ result: "Unauthorized" }, { status: 403 });
       }
+      // FIRST DELETE IMAGES FROM S3 BUCKET
+
+      const discussionCoverImageUrl = discussion.coverImage;
+      const discussionCoverImageKey = discussionCoverImageUrl
+        ?  decodeURIComponent(discussionCoverImageUrl.split("/").slice(-2).join("/") )// Adjust the slice as necessary based on your URL structure
+        : null;
+     
+      // Delete the DISCUSSION  picture from S3 if it exists
+      if (discussionCoverImageKey) {
+        await deleteObject(discussionCoverImageKey);
+      }
 
       await discussion.deleteOne();
 
@@ -98,7 +109,7 @@ export async function PUT(req, { params }) {
     const { id } = params;
     const session = await getServerSession(options);
     const data = await req.formData();
-
+    console.log("kuchkuch",data);
     let title = data.get("title");
 
     const type = data.get("type");
@@ -115,7 +126,7 @@ export async function PUT(req, { params }) {
     if (discussion.creator.toString() !== session.user.db_id) {
       return NextResponse.json({ result: "Unauthorized" }, { status: 403 });
     }
-
+   
     if (title) {
       title = title.trim();
       title = title[0].toUpperCase() + title.slice(1);
@@ -125,6 +136,19 @@ export async function PUT(req, { params }) {
 
     if (content) discussion.content = content;
     if (subcategories.length > 0) discussion.subcategories = subcategories;
+
+    if(file!=null){
+      const discussionCoverImageUrl = discussion.coverImage;
+      const discussionCoverImageKey = discussionCoverImageUrl
+        ?  decodeURIComponent(discussionCoverImageUrl.split("/").slice(-2).join("/")) // Adjust the slice as necessary based on your URL structure
+        : null;
+  
+               //UPDATE picture from S3 if it exists
+      
+      if (discussionCoverImageKey) {
+        await deleteObject(discussionCoverImageKey);
+      }
+    }
 
     let coverImage = "";
     if (file && file instanceof File) {

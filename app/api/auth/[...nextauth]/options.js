@@ -97,7 +97,7 @@ export const options = {
           token.requestPending = session.requestPending;
         if (session.connection) token.connection = session.connection;
         if (session.degree) token.degree = session.degree;
-        if (session.bio !== null) token.bio = session.bio;
+        if (session.bio !== undefined) token.bio = session.bio;
 
         if (session.dob !== undefined) {
           token.dob = session.dob;

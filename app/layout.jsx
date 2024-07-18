@@ -10,7 +10,6 @@ import { SessionProvider } from "@/app/(components)/SessionProvider";
 const inter = Inter({ subsets: ["latin"] });
 import { getServerSession } from "next-auth";
 import { options } from "./api/auth/[...nextauth]/options";
-
 import Header from "./(components)/Header";
 export const metadata = {
   title: "ScholarMates",
