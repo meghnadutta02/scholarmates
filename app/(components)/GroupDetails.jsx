@@ -47,7 +47,7 @@ const GroupDetails = ({
   setToggleChatView,
 }) => {
   const [description, setDescription] = useState(groupDetails.description);
-  const [isPrivate, setIsPrivate] = useState(groupDetails.isPrivate);
+  const [isPublic, setIsPublic] = useState(groupDetails.isPublic);
   const [group, setGroup] = useState(groupDetails);
   const [name, setName] = useState(groupDetails.name);
   const handleKickMember = async (memberId) => {
@@ -182,13 +182,14 @@ const GroupDetails = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ isPrivate: !isPrivate }),
+        body: JSON.stringify({ isPublic: !isPublic }),
       });
 
       if (response.ok) {
-        setGroup((prevGroup) => ({ ...prevGroup, isPrivate: !isPrivate }));
-        setIsPrivate(!isPrivate);
-        toast.success(`Group is now ${!isPrivate ? "Private" : "Public"}`, {
+        setIsPublic(!isPublic);
+        setGroup((prevGroup) => ({ ...prevGroup, isPublic: !isPublic }));
+        toast.success(`Group is now ${isPublic ? "Private" : "Public"}`, {
+          //reversed value of toast because state variable doesn't change immediately
           autoClose: 5000,
         });
       }
@@ -268,11 +269,11 @@ const GroupDetails = ({
         {isCurrentUserCreator && (
           <div className="flex items-center justify-end">
             <Label htmlFor="privacy-switch" className="mr-2 text-sm">
-              {isPrivate ? "Private" : "Public"}
+              {isPublic ? "Public" : "Private"}
             </Label>
             <Switch
               id="privacy-switch"
-              checked={isPrivate}
+              checked={!isPublic}
               onCheckedChange={togglePrivacy}
             />
           </div>
