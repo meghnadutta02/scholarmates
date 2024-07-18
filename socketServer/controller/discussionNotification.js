@@ -7,7 +7,6 @@ export const discussionNotification = async (user, socket) => {
   
         
   try {
-
     const notifiedUsers = new Set();
     // Find notifications for the user
     const notifications = await DiscussionNotification.find({
