@@ -19,6 +19,7 @@ import Link from "next/link";
 import Loading from "./Loading";
 import { Clock12Icon } from "lucide-react";
 import { BiCheckDouble } from "react-icons/bi";
+import { set } from "mongoose";
 
 const UserChatbox = ({
   selectedUser,
@@ -39,6 +40,7 @@ const UserChatbox = ({
   const [inboxMessages, setInboxMessages] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [isUserOnline, setIsUserOnline] = useState(false);
   const [page, setPage] = useState(0);
 
   const messagesEndRef = useRef(null);
@@ -84,11 +86,35 @@ const UserChatbox = ({
 
   //Initial load of messages
   useEffect(() => {
+    const fetchUserStatus = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NODE_SERVER}/user-status/${selectedUser.userId}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user status");
+        }
+        const data = await response.json();
+
+        setIsUserOnline(data.isActive);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     if (userID) {
       setPage(0);
       setHasMoreMessages(true);
       setInboxMessages([]);
       fetchInboxMessages(0);
+      if (selectedUser) {
+        fetchUserStatus();
+
+        const intervalId = setInterval(fetchUserStatus, 150000);
+
+        return () => clearInterval(intervalId);
+      }
     }
   }, [selectedUser, userID, fetchInboxMessages]);
 
@@ -293,7 +319,9 @@ const UserChatbox = ({
                       }}
                       width="48"
                     />
-                    {/* <span className="absolute bottom-0 right-0 flex w-3 h-3 rounded-full border-[4px] border-white bg-green-500 translate-x-1 translate-y-1" /> */}
+                    {isUserOnline && (
+                      <span className="absolute bottom-0 right-[2.5px] flex w-[10px] h-[10px] rounded-full  bg-green-500 " />
+                    )}
                   </div>
                 </PopoverTrigger>
                 <PopoverContent className="max-w-[132px]">
@@ -414,7 +442,7 @@ const UserChatbox = ({
                                     }
                                   )}
                                 </p>
-                                {msg.sender === session.user?.db_id && (
+                                {msg.sender === session?.user?.db_id && (
                                   <span className="ml-1 font-extrabold">
                                     {msg.status === "delivered" ? (
                                       <BiCheckDouble
@@ -477,7 +505,7 @@ const UserChatbox = ({
               ))}
             </div>
           )}
-          {selectedUser?.connection.includes(session?.user?.db_id) ? (
+          {selectedUser?.connections?.includes(session?.user?.db_id) ? (
             <form
               onSubmit={sendMessageHandler}
               className="flex items-center p-2 gap-2"

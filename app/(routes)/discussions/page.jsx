@@ -140,7 +140,7 @@ const DiscussionsPage = () => {
           <Button
             variant="icon"
             onClick={handleSearch}
-            className="h-8 w-8 bg-slate-900 rounded-full p-2 mr-2"
+            className="h-8 w-8 bg-slate-900 rounded-full p-2 mr-[10px]"
           >
             <AiOutlineSearch className="h-full w-full  text-white " />
           </Button>

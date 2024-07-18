@@ -4,14 +4,14 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import connection from "./db.js";
-import Group from "./model/groupModel.js";
+import userStatus from "./route/userStatus.js";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import notification from "./route/notification.js";
 import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
-import Request from "./model/requestModel.js";
+
 import { handleNotificationFunction } from "./controller/handleNotificationFunction.js";
 import { discussionNotification } from "./controller/discussionNotification.js";
 import ActiveUsers from "./activeUser.js";
@@ -24,6 +24,7 @@ app.use(express.json());
 app.use("/sendconnection", sendConnection);
 app.use("/joinrequest", joinRequest);
 app.use("/notification", notification);
+app.use("/user-status", userStatus);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "success", message: "Service is running" });
@@ -104,8 +105,8 @@ io.on("connection", async (socket) => {
 
   socket.on("disconnect", () => {
     activeUserChatrooms.delete(socket.id);
-    ActiveUsers.removeActiveUser(userId);
-    console.log("User from activeUser disconnected");
+    ActiveUsers.removeActiveUser(socket.id);
+
     console.log("user disconnected");
   });
 });
