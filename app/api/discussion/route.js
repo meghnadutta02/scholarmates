@@ -8,7 +8,7 @@ import { ObjectId } from "mongodb";
 import { interests } from "@/app/(data)/interests";
 import Group from "@/app/(models)/groupModel";
 import User from "@/app/(models)/userModel";
-import { postObject,deleteObject } from "@/app/config/s3";
+import { postObject, deleteObject } from "@/app/config/s3";
 export async function POST(req) {
   try {
     await connect();
@@ -211,7 +211,7 @@ export async function PUT(req) {
     const id = req.nextUrl.searchParams.get("id");
 
     const data = await req.json();
-   
+
     const discussion = await Discussion.findOne({
       _id: id,
       creator: new ObjectId(session?.user?.db_id),
