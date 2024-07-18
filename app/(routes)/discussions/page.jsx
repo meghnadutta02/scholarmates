@@ -39,7 +39,7 @@ const DiscussionsPage = () => {
   const [reloadList, setReloadList] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false); // New state variable
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [discussions, setDiscussions] = useState([]);
   const suggestionsRef = useRef(null);
@@ -90,12 +90,12 @@ const DiscussionsPage = () => {
         if (searchQuery && searchQuery.length > 1) {
           const { result } = await getSuggestions(searchQuery);
           setSuggestions(result);
-          setShowSuggestions(true); // Show suggestions when available
+          setShowSuggestions(true);
         } else if (searchQuery.length === 0) {
           setReloadList(true);
           setOffset(0);
           setHasMore(true);
-          setShowSuggestions(false); // Hide suggestions when search query is empty
+          setShowSuggestions(false);
         }
       } catch (error) {
         console.error("Error fetching discussions:", error);

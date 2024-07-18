@@ -117,11 +117,12 @@ body::-webkit-scrollbar {
 
 .checkbox-wrapper-26 * {
   -webkit-tap-highlight-color: transparent;
-  outline: none;
+ 
 }
 
 .checkbox-wrapper-26 input[type="checkbox"] {
   display: none;
+  
 }
 
 .checkbox-wrapper-26 label {
@@ -152,6 +153,7 @@ body::-webkit-scrollbar {
   background-color: #fff;
   transform: translateY(-50%);
   border-radius: 50%;
+  border: 1px solid #2f3641;
   transition: 0.2s ease width, 0.2s ease height;
 }
 
@@ -201,7 +203,7 @@ body::-webkit-scrollbar {
 }
 
 .checkbox-wrapper-26 input[type="checkbox"]:checked + label {
-  background-color: #07d410;
+  background-color: #2f3641;
 }
 
 .checkbox-wrapper-26 input[type="checkbox"]:checked + label:before {

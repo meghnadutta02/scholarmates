@@ -50,7 +50,7 @@ const DiscussionList = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      // setLoading(true);
       try {
         let query = "";
         let params = [];

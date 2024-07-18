@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useSession } from "next-auth/react";
 import { CaretSortIcon } from "@radix-ui/react-icons";
-import { FilterIcon } from "lucide-react";
+
 import { MdFilterAlt } from "react-icons/md";
 
 const FilterDrawer = ({ applyFilters }) => {
@@ -51,15 +51,47 @@ const FilterDrawer = ({ applyFilters }) => {
   const handleCategoryChange = (event) => {
     const { value, checked } = event.target;
     if (checked) {
+      // Add the category to selectedCategories
       setSelectedCategories((prevSelectedCategories) => [
         ...prevSelectedCategories,
         value,
       ]);
+      // Deselect all subcategories of the selected category
+      setSelectedSubcategories((prevSelectedSubcategories) =>
+        prevSelectedSubcategories.filter(
+          (subcategory) =>
+            !interests
+              .find((interest) => interest.category === value)
+              .subcategories.includes(subcategory)
+        )
+      );
     } else {
+      // Remove the category from selectedCategories
       setSelectedCategories((prevSelectedCategories) =>
         prevSelectedCategories.filter((category) => category !== value)
       );
+      // Clear expanded category if it was deselected
       setExpandedCategory(null);
+    }
+  };
+
+  const handleSubcategoryChange = (event, category) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      // Add the subcategory to selectedSubcategories
+      setSelectedSubcategories((prevSelectedSubcategories) => [
+        ...prevSelectedSubcategories,
+        value,
+      ]);
+      // Deselect the corresponding category
+      setSelectedCategories((prevSelectedCategories) =>
+        prevSelectedCategories.filter((cat) => cat !== category)
+      );
+    } else {
+      // Remove the subcategory from selectedSubcategories
+      setSelectedSubcategories((prevSelectedSubcategories) =>
+        prevSelectedSubcategories.filter((subcategory) => subcategory !== value)
+      );
     }
   };
 
@@ -70,23 +102,6 @@ const FilterDrawer = ({ applyFilters }) => {
     } else {
       setSelectedType((prevSelectedType) =>
         prevSelectedType.filter((type) => type !== value)
-      );
-    }
-  };
-
-  const handleSubcategoryChange = (event, category) => {
-    const { value, checked } = event.target;
-    if (checked) {
-      setSelectedCategories((prev) =>
-        prev.filter((value) => value !== category)
-      );
-      setSelectedSubcategories((prevSelectedSubcategories) => [
-        ...prevSelectedSubcategories,
-        value,
-      ]);
-    } else {
-      setSelectedSubcategories((prevSelectedSubcategories) =>
-        prevSelectedSubcategories.filter((category) => category !== value)
       );
     }
   };
@@ -104,8 +119,8 @@ const FilterDrawer = ({ applyFilters }) => {
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 " />
-        <Drawer.Content className="rounded-se-lg bg-zinc-300 dark:bg-gray-200 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-scroll scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-400 scrollbar-thumb-rounded-full shadow-inner">
-          <div className="p-4 rounded-se-lg bg-zinc-300  dark:bg-gray-800 flex-1 h-full font-sans">
+        <Drawer.Content className="rounded-se-lg bg-gray-100 dark:bg-gray-800 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-scroll scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-300 scrollbar-thumb-rounded-full shadow-lg shadow-gray-600">
+          <div className="p-4 rounded-se-lg  flex-1 h-full font-sans">
             <div className="max-w-lg mx-auto">
               <section className="flex">
                 <aside className="text-black dark:text-black text-md w-full">
@@ -118,6 +133,7 @@ const FilterDrawer = ({ applyFilters }) => {
                           id="college"
                           name="college"
                           checked={college}
+                          className=" accent-gray-700"
                           onChange={(e) => {
                             if (e.target.checked) {
                               if (session?.user?.collegeName !== "") {
@@ -139,7 +155,7 @@ const FilterDrawer = ({ applyFilters }) => {
                     </ul>
                   </div>
 
-                  <Collapsible className="border-b-2 border-gray-700 pb-[8px]">
+                  <Collapsible className="border-b-[1.5px] border-gray-300 pb-[8px]">
                     <div className="flex my-2 items-center justify-between">
                       <h2 className="text-xl font-semibold">Categories</h2>
                       <CollapsibleTrigger asChild>
@@ -160,7 +176,7 @@ const FilterDrawer = ({ applyFilters }) => {
                                   interest.category
                                 )}
                                 onChange={handleCategoryChange}
-                                className="h-4 w-4 "
+                                className="h-4 w-4 accent-gray-700"
                               />
                               <label
                                 className="ml-2"
@@ -207,9 +223,9 @@ const FilterDrawer = ({ applyFilters }) => {
                                             }
                                           />
                                           <label
-                                            for={`${interest.category}-${subIndex}`}
+                                            htmlFor={`${interest.category}-${subIndex}`}
                                           >
-                                            <div class="tick_mark"></div>
+                                            <div className="tick_mark"></div>
                                           </label>
                                         </div>
                                         <div className="">
@@ -231,7 +247,7 @@ const FilterDrawer = ({ applyFilters }) => {
                     </CollapsibleContent>
                   </Collapsible>
 
-                  <Collapsible className="border-b-2 border-gray-700 pb-[8px]">
+                  <Collapsible className="border-b-[1.5px] border-gray-300 pb-[8px]">
                     <div className="flex my-2 items-center justify-between">
                       <h2 className="text-xl font-semibold">Type</h2>
                       <CollapsibleTrigger asChild>
@@ -247,6 +263,7 @@ const FilterDrawer = ({ applyFilters }) => {
                             name="type"
                             value="general"
                             checked={selectedType.includes("general")}
+                            className=" accent-gray-700"
                             onChange={handleTypeChange}
                           />
                           <label className="ml-2" htmlFor="general">
@@ -261,6 +278,7 @@ const FilterDrawer = ({ applyFilters }) => {
                             value="urgent"
                             checked={selectedType.includes("urgent")}
                             onChange={handleTypeChange}
+                            className=" accent-gray-700"
                           />
                           <label className="ml-2" htmlFor="urgent">
                             Urgent
@@ -274,6 +292,7 @@ const FilterDrawer = ({ applyFilters }) => {
                             value="announcement"
                             checked={selectedType.includes("announcement")}
                             onChange={handleTypeChange}
+                            className=" accent-gray-700"
                           />
                           <label className="ml-2" htmlFor="announcement">
                             Announcement
@@ -287,6 +306,7 @@ const FilterDrawer = ({ applyFilters }) => {
                             value="collaboration"
                             checked={selectedType.includes("collaboration")}
                             onChange={handleTypeChange}
+                            className=" accent-gray-700"
                           />
                           <label className="ml-2" htmlFor="collaboration">
                             Collaboration
@@ -300,6 +320,7 @@ const FilterDrawer = ({ applyFilters }) => {
                             value="event"
                             checked={selectedType.includes("event")}
                             onChange={handleTypeChange}
+                            className=" accent-gray-700"
                           />
                           <label className="ml-2" htmlFor="event">
                             Event
@@ -313,6 +334,7 @@ const FilterDrawer = ({ applyFilters }) => {
                             value="support"
                             checked={selectedType.includes("support")}
                             onChange={handleTypeChange}
+                            className=" accent-gray-700"
                           />
                           <label className="ml-2" htmlFor="support">
                             Support
