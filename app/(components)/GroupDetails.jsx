@@ -205,7 +205,7 @@ const GroupDetails = ({
   const isCurrentUserModerator = group.moderators.includes(currentUser);
 
   return (
-    <div className="flex flex-col justify-between bg-gray-100 max-h-[32rem]  dark:bg-gray-800 pb-2 relative">
+    <div className="flex flex-col justify-between bg-gray-100  dark:bg-gray-800 pb-2 relative">
       <div className="flex justify-center py-4 items-center gap-1">
         <span className=" font-semibold text-xl ">{group.name}</span>
         {(isCurrentUserCreator || isCurrentUserModerator) && (

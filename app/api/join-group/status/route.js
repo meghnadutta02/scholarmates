@@ -20,11 +20,8 @@ export async function GET(req) {
     const pending = groups
       .filter((group) => group.status === "pending")
       .map((group) => group.groupId);
-    const rejected = groups
-      .filter((group) => group.status === "rejected")
-      .map((group) => group.groupId);
     user.groupsJoined.map((group) => accepted.push(group._id));
-    return NextResponse.json({ accepted, pending, rejected }, { status: 200 });
+    return NextResponse.json({ accepted, pending }, { status: 200 });
   } catch (error) {
     console.error(error);
 

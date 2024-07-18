@@ -84,9 +84,9 @@ const DiscussionList = ({
         let result = [];
         let accepted = [];
         let pending = [];
-        let rejected = [];
+
         if (joinRequestsResult.status === "fulfilled") {
-          ({ accepted, pending, rejected } = joinRequestsResult.value);
+          ({ accepted, pending } = joinRequestsResult.value);
         }
 
         if (discussionsResult.status === "fulfilled") {
@@ -100,7 +100,6 @@ const DiscussionList = ({
           const isDisliked = discussion.dislikedBy?.includes(userId);
           let isMember = false;
           let isRequested = false;
-          let isRejected = false;
 
           if (accepted.includes(discussion.groupId)) {
             isMember = true;
@@ -108,16 +107,13 @@ const DiscussionList = ({
           if (pending.includes(discussion.groupId)) {
             isRequested = true;
           }
-          if (rejected.includes(discussion.groupId)) {
-            isRejected = true;
-          }
+
           return {
             ...discussion,
             isLiked,
             isDisliked,
             isMember,
             isRequested,
-            isRejected,
           };
         });
 
@@ -248,16 +244,13 @@ const DiscussionList = ({
     }, 300);
   };
 
-  const handleButtonClick = async (discussion) => {
+  const handleButtonClick = async (discussionId, id) => {
     try {
       const toastId = toast.loading("Sending request...");
 
-      const res = await fetch(
-        `/api/join-group?discussionId=${discussion._id}`,
-        {
-          method: "GET",
-        }
-      );
+      const res = await fetch(`/api/join-group?groupId=${id}`, {
+        method: "GET",
+      });
 
       if (!res.ok) {
         toast.update(toastId, {
@@ -269,9 +262,8 @@ const DiscussionList = ({
         throw new Error("Error sending request");
       }
 
-      const r = await res.json();
-
-      if (r.status === 200) {
+      //if the group is private and request is sent to moderators
+      if (res.status === 200) {
         toast.update(toastId, {
           render: "Request sent successfully",
           type: "success",
@@ -281,13 +273,15 @@ const DiscussionList = ({
 
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
-            if (d._id === discussion._id) {
-              return { ...d, isRequested: true };
+            if (d._id === discussionId) {
+              return { ...d, isRequested: true, isMember: false };
             }
             return d;
           })
         );
-      } else {
+      } else if (res.status === 201) {
+        //if the group is public and user is added to group
+
         toast.update(toastId, {
           render: "Joined group successfully",
           type: "success",
@@ -297,8 +291,8 @@ const DiscussionList = ({
 
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
-            if (d._id === discussion._id) {
-              return { ...d, isMember: true };
+            if (d._id === discussionId) {
+              return { ...d, isMember: true, isRequested: false };
             }
             return d;
           })
@@ -459,14 +453,12 @@ const DiscussionList = ({
                     <Button
                       className="w-16 md:w-20 h-8 md:h-10"
                       variant="secondary"
-                      disabled={discussion.isRequested || discussion.isRejected}
-                      onClick={() => handleButtonClick(discussion)}
+                      disabled={discussion.isRequested}
+                      onClick={() =>
+                        handleButtonClick(discussion._id, discussion.groupId)
+                      }
                     >
-                      {discussion.isRequested
-                        ? "Requested"
-                        : discussion.isRejected
-                        ? "Rejected"
-                        : "Join"}
+                      {discussion.isRequested ? "Requested" : "Join"}
                     </Button>
                   )}
                   <Button

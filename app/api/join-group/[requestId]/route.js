@@ -67,7 +67,7 @@ export async function DELETE(req, { params }) {
     if (request.status === "pending") {
       throw new Error("Request is not processed yet");
     }
-    if (!request.fromUser === new ObjectId(session?.user?.db_id)) {
+    if (!request.fromUser.equals(new ObjectId(session?.user?.db_id))) {
       throw new Error("You are not authorized to perform this action");
     }
 

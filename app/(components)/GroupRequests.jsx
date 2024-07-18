@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import Loading from "@/app/(components)/Loading";
 import Image from "next/image";
 import { FaTimes, FaCheck } from "react-icons/fa";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { toast } from "react-toastify";
 
 const GroupRequests = () => {
@@ -60,9 +55,8 @@ const GroupRequests = () => {
         );
         toast.success(
           <div>
-            Request from {request?.fromUser?.name} to join group - #
-            {request.groupId._id.substring(request.groupId._id.length - 4)} is
-            accepted
+            Request from {request?.fromUser?.name} to join group "
+            {request.groupId.name}" is accepted
           </div>
         );
       }
@@ -88,9 +82,8 @@ const GroupRequests = () => {
         );
         toast.success(
           <div>
-            Request from {request?.fromUser?.name} to join group - #
-            {request.groupId._id.substring(request.groupId._id.length - 4)} is
-            rejected
+            Request from {request?.fromUser?.name} to join group "
+            {request?.groupId?.name}" is rejected
           </div>
         );
       }
@@ -135,21 +128,8 @@ const GroupRequests = () => {
                 {requestsToJoin.includes(request) && (
                   <div className="flex items-center justify-between rounded-md shadow md:px-3 px-[6px] md:py-4 py-2 font-sans my-auto">
                     <div className="flex">
-                      Your request to join group -{" "}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger className="mr-1">
-                            #
-                            {request.groupId._id.substring(
-                              request.groupId._id.length - 4
-                            )}
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{request.groupId.name}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      is {request.status}
+                      Your request to join group "{request.groupId.name}" is{" "}
+                      {request.status}.
                     </div>
                     <button
                       onClick={() => handleDeleteRequest(request._id)}
@@ -173,20 +153,7 @@ const GroupRequests = () => {
                         <span className="font-semibold ">
                           {request?.fromUser?.name}
                         </span>{" "}
-                        has requested to join group -{" "}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              #
-                              {request.groupId._id.substring(
-                                request.groupId._id.length - 4
-                              )}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{request?.groupId?.name}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>{" "}
+                        has requested to join group "{request?.groupId?.name}".
                       </div>
                     </div>
                     <div className="flex gap-1">

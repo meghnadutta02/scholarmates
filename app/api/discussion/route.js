@@ -58,7 +58,11 @@ export async function POST(req) {
     await discussion.save();
     await DiscussionNotification.create({
       discussionId: discussion._id,
-      content: `just posted a new discussion titled "${title}".`,
+      content: `just posted a new discussion titled "${
+        discussion.title.length > 15
+          ? discussion.title.slice(0, 15) + ".."
+          : discussion.title
+      }"`,
       creator: session?.user?.db_id,
       connection: user.connection.map((conn) => conn._id),
       status: true,
