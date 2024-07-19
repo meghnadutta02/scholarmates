@@ -2,11 +2,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import Loading from "../(routes)/discussions/loading";
 import { Button } from "@/components/ui/button";
-
+import { IoChatboxOutline } from "react-icons/io5";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
+import { RiShareForwardLine } from "react-icons/ri";
 
 const getDiscussions = async (id, offset = 0, limit = 5) => {
   const response = await fetch(
@@ -51,7 +52,7 @@ const DiscussionSection = ({ user }) => {
         let rejected = [];
 
         if (joinRequestsResult.status === "fulfilled") {
-          ({ accepted, pending, rejected } = joinRequestsResult.value);
+          ({ accepted, pending } = joinRequestsResult.value);
         }
 
         if (discussionsResult.status === "fulfilled") {
@@ -65,7 +66,6 @@ const DiscussionSection = ({ user }) => {
           const isDisliked = discussion.dislikedBy?.includes(userId);
           let isMember = false;
           let isRequested = false;
-          let isRejected = false;
 
           if (accepted.includes(discussion.groupId)) {
             isMember = true;
@@ -73,16 +73,13 @@ const DiscussionSection = ({ user }) => {
           if (pending.includes(discussion.groupId)) {
             isRequested = true;
           }
-          if (rejected.includes(discussion.groupId)) {
-            isRejected = true;
-          }
+
           return {
             ...discussion,
             isLiked,
             isDisliked,
             isMember,
             isRequested,
-            isRejected,
           };
         });
 
@@ -137,6 +134,22 @@ const DiscussionSection = ({ user }) => {
     };
   }, [discussions, hasMore]);
 
+  const handleShare = (discussion) => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: discussion.title,
+          text: discussion.content,
+          url: `${window.location.origin}/discussions/${discussion._id}`,
+        })
+        .catch(console.error);
+    } else {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/discussions/${discussion._id}`
+      );
+      toast.success("Link copied to clipboard!");
+    }
+  };
   const toggleDiscussion = (id) => {
     setExpandedDiscussion((prev) => {
       const isIdPresent = prev.includes(id);
@@ -212,16 +225,13 @@ const DiscussionSection = ({ user }) => {
     }, 300);
   };
 
-  const handleButtonClick = async (discussion) => {
+  const handleButtonClick = async (discussionId, id) => {
     try {
       const toastId = toast.loading("Sending request...");
 
-      const res = await fetch(
-        `/api/join-group?discussionId=${discussion._id}`,
-        {
-          method: "GET",
-        }
-      );
+      const res = await fetch(`/api/join-group?groupId=${id}`, {
+        method: "GET",
+      });
 
       if (!res.ok) {
         toast.update(toastId, {
@@ -233,9 +243,8 @@ const DiscussionSection = ({ user }) => {
         throw new Error("Error sending request");
       }
 
-      const r = await res.json();
-
-      if (r.status === 200) {
+      //if the group is private and request is sent to moderators
+      if (res.status === 200) {
         toast.update(toastId, {
           render: "Request sent successfully",
           type: "success",
@@ -245,13 +254,15 @@ const DiscussionSection = ({ user }) => {
 
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
-            if (d._id === discussion._id) {
-              return { ...d, isRequested: true };
+            if (d._id === discussionId) {
+              return { ...d, isRequested: true, isMember: false };
             }
             return d;
           })
         );
-      } else {
+      } else if (res.status === 201) {
+        //if the group is public and user is added to group
+
         toast.update(toastId, {
           render: "Joined group successfully",
           type: "success",
@@ -261,8 +272,8 @@ const DiscussionSection = ({ user }) => {
 
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
-            if (d._id === discussion._id) {
-              return { ...d, isMember: true };
+            if (d._id === discussionId) {
+              return { ...d, isMember: true, isRequested: false };
             }
             return d;
           })
@@ -294,11 +305,18 @@ const DiscussionSection = ({ user }) => {
               className="flex items-start gap-4 rounded-lg shadow-sm p-2"
             >
               <div className="flex-1 grid gap-2">
-                <h4 className="font-semibold text-base cursor-pointer">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-base cursor-pointer">
+                    <Link href={`/discussions/${discussion._id}`}>
+                      {discussion.title}
+                    </Link>
+                  </h4>
                   <Link href={`/discussions/${discussion._id}`}>
-                    {discussion.title}
+                    <Button className="p-0 md:hidden" variant="icon">
+                      <InfoIcon className="w-5 h-5" />
+                    </Button>
                   </Link>
-                </h4>
+                </div>
 
                 <div
                   className={`prose max-w-none cursor-pointer md:hidden ${
@@ -346,29 +364,33 @@ const DiscussionSection = ({ user }) => {
                     <span className="ml-2">{discussion.dislikes}</span>
                   </Button>
 
-                  <Button
-                    className="md:w-24 w-[70px]"
-                    variant="secondary"
-                    disabled={
-                      discussion.isMember ||
-                      discussion.isRequested ||
-                      discussion.isRejected
-                    }
-                    onClick={() => handleButtonClick(discussion)}
-                  >
-                    {discussion.isMember
-                      ? "Member"
-                      : discussion.isRequested
-                      ? "Requested"
-                      : discussion.isRejected
-                      ? "Rejected"
-                      : "Join"}
-                  </Button>
-                  <Link href={`/discussions/${discussion._id}`}>
-                    <Button className="w-24 md:hidden" variant="icon">
-                      <InfoIcon className="w-5 h-5" />
+                  {discussion.isMember ? (
+                    <Link href={`/chats?discussionId=${discussion._id}`}>
+                      <Button variant="icon" className="flex md:ml-4">
+                        <IoChatboxOutline className="h-6 w-6" />
+                      </Button>{" "}
+                    </Link>
+                  ) : (
+                    <Button
+                      className="w-16 md:w-20 h-8 md:h-10"
+                      variant="secondary"
+                      disabled={discussion.isRequested}
+                      onClick={() =>
+                        handleButtonClick(discussion._id, discussion.groupId)
+                      }
+                    >
+                      {discussion.isRequested ? "Requested" : "Join"}
                     </Button>
-                  </Link>
+                  )}
+
+                  <Button
+                    className="h-10"
+                    size="icon"
+                    variant="icon"
+                    onClick={() => handleShare(discussion)}
+                  >
+                    <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
+                  </Button>
                 </div>
               </div>
             </div>

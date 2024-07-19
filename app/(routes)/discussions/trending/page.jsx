@@ -113,9 +113,9 @@ const Trending = () => {
         let result = [];
         let accepted = [];
         let pending = [];
-        let rejected = [];
+
         if (joinRequestsResult.status === "fulfilled") {
-          ({ accepted, pending, rejected } = joinRequestsResult.value);
+          ({ accepted, pending } = joinRequestsResult.value);
         }
 
         if (discussionsResult.status === "fulfilled") {
@@ -129,7 +129,6 @@ const Trending = () => {
           const isDisliked = discussion.dislikedBy?.includes(userId);
           let isMember = false;
           let isRequested = false;
-          let isRejected = false;
 
           if (accepted.includes(discussion?.groupId?._id)) {
             isMember = true;
@@ -137,16 +136,13 @@ const Trending = () => {
           if (pending.includes(discussion?.groupId?._id)) {
             isRequested = true;
           }
-          if (rejected.includes(discussion?.groupId?._id)) {
-            isRejected = true;
-          }
+
           return {
             ...discussion,
             isLiked,
             isDisliked,
             isMember,
             isRequested,
-            isRejected,
           };
         });
         setDiscussions(updatedResult);
@@ -162,36 +158,60 @@ const Trending = () => {
     fetchData();
   }, [session, college]);
 
-  const handleButtonClick = async (discussion) => {
+  const handleButtonClick = async (discussionId, id) => {
     try {
-      const promise = new Promise(async (resolve, reject) => {
-        const res = await fetch(
-          `/api/join-group?discussionId=${discussion._id}`,
-          {
-            method: "GET",
-          }
+      const toastId = toast.loading("Sending request...");
+
+      const res = await fetch(`/api/join-group?groupId=${id}`, {
+        method: "GET",
+      });
+
+      if (!res.ok) {
+        toast.update(toastId, {
+          render: "Error sending request",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
+        throw new Error("Error sending request");
+      }
+
+      //if the group is private and request is sent to moderators
+      if (res.status === 200) {
+        toast.update(toastId, {
+          render: "Request sent successfully",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+        });
+
+        setDiscussions((prevDiscussions) =>
+          prevDiscussions.map((d) => {
+            if (d._id === discussionId) {
+              return { ...d, isRequested: true, isMember: false };
+            }
+            return d;
+          })
         );
-        if (!res.ok) {
-          reject(new Error("Error sending request"));
-        } else {
-          resolve(await res.json());
-        }
-      });
+      } else if (res.status === 201) {
+        //if the group is public and user is added to group
 
-      toast.promise(promise, {
-        loading: "Sending request...",
-        success: "Request sent successfully",
-        error: "Error sending request",
-      });
+        toast.update(toastId, {
+          render: "Joined group successfully",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+        });
 
-      setDiscussions((prevDiscussions) =>
-        prevDiscussions.map((d) => {
-          if (d._id === discussion._id) {
-            return { ...d, isRequested: true };
-          }
-          return d;
-        })
-      );
+        setDiscussions((prevDiscussions) =>
+          prevDiscussions.map((d) => {
+            if (d._id === discussionId) {
+              return { ...d, isMember: true, isRequested: false };
+            }
+            return d;
+          })
+        );
+      }
     } catch (error) {
       console.error(error);
       toast.error("Error sending request");
@@ -199,18 +219,18 @@ const Trending = () => {
   };
   if (loading) return <Loading />;
   return (
-    <div className="pt-5 md:px-6 px-1 relative w-full">
-      <div className="flex justify-end gap-2 items-center mt-6 mr-4">
+    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full">
+      <div className="flex justify-end gap-2 items-center md:mt-4 mt-3 mr-4">
         <input
           type="checkbox"
           id="college"
           name="college"
           className="rounded-md h-[14px] w-[14px] accent-zinc-700"
           onChange={(e) =>
-            session?.user?.collegeName !== ""
+            session?.user?.collegeName
               ? setCollege(e.target.checked)
               : toast.info(
-                  "Please provide your college name to complete your profile."
+                  "Please update your college in profile settings to filter discussions by college."
                 )
           }
         />
@@ -346,7 +366,7 @@ const Trending = () => {
                     </span>
                   </Button>
                   {discussion.isMember ? (
-                    <Link href={`/chats/?discussionId=${discussion._id}`}>
+                    <Link href={`/chats?discussionId=${discussion._id}`}>
                       <Button variant="icon" className="flex ml-4">
                         <IoChatboxOutline className="h-6 w-6" />
                       </Button>
@@ -355,14 +375,15 @@ const Trending = () => {
                     <Button
                       className="w-16 md:w-20 h-8 md:h-10"
                       variant="secondary"
-                      disabled={discussion.isRequested || discussion.isRejected}
-                      onClick={() => handleButtonClick(discussion)}
+                      disabled={discussion.isRequested}
+                      onClick={() =>
+                        handleButtonClick(
+                          discussion._id,
+                          discussion.groupId._id
+                        )
+                      }
                     >
-                      {discussion.isRequested
-                        ? "Requested"
-                        : discussion.isRejected
-                        ? "Rejected"
-                        : "Join"}
+                      {discussion.isRequested ? "Requested" : "Join"}
                     </Button>
                   )}
                 </div>

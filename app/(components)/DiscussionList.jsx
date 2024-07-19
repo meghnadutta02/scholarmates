@@ -444,7 +444,7 @@ const DiscussionList = ({
                   </Button>
 
                   {discussion.isMember ? (
-                    <Link href={`/chats/?discussionId=${discussion._id}`}>
+                    <Link href={`/chats?discussionId=${discussion._id}`}>
                       <Button variant="icon" className="flex md:ml-4">
                         <IoChatboxOutline className="h-6 w-6" />
                       </Button>{" "}

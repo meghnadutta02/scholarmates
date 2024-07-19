@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
-import Discussion from "@/app/(models)/discussionModel";
+
 import Group from "@/app/(models)/groupModel";
 import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";

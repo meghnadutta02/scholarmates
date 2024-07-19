@@ -81,7 +81,6 @@ export async function POST(req) {
           isDisliked: false,
           isMember: true,
           isRequested: false,
-          isRejected: false,
         },
       },
       { status: 200 },

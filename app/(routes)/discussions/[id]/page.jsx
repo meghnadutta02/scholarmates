@@ -7,6 +7,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { RiShareForwardLine } from "react-icons/ri";
+import { IoChatboxOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 import Loading from "@/app/(components)/Loading";
@@ -141,16 +142,13 @@ const DiscussionDetails = ({ params }) => {
     }, 300);
   };
 
-  const handleButtonClick = async (discussion) => {
+  const handleButtonClick = async (discussionId, id) => {
     try {
       const toastId = toast.loading("Sending request...");
 
-      const res = await fetch(
-        `/api/join-group?discussionId=${discussion._id}`,
-        {
-          method: "GET",
-        }
-      );
+      const res = await fetch(`/api/join-group?groupId=${id}`, {
+        method: "GET",
+      });
 
       if (!res.ok) {
         toast.update(toastId, {
@@ -162,15 +160,42 @@ const DiscussionDetails = ({ params }) => {
         throw new Error("Error sending request");
       }
 
-      const r = await res.json();
-      toast.update(toastId, {
-        render: r.message,
-        type: r.status === 200 ? "success" : "error",
-        isLoading: false,
-        autoClose: 5000,
-      });
+      //if the group is private and request is sent to moderators
+      if (res.status === 200) {
+        toast.update(toastId, {
+          render: "Request sent successfully",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+        });
 
-      setStatus(r.status === 200 ? "pending" : "");
+        setDiscussions((prevDiscussions) =>
+          prevDiscussions.map((d) => {
+            if (d._id === discussionId) {
+              return { ...d, isRequested: true, isMember: false };
+            }
+            return d;
+          })
+        );
+      } else if (res.status === 201) {
+        //if the group is public and user is added to group
+
+        toast.update(toastId, {
+          render: "Joined group successfully",
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+        });
+
+        setDiscussions((prevDiscussions) =>
+          prevDiscussions.map((d) => {
+            if (d._id === discussionId) {
+              return { ...d, isMember: true, isRequested: false };
+            }
+            return d;
+          })
+        );
+      }
     } catch (error) {
       console.error(error);
       toast.error("Error sending request");
@@ -323,7 +348,9 @@ const DiscussionDetails = ({ params }) => {
                       className="w-16 md:w-20 h-8 md:h-10"
                       variant="secondary"
                       disabled={status === "accepted" || status === "pending"}
-                      onClick={() => handleButtonClick(discussion)}
+                      onClick={() =>
+                        handleButtonClick(discussion._id, discussion.groupId)
+                      }
                     >
                       {status === "accepted"
                         ? "Member"
@@ -444,18 +471,25 @@ const DiscussionDetails = ({ params }) => {
                     <span className="sr-only">Dislike</span>
                     <span className="ml-2">{discussion.dislikes}</span>
                   </Button>
-                  <Button
-                    className="md:w-24 w-[70px]"
-                    variant="secondary"
-                    disabled={status === "accepted" || status === "pending"}
-                    onClick={() => handleButtonClick(discussion)}
-                  >
-                    {status === "accepted"
-                      ? "Member"
-                      : status === "pending"
-                      ? "Requested"
-                      : "Join"}
-                  </Button>
+                  {status === "accepted" ? (
+                    <Link href={`/chats?discussionId=${discussion._id}`}>
+                      <Button variant="icon" className="flex md:ml-4">
+                        <IoChatboxOutline className="h-6 w-6" />
+                      </Button>{" "}
+                    </Link>
+                  ) : (
+                    <Button
+                      className="w-16 md:w-20 h-8 md:h-10"
+                      variant="secondary"
+                      disabled={status === "pending"}
+                      onClick={() =>
+                        handleButtonClick(discussion._id, discussion.groupId)
+                      }
+                    >
+                      {status === "pending" ? "Requested" : "Join"}
+                    </Button>
+                  )}
+
                   <Button
                     className="h-10"
                     size="icon"

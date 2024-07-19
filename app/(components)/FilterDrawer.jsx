@@ -136,7 +136,7 @@ const FilterDrawer = ({ applyFilters }) => {
                           className=" accent-gray-700"
                           onChange={(e) => {
                             if (e.target.checked) {
-                              if (session?.user?.collegeName !== "") {
+                              if (session?.user?.collegeName) {
                                 setCollege(true);
                               } else {
                                 toast.info(
