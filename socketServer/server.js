@@ -1,4 +1,3 @@
-//create a socket server using node express
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -26,7 +25,7 @@ app.use("/joinrequest", joinRequest);
 app.use("/notification", notification);
 app.use("/user-status", userStatus);
 
-app.get("/health", (req, res) => {
+app.get("/health", (res) => {
   res.status(200).json({ status: "success", message: "Service is running" });
 });
 
@@ -36,15 +35,15 @@ connection();
 const io = new Server(socketServer, {
   cors: {
     origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "PATCH"],
   },
 });
 
 const activeUserChatrooms = new Map();
 var userId = null;
-// GROUP CREATION AND SEND NOTIFICATION STARTED
 
 io.on("connection", async (socket) => {
+  // User socket connection setup and notification handler
   console.log("Connected to socket.io");
   socket.on("setup", async (userData) => {
     const user = await User.findById(userData);
@@ -60,9 +59,12 @@ io.on("connection", async (socket) => {
       await discussionNotification(user, socket);
     }
   });
-  // ========END============
 
-  // ==========CHAT SYSTEM STARTED==========
+  socket.on("joinRequest", async (data) => {
+    await handleJoinRequestNotification(data);
+  });
+
+  // ---------------------Group chat events ----------------------------
 
   socket.on("groupchat-setup", async (groupId) => {
     if (groupId) {
@@ -70,6 +72,16 @@ io.on("connection", async (socket) => {
       console.log(`User ${socket.id} joined group ${groupId}`);
     } else console.log(`Group ${groupId} not found`);
   });
+
+  socket.on("send-message", (data) => {
+    if (data.roomID) {
+      io.to(data.roomID).emit("receive-message", data.message);
+    } else {
+      io.emit("receive-message", data);
+    }
+  });
+
+  // ---------------------User chat events ----------------------------
 
   socket.on("userchat-setup", async (data) => {
     if (!data || !data.sender || !data.receiver) {
@@ -86,22 +98,47 @@ io.on("connection", async (socket) => {
       socket.join(roomId);
       activeUserChatrooms.set(socket.id, roomId);
     }
+
+    if (
+      activeUserChatrooms.get(socket.id) ===
+      activeUserChatrooms.get(ActiveUsers.getUserSocketId(data.receiver))
+    ) {
+      io.to(roomId).emit("userchat-update-read");
+    }
   });
-  socket.on("joinRequest", async (data) => {
-    await handleJoinRequestNotification(data);
-  });
-  socket.on("send-message", (data) => {
-    if (data.roomID) {
-      io.to(data.roomID).emit("receive-message", data.message);
-    } else {
-      io.emit("receive-message", data);
+
+  socket.on("userchat-close", async (data) => {
+    if (!data || !data.sender || !data.receiver) {
+      console.error("Invalid data received:", data);
+      return;
+    }
+
+    function generateRoomId(userId1, userId2) {
+      const combinedIds = [userId1, userId2].sort().join("_");
+      return combinedIds;
+    }
+
+    const roomId = generateRoomId(data.sender, data.receiver);
+
+    if (socket.rooms.has(roomId)) {
+      socket.leave(roomId);
+      activeUserChatrooms.delete(socket.id);
     }
   });
 
   socket.on("userchat-send", (data) => {
-    if (data.message && activeUserChatrooms.has(socket.id)) {
+    if (
+      data.message &&
+      activeUserChatrooms.get(socket.id) ===
+        activeUserChatrooms.get(ActiveUsers.getUserSocketId(data.receiver))
+    ) {
       const roomId = activeUserChatrooms.get(socket.id);
       io.to(roomId).emit("userchat-receive", data.message);
+    } else if (ActiveUsers.getActiveUsers().has(data.receiver)) {
+      io.to(ActiveUsers.getUserSocketId(data.receiver)).emit(
+        "userchat-inbox",
+        data.message
+      );
     }
   });
 

@@ -85,6 +85,7 @@ const UserChatbox = ({
 
   //Initial load of messages
   useEffect(() => {
+    setInboxMessages([]);
     const fetchUserStatus = async () => {
       try {
         const response = await fetch(
@@ -115,7 +116,7 @@ const UserChatbox = ({
         return () => clearInterval(intervalId);
       }
     }
-  }, [selectedUser, userID, fetchInboxMessages]);
+  }, [selectedUser, userID, fetchInboxMessages, socket, session]);
 
   // Lazy loading next batch messages fetch
   useEffect(() => {
@@ -171,7 +172,7 @@ const UserChatbox = ({
         );
         socket.emit("userchat-send", {
           message: data.result,
-          receiver: selectedUser,
+          receiver: userID,
           sender: session?.user?.db_id,
         });
         scrollDown();
@@ -211,23 +212,54 @@ const UserChatbox = ({
       const messageHandler = (msg) => {
         updateLastMessage(msg.sender, msg.text);
         setInboxMessages((prevMessages) => {
-          if (prevMessages.some((m) => m._id === msg._id)) {
-            return prevMessages;
+          const updatedMessages = prevMessages.map((m) => {
+            if (m.sender === session?.user?.db_id) {
+              return { ...m, status: "read" };
+            }
+            return m;
+          });
+
+          if (updatedMessages.some((m) => m._id === msg._id)) {
+            return updatedMessages;
           }
-          return [...prevMessages, msg];
+
+          return [...updatedMessages, msg];
         });
+
+        scrollDown();
+        markMessagesAsRead(userID);
       };
-      socket.emit("userchat-setup", {
-        sender: session?.user?.db_id,
-        receiver: userID,
-      });
+      const updateBlueTicks = () => {
+        setInboxMessages((prevMessages) => {
+          const updatedMessages = prevMessages.map((m) => {
+            if (m.sender === session?.user?.db_id) {
+              return { ...m, status: "read" };
+            }
+            return m;
+          });
+
+          return updatedMessages;
+        });
+        markMessagesAsRead(userID);
+      };
+
       socket.on("userchat-receive", messageHandler);
+      socket.on("userchat-update-read", updateBlueTicks);
 
       return () => {
         socket.off("userchat-receive", messageHandler);
       };
     }
   }, [socket, inboxMessages, session?.user?.db_id, updateLastMessage, userID]);
+
+  const closeChatHandler = () => {
+    socket.emit("userchat-close", {
+      sender: session?.user?.db_id,
+      receiver: userID,
+    });
+    setToggleChatView(true);
+    setInboxMessages([]);
+  };
 
   const scrollDown = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -338,7 +370,7 @@ const UserChatbox = ({
             <div className=" p-1 rounded-lg">
               <IoArrowBackCircleOutline
                 className="cursor-pointer hover:text-gray-500 transition-colors duration-200 ease-in-out"
-                onClick={() => setToggleChatView(true)}
+                onClick={closeChatHandler}
                 size={30}
               />
             </div>
