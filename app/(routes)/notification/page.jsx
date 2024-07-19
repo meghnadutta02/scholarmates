@@ -12,16 +12,106 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const Page = () => {
-  const { notification, clearUnreadCount } = useSession();
+  const { session, notification, clearUnreadCount, setNotification } = useSession();
   const [notifications, setNotifications] = useState([]);
 
-  useEffect(() => {
-    clearUnreadCount();
-    setNotifications(notification);
-  }, [notification, clearUnreadCount]);
+  const removeDuplicates = (array) => {
+    const uniqueSet = new Map();
+    array.forEach(item => {
+      const id = item.notificationId || item._id;
+      uniqueSet.set(id, item);
+    });
+    return Array.from(uniqueSet.values());
+  };
 
-  const handleClose = (index) => {
-    setNotifications((prev) => prev.filter((_, i) => i !== index));
+// ALL THE NOTIFICATION CAME FROM BACKEND ALLREADY SORTED ,THIS ONLY SORT THE NOTIFICATION 
+//CAME FROM SOCKET
+
+  const sortByTimestamp = (array) => {
+    return array.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  };
+
+  useEffect(() => {
+    const markAllAsSeen = async () => {
+      if (session?.db_id && notification.length > 0) {
+        const notificationIds = notification.map(n => n.notificationId);
+        try {
+          const resp = await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/markaseen/${session.db_id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ notificationIds }),
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            console.log("Marked as seen:", data);
+            clearUnreadCount();
+          }
+        } catch (error) {
+          console.error('Failed to mark notifications as seen', error);
+        }
+      }
+    };
+
+    markAllAsSeen();
+  }, [session?.db_id, notification, clearUnreadCount]);
+
+  useEffect(() => {
+    const getAllNotifications = async () => {
+      if (session?.db_id) {
+        try {
+          const resp = await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/getnotification/${session.db_id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            console.log("Fetched notifications:", data.notifications);
+            setNotifications((prev) => removeDuplicates([...prev, ...data.notifications]));
+          }
+        } catch (error) {
+          console.error('Failed to fetch notifications', error);
+        }
+      }
+    };
+
+    getAllNotifications();
+  }, [session?.db_id]);
+
+  useEffect(() => {
+    if (notification.length > 0) {
+      setNotifications((prev) => sortByTimestamp(removeDuplicates([...prev, ...notification])));
+     console.log("djjdfkjfjdj",notification)
+      setNotification([]);
+    }
+  }, [notification, setNotification]);
+
+  const handleClose = async(index,item) => {
+   
+   
+    try{
+      const id = item.notificationId || item._id;
+      if(!id){
+        console.log("no id");
+         }
+         const resp=await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/remove/${id}`,{
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+         })
+         if(resp.ok){
+          console.log("okkk")
+          setNotifications((prev) => prev.filter((_, i) => i !== index));
+         }
+      
+    }catch(error){
+      console.log(error.message);
+    }
+   
   };
 
   return (
@@ -39,7 +129,7 @@ const Page = () => {
               key={index}
               className="md:p-2 p-1 bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 my-auto"
             >
-              <div className="flex flex-row items-center justify-between  ">
+              <div className="flex flex-row items-center justify-between">
                 <Link
                   href={
                     item.status === "discussNotify"
@@ -76,7 +166,7 @@ const Page = () => {
                   type="button"
                   className="text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
                   aria-label="Close"
-                  onClick={() => handleClose(index)}
+                  onClick={() => handleClose(index,item)}
                 >
                   <svg
                     className="w-4 h-4"

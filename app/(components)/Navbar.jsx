@@ -41,64 +41,27 @@ const NavbarClient = () => {
 
   useEffect(() => {
     if (socket && session) {
-      const data = session?.user?.db_id;
-
-      socket.emit("setup", data);
-
-      socket.on("connectionRequest", (data) => {
-        if (data) {
-          setNotification((prev) => {
-            const newNotifications = removeDuplicates([...prev, data]);
-            setUnreadCount(newNotifications.length);
-            return newNotifications;
-          });
-          const dataString = JSON.stringify(data);
-          if (!seenNotifications.has(dataString)) {
-            setSeenNotifications((prev) => new Set(prev).add(dataString));
-          }
-        }
-      });
-
-      socket.on("receiveRequest", (data) => {
-        if (data) {
-          console.log("receive noti:", data);
-          setNotification((prev) => {
-            const newNotifications = removeDuplicates([...prev, data]);
-            setUnreadCount(newNotifications.length);
-            return newNotifications;
-          });
-          const dataString = JSON.stringify(data);
-          if (!seenNotifications.has(dataString)) {
-            setSeenNotifications((prev) => new Set(prev).add(dataString));
-          }
-        }
-      });
-
-      socket.on("dicussionNotification", (data) => {
-        if (data) {
-          console.log("receive noti:", data);
-          setNotification((prev) => {
-            const newNotifications = removeDuplicates([...prev, data]);
-            setUnreadCount(newNotifications.length);
-            return newNotifications;
-          });
-          const dataString = JSON.stringify(data);
-          if (!seenNotifications.has(dataString)) {
-            setSeenNotifications((prev) => new Set(prev).add(dataString));
-          }
-        }
-      });
+      socket.on('connectionRequest', (data) => handleNewNotification(data));
+      socket.on('receiveRequest', (data) => handleNewNotification(data));
+      socket.on('discussionNotification', (data) => handleNewNotification(data));
     }
-  }, [
-    socket,
-    notification,
-    session,
-    seenNotifications,
-    setNotification,
-    setSeenNotifications,
-    setUnreadCount,
-  ]);
+  }, [socket, session]);
 
+  const handleNewNotification = (data) => {
+    if (data) {
+      setNotification((prev) => {
+        const newNotifications = removeDuplicates([...prev, data]);
+        setUnreadCount(newNotifications.length);
+        return newNotifications;
+      });
+      const dataString = JSON.stringify(data);
+      if (!seenNotifications.has(dataString)) {
+        setSeenNotifications((prev) => new Set(prev).add(dataString));
+      }
+    }
+  };
+
+  
   return (
     <>
       <div className=" flex justify-between ">

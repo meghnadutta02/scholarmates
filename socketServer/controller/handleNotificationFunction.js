@@ -27,6 +27,7 @@ export const handleNotificationFunction = async (user, socket) => {
           status: "requestSend",
           friendRequest: request._id,
           interest: sender.interest,
+          notificationId:request.sendnotificationId
         });
         request.notificationSend = false;
         await request.save();
@@ -46,6 +47,7 @@ export const handleNotificationFunction = async (user, socket) => {
           sendername: sender.name,
           status: "requestaccept",
           profilePic: sender.profilePic,
+          notificationId:response.recepitnotificationId,
           message: response.accepted ? "accept your connection request" : "decline your connection request",
         });
         response.notificationRecipt = false;

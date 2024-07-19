@@ -2,6 +2,7 @@ import User from "../model/userModel.js";
 import Request from "../model/requestModel.js";
 import { io } from "../server.js";
 import ActiveUsers from "../activeUser.js";
+import Notifications from "../model/notificationModel.js";
 export const sendConnectionController = async (req, resp) => {
   try {
     const { recipientId } = req.body;
@@ -41,6 +42,18 @@ export const sendConnectionController = async (req, resp) => {
       await receiverUser.save();
       await senderUser.save();
     }
+    // NOTIFICATION SAVE
+
+    const notification = new Notifications({
+      recipientId: recipientId,
+      senderId: senderId,
+      sendername: senderUser.name,
+      profilePic: senderUser.profilePic,
+      status: "requestSend",
+      friendRequestId: requestdata._id,
+      timestamp: new Date(),
+    });
+    await notification.save(); 
 
     const recipientSocketId = ActiveUsers.getUserSocketId(recipientId);
 
@@ -55,9 +68,11 @@ export const sendConnectionController = async (req, resp) => {
         status: "requestSend",
         friendRequest: requestdata._id,
         interest: senderUser.interest,
+        notificationId:notification._id
       });
     } else {
       requestdata.notificationSend = true;
+      requestdata.sendnotificationId=notification._id;
       await requestdata.save();
       // Handle case where recipient is not connected
       
@@ -108,7 +123,16 @@ export const receiveConnectionController = async (req, resp) => {
         await user.save();
         await sender.save();
         
-       
+        const notification = new Notifications({
+          recipientId: sender._id,
+          senderId: userId,
+          sendername: user.name,
+          profilePic: user.profilePic,
+          status: "requestaccept",
+          timestamp: new Date(),
+          message: "accept your connection request",
+        });
+        await notification.save(); 
 
         const senderSocketId = ActiveUsers.getActiveUsers(
           friendshipRequest.user.toString()
@@ -122,10 +146,12 @@ export const receiveConnectionController = async (req, resp) => {
             status: "requestaccept",
             profilePic: user.profilePic,
             message: "accept your connection request",
+            notificationId:notification._id
           });
           await friendshipRequest.deleteOne();
         } else {
           friendshipRequest.notificationRecipt = true;
+          friendshipRequest.recepitnotificationId=notification._id;
           await friendshipRequest.save();
           // Handle case where recipient is not connected
           
@@ -143,6 +169,18 @@ export const receiveConnectionController = async (req, resp) => {
     } else if (action === "decline") {
       await user.updateOne({ $pull: { requestReceived: sender._id } });
       await sender.updateOne({ $pull: { requestPending: user._id } });
+
+      const notification = new Notifications({
+          recipientId: sender._id,
+          senderId: userId,
+          sendername: user.name,
+          profilePic: user.profilePic,
+          status: "requestaccept",
+          timestamp: new Date(),
+          message: "decline your connection request",
+        });
+        await notification.save(); 
+
       const senderSocketId = ActiveUsers.getUserSocketId(
         friendshipRequest.user.toString()
       );
@@ -157,10 +195,12 @@ export const receiveConnectionController = async (req, resp) => {
           status: "requestaccept",
           profilePic: user.profilePic,
           message: "decline your connection request",
+          notificationId:notification._id
         });
         await friendshipRequest.deleteOne();
       } else {
         friendshipRequest.notificationRecipt = true;
+        friendshipRequest.recepitnotificationId=notification._id;
         await friendshipRequest.save();
         // Handle case where recipient is not connected
         // This could involve queuing the notification or other logic based on your app's needs
