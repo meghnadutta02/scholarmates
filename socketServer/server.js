@@ -11,7 +11,7 @@ import notification from "./route/notification.js";
 import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
-
+import { handleJoinRequestNotification } from "./controller/joinRequestNotification.js";
 import { handleNotificationFunction } from "./controller/handleNotificationFunction.js";
 import { discussionNotification } from "./controller/discussionNotification.js";
 import ActiveUsers from "./activeUser.js";
@@ -84,7 +84,9 @@ io.on("connection", async (socket) => {
       activeUserChatrooms.set(socket.id, roomId);
     }
   });
-
+  socket.on("joinRequest", async (data) => {
+    await handleJoinRequestNotification(data);
+  });
   socket.on("send-message", (data) => {
     if (data.roomID) {
       io.to(data.roomID).emit("receive-message", data.message);

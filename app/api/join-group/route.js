@@ -14,7 +14,6 @@ export async function GET(req) {
     await connect();
     const groupId = req.nextUrl.searchParams.get("groupId");
     const session = await getServerSession(options);
-
     const userId = new ObjectId(session?.user?.db_id);
     const user = await User.findById(userId);
 
@@ -24,12 +23,11 @@ export async function GET(req) {
     }
 
     if (group.isPublic && !group.participants.includes(userId)) {
-      console.log("Public group");
       group.participants.push(userId);
       user.groupsJoined.push(groupId);
       await group.save();
       await user.save();
-      console.log("User added to group");
+
       return NextResponse.json(
         { result: "User added to group" },
         { status: 201 }
@@ -41,7 +39,7 @@ export async function GET(req) {
         groupId: groupId,
         toUsers: moderators,
       });
-      console.log("Request created");
+
       return NextResponse.json({ result: createRequest }, { status: 200 });
     }
   } catch (error) {

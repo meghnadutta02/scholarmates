@@ -58,6 +58,19 @@ const NavbarClient = () => {
           }
         }
       });
+      socket.on("joinRequestNotification", (data) => {
+        if (data) {
+          setNotification((prev) => {
+            const newNotifications = removeDuplicates([...prev, data]);
+            setUnreadCount(newNotifications.length);
+            return newNotifications;
+          });
+          const dataString = JSON.stringify(data);
+          if (!seenNotifications.has(dataString)) {
+            setSeenNotifications((prev) => new Set(prev).add(dataString));
+          }
+        }
+      });
 
       socket.on("receiveRequest", (data) => {
         if (data) {
@@ -76,7 +89,6 @@ const NavbarClient = () => {
 
       socket.on("dicussionNotification", (data) => {
         if (data) {
-          console.log("receive noti:", data);
           setNotification((prev) => {
             const newNotifications = removeDuplicates([...prev, data]);
             setUnreadCount(newNotifications.length);
