@@ -29,7 +29,15 @@ const requestSchema = new mongoose.Schema(
         processed: {
             type: Boolean,
             default: false
-          }
+          },
+        sendnotificationId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Notifications"
+        },
+        recepitnotificationId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Notifications"
+        }
     },
     { timestamps: true }
 );

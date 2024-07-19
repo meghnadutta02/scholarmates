@@ -1,6 +1,6 @@
 import Request from "../model/requestModel.js";
 import User from "../model/userModel.js";
-
+import Notifications from "../model/notificationModel.js"
 export const requestNotificationController = async (req, resp) => {
   try {
     const user = req.params.userId;
@@ -90,3 +90,90 @@ export const userRequestsController = async (req, res) => {
     });
   }
 };
+
+
+// ================NOTIFICATION STORE API'S HERE=====================
+
+export const checkIsSeenController = async (req, resp) => {
+  try {
+    const { userId } = req.params;
+    const { notificationIds } = req.body; 
+    console.log("request boyd",req.body)
+    if (!notificationIds || !Array.isArray(notificationIds)) {
+      return resp.status(400).send({
+        success: false,
+        message: "Invalid notification IDs",
+      });
+    }
+   // Update isSeen to true for the given notification IDs
+
+    const updateResult = await Notifications.updateMany(
+      {
+        _id: { $in: notificationIds },
+        recipientId: userId, 
+      },
+      { $set: { isSeen: true } }
+    );
+
+    // Check if any documents were modified
+    if (updateResult.modifiedCount > 0) {
+      resp.status(200).send({
+        success: true,
+        message: "Notifications marked as seen",
+      });
+    } else {
+      resp.status(404).send({
+        success: false,
+        message: "No notifications found to update",
+      });
+    }
+  } catch (error) {
+    resp.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getAllNotificationController=async(req,resp)=>{
+  try{
+    const {userId}=req.params;
+    const notifications = await Notifications.find({ recipientId: userId,isSeen:true })
+      .sort({ timestamp: -1});
+      console.log(notifications);
+      resp.status(200).send({
+        success: true,
+        notifications,
+      });
+
+  }catch(error){
+    resp.status(500).send({
+      success:false,
+      message:error.message
+    })
+  }
+}
+
+export const DeleteNotificationController=async(req,resp)=>{
+try{
+  const {notification_Id}=req.params;
+  if(!notification_Id){
+    resp.status(400).send({
+      success:false,
+      message:"notification_Id is required"
+    })
+  }
+  const notification=await Notifications.findByIdAndDelete(notification_Id);
+  if(notification){
+    resp.status(200).send({
+      success:true,
+      message:"Remove notification Successfully"
+    })
+  }
+}catch(error){
+resp.status(500).send({
+  success:false,
+  message:error.message
+})
+}
+}

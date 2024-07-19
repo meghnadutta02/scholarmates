@@ -27,7 +27,9 @@ const groupRequestSchema = new mongoose.Schema(
         index: true,
         required: true,
       },
+     
     ],
+   
   },
   { timestamps: true }
 );

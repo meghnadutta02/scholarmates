@@ -14,9 +14,16 @@ TimeAgo.addLocale(ru);
 const Page = () => {
   const { notification, clearUnreadCount, setNotification } = useSession();
 
+  const sortByTimestamp = (array) => {
+    return array.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  };
+
   useEffect(() => {
     clearUnreadCount();
-  }, [notification, clearUnreadCount]);
+
+    const sortedNotifications = sortByTimestamp(notification);
+    setNotification(sortedNotifications);
+  }, [notification, clearUnreadCount, setNotification]);
 
   const handleClose = (index) => {
     setNotification((prev) => prev.filter((_, i) => i !== index));
