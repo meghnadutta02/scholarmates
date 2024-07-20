@@ -4,11 +4,10 @@ import { io } from "../server.js";
 import ActiveUsers from "../activeUser.js";
 import Notifications from "../model/notificationModel.js";
 
-export const discussionNotification = async (user, socket) => {
+export const discussionNotification = async (user) => {
   try {
     const notifiedUsers = new Set();
-    
-    console.log(`Fetching notifications for user: ${user._id}`);
+
     const notifications = await DiscussionNotification.find({
       connection: user._id,
       status: true,
@@ -20,7 +19,9 @@ export const discussionNotification = async (user, socket) => {
       // Find the creator of the notification
       const creator = await User.findById(notification.creator);
       if (!creator) {
-        console.error(`Creator not found for notification: ${notification._id}`);
+        console.error(
+          `Creator not found for notification: ${notification._id}`
+        );
         continue;
       }
 
@@ -44,8 +45,6 @@ export const discussionNotification = async (user, socket) => {
       });
 
       if (!existingNotification) {
-       
-
         await newNotification.save();
         console.log(`Saved new notification: ${newNotification._id}`);
       } else {
@@ -55,7 +54,7 @@ export const discussionNotification = async (user, socket) => {
       // Notify the user if they are active
       if (ActiveUsers.getActiveUsers().has(user._id.toString())) {
         const socketId = ActiveUsers.getUserSocketId(user._id.toString());
-        console.log("socketid",socketId);
+        console.log("socketid", socketId);
         io.to(socketId).emit("discussionNotification", {
           discussionId: notification.discussionId.toString(),
           timestamp: notification.createdAt,

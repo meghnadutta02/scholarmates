@@ -10,6 +10,7 @@ import notification from "./route/notification.js";
 import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
+import Notification from "./model/notificationModel.js";
 import { handleJoinRequestNotification } from "./controller/joinRequestNotification.js";
 import { handleNotificationFunction } from "./controller/handleNotificationFunction.js";
 import { discussionNotification } from "./controller/discussionNotification.js";
@@ -24,8 +25,16 @@ app.use("/sendconnection", sendConnection);
 app.use("/joinrequest", joinRequest);
 app.use("/notification", notification);
 app.use("/user-status", userStatus);
-
-app.get("/health", (res) => {
+app.get("/delete-old-notifications", async (req, res) => {
+  try {
+    await Notification.deleteOldNotifications();
+    res.status(200).send("Old notifications successfully deleted.");
+  } catch (error) {
+    console.error("Error deleting old notifications:", error);
+    res.status(500).send("Failed to delete old notifications.");
+  }
+});
+app.get("/health", (req, res) => {
   res.status(200).json({ status: "success", message: "Service is running" });
 });
 
@@ -59,16 +68,15 @@ io.on("connection", async (socket) => {
       await discussionNotification(user, socket);
     }
   });
-  
-  socket.on("discussion_Created",async (data)=>{
-    console.log("mydata",data);
+
+  socket.on("discussion_Created", async (data) => {
+    console.log("mydata", data);
     const user = await User.findById(data);
-    if(user){
+    if (user) {
       await discussionNotification(user, socket);
     }
-    console.log("mydata",data);
-   
-  })
+    console.log("mydata", data);
+  });
 
   socket.on("joinRequest", async (data) => {
     await handleJoinRequestNotification(data);

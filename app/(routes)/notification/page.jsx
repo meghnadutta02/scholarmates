@@ -12,20 +12,35 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const Page = () => {
-  const { session, notification, clearUnreadCount, setNotification } = useSession();
+  const { session, notification, clearUnreadCount, setNotification } =
+    useSession();
   const [notifications, setNotifications] = useState([]);
-
-  const removeDuplicates = (array) => {
-    const uniqueSet = new Map();
-    array.forEach(item => {
-      const id = item.notificationId || item._id;
-      uniqueSet.set(id, item);
-    });
-    return Array.from(uniqueSet.values());
+  const deleteAllNotifications = async () => {
+    if (session?.db_id && notifications.length > 0) {
+      const notificationIds = notifications.map((n) =>
+        n._id ? n._id : n.notificationId
+      );
+      try {
+        const resp = await fetch(
+          `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/delete-notifications/${session.db_id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ notificationIds }),
+          }
+        );
+        if (resp.ok) {
+          clearUnreadCount();
+          setNotifications([]);
+          setNotification([]);
+        }
+      } catch (error) {
+        console.error("Failed to mark notifications as seen", error);
+      }
+    }
   };
-
-// ALL THE NOTIFICATION CAME FROM BACKEND ALLREADY SORTED ,THIS ONLY SORT THE NOTIFICATION 
-//CAME FROM SOCKET
 
   const sortByTimestamp = (array) => {
     return array.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -33,47 +48,55 @@ const Page = () => {
 
   useEffect(() => {
     const markAllAsSeen = async () => {
-      if (session?.db_id && notification.length > 0) {
-        const notificationIds = notification.map(n => n.notificationId);
+      if (session?.db_id && notifications.length > 0) {
+        const notificationIds = notifications.map((n) => n.notificationId);
         try {
-          const resp = await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/markaseen/${session.db_id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ notificationIds }),
-          });
+          const resp = await fetch(
+            `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/mark-as-seen/${session.db_id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ notificationIds }),
+            }
+          );
           if (resp.ok) {
-            const data = await resp.json();
-            console.log("Marked as seen:", data);
+            setNotification([]); // all socket notifications are seen and can now be fetched from the socket server api
             clearUnreadCount();
           }
         } catch (error) {
-          console.error('Failed to mark notifications as seen', error);
+          console.error("Failed to mark notifications as seen", error);
         }
       }
     };
 
     markAllAsSeen();
-  }, [session?.db_id, notification, clearUnreadCount]);
+  }, [session?.db_id, notifications, clearUnreadCount]);
 
   useEffect(() => {
     const getAllNotifications = async () => {
       if (session?.db_id) {
         try {
-          const resp = await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/getnotification/${session.db_id}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
+          const resp = await fetch(
+            `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/get-notification/${session.db_id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
-          });
+          );
           if (resp.ok) {
-            const data = await resp.json();
-            console.log("Fetched notifications:", data.notifications);
-            setNotifications((prev) => removeDuplicates([...prev, ...data.notifications]));
+            const data = await resp.json(); //only contains seen notifications
+
+            setNotifications([
+              ...sortByTimestamp(notification), // from socket
+              ...data.notifications,
+            ]);
           }
         } catch (error) {
-          console.error('Failed to fetch notifications', error);
+          console.error("Failed to fetch notifications", error);
         }
       }
     };
@@ -81,37 +104,27 @@ const Page = () => {
     getAllNotifications();
   }, [session?.db_id]);
 
-  useEffect(() => {
-    if (notification.length > 0) {
-      setNotifications((prev) => sortByTimestamp(removeDuplicates([...prev, ...notification])));
-     console.log("djjdfkjfjdj",notification)
-      setNotification([]);
-    }
-  }, [notification, setNotification]);
-
-  const handleClose = async(index,item) => {
-   
-   
-    try{
+  const handleClose = async (index, item) => {
+    try {
       const id = item.notificationId || item._id;
-      if(!id){
-        console.log("no id");
-         }
-         const resp=await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/remove/${id}`,{
-          method: 'DELETE',
+      if (!id) {
+        console.log("No Id");
+      }
+      const resp = await fetch(
+        `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/remove/${id}`,
+        {
+          method: "DELETE",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-         })
-         if(resp.ok){
-          console.log("okkk")
-          setNotifications((prev) => prev.filter((_, i) => i !== index));
-         }
-      
-    }catch(error){
+        }
+      );
+      if (resp.ok) {
+        setNotifications((prev) => prev.filter((_, i) => i !== index));
+      }
+    } catch (error) {
       console.log(error.message);
     }
-   
   };
 
   return (
@@ -124,6 +137,18 @@ const Page = () => {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
+          <div className="flex justify-end gap-2 items-center md:mt-4 mt-3 mr-4">
+            <input
+              type="checkbox"
+              id="college"
+              name="college"
+              className="rounded-md h-[14px] w-[14px] accent-zinc-700"
+              onChange={deleteAllNotifications}
+            />
+            <label htmlFor="college" className="text-md font-medium ">
+              Clear All
+            </label>
+          </div>
           {notifications.map((item, index) => (
             <div
               key={index}
@@ -152,21 +177,15 @@ const Page = () => {
                   <span className="font-semibold text-gray-900 mr-1 dark:text-white">
                     {item.sendername}{" "}
                   </span>
-                  {item.status === "requestSend" && (
-                    <span>sent a connection request.</span>
-                  )}
-                  {item.status === "requestaccept" && (
-                    <span> {item.message}.</span>
-                  )}
-                  {item.status === "discussNotify" && (
-                    <span> {item.message}.</span>
-                  )}
+                  {["requestaccept", "discussNotify", "joinRequest"].includes(
+                    item.status
+                  ) && <span> {item.message}.</span>}
                 </Link>
                 <button
                   type="button"
                   className="text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
                   aria-label="Close"
-                  onClick={() => handleClose(index,item)}
+                  onClick={() => handleClose(index, item)}
                 >
                   <svg
                     className="w-4 h-4"

@@ -27,7 +27,7 @@ const MenuDrawer = () => {
       <DrawerTrigger asChild>
         <IoMdMenu
           onClick={() => setIsOpen(true)}
-          className="w-6 h-6 text-white"
+          className="w-6 h-6 text-white cursor-pointer"
         />
       </DrawerTrigger>
       <DrawerContent>

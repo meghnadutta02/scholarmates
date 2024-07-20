@@ -332,7 +332,9 @@ const DiscussionDetails = ({ params }) => {
                       <span className="ml-2">{discussion.dislikes}</span>
                     </Button>
                     <Button
-                      className="w-16 md:w-20 h-8 md:h-10"
+                      className={`${
+                        status === "pending" ? "w-20" : "w-16 "
+                      } h-8 md:h-10 md:w-20`}
                       variant="secondary"
                       disabled={status === "accepted" || status === "pending"}
                       onClick={() => handleButtonClick(discussion.groupId)}
@@ -464,7 +466,9 @@ const DiscussionDetails = ({ params }) => {
                     </Link>
                   ) : (
                     <Button
-                      className="w-16 md:w-20 h-8 md:h-10"
+                      className={`${
+                        status === "pending" ? "w-20" : "w-16 "
+                      } h-8 md:h-10 md:w-20`}
                       variant="secondary"
                       disabled={status === "pending"}
                       onClick={() => handleButtonClick(discussion.groupId)}

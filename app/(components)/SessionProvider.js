@@ -12,7 +12,6 @@ export const SessionProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState([]);
   const [socket, setSocket] = useState(null);
-  const [seenNotifications, setSeenNotifications] = useState(new Set());
   const [unreadCount, setUnreadCount] = useState(0);
 
   const clearUnreadCount = () => {
@@ -42,9 +41,25 @@ export const SessionProvider = ({ children }) => {
       newSocket.emit("setup", session?.db_id);
     });
 
+    const handleNewNotification = (data) => {
+      if (data) {
+        setNotification((prev) => [...prev, data]);
+        setUnreadCount((prev) => prev + 1);
+      }
+    };
+
+    newSocket.on("connectionRequest", handleNewNotification);
+    newSocket.on("receiveRequest", handleNewNotification);
+    newSocket.on("discussionNotification", handleNewNotification);
+    newSocket.on("joinRequestNotification", handleNewNotification);
+
     setSocket(newSocket);
 
     return () => {
+      newSocket.off("connectionRequest", handleNewNotification);
+      newSocket.off("receiveRequest", handleNewNotification);
+      newSocket.off("discussionNotification", handleNewNotification);
+      newSocket.off("joinRequestNotification", handleNewNotification);
       newSocket.close();
     };
   }, [session?.db_id]);
@@ -57,8 +72,6 @@ export const SessionProvider = ({ children }) => {
         request,
         setRequest,
         socket,
-        seenNotifications,
-        setSeenNotifications,
         notification,
         setNotification,
         setUnreadCount,

@@ -272,7 +272,7 @@ const DiscussionList = ({
           isLoading: false,
           autoClose: 5000,
         });
-        console.log(data.result);
+
         socket.emit("joinRequest", data.result);
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
@@ -454,7 +454,9 @@ const DiscussionList = ({
                     </Link>
                   ) : (
                     <Button
-                      className="w-16 md:w-20 h-8 md:h-10"
+                      className={`${
+                        discussion.isRequested ? "w-20" : "w-16 "
+                      } h-8 md:h-10 md:w-20`}
                       variant="secondary"
                       disabled={discussion.isRequested}
                       onClick={() =>

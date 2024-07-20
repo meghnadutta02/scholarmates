@@ -1,7 +1,6 @@
 "use client";
-
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import profilePic from "@/public/pfp.png";
@@ -22,58 +21,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NavbarClient = () => {
-  const {
-    socket,
-    seenNotifications,
-    setSeenNotifications,
-    setNotification,
-    setUnreadCount,
-    unreadCount,
-  } = useCustomSession();
+  const { unreadCount } = useCustomSession();
   const { data: session } = useSession();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  const removeDuplicates = (array) => {
-    const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
-    return Array.from(uniqueSet).map((item) => JSON.parse(item));
-  };
-
-  useEffect(() => {
-    if (socket && session) {
-      const handleNewNotification = (data) => {
-        if (data) {
-          setNotification((prev) => {
-            const newNotifications = removeDuplicates([...prev, data]);
-            setUnreadCount(newNotifications.length);
-            return newNotifications;
-          });
-          const dataString = JSON.stringify(data);
-          if (!seenNotifications.has(dataString)) {
-            setSeenNotifications((prev) => new Set(prev).add(dataString));
-          }
-        }
-      };
-
-      socket.on("connectionRequest", handleNewNotification);
-      socket.on("receiveRequest", handleNewNotification);
-      socket.on("discussionNotification", handleNewNotification);
-      socket.on("joinRequestNotification", handleNewNotification);
-
-      return () => {
-        socket.off("connectionRequest", handleNewNotification);
-        socket.off("receiveRequest", handleNewNotification);
-        socket.off("discussionNotification", handleNewNotification);
-        socket.off("joinRequestNotification", handleNewNotification);
-      };
-    }
-  }, [
-    socket,
-    session,
-    seenNotifications,
-    setNotification,
-    setSeenNotifications,
-    setUnreadCount,
-  ]);
 
   return (
     <>
