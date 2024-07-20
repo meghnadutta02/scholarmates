@@ -49,12 +49,18 @@ const notificationSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Static method to delete notifications older than 10 days
-notificationSchema.statics.deleteOldNotifications = async function() {
-    const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
-    await this.deleteMany({ timestamp: { $lt: tenDaysAgo } });
-};
+// TRIGGER ON EVERY FIND EVENT AND CHECK DELETE OLDER THAN 4 DAYS
 
+notificationSchema.pre('find', async function (next) {
+    const cutoffTime = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000); //4 days
+    try {
+        await this.model.deleteMany({ timestamp: { $lt: cutoffTime } });
+        console.log('Old notifications deleted on find operation.');
+    } catch (error) {
+        console.error('Error deleting old notifications during find:', error);
+    }
+    next();
+});
 
 const Notification = mongoose.models.notification || mongoose.model("AllNotification", notificationSchema);
 export default Notification;
