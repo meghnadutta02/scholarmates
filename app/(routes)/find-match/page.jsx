@@ -127,7 +127,7 @@ export default function Component() {
                         <div className="p-2 ">
                           <div className="flex md:flex-row flex-col justify-between items-center">
                             <Link href={`/profile/${profile._id}`} asChild>
-                              <div className="flex gap-2  cursor-pointer items-center ">
+                              <div className="flex gap-4 cursor-pointer items-center ">
                                 <Image
                                   alt="Thumbnail"
                                   className="rounded-full object-cover aspect-square md:h-20 md:w-20 h-16 w-16"
@@ -161,61 +161,36 @@ export default function Component() {
                                 </div>
                               </div>
                             </Link>
-                            <div className="sm:flex  gap-2    flex-col  hidden items-center">
+
+                            <div className="flex flex-row md:flex-col w-full md:w-[24%] justify-between  items-center">
                               <p className="text-sm text-gray-600">
                                 {profile.connection.length} connection
                                 {profile.connection.length > 1 ? "s" : ""}
                               </p>
-                              {requestPend.includes(profile._id) ? (
-                                <Button disabled>Requested</Button>
-                              ) : requestReceived.includes(profile._id) ? (
-                                <Button
-                                  onClick={() => router.push("/requests")}
-                                  disabled={connectingProfile === profile._id}
-                                >
-                                  {" "}
-                                  Accept Request
-                                </Button>
-                              ) : (
-                                <Button
-                                  onClick={() =>
-                                    handleConnectClick(profile._id)
-                                  }
-                                  disabled={connectingProfile === profile._id}
-                                >
-                                  {connectingProfile === profile._id
-                                    ? "Sending.."
-                                    : "Connect"}
-                                </Button>
-                              )}
-                            </div>
-                            <div className="flex  w-full justify-between    flex-row sm:hidden items-center">
-                              <p className="text-sm text-gray-600">
-                                {profile.connection.length} connection
-                                {profile.connection.length > 1 ? "s" : ""}
-                              </p>
-                              {requestPend.includes(profile._id) ? (
-                                <Button disabled>Requested</Button>
-                              ) : requestReceived.includes(profile._id) ? (
-                                <Button
-                                  onClick={() => router.push("/requests")}
-                                  disabled={connectingProfile === profile._id}
-                                >
-                                  {" "}
-                                  Accept Request
-                                </Button>
-                              ) : (
-                                <Button
-                                  onClick={() =>
-                                    handleConnectClick(profile._id)
-                                  }
-                                  disabled={connectingProfile === profile._id}
-                                >
-                                  {connectingProfile === profile._id
-                                    ? "Sending.."
-                                    : "Connect"}
-                                </Button>
-                              )}
+                              <div className="mt-2">
+                                {requestPend.includes(profile._id) ? (
+                                  <Button disabled>Requested</Button>
+                                ) : requestReceived.includes(profile._id) ? (
+                                  <Button
+                                    onClick={() => router.push("/requests")}
+                                    disabled={connectingProfile === profile._id}
+                                  >
+                                    {" "}
+                                    Accept Request
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    onClick={() =>
+                                      handleConnectClick(profile._id)
+                                    }
+                                    disabled={connectingProfile === profile._id}
+                                  >
+                                    {connectingProfile === profile._id
+                                      ? "Sending.."
+                                      : "Connect"}
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>

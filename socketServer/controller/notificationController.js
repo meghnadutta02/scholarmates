@@ -131,7 +131,7 @@ export const checkIsSeenController = async (req, resp) => {
     });
   }
 };
-export const deleteBatchNotification = async (req, resp) => {
+export const deleteBatchNotificationController = async (req, resp) => {
   try {
     const { userId } = req.params;
     const { notificationIds } = req.body;

@@ -51,6 +51,10 @@ const io = new Server(socketServer, {
 });
 
 const activeUserChatrooms = new Map();
+function generateRoomId(userId1, userId2) {
+  const combinedIds = [userId1, userId2].sort().join("_");
+  return combinedIds;
+}
 var userId = null;
 
 io.on("connection", async (socket) => {
@@ -102,10 +106,7 @@ io.on("connection", async (socket) => {
       console.error("Invalid data received:", data);
       return;
     }
-    function generateRoomId(userId1, userId2) {
-      const combinedIds = [userId1, userId2].sort().join("_");
-      return combinedIds;
-    }
+
     const roomId = generateRoomId(data.sender, data.receiver);
 
     if (!socket.rooms.has(roomId)) {
@@ -125,11 +126,6 @@ io.on("connection", async (socket) => {
     if (!data || !data.sender || !data.receiver) {
       console.error("Invalid data received:", data);
       return;
-    }
-
-    function generateRoomId(userId1, userId2) {
-      const combinedIds = [userId1, userId2].sort().join("_");
-      return combinedIds;
     }
 
     const roomId = generateRoomId(data.sender, data.receiver);

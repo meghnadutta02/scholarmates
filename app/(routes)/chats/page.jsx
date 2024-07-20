@@ -76,14 +76,22 @@ export default function Chats() {
     markMessagesAsRead(user.userId);
   };
 
-  const updateLastMessage = (userId, message) => {
-    setConnections((prevConnections) =>
-      prevConnections.map((connection) =>
+  const updateLastMessage = (userId, message, messageTime) => {
+    setConnections((prevConnections) => {
+      const updatedConnections = prevConnections.map((connection) =>
         connection.userId === userId
-          ? { ...connection, lastMessageText: message }
+          ? {
+              ...connection,
+              lastMessageText: message,
+              lastMessageTime: messageTime,
+            }
           : connection
-      )
-    );
+      );
+      updatedConnections.sort(
+        (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
+      );
+      return updatedConnections;
+    });
   };
 
   useEffect(() => {

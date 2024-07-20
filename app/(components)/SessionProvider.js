@@ -35,10 +35,12 @@ export const SessionProvider = ({ children }) => {
 
   const removeDuplicates = (array) => {
     const uniqueSet = new Map();
+
     array.forEach((item) => {
-      const id = item.notificationId || item._id;
-      uniqueSet.set(id, item);
+      const key = `${item.senderId}-${item.recipientId}-${item.status}`;
+      uniqueSet.set(key, item);
     });
+
     return Array.from(uniqueSet.values());
   };
 

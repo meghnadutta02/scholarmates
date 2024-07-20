@@ -176,7 +176,7 @@ const UserChatbox = ({
           sender: session?.user?.db_id,
         });
         scrollDown();
-        updateLastMessage(userID, message.text);
+        updateLastMessage(userID, message.text, message.createdAt);
       } else {
         toast.error("Failed to send message");
         // Remove the temporary message from the UI on failure
@@ -210,7 +210,7 @@ const UserChatbox = ({
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
-        updateLastMessage(msg.sender, msg.text);
+        updateLastMessage(msg.sender, msg.text, msg.createdAt);
         setInboxMessages((prevMessages) => {
           const updatedMessages = prevMessages.map((m) => {
             if (m.sender === session?.user?.db_id) {
