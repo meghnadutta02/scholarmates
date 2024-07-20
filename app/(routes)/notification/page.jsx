@@ -7,14 +7,15 @@ import Link from "next/link";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import { useSession } from "@/app/(components)/SessionProvider";
+import { Button } from "@/components/ui/button";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const Page = () => {
-  const { session, notification, clearUnreadCount, setNotification } =
+  const { session, notifications, clearUnreadCount, setNotifications } =
     useSession();
-  const [notifications, setNotifications] = useState([]);
+
   const deleteAllNotifications = async () => {
     if (session?.db_id && notifications.length > 0) {
       const notificationIds = notifications.map((n) =>
@@ -34,7 +35,6 @@ const Page = () => {
         if (resp.ok) {
           clearUnreadCount();
           setNotifications([]);
-          setNotification([]);
         }
       } catch (error) {
         console.error("Failed to mark notifications as seen", error);
@@ -62,7 +62,6 @@ const Page = () => {
             }
           );
           if (resp.ok) {
-            setNotification([]); // all socket notifications are seen and can now be fetched from the socket server api
             clearUnreadCount();
           }
         } catch (error) {
@@ -72,37 +71,7 @@ const Page = () => {
     };
 
     markAllAsSeen();
-  }, [session?.db_id, notifications, clearUnreadCount]);
-
-  useEffect(() => {
-    const getAllNotifications = async () => {
-      if (session?.db_id) {
-        try {
-          const resp = await fetch(
-            `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/get-notification/${session.db_id}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (resp.ok) {
-            const data = await resp.json(); //only contains seen notifications
-
-            setNotifications([
-              ...sortByTimestamp(notification), // from socket
-              ...data.notifications,
-            ]);
-          }
-        } catch (error) {
-          console.error("Failed to fetch notifications", error);
-        }
-      }
-    };
-
-    getAllNotifications();
-  }, [session?.db_id]);
+  }, [session?.db_id, notifications, setNotifications, clearUnreadCount]);
 
   const handleClose = async (index, item) => {
     try {
@@ -138,16 +107,12 @@ const Page = () => {
       ) : (
         <div className="flex flex-col gap-3">
           <div className="flex justify-end gap-2 items-center md:mt-4 mt-3 mr-4">
-            <input
-              type="checkbox"
-              id="college"
-              name="college"
-              className="rounded-md h-[14px] w-[14px] accent-zinc-700"
-              onChange={deleteAllNotifications}
-            />
-            <label htmlFor="college" className="text-md font-medium ">
+            <Button
+              className="rounded-md accent-zinc-700"
+              onClick={deleteAllNotifications}
+            >
               Clear All
-            </label>
+            </Button>
           </div>
           {notifications.map((item, index) => (
             <div
@@ -177,9 +142,12 @@ const Page = () => {
                   <span className="font-semibold text-gray-900 mr-1 dark:text-white">
                     {item.sendername}{" "}
                   </span>
-                  {["requestaccept", "discussNotify", "joinRequest"].includes(
-                    item.status
-                  ) && <span> {item.message}.</span>}
+                  {[
+                    "requestSend",
+                    "requestaccept",
+                    "discussNotify",
+                    "joinRequest",
+                  ].includes(item.status) && <span> {item.message}.</span>}
                 </Link>
                 <button
                   type="button"

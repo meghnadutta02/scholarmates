@@ -12,7 +12,6 @@ import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
 import Notification from "./model/notificationModel.js";
 import { handleJoinRequestNotification } from "./controller/joinRequestNotification.js";
-import { handleNotificationFunction } from "./controller/handleNotificationFunction.js";
 import {
   discussionNotification,
   notifyAllActiveUsers,
@@ -67,7 +66,6 @@ io.on("connection", async (socket) => {
       console.log(data);
       socket.emit("connected");
 
-      await handleNotificationFunction(user, socket);
       await discussionNotification(user, socket);
     }
   });

@@ -18,34 +18,34 @@ const Request = () => {
     }
   }, [session]);
 
-  const fetchRequests = async () => {
-    if (!userId) return;
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setData(data.data);
-      } else {
-        console.log("Error:", response.statusText);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchRequests = async () => {
+      if (!userId) return;
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setData(data.data);
+        } else {
+          console.log("Error:", response.statusText);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchRequests();
   }, [userId]);
 

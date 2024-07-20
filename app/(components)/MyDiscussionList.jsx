@@ -192,7 +192,7 @@ const DiscussionList = () => {
                 key={discussion._id}
                 className="relative flex items-start gap-4 rounded-lg shadow p-2"
               >
-                <div className="flex-1 gap-2">
+                <div className="flex-1 gap-2 px-2">
                   <div className="flex flex-col  gap-2">
                     <h4 className="font-semibold text-base cursor-pointer">
                       <Link href={`/discussions/${discussion._id}`}>
@@ -210,15 +210,15 @@ const DiscussionList = () => {
                   >
                     <p className="cursor-pointer">{discussion.content}</p>
                   </div>
-                  <div className="flex w-full justify-between my-1 ">
-                    <div className="prose max-w-[80%] md:block hidden ">
+                  <div className="flex flex-col w-full justify-between my-1">
+                    <div className="prose  md:block hidden ">
                       <p className="cursor-pointer pr-2">
                         <Link href={`/discussions/${discussion._id}`}>
                           {discussion.content}
                         </Link>
                       </p>
                     </div>
-                    <div className="w-full grid grid-cols-3 md:grid-cols-2  text-center  place-items-center">
+                    <div className="w-full grid grid-cols-3  text-center  place-items-start">
                       <Button className="h-10" size="icon" variant="icon">
                         <ThumbsUpIcon
                           className={`w-4 h-4 cursor-pointer ${

@@ -113,7 +113,7 @@ export const checkIsSeenController = async (req, resp) => {
     );
 
     // Check if any documents were modified
-    if (updateResult.modifiedCount > 0) {
+    if (updateResult.modifiedCount >= 0) {
       resp.status(200).send({
         success: true,
         message: "Notifications marked as seen",
@@ -174,7 +174,6 @@ export const getAllNotificationController = async (req, resp) => {
     const { userId } = req.params;
     const notifications = await Notifications.find({
       recipientId: userId,
-      isSeen: true, // fetch stale notifications only
     }).sort({ timestamp: -1 });
 
     resp.status(200).send({

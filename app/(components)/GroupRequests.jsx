@@ -55,8 +55,8 @@ const GroupRequests = () => {
         );
         toast.success(
           <div>
-            Request from {request?.fromUser?.name} to join group "
-            {request.groupId.name}" is accepted
+            Request from {request?.fromUser?.name} to join group &quot;
+            {request.groupId.name}&quot; is accepted
           </div>
         );
       }
@@ -82,8 +82,8 @@ const GroupRequests = () => {
         );
         toast.success(
           <div>
-            Request from {request?.fromUser?.name} to join group "
-            {request?.groupId?.name}" is rejected
+            Request from {request?.fromUser?.name} to join group &quot;
+            {request?.groupId?.name}&quot; is rejected
           </div>
         );
       }
@@ -128,8 +128,8 @@ const GroupRequests = () => {
                 {requestsToJoin.includes(request) && (
                   <div className="flex items-center justify-between rounded-md shadow md:px-3 px-[6px] md:py-4 py-2 font-sans my-auto">
                     <div className="flex">
-                      Your request to join group "{request.groupId.name}" is{" "}
-                      {request.status}.
+                      Your request to join group &quot;{request.groupId.name}
+                      &quot; is {request.status}.
                     </div>
                     <button
                       onClick={() => handleDeleteRequest(request._id)}
@@ -153,21 +153,22 @@ const GroupRequests = () => {
                         <span className="font-semibold ">
                           {request?.fromUser?.name}
                         </span>{" "}
-                        has requested to join group "{request?.groupId?.name}".
+                        has requested to join group &quot;
+                        {request?.groupId?.name}&quot;.
                       </div>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex gap-3">
                       <button
                         onClick={() => handleAcceptRequest(request)}
-                        className="md:p-1 p-[2px] transform transition-transform hover:scale-125 text-zinc-700"
+                        className="bg-green-500 text-white flex items-center p-2 rounded-lg transform transition-transform hover:scale-125"
                       >
-                        <FaCheck className="h-4 w-4 transform transition-transform hover:scale-125" />
+                        <FaCheck className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleRejectRequest(request)}
-                        className="transform transition-transform hover:scale-125 md:p-1 p-[2px] text-zinc-700"
+                        className="bg-red-500 text-white flex items-center p-2 rounded-lg transform transition-transform hover:scale-125"
                       >
-                        <FaTimes className="h-[17px] w-[17px] transform transition-transform hover:scale-125" />
+                        <FaTimes className="h-[17px] w-[17px]" />
                       </button>
                     </div>
                   </div>
