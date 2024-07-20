@@ -12,7 +12,7 @@ export const discussionNotification = async (user) => {
       connection: user._id,
       status: true,
     });
-
+    // console.log("notification not found");
     for (const notification of notifications) {
       console.log(`Processing notification: ${notification._id}`);
 
@@ -66,7 +66,7 @@ export const discussionNotification = async (user) => {
           notificationId: newNotification._id,
         });
 
-        console.log(`Notified user: ${user._id}`);
+        // console.log(`Notified user: ${user._id}`);
 
         // Remove the user from the connection array
         notifiedUsers.add(user._id.toString());
@@ -84,5 +84,20 @@ export const discussionNotification = async (user) => {
     }
   } catch (error) {
     console.error("Error in discussionNotification:", error);
+  }
+};
+
+// ==========NOTIFICATION OF ALL ACTIVE USER FUNCTION=====//
+
+export const notifyAllActiveUsers = async (socketId) => {
+  const activeUsers = ActiveUsers.getActiveUsers();
+
+  for (const [userId, socketId] of activeUsers.entries()) {
+    const user = await User.findById(userId);
+
+    if (user) {
+      // Here, we can reuse the existing discussionNotification function
+      await discussionNotification(user, socketId);
+    }
   }
 };

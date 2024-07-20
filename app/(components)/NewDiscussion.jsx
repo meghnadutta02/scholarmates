@@ -106,7 +106,10 @@ function NewDiscussion({ setDiscussions }) {
       });
 
       if (result.ok) {
-        socket.emit("discussion_Created",session?.db_id);
+        
+        // SOCKET CALL FOR NOTIFICATION
+
+        socket.emit("discussion_Created");
         const discussion = await result.json();
 
         setDiscussions((prevDiscussions) => [
