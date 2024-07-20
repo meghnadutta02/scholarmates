@@ -19,6 +19,7 @@ import { interests } from "../(data)/interests";
 
 import { PaperclipIcon } from "lucide-react";
 function NewDiscussion({ setDiscussions }) {
+  
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
@@ -105,6 +106,7 @@ function NewDiscussion({ setDiscussions }) {
       });
 
       if (result.ok) {
+       
         const discussion = await result.json();
 
         setDiscussions((prevDiscussions) => [
