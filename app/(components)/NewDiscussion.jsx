@@ -16,10 +16,10 @@ import { Label } from "@/components/ui/label";
 
 import { toast } from "react-toastify";
 import { interests } from "../(data)/interests";
-
+import { useSession } from "@/app/(components)/SessionProvider";
 import { PaperclipIcon } from "lucide-react";
 function NewDiscussion({ setDiscussions }) {
-  
+  const {session,socket}=useSession();
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
@@ -106,7 +106,7 @@ function NewDiscussion({ setDiscussions }) {
       });
 
       if (result.ok) {
-       
+        socket.emit("discussion_Created",session?.db_id);
         const discussion = await result.json();
 
         setDiscussions((prevDiscussions) => [

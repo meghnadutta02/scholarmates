@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
+import { useSession as useCustomSession } from "./SessionProvider";
 import { IoChatboxOutline } from "react-icons/io5";
 import { RiShareForwardLine } from "react-icons/ri";
 
@@ -44,7 +45,7 @@ const DiscussionList = ({
   const { data: session } = useSession();
   const [animationState, setAnimationState] = useState({});
   const [loading, setLoading] = useState(true);
-
+  const { socket } = useCustomSession();
   const limit = 10;
   const observer = useRef(null);
 
@@ -264,13 +265,15 @@ const DiscussionList = ({
 
       //if the group is private and request is sent to moderators
       if (res.status === 200) {
+        const data = await res.json();
         toast.update(toastId, {
           render: "Request sent successfully",
           type: "success",
           isLoading: false,
           autoClose: 5000,
         });
-
+        console.log(data.result);
+        socket.emit("joinRequest", data.result);
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussionId) {

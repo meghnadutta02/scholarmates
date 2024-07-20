@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { LuTrendingDown } from "react-icons/lu";
 import { IoChatboxOutline } from "react-icons/io5";
+import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
 const getDiscussions = async (college, c) => {
   let url = `/api/discussion/trending`;
   if (college) {
@@ -28,6 +29,7 @@ const Trending = () => {
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
   const [animationState, setAnimationState] = useState({});
   const [college, setCollege] = useState(false);
+  const { socket } = useCustomSession();
   const toggleDiscussion = (id) => {
     setExpandedDiscussion((prev) => {
       const isIdPresent = prev.includes(id);
@@ -178,13 +180,14 @@ const Trending = () => {
 
       //if the group is private and request is sent to moderators
       if (res.status === 200) {
+        const data = await res.json();
         toast.update(toastId, {
           render: "Request sent successfully",
           type: "success",
           isLoading: false,
           autoClose: 5000,
         });
-
+        socket.emit("joinRequest", data.result);
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussionId) {

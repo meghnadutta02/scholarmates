@@ -1,4 +1,3 @@
-// NavbarClient.js
 "use client";
 
 import Link from "next/link";
@@ -26,7 +25,6 @@ const NavbarClient = () => {
   const {
     socket,
     seenNotifications,
-    notification,
     setSeenNotifications,
     setNotification,
     setUnreadCount,
@@ -34,6 +32,7 @@ const NavbarClient = () => {
   } = useCustomSession();
   const { data: session } = useSession();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   const removeDuplicates = (array) => {
     const uniqueSet = new Set(array.map((item) => JSON.stringify(item)));
     return Array.from(uniqueSet).map((item) => JSON.parse(item));
@@ -41,33 +40,47 @@ const NavbarClient = () => {
 
   useEffect(() => {
     if (socket && session) {
-      socket.on('connectionRequest', (data) => handleNewNotification(data));
-      socket.on('receiveRequest', (data) => handleNewNotification(data));
-      socket.on('discussionNotification', (data) => handleNewNotification(data));
-    }
-  }, [socket, session]);
+      const handleNewNotification = (data) => {
+        if (data) {
+          setNotification((prev) => {
+            const newNotifications = removeDuplicates([...prev, data]);
+            setUnreadCount(newNotifications.length);
+            return newNotifications;
+          });
+          const dataString = JSON.stringify(data);
+          if (!seenNotifications.has(dataString)) {
+            setSeenNotifications((prev) => new Set(prev).add(dataString));
+          }
+        }
+      };
 
-  const handleNewNotification = (data) => {
-    if (data) {
-      setNotification((prev) => {
-        const newNotifications = removeDuplicates([...prev, data]);
-        setUnreadCount(newNotifications.length);
-        return newNotifications;
-      });
-      const dataString = JSON.stringify(data);
-      if (!seenNotifications.has(dataString)) {
-        setSeenNotifications((prev) => new Set(prev).add(dataString));
-      }
-    }
-  };
+      socket.on("connectionRequest", handleNewNotification);
+      socket.on("receiveRequest", handleNewNotification);
+      socket.on("discussionNotification", handleNewNotification);
+      socket.on("joinRequestNotification", handleNewNotification);
 
-  
+      return () => {
+        socket.off("connectionRequest", handleNewNotification);
+        socket.off("receiveRequest", handleNewNotification);
+        socket.off("discussionNotification", handleNewNotification);
+        socket.off("joinRequestNotification", handleNewNotification);
+      };
+    }
+  }, [
+    socket,
+    session,
+    seenNotifications,
+    setNotification,
+    setSeenNotifications,
+    setUnreadCount,
+  ]);
+
   return (
     <>
-      <div className=" flex justify-between ">
-        <header className="fixed z-10 top-0 left-1/2 transform -translate-x-1/2  flex flex-col gap-[5px] pt-1 ">
-          <div className="flex flex-row md:justify-center justify ">
-            <div className="flex  items-center px-2 rounded-s-xl border-2 border-zinc-700 border-r-0 bg-white">
+      <div className="flex justify-between">
+        <header className="fixed z-10 top-0 left-1/2 transform -translate-x-1/2 flex flex-col gap-[5px] pt-1">
+          <div className="flex flex-row md:justify-center">
+            <div className="flex items-center px-2 rounded-s-xl border-2 border-zinc-700 border-r-0 bg-white">
               <Link
                 href="/discussions"
                 className="flex items-center gap-2 font-semibold md:mr-0 mr-10"
@@ -78,10 +91,10 @@ const NavbarClient = () => {
             </div>
             <div className="flex h-14 px-3 items-center justify-between gap-3 md:gap-5 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
               <Link href="/notification">
-                <div className="relative ">
-                  <BellIcon className="relative  h-5 w-5 text-white cursor-pointer" />
+                <div className="relative">
+                  <BellIcon className="relative h-5 w-5 text-white cursor-pointer" />
                   {unreadCount > 0 && (
-                    <span className="z-10  md:block  text-center p-[2px] w-4 h-4 text-[11px] font-bold leading-none top-[-9px] text-red-100 bg-red-600 rounded-full right-[-5px] absolute">
+                    <span className="z-10 md:block text-center p-[2px] w-4 h-4 text-[11px] font-bold leading-none top-[-9px] text-red-100 bg-red-600 rounded-full right-[-5px] absolute">
                       {unreadCount}
                     </span>
                   )}

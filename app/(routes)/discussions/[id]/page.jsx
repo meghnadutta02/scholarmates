@@ -29,7 +29,7 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 const DiscussionDetails = ({ params }) => {
   const router = useRouter();
-  const { session } = useSession();
+  const { session, socket } = useSession();
   const { id } = params;
   const [open, setOpen] = useState(false);
   const [discussion, setDiscussion] = useState(null);
@@ -142,7 +142,7 @@ const DiscussionDetails = ({ params }) => {
     }, 300);
   };
 
-  const handleButtonClick = async (discussionId, id) => {
+  const handleButtonClick = async (id) => {
     try {
       const toastId = toast.loading("Sending request...");
 
@@ -162,21 +162,15 @@ const DiscussionDetails = ({ params }) => {
 
       //if the group is private and request is sent to moderators
       if (res.status === 200) {
+        const data = await res.json();
         toast.update(toastId, {
           render: "Request sent successfully",
           type: "success",
           isLoading: false,
           autoClose: 5000,
         });
-
-        setDiscussions((prevDiscussions) =>
-          prevDiscussions.map((d) => {
-            if (d._id === discussionId) {
-              return { ...d, isRequested: true, isMember: false };
-            }
-            return d;
-          })
-        );
+        socket.emit("joinRequest", data.result);
+        setStatus("pending");
       } else if (res.status === 201) {
         //if the group is public and user is added to group
 
@@ -187,14 +181,7 @@ const DiscussionDetails = ({ params }) => {
           autoClose: 5000,
         });
 
-        setDiscussions((prevDiscussions) =>
-          prevDiscussions.map((d) => {
-            if (d._id === discussionId) {
-              return { ...d, isMember: true, isRequested: false };
-            }
-            return d;
-          })
-        );
+        setStatus("accepted");
       }
     } catch (error) {
       console.error(error);
@@ -348,9 +335,7 @@ const DiscussionDetails = ({ params }) => {
                       className="w-16 md:w-20 h-8 md:h-10"
                       variant="secondary"
                       disabled={status === "accepted" || status === "pending"}
-                      onClick={() =>
-                        handleButtonClick(discussion._id, discussion.groupId)
-                      }
+                      onClick={() => handleButtonClick(discussion.groupId)}
                     >
                       {status === "accepted"
                         ? "Member"
@@ -482,9 +467,7 @@ const DiscussionDetails = ({ params }) => {
                       className="w-16 md:w-20 h-8 md:h-10"
                       variant="secondary"
                       disabled={status === "pending"}
-                      onClick={() =>
-                        handleButtonClick(discussion._id, discussion.groupId)
-                      }
+                      onClick={() => handleButtonClick(discussion.groupId)}
                     >
                       {status === "pending" ? "Requested" : "Join"}
                     </Button>

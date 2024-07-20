@@ -8,6 +8,8 @@ import DiscussionChatsSection from "@/app/(components)/DiscussionChatsSection";
 import UserInboxSearch from "@/app/(components)/UserInboxSearch";
 import Loading from "@/app/(components)/Loading";
 import { useSearchParams } from "next/navigation";
+import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
+import { useSession } from "next-auth/react";
 
 export default function Chats() {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -15,6 +17,8 @@ export default function Chats() {
   const [loading, setLoading] = useState(true);
   const [toggleChatView, setToggleChatView] = useState(true);
   const [tabValue, setTabValue] = useState("c");
+  const { socket } = useCustomSession();
+  const { data: session } = useSession();
 
   const searchParams = useSearchParams();
   const selectDiscussion = searchParams.get("discussionId");
@@ -52,7 +56,16 @@ export default function Chats() {
 
   const handleUserSelection = async (user) => {
     setSelectedUser(user);
+    // Setup the user private chat room on selecting a chat
+    if (socket && toggleChatView === true) {
+      socket.emit("userchat-setup", {
+        sender: session?.user?.db_id,
+        receiver: user.userId,
+      });
+    }
     setToggleChatView(false);
+
+    // Reset the unread count to 0 on selection
     setConnections((prevConnections) =>
       prevConnections.map((connection) =>
         connection.userId === user.userId
@@ -79,7 +92,30 @@ export default function Chats() {
     }
     fetchConnections();
     updateLastMessage();
-  }, [searchParams, selectDiscussion]);
+
+    if (socket) {
+      socket.on("userchat-inbox", (msg) => {
+        setConnections((prevConnections) => {
+          const updatedConnections = prevConnections.map((connection) =>
+            connection.userId === msg.sender
+              ? {
+                  ...connection,
+                  lastMessageText: msg.text,
+                  lastMessageTime: msg.createdAt,
+                  unreadMessagesCount: connection.unreadMessagesCount + 1,
+                }
+              : connection
+          );
+
+          updatedConnections.sort(
+            (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
+          );
+
+          return updatedConnections;
+        });
+      });
+    }
+  }, [searchParams, selectDiscussion, socket]);
 
   return (
     <div>
