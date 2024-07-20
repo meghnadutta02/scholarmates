@@ -9,10 +9,10 @@ import bodyParser from "body-parser";
 import notification from "./route/notification.js";
 import sendConnection from "./route/sendConnectionRoute.js";
 import joinRequest from "./route/joinRequestRoute.js";
-import User from "./model/userModel.js";
+import User from "./model/userModel.js"
 import { handleJoinRequestNotification } from "./controller/joinRequestNotification.js";
 import { handleNotificationFunction } from "./controller/handleNotificationFunction.js";
-import { discussionNotification } from "./controller/discussionNotification.js";
+import { discussionNotification,notifyAllActiveUsers } from "./controller/discussionNotification.js";
 import ActiveUsers from "./activeUser.js";
 dotenv.config();
 const app = express();
@@ -60,14 +60,8 @@ io.on("connection", async (socket) => {
     }
   });
   
-  socket.on("discussion_Created",async (data)=>{
-    console.log("mydata",data);
-    const user = await User.findById(data);
-    if(user){
-      await discussionNotification(user, socket);
-    }
-    console.log("mydata",data);
-   
+  socket.on("discussion_Created",async ()=>{
+   await notifyAllActiveUsers(socket);
   })
 
   socket.on("joinRequest", async (data) => {

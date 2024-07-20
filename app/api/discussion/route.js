@@ -56,7 +56,7 @@ export async function POST(req) {
     discussion.notification = true;
 
     await discussion.save();
-    await DiscussionNotification.create({
+  const mydata=  await DiscussionNotification.create({
       discussionId: discussion._id,
       content: `just posted a new discussion titled "${
         discussion.title.length > 15
@@ -67,6 +67,7 @@ export async function POST(req) {
       connection: user.connection.map((conn) => conn._id),
       status: true,
     });
+    await mydata.save();
     return NextResponse.json(
       {
         result: {
