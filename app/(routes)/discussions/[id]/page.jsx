@@ -587,13 +587,13 @@ const DiscussionDetails = ({ params }) => {
             <p className="mt-1">
               Are you sure you want to delete this discussion?
             </p>
-            <p className="flex gap-1 md:items-center items-start mt-2  ">
-              <MdOutlineInfo className="text-red-500" />
+            <span className=" mt-2  ">
+              <MdOutlineInfo className="text-red-500 mr-1" />
               <span className="text-sm text-red-500">
                 Deleting this discussion will also permanently delete the
                 associated group.
               </span>
-            </p>
+            </span>
             <div className="flex justify-end mt-4">
               <Button
                 variant="secondary"
