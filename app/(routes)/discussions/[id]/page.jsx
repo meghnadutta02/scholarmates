@@ -386,10 +386,7 @@ const DiscussionDetails = ({ params }) => {
         ) : (
           <div className="container mx-auto md:p-4 p-1">
             <div className="flex sm:flex-row flex-col items-start gap-4 p-2 bg-white dark:bg-gray-800 md:p-2">
-              <Link
-                href={`/profile/${discussion.creator._id}`}
-                className="flex gap-3 w-full sm:w-auto"
-              >
+              <div className="flex gap-3 w-full sm:w-auto">
                 <Image
                   alt="Avatar"
                   className="w-12 h-12 rounded-full md:w-[54px] md:h-[54px]"
@@ -398,10 +395,13 @@ const DiscussionDetails = ({ params }) => {
                   style={{ aspectRatio: "48/48", objectFit: "cover" }}
                   width="48"
                 />
+
                 <div className="sm:hidden flex flex-col justify-between w-full">
-                  <span className="text-sm  text-gray-500 dark:text-gray-400">
-                    {discussion.creator.name}
-                  </span>
+                  <Link href={`/profile/${discussion.creator._id}`}>
+                    <span className="text-sm  text-gray-500 dark:text-gray-400">
+                      {discussion.creator.name}
+                    </span>
+                  </Link>
                   <div className="flex  justify-between  w-full  ">
                     {session?.db_id == discussion.creator._id && (
                       <div className="  flex  gap-2">
@@ -438,7 +438,7 @@ const DiscussionDetails = ({ params }) => {
                     </span>
                   </div>
                 </div>
-              </Link>
+              </div>
 
               <div className="flex-1 grid gap-2">
                 <div className="flex  justify-between">
@@ -587,7 +587,7 @@ const DiscussionDetails = ({ params }) => {
             <p className="mt-1">
               Are you sure you want to delete this discussion?
             </p>
-            <p className="flex gap-1 items-center mt-2 ">
+            <p className="flex gap-1 md:items-center items-start mt-2  ">
               <MdOutlineInfo className="text-red-500" />
               <span className="text-sm text-red-500">
                 Deleting this discussion will also permanently delete the
