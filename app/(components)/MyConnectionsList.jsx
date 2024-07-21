@@ -60,7 +60,7 @@ const Connection = () => {
         </div>
       ) : (
         <div className="w-full md:mt-7 mt-4 font-sans">
-          <h2 className="md:text-xl text-lg font-semibold">
+          <h2 className="md:text-xl sm:text-lg text-md font-semibold">
             {data.length} connection{data.length !== 1 ? "s" : ""}
           </h2>
 
@@ -79,12 +79,20 @@ const Connection = () => {
                     />
                     <div>
                       <p className="text-md font-semibold ">{user.name}</p>
-                      <p className="text-sm">{user.collegeName}</p>
-                      <p className="text-sm text-gray-600">{user.degree}</p>
+                      <div className="sm:block hidden">
+                        <p className="text-sm">{user.collegeName}</p>
+                        <p className="text-sm text-gray-600">{user.degree}</p>
+                      </div>
+                      {user.connection.length > 0 && (
+                        <p className="text-sm text-gray-600 block sm:hidden">
+                          {user.connection.length} connection
+                          {user.connection.length > 1 ? "s" : ""}
+                        </p>
+                      )}
                     </div>
                   </div>
                   {user.connection.length > 0 && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 sm:block hidden">
                       {user.connection.length} connection
                       {user.connection.length > 1 ? "s" : ""}
                     </p>

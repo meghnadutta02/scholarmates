@@ -337,144 +337,102 @@ const DiscussionList = ({
       ) : (
         <div className="grid grid-cols-1  gap-6 ">
           {discussions.map((discussion) => (
-            <div
-              key={discussion._id}
-              className="flex items-start gap-4 rounded-lg shadow-sm p-2 "
-            >
-              <Image
-                alt="Avatar"
-                className="rounded-full hidden sm:block"
-                height="48"
-                src={discussion.creatorData.profilePic}
-                style={{
-                  aspectRatio: "48/48",
-                  objectFit: "cover",
-                }}
-                width="48"
-              />
-              <Image
-                alt="Avatar"
-                className="rounded-full sm:hidden block"
-                height="38"
-                src={discussion.creatorData.profilePic}
-                style={{
-                  aspectRatio: "38/38",
-                  objectFit: "cover",
-                }}
-                width="38"
-              />
+            <div className=" rounded-lg shadow-sm p-2 ">
+              <div key={discussion._id} className="flex items-start gap-4 ">
+                <Image
+                  alt="Avatar"
+                  className="rounded-full hidden sm:block"
+                  height="48"
+                  src={discussion.creatorData.profilePic}
+                  style={{
+                    aspectRatio: "48/48",
+                    objectFit: "cover",
+                  }}
+                  width="48"
+                />
+                <Image
+                  alt="Avatar"
+                  className="rounded-full sm:hidden block"
+                  height="38"
+                  src={discussion.creatorData.profilePic}
+                  style={{
+                    aspectRatio: "38/38",
+                    objectFit: "cover",
+                  }}
+                  width="38"
+                />
 
-              <div className="flex-1 grid gap-2">
-                <div className="flex flex-col  gap-2">
-                  <div className="flex justify-between">
-                    <div className="flex md:flex-row flex-col justify-between md:items-center w-full items-start">
-                      <Link href={`/profile/${discussion.creatorData._id}`}>
-                        <span className="text-sm text-gray-500 font-medium dark:text-gray-400">
-                          {discussion.creatorData.name}
-                        </span>{" "}
+                <div className="flex-1 grid gap-2">
+                  <div className="flex flex-col  gap-2">
+                    <div className="flex justify-between">
+                      <div className="flex md:flex-row flex-col justify-between md:items-center w-full items-start">
+                        <Link href={`/profile/${discussion.creatorData._id}`}>
+                          <span className="text-sm text-gray-500 font-medium dark:text-gray-400">
+                            {discussion.creatorData.name}
+                          </span>{" "}
+                        </Link>
+                        <span className="md:text-sm sm:mr-8 text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
+                          {discussion.creatorData.collegeName}
+                        </span>
+                      </div>
+                      <Link
+                        href={`/discussions/${discussion._id}`}
+                        className="md:hidden"
+                      >
+                        <Button className="p-0" variant="icon">
+                          <InfoIcon className="w-5 h-5" />
+                        </Button>
                       </Link>
-                      <span className="md:text-sm sm:mr-8 text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
-                        {discussion.creatorData.collegeName}
-                      </span>
                     </div>
-                    <Link
-                      href={`/discussions/${discussion._id}`}
-                      className="md:hidden mr-6"
-                    >
-                      <Button className="p-0" variant="icon">
-                        <InfoIcon className="w-5 h-5" />
-                      </Button>
-                    </Link>
+                    <h4 className="font-semibold text-base cursor-pointer">
+                      <Link href={`/discussions/${discussion._id}`}>
+                        {discussion.title}
+                      </Link>
+                    </h4>
                   </div>
-                  <h4 className="font-semibold text-base cursor-pointer">
-                    <Link href={`/discussions/${discussion._id}`}>
-                      {discussion.title}
-                    </Link>
-                  </h4>
-                </div>
-                <div
-                  className={`prose max-w-none cursor-pointer md:hidden ${
-                    expandedDiscussion.includes(discussion._id)
-                      ? ""
-                      : "line-clamp-2"
-                  }`}
-                  onClick={() => toggleDiscussion(discussion._id)}
-                >
-                  <p className="cursor-pointer">{discussion.content}</p>
-                </div>
-                <div className="prose max-w-none  md:block hidden ">
-                  <p className="cursor-pointer">
-                    {" "}
-                    <Link href={`/discussions/${discussion._id}`}>
-                      {discussion.content}
-                    </Link>
-                  </p>
-                </div>
-                <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
-                  <Button
-                    onClick={() => toggleLike(discussion._id)}
-                    className="h-10"
-                    size="icon"
-                    variant="icon"
+                  <div
+                    className={`prose max-w-none cursor-pointer md:hidden ${
+                      expandedDiscussion.includes(discussion._id)
+                        ? ""
+                        : "line-clamp-2"
+                    }`}
+                    onClick={() => toggleDiscussion(discussion._id)}
                   >
-                    <ThumbsUpIcon
-                      className={`w-4 h-4 cursor-pointer ${
-                        discussion.isLiked && "text-blue-400"
-                      } ${
-                        animationState[discussion._id] === "like" &&
-                        "pop text-blue-400"
-                      }`}
+                    <p className="cursor-pointer">{discussion.content}</p>
+                  </div>
+                  <div className="prose max-w-none  md:block hidden ">
+                    <p className="cursor-pointer">
+                      {" "}
+                      <Link href={`/discussions/${discussion._id}`}>
+                        {discussion.content}
+                      </Link>
+                    </p>
+                  </div>
+                  <div className="hidden sm:block">
+                    <DiscussionActions
+                      {...{
+                        discussion,
+                        toggleLike,
+                        toggleDislike,
+                        handleButtonClick,
+                        handleShare,
+                        animationState,
+                      }}
                     />
-                    <span className="sr-only">Like</span>
-                    <span className="ml-2">{discussion.likes}</span>
-                  </Button>
-                  <Button
-                    onClick={() => toggleDislike(discussion._id)}
-                    className="h-10"
-                    size="icon"
-                    variant="icon"
-                  >
-                    <ThumbsDownIcon
-                      className={`w-4 h-4 cursor-pointer ${
-                        discussion.isDisliked && "text-red-400"
-                      } ${
-                        animationState[discussion._id] === "dislike" &&
-                        "pop text-red-400"
-                      }`}
-                    />
-                    <span className="sr-only">Dislike</span>
-                    <span className="ml-2">{discussion.dislikes}</span>
-                  </Button>
-
-                  {discussion.isMember ? (
-                    <Link href={`/chats?discussionId=${discussion._id}`}>
-                      <Button variant="icon" className="flex md:ml-4">
-                        <IoChatboxOutline className="h-6 w-6" />
-                      </Button>{" "}
-                    </Link>
-                  ) : (
-                    <Button
-                      className={`${
-                        discussion.isRequested ? "w-20" : "w-16 "
-                      } h-8 md:h-10 md:w-20`}
-                      variant="secondary"
-                      disabled={discussion.isRequested}
-                      onClick={() =>
-                        handleButtonClick(discussion._id, discussion.groupId)
-                      }
-                    >
-                      {discussion.isRequested ? "Requested" : "Join"}
-                    </Button>
-                  )}
-                  <Button
-                    className="h-10"
-                    size="icon"
-                    variant="icon"
-                    onClick={() => handleShare(discussion)}
-                  >
-                    <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
-                  </Button>
+                  </div>
                 </div>
+              </div>
+              <div className="sm:hidden block">
+                <DiscussionActions
+                  {...{
+                    discussion,
+                    toggleLike,
+                    toggleDislike,
+                    handleButtonClick,
+                    handleShare,
+                    animationState,
+                  }}
+                />
               </div>
             </div>
           ))}
@@ -486,7 +444,76 @@ const DiscussionList = ({
 };
 
 export default DiscussionList;
+const DiscussionActions = ({
+  discussion,
+  toggleLike,
+  toggleDislike,
+  handleButtonClick,
+  handleShare,
+  animationState,
+}) => {
+  return (
+    <div className="grid w-full grid-cols-4 place-items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2">
+      <Button
+        onClick={() => toggleLike(discussion._id)}
+        className="h-10"
+        size="icon"
+        variant="icon"
+      >
+        <ThumbsUpIcon
+          className={`w-4 h-4 cursor-pointer ${
+            discussion.isLiked && "text-blue-400"
+          } ${
+            animationState[discussion._id] === "like" && "pop text-blue-400"
+          }`}
+        />
+        <span className="sr-only">Like</span>
+        <span className="ml-2">{discussion.likes}</span>
+      </Button>
+      <Button
+        onClick={() => toggleDislike(discussion._id)}
+        className="h-10"
+        size="icon"
+        variant="icon"
+      >
+        <ThumbsDownIcon
+          className={`w-4 h-4 cursor-pointer ${
+            discussion.isDisliked && "text-red-400"
+          } ${
+            animationState[discussion._id] === "dislike" && "pop text-red-400"
+          }`}
+        />
+        <span className="sr-only">Dislike</span>
+        <span className="ml-2">{discussion.dislikes}</span>
+      </Button>
 
+      {discussion.isMember ? (
+        <Button variant="icon" className="flex md:ml-4">
+          <IoChatboxOutline className="h-6 w-6" />
+        </Button>
+      ) : (
+        <Button
+          className={`${
+            discussion.isRequested ? "w-20" : "w-16 "
+          } h-8 md:h-10 md:w-20`}
+          variant="secondary"
+          disabled={discussion.isRequested}
+          onClick={() => handleButtonClick(discussion._id, discussion.groupId)}
+        >
+          {discussion.isRequested ? "Requested" : "Join"}
+        </Button>
+      )}
+      <Button
+        className="h-10"
+        size="icon"
+        variant="icon"
+        onClick={() => handleShare(discussion)}
+      >
+        <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
+      </Button>
+    </div>
+  );
+};
 function ThumbsDownIcon(props) {
   return (
     <svg

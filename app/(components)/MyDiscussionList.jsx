@@ -183,7 +183,7 @@ const DiscussionList = () => {
         </div>
       ) : (
         <div className="md:mt-7 mt-4">
-          <h2 className="md:text-xl text-lg font-semibold">
+          <h2 className=" md:text-xl sm:text-lg text-md font-semibold">
             {discussions.length} discussion{discussions.length !== 1 ? "s" : ""}
           </h2>
           <div className="grid grid-cols-1 gap-6 mt-4">
@@ -218,10 +218,11 @@ const DiscussionList = () => {
                         </Link>
                       </p>
                     </div>
+                    {/* buttons */}
                     <div className="w-full grid grid-cols-3  text-center  place-items-start">
                       <Button className="h-10" size="icon" variant="icon">
                         <ThumbsUpIcon
-                          className={`w-4 h-4 cursor-pointer ${
+                          className={`w-5 h-5 cursor-pointer ${
                             discussion.isLiked && "text-blue-400"
                           } ${
                             animationState[discussion._id] === "like" &&
@@ -245,7 +246,7 @@ const DiscussionList = () => {
                         className="md:hidden "
                       >
                         <Button variant="icon">
-                          <InfoIcon className="w-4 h-4" />
+                          <InfoIcon className="w-5 h-5" />
                         </Button>
                       </Link>
                     </div>

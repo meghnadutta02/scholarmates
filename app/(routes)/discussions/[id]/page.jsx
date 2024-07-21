@@ -9,8 +9,11 @@ import { Button } from "@/components/ui/button";
 import { RiShareForwardLine } from "react-icons/ri";
 import { IoChatboxOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
+import { Drawer } from "vaul";
+import { IoStatsChart } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
 import Loading from "@/app/(components)/Loading";
+import LikedBy from "@/app/(components)/LikedBy";
 import TimeAgo from "javascript-time-ago";
 import EditDiscussion from "@/app/(components)/EditDiscussion";
 import {
@@ -37,6 +40,7 @@ const DiscussionDetails = ({ params }) => {
   const [animationState, setAnimationState] = useState({});
   const [status, setStatus] = useState("");
   const [disabled, setDisabled] = useState(false);
+  const [likedByUsers, setLikedByUsers] = useState([]);
   const [isLikedByUser, setIsLikedByUser] = useState(false);
   const [isDislikedByUser, setIsDislikedByUser] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -80,8 +84,9 @@ const DiscussionDetails = ({ params }) => {
           method: "GET",
         });
         const data = await res.json();
-
+        console.log(data.discussion);
         setDiscussion(data.discussion);
+        setLikedByUsers(data.discussion.likedBy);
         setStatus(data.status);
         setIsLikedByUser(data.isLikedByUser);
         setIsDislikedByUser(data.isDislikedByUser);
@@ -259,7 +264,7 @@ const DiscussionDetails = ({ params }) => {
             <div className="flex flex-col justify-center gap-6 mt-3 md:flex-row ">
               <Image
                 alt="Cover"
-                className="w-full h-[200px] md:w-[520px] md:h-[358px]"
+                className="w-full h-[270px] md:w-[520px] md:h-[370px]"
                 src={discussion.coverImage}
                 style={{ aspectRatio: "1", objectFit: "cover" }}
                 width={280}
@@ -305,7 +310,11 @@ const DiscussionDetails = ({ params }) => {
                     </div>
                   </div>
 
-                  <div className="grid w-full gap-4 md:gap-8 grid-cols-4 ">
+                  <div
+                    className={`grid w-full gap-4 md:gap-8 ${
+                      likedByUsers.length > 0 ? "grid-cols-5" : "grid-cols-4"
+                    }`}
+                  >
                     <Button className="h-10" size="icon" variant="icon">
                       <ThumbsUpIcon
                         className={`w-4 h-4 cursor-pointer ${
@@ -354,15 +363,33 @@ const DiscussionDetails = ({ params }) => {
                     >
                       <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
                     </Button>
+                    {likedByUsers.length > 0 && (
+                      <Drawer.Root direction="right">
+                        <Drawer.Trigger asChild>
+                          <Button className="h-10" size="icon" variant="icon">
+                            <IoStatsChart className="w-5 h-5 cursor-pointer text-gray-800" />
+                          </Button>
+                        </Drawer.Trigger>
+                        <Drawer.Portal>
+                          <Drawer.Overlay className="fixed inset-0 " />
+                          <Drawer.Content className="rounded-se-lg bg-gray-100 dark:bg-gray-800  h-full max-w-[80%] w-[380px] fixed bottom-0 right-0  overflow-y-auto overflow-x-hidden scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-300 scrollbar-thumb-rounded-full shadow-lg shadow-gray-600">
+                            <LikedBy likedByUsers={likedByUsers} />
+                          </Drawer.Content>
+                        </Drawer.Portal>
+                      </Drawer.Root>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="container mx-auto p-4">
-            <div className="flex items-start gap-4 p-2 bg-white dark:bg-gray-800 md:p-4">
-              <Link href={`/profile/${discussion.creator._id}`}>
+          <div className="container mx-auto md:p-4 p-1">
+            <div className="flex sm:flex-row flex-col items-start gap-4 p-2 bg-white dark:bg-gray-800 md:p-2">
+              <Link
+                href={`/profile/${discussion.creator._id}`}
+                className="flex gap-3 w-full sm:w-auto"
+              >
                 <Image
                   alt="Avatar"
                   className="w-12 h-12 rounded-full md:w-[54px] md:h-[54px]"
@@ -371,12 +398,53 @@ const DiscussionDetails = ({ params }) => {
                   style={{ aspectRatio: "48/48", objectFit: "cover" }}
                   width="48"
                 />
+                <div className="sm:hidden flex flex-col justify-between w-full">
+                  <span className="text-sm  text-gray-500 dark:text-gray-400">
+                    {discussion.creator.name}
+                  </span>
+                  <div className="flex  justify-between  w-full  ">
+                    {session?.db_id == discussion.creator._id && (
+                      <div className="  flex  gap-2">
+                        <Dialog open={open} onOpenChange={setOpen}>
+                          <DialogTrigger asChild>
+                            <MdEdit className="h-5 w-5  cursor-pointer" />
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[720px]">
+                            <DialogHeader>
+                              <DialogTitle>Edit Discussion</DialogTitle>
+                              <DialogDescription>
+                                Update your discussion.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <EditDiscussion
+                              discussion={discussion}
+                              setDiscussion={setDiscussion}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                        <button
+                          className=" "
+                          onClick={() => handleGetDiscussionId(discussion._id)}
+                        >
+                          <MdDeleteOutline className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">
+                      <ReactTimeAgo
+                        date={new Date(discussion.createdAt)}
+                        locale="en-US"
+                      />
+                    </span>
+                  </div>
+                </div>
               </Link>
+
               <div className="flex-1 grid gap-2">
-                <div className="flex justify-between">
+                <div className="flex  justify-between">
                   <div className="flex flex-col gap-2">
                     <Link href={`/profile/${discussion.creator._id}`}>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                      <span className="hidden sm:inline text-sm text-gray-500 dark:text-gray-400">
                         {discussion.creator.name}
                       </span>
                     </Link>
@@ -385,7 +453,7 @@ const DiscussionDetails = ({ params }) => {
                     </h4>
                   </div>
 
-                  <div className="flex flex-col items-center gap-2 ">
+                  <div className="sm:flex sm:flex-col sm:items-center  sm:gap-2 hidden ">
                     {session?.db_id == discussion.creator._id && (
                       <div className="  flex justify-end gap-2">
                         <Dialog open={open} onOpenChange={setOpen}>
@@ -413,7 +481,7 @@ const DiscussionDetails = ({ params }) => {
                         </button>
                       </div>
                     )}
-                    <span className="text-gray-500 dark:text-gray-400 ">
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">
                       <ReactTimeAgo
                         date={new Date(discussion.createdAt)}
                         locale="en-US"
@@ -424,7 +492,11 @@ const DiscussionDetails = ({ params }) => {
                 <div className="prose max-w-none">
                   <p>{discussion.content}</p>
                 </div>
-                <div className="grid items-center w-full gap-4 mb-2 text-center md:gap-8 grid-cols-4">
+                <div
+                  className={`grid w-full gap-4 md:gap-8 ${
+                    likedByUsers.length > 0 ? "grid-cols-5" : "grid-cols-4"
+                  }`}
+                >
                   <Button
                     onClick={() => toggleLike(discussion._id)}
                     className="h-10"
@@ -486,6 +558,21 @@ const DiscussionDetails = ({ params }) => {
                   >
                     <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
                   </Button>
+                  {likedByUsers.length > 0 && (
+                    <Drawer.Root direction="right">
+                      <Drawer.Trigger asChild>
+                        <Button className="h-10" size="icon" variant="icon">
+                          <IoStatsChart className="w-5 h-5 cursor-pointer text-gray-800" />
+                        </Button>
+                      </Drawer.Trigger>
+                      <Drawer.Portal>
+                        <Drawer.Overlay className="fixed inset-0 " />
+                        <Drawer.Content className="rounded-se-lg bg-gray-100 dark:bg-gray-800  h-full max-w-[80%] w-[380px]  fixed bottom-0 right-0 overflow-y-auto scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-300 overflow-x-hidden scrollbar-thumb-rounded-full shadow-lg shadow-gray-600">
+                          <LikedBy likedByUsers={likedByUsers} />
+                        </Drawer.Content>
+                      </Drawer.Portal>
+                    </Drawer.Root>
+                  )}
                 </div>
               </div>
             </div>

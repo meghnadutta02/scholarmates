@@ -19,9 +19,9 @@ const Page = () => {
 
   const deleteAllNotifications = async () => {
     if (session?.db_id && notifications.length > 0) {
-      const notificationIds = notifications.map((n) =>
-        n._id ? n._id : n.notificationId
-      );
+      const notificationIds = notifications
+        .filter((n) => !n.isSeen)
+        .map((n) => (n._id ? n._id : n.notificationId));
 
       try {
         const resp = await fetch(
@@ -48,7 +48,9 @@ const Page = () => {
   useEffect(() => {
     const markAllAsSeen = async () => {
       if (session?.db_id && notifications.length > 0) {
-        const notificationIds = notifications.map((n) => n.notificationId);
+        const notificationIds = notifications
+          .filter((n) => n.isSeen === false || typeof n.isSeen === "undefined")
+          .map((n) => (n._id ? n._id : n.notificationId));
         try {
           const resp = await fetch(
             `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/mark-as-seen/${session.db_id}`,
@@ -113,10 +115,11 @@ const Page = () => {
               Clear All
             </Button>
           </div>
+
           {notifications.map((item, index) => (
             <div
               key={index}
-              className="md:p-2 p-1 bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 my-auto"
+              className="md:p-2 p-1 bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 my-auto "
             >
               <div className="flex flex-row items-center justify-between">
                 <Link
@@ -127,7 +130,7 @@ const Page = () => {
                       ? "/chats"
                       : "/requests"
                   }
-                  className="flex items-center"
+                  className="inline my-auto "
                 >
                   <Image
                     src={item.profilePic}
@@ -138,7 +141,7 @@ const Page = () => {
                       aspectRatio: "32/32",
                       objectFit: "cover",
                     }}
-                    className="rounded-full mr-2"
+                    className="rounded-full mr-2 inline"
                   />
                   <span className="font-semibold text-gray-900 mr-1 dark:text-white">
                     {item.sendername}{" "}

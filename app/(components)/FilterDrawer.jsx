@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Drawer } from "vaul";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { FaFilter } from "react-icons/fa6";
+
 import { interests } from "@/app/(data)/interests";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";

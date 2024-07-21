@@ -337,7 +337,7 @@ const DiscussionSection = ({ user }) => {
                     </Link>
                   </p>
                 </div>
-                <div className="grid w-full grid-cols-4 items-center gap-4 text-center md:gap-8 mb-2">
+                <div className="grid w-full grid-cols-4  gap-7 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">
                     <ThumbsUpIcon
                       className={`w-4 h-4 cursor-pointer ${
@@ -374,7 +374,7 @@ const DiscussionSection = ({ user }) => {
                   ) : (
                     <Button
                       className={`${
-                        discussion.isRequested ? "w-20" : "w-16 "
+                        discussion.isRequested ? "w-20 " : "w-16 "
                       } h-8 md:h-10 md:w-20`}
                       variant="secondary"
                       disabled={discussion.isRequested}

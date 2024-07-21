@@ -17,7 +17,7 @@ export async function GET(req, { params }) {
 
   try {
     const discussion = await Discussion.findById(id).populate(
-      "creator",
+      "creator likedBy",
       "name profilePic _id"
     );
 
