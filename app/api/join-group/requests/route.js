@@ -15,16 +15,10 @@ export async function GET(req) {
     const requestsToAccept =
       (await groupRequest
         .find({ toUsers: userId, status: "pending" })
+        .sort({ createdAt: -1 })
         .populate("groupId", "name description")
         .populate("fromUser", "name profilePic")) || [];
-    const requestsToJoin =
-      (await groupRequest
-        .find({ fromUser: userId })
-        .populate("groupId", "name description")) || [];
-    return NextResponse.json(
-      { requestsToAccept, requestsToJoin },
-      { status: 200 }
-    );
+    return NextResponse.json({ requestsToAccept }, { status: 200 });
   } catch (error) {
     console.error(error);
 

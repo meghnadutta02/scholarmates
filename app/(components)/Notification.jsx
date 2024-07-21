@@ -70,7 +70,7 @@ const Notification = ({
   return (
     <>
       {isVisible && status == false && (
-        <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px]">
+        <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 sm:text-base text-[14px]">
           <Link href={`/profile/${user?._id}`}>
             <div className="flex items-center font-sans">
               <Image
@@ -94,23 +94,23 @@ const Notification = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => acceptHandle("accept")}
-              className="bg-green-500 text-white flex items-center p-2 rounded-lg transform transition-transform hover:scale-125"
+              className="flex items-center p-1"
               disabled={loading}
             >
-              <FaCheck className="h-4 w-4" />
+              <FaCheck className="h-4 w-4 text-green-500 transform transition-transform hover:scale-125" />
             </button>
             <button
               onClick={() => acceptHandle("decline")}
-              className="bg-red-500 text-white flex items-center p-2 rounded-lg transform transition-transform hover:scale-125"
+              className="flex items-center p-1"
               disabled={loading}
             >
-              <FaTimes className="h-[17px] w-[17px]" />
+              <FaTimes className="h-[17px] w-[17px] text-red-500 transform transition-transform hover:scale-125" />
             </button>
           </div>
         </div>
       )}
       {isConnected && (
-        <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 md:text-base text-[14px]">
+        <div className="flex w-full justify-between items-center rounded-md shadow md:px-3 px-[6px]  md:py-4 py-2 sm:text-base text-[14px]">
           <div className="flex items-center font-sans">
             <Image
               src={user?.profilePic}

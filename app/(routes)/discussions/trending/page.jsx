@@ -29,7 +29,7 @@ const Trending = () => {
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
   const [animationState, setAnimationState] = useState({});
   const [college, setCollege] = useState(false);
-  const { socket } = useCustomSession();
+  const { socket, session: userData } = useCustomSession();
   const toggleDiscussion = (id) => {
     setExpandedDiscussion((prev) => {
       const isIdPresent = prev.includes(id);
@@ -187,7 +187,7 @@ const Trending = () => {
           isLoading: false,
           autoClose: 5000,
         });
-        socket.emit("joinRequest", data.result);
+        socket.emit("joinRequest", { request: data.result, user: userData });
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussionId) {

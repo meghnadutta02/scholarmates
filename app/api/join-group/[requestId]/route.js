@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import Group from "@/app/(models)/groupModel";
-import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";
 import groupRequest from "@/app/(models)/groupRequestModel";
-import { getServerSession } from "next-auth";
+import User from "@/app/(models)/userModel";
+import Group from "@/app/(models)/groupModel";
+import { getServerSession } from "next-auth/next";
+import { ObjectId } from "mongodb";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 
-// to accept or reject a request to join a group
 export async function PUT(req, { params }) {
   try {
     await connect();
@@ -43,37 +42,14 @@ export async function PUT(req, { params }) {
     }
 
     await group.save();
-    await request.save();
     await user.save();
 
-    const message =
-      action === "accept" ? "Request accepted" : "Request rejected";
-    return NextResponse.json({ result: message }, { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-export async function DELETE(req, { params }) {
-  try {
-    await connect();
-    const requestId = params.requestId;
-    const session = await getServerSession(options);
+    const savedRequest = await request.save();
 
-    const request = await groupRequest.findById(requestId);
-    if (!request) {
-      throw new Error("Request not found");
-    }
-    if (request.status === "pending") {
-      throw new Error("Request is not processed yet");
-    }
-    if (!request.fromUser.equals(new ObjectId(session?.user?.db_id))) {
-      throw new Error("You are not authorized to perform this action");
-    }
+    // Delete the request from the database
+    await request.deleteOne();
 
-    await groupRequest.findByIdAndDelete(requestId);
-
-    return NextResponse.json({ result: "Request deleted" }, { status: 200 });
+    return NextResponse.json({ result: savedRequest }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });

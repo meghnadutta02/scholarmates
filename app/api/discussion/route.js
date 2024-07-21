@@ -1,14 +1,14 @@
 import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/app/config/db";
 import { getServerSession } from "next-auth";
-import DiscussionNotification from "@/app/(models)/discussionNotification";
+
 import { NextResponse } from "next/server";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { ObjectId } from "mongodb";
 import { interests } from "@/app/(data)/interests";
 import Group from "@/app/(models)/groupModel";
 import User from "@/app/(models)/userModel";
-import { postObject, deleteObject } from "@/app/config/s3";
+import { postObject } from "@/app/config/s3";
 export async function POST(req) {
   try {
     await connect();
@@ -56,18 +56,7 @@ export async function POST(req) {
     discussion.notification = true;
 
     await discussion.save();
-  const mydata=  await DiscussionNotification.create({
-      discussionId: discussion._id,
-      content: `just posted a new discussion titled "${
-        discussion.title.length > 15
-          ? discussion.title.slice(0, 15) + ".."
-          : discussion.title
-      }"`,
-      creator: session?.user?.db_id,
-      connection: user.connection.map((conn) => conn._id),
-      status: true,
-    });
-    await mydata.save();
+
     return NextResponse.json(
       {
         result: {

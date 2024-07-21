@@ -105,15 +105,15 @@ const DiscussionsPage = () => {
   }, [searchQuery]);
 
   return (
-    <div className="flex-1 md:pt-3 pt-0 md:px-6 px-3 ">
+    <div className="flex-1 md:pt-3 sm:pt-2 pt-0 md:px-6 px-3 ">
       {/* search button */}
-      <div className="flex mb-8 md:mt-5 mt-2 md:justify-center md:flex-row flex-col gap-4 w-full ">
+      <div className="flex mb-8 md:mt-5 sm:mt-3 mt-2 md:justify-center md:flex-row flex-col gap-4 w-full ">
         <div className="flex gap-2 md:gap-0 md:justify-between  pl-6 items-center  relative">
           <div className=" w-[85%]">
             <input
               type="text"
               placeholder="Looking for a ml engineer?"
-              className="w-full bg-transparent py-3 border-2 border-gray-300 rounded-full px-8"
+              className="w-full bg-transparent md:py-3 py-2 border-2 border-gray-300 rounded-full md:px-8 px-6"
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             {/* search suggestions */}

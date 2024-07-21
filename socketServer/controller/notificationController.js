@@ -1,6 +1,6 @@
 import Request from "../model/requestModel.js";
 import User from "../model/userModel.js";
-import Notifications from "../model/notificationModel.js";
+import Notification from "../model/notificationModel.js";
 export const requestNotificationController = async (req, resp) => {
   try {
     const user = req.params.userId;
@@ -104,7 +104,7 @@ export const checkIsSeenController = async (req, resp) => {
     }
     // Update isSeen to true for the given notification IDs
 
-    const updateResult = await Notifications.updateMany(
+    const updateResult = await Notification.updateMany(
       {
         _id: { $in: notificationIds },
         recipientId: userId,
@@ -131,10 +131,12 @@ export const checkIsSeenController = async (req, resp) => {
     });
   }
 };
-export const deleteBatchNotificationController = async (req, resp) => {
+export const deleteBatchNotification = async (req, resp) => {
   try {
     const { userId } = req.params;
+    console.log(userId);
     const { notificationIds } = req.body;
+    console.log(notificationIds);
 
     if (!notificationIds || !Array.isArray(notificationIds)) {
       return resp.status(400).send({
@@ -144,7 +146,7 @@ export const deleteBatchNotificationController = async (req, resp) => {
     }
 
     // Delete notifications with the given IDs
-    const deleteResult = await Notifications.deleteMany({
+    const deleteResult = await Notification.deleteMany({
       _id: { $in: notificationIds },
       recipientId: userId,
     });
@@ -172,7 +174,7 @@ export const deleteBatchNotificationController = async (req, resp) => {
 export const getAllNotificationController = async (req, resp) => {
   try {
     const { userId } = req.params;
-    const notifications = await Notifications.find({
+    const notifications = await Notification.find({
       recipientId: userId,
     }).sort({ timestamp: -1 });
 
@@ -197,7 +199,7 @@ export const DeleteNotificationController = async (req, resp) => {
         message: "notification id is required",
       });
     }
-    const notification = await Notifications.findByIdAndDelete(notification_Id);
+    const notification = await Notification.findByIdAndDelete(notification_Id);
     if (notification) {
       resp.status(200).send({
         success: true,

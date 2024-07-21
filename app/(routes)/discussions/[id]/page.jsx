@@ -169,7 +169,7 @@ const DiscussionDetails = ({ params }) => {
           isLoading: false,
           autoClose: 5000,
         });
-        socket.emit("joinRequest", data.result);
+        socket.emit("joinRequest", { request: data.result, user: session });
         setStatus("pending");
       } else if (res.status === 201) {
         //if the group is public and user is added to group
@@ -214,7 +214,8 @@ const DiscussionDetails = ({ params }) => {
     return (
       <div className="flex   justify-center  mt-5">
         <p className="text-lg text-gray-500 dark:text-gray-400 mb-4">
-          Discussion not found
+          The discussion you are looking for may have been deleted or does not
+          exist.
         </p>
       </div>
     );

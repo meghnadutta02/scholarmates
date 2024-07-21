@@ -9,7 +9,7 @@ export const SessionProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [request, setRequest] = useState();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+
   const [notifications, setNotifications] = useState([]);
   const [socket, setSocket] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -37,8 +37,13 @@ export const SessionProvider = ({ children }) => {
     const uniqueSet = new Map();
 
     array.forEach((item) => {
-      const key = `${item.senderId}-${item.recipientId}-${item.status}`;
-      uniqueSet.set(key, item);
+      const key = `${item.senderId}-${item.recipientId}-${item.message}`;
+      if (
+        !uniqueSet.has(key) ||
+        uniqueSet.get(key).timestamp < item.timestamp
+      ) {
+        uniqueSet.set(key, item);
+      }
     });
 
     return Array.from(uniqueSet.values());
@@ -57,7 +62,6 @@ export const SessionProvider = ({ children }) => {
         setLoading(false);
       }
     };
-
     const getAllNotifications = async () => {
       if (session?.db_id) {
         try {
@@ -72,7 +76,7 @@ export const SessionProvider = ({ children }) => {
           );
           if (res.ok) {
             const data = await res.json(); // contains all notifications
-            console.log(data);
+
             setNotifications(data.notifications);
             setUnreadCount(() => {
               return data.notifications.filter((noti) => !noti.isSeen).length;
@@ -98,21 +102,34 @@ export const SessionProvider = ({ children }) => {
 
     const handleNewNotification = (data) => {
       if (data) {
-        setNotifications((prev) => removeDuplicates([data, ...prev]));
+        setNotifications((prev) => {
+          const uniqueNotifications = removeDuplicates([data, ...prev]);
+          return uniqueNotifications.sort((a, b) => a.timestamp - b.timestamp);
+        });
         setUnreadCount((prev) => prev + 1);
       }
     };
 
-    newSocket.on("connectionRequest", handleNewNotification);
-    newSocket.on("receiveRequest", handleNewNotification);
-    newSocket.on("discussionNotification", handleNewNotification);
-    newSocket.on("joinRequestNotification", handleNewNotification);
+    [
+      "connectionRequest",
+      "receiveRequest",
+      "discussionNotification",
+      "joinRequestNotification",
+      "joinRequestAcceptedNotification",
+    ].forEach((event) => {
+      newSocket.on(event, handleNewNotification);
+    });
 
     return () => {
-      newSocket.off("connectionRequest", handleNewNotification);
-      newSocket.off("receiveRequest", handleNewNotification);
-      newSocket.off("discussionNotification", handleNewNotification);
-      newSocket.off("joinRequestNotification", handleNewNotification);
+      [
+        "connectionRequest",
+        "receiveRequest",
+        "discussionNotification",
+        "joinRequestNotification",
+        "joinRequestAcceptedNotification",
+      ].forEach((event) => {
+        newSocket.off(event, handleNewNotification);
+      });
       newSocket.close();
     };
   }, [session?.db_id]);
@@ -125,13 +142,11 @@ export const SessionProvider = ({ children }) => {
         socket,
         notifications,
         unreadCount,
-        user,
         setSession,
         setRequest,
         setNotifications,
         setUnreadCount,
         clearUnreadCount,
-        setUser,
         removeConnectionNotification,
       }}
     >

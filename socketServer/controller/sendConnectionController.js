@@ -2,7 +2,7 @@ import User from "../model/userModel.js";
 import Request from "../model/requestModel.js";
 import { io } from "../server.js";
 import ActiveUsers from "../activeUser.js";
-import Notifications from "../model/notificationModel.js";
+import Notification from "../model/notificationModel.js";
 export const sendConnectionController = async (req, resp) => {
   try {
     const { recipientId } = req.body;
@@ -23,7 +23,7 @@ export const sendConnectionController = async (req, resp) => {
 
     if (existingFriendship) {
       return resp.send({
-        message: "Friendship request already sent or accepted",
+        message: "Connection request already sent or accepted",
       });
     }
 
@@ -34,7 +34,7 @@ export const sendConnectionController = async (req, resp) => {
       user: senderId,
     });
 
-    await Notifications.deleteOne({
+    await Notification.deleteOne({
       recipientId: recipientId,
       senderId: senderId,
       status: "requestSend",
@@ -48,16 +48,15 @@ export const sendConnectionController = async (req, resp) => {
       await receiverUser.save();
       await senderUser.save();
     }
-    // NOTIFICATION SAVE
 
-    const notification = new Notifications({
+    const notification = new Notification({
       recipientId: recipientId,
       senderId: senderId,
       sendername: senderUser.name,
       profilePic: senderUser.profilePic,
       status: "requestSend",
       message: "has sent you a connection request",
-      friendRequestId: requestdata._id,
+
       timestamp: new Date(),
     });
     await notification.save();
@@ -130,13 +129,13 @@ export const receiveConnectionController = async (req, resp) => {
         await user.save();
         await sender.save();
 
-        await Notifications.deleteOne({
+        await Notification.deleteOne({
           recipientId: user._id,
           senderId: sender._id,
           status: "requestaccept",
         });
 
-        const notification = new Notifications({
+        const notification = new Notification({
           recipientId: sender._id,
           senderId: userId,
           sendername: user.name,

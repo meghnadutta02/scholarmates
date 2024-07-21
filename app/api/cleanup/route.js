@@ -3,7 +3,7 @@ import Group from "@/app/(models)/groupModel";
 import GroupRequest from "@/app/(models)/groupRequestModel";
 import Message from "@/app/(models)/messageModel";
 import Discussion from "@/app/(models)/discussionModel";
-import DiscussionNotification from "@/app/(models)/discussionNotification";
+import Notification from "@/app/(models)/notificationModel";
 import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";
 import { getServerSession } from "next-auth";
@@ -18,14 +18,18 @@ async function cleanupOrphanedDocuments(session) {
     // Cleanup orphaned Groups
     const allGroups = await Group.find();
     const orphanedGroups = [];
-    const orphanedDiscussionNotifications = [];
-    const allDiscussionNotifications = await DiscussionNotification.find();
+    const orphanedNotifications = [];
+    const allDiscussionNotifications = await Notification.find();
+
     for (const notification of allDiscussionNotifications) {
+      if (!notification.discussionId) {
+        continue;
+      }
       const discussion = await Discussion.findOne({
         _id: notification.discussionId,
       }).session(transactionSession);
       if (!discussion) {
-        orphanedDiscussionNotifications.push(notification._id);
+        orphanedNotifications.push(notification._id);
       }
     }
     for (const group of allGroups) {
@@ -36,9 +40,9 @@ async function cleanupOrphanedDocuments(session) {
         orphanedGroups.push(group._id);
       }
     }
-    if (orphanedDiscussionNotifications.length > 0) {
-      await DiscussionNotification.deleteMany(
-        { _id: { $in: orphanedDiscussionNotifications } },
+    if (orphanedNotifications.length > 0) {
+      await Notification.deleteMany(
+        { _id: { $in: orphanedNotifications } },
         { session: transactionSession }
       );
     }
@@ -52,7 +56,10 @@ async function cleanupOrphanedDocuments(session) {
     // Cleanup orphaned GroupRequests
     const orphanedGroupRequests = await GroupRequest.find().populate("groupId");
     const orphanedGroupRequestsToDelete = orphanedGroupRequests.filter(
-      (req) => !req.groupId
+      (req) =>
+        !req.groupId._id ||
+        req.status === "accepted" ||
+        req.status === "rejected"
     );
     if (orphanedGroupRequestsToDelete.length > 0) {
       const ids = orphanedGroupRequestsToDelete.map((req) => req._id);

@@ -5,6 +5,7 @@ import ReactTimeAgo from "react-time-ago";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import en from "javascript-time-ago/locale/en";
+import { toast } from "react-toastify";
 import ru from "javascript-time-ago/locale/ru";
 import { useSession } from "@/app/(components)/SessionProvider";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ const Page = () => {
       const notificationIds = notifications.map((n) =>
         n._id ? n._id : n.notificationId
       );
+
       try {
         const resp = await fetch(
           `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/delete-notifications/${session.db_id}`,
@@ -35,15 +37,12 @@ const Page = () => {
         if (resp.ok) {
           clearUnreadCount();
           setNotifications([]);
+          toast.success("All notifications cleared successfully");
         }
       } catch (error) {
         console.error("Failed to mark notifications as seen", error);
       }
     }
-  };
-
-  const sortByTimestamp = (array) => {
-    return array.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   };
 
   useEffect(() => {
@@ -106,7 +105,7 @@ const Page = () => {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          <div className="flex justify-end gap-2 items-center md:mt-4 mt-3 mr-4">
+          <div className="flex justify-end gap-2 items-center md:mt-4 mt-3 ">
             <Button
               className="rounded-md accent-zinc-700"
               onClick={deleteAllNotifications}
@@ -124,6 +123,8 @@ const Page = () => {
                   href={
                     item.status === "discussNotify"
                       ? `/discussions/${item.discussionId}`
+                      : item.status === "joinRequestAccepted"
+                      ? "/chats"
                       : "/requests"
                   }
                   className="flex items-center"
@@ -147,6 +148,7 @@ const Page = () => {
                     "requestaccept",
                     "discussNotify",
                     "joinRequest",
+                    "joinRequestAccepted",
                   ].includes(item.status) && <span> {item.message}.</span>}
                 </Link>
                 <button

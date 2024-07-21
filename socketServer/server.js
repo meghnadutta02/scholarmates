@@ -12,10 +12,8 @@ import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
 import Notification from "./model/notificationModel.js";
 import { handleJoinRequestNotification } from "./controller/joinRequestNotification.js";
-import {
-  discussionNotification,
-  notifyAllActiveUsers,
-} from "./controller/discussionNotification.js";
+import { handleDiscussionNotification } from "./controller/discussionNotification.js";
+import { handleJoinRequestAcceptedNotification } from "./controller/joinRequestAcceptedNotification.js";
 import ActiveUsers from "./activeUser.js";
 dotenv.config();
 const app = express();
@@ -66,20 +64,19 @@ io.on("connection", async (socket) => {
       userId = userData;
       socket.join(userData);
       ActiveUsers.setActiveUser(userData, socket.id);
-      const data = ActiveUsers.getActiveUsers();
-      console.log(data);
-      socket.emit("connected");
-
-      await discussionNotification(user, socket);
     }
   });
 
-  socket.on("discussion_Created", async () => {
-    await notifyAllActiveUsers(socket);
+  socket.on("discussionCreated", async (data) => {
+    await handleDiscussionNotification(data);
   });
 
   socket.on("joinRequest", async (data) => {
     await handleJoinRequestNotification(data);
+  });
+  socket.on("joinRequestAccepted", async (data) => {
+    console.log("joinRequestAccepted", data);
+    await handleJoinRequestAcceptedNotification(data);
   });
 
   // ---------------------Group chat events ----------------------------

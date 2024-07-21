@@ -26,9 +26,7 @@ const notificationSchema = new mongoose.Schema(
     },
     discussionId: {
       type: mongoose.Schema.Types.ObjectId,
-    },
-    groupId: {
-      type: mongoose.Schema.Types.ObjectId,
+      // ref: "Discussion"
     },
     message: {
       type: String,

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Loading from "./Loading";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
@@ -42,10 +42,10 @@ const DiscussionList = ({
   setDiscussions,
 }) => {
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
-  const { data: session } = useSession();
+
   const [animationState, setAnimationState] = useState({});
   const [loading, setLoading] = useState(true);
-  const { socket } = useCustomSession();
+  const { socket, session } = useCustomSession();
   const limit = 10;
   const observer = useRef(null);
 
@@ -94,7 +94,7 @@ const DiscussionList = ({
           result = discussionsResult.value.result;
         }
 
-        const userId = session?.user?.db_id;
+        const userId = session?.db_id;
 
         const updatedResult = result.map((discussion) => {
           const isLiked = discussion.likedBy?.includes(userId);
@@ -273,7 +273,7 @@ const DiscussionList = ({
           autoClose: 5000,
         });
 
-        socket.emit("joinRequest", data.result);
+        socket.emit("joinRequest", { request: data.result, user: session });
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussionId) {

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Loading from "../(routes)/discussions/loading";
 import { Button } from "@/components/ui/button";
 import { IoChatboxOutline } from "react-icons/io5";
-import { useSession } from "next-auth/react";
+
 import { toast } from "react-toastify";
 import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
 import Link from "next/link";
@@ -30,7 +30,7 @@ const getJoinRequests = async () => {
 
 const DiscussionSection = ({ user }) => {
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
-  const { data: session } = useSession();
+
   const [animationState, setAnimationState] = useState({});
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +38,7 @@ const DiscussionSection = ({ user }) => {
   const [hasMore, setHasMore] = useState(true);
   const limit = 5;
   const observer = useRef(null);
-  const { socket } = useCustomSession();
+  const { socket, session } = useCustomSession();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,7 +50,6 @@ const DiscussionSection = ({ user }) => {
         let result = [];
         let accepted = [];
         let pending = [];
-        let rejected = [];
 
         if (joinRequestsResult.status === "fulfilled") {
           ({ accepted, pending } = joinRequestsResult.value);
@@ -60,7 +59,7 @@ const DiscussionSection = ({ user }) => {
           result = discussionsResult.value.result;
         }
 
-        const userId = session?.user?.db_id;
+        const userId = session?.db_id;
 
         const updatedResult = result.map((discussion) => {
           const isLiked = discussion.likedBy?.includes(userId);
@@ -253,7 +252,7 @@ const DiscussionSection = ({ user }) => {
           isLoading: false,
           autoClose: 5000,
         });
-        socket.emit("joinRequest", data.result);
+        socket.emit("joinRequest", { request: data.result, user: session });
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussionId) {

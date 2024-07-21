@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -7,25 +8,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
 import { Textarea } from "@/components/ui/textarea";
-
-import { useState } from "react";
 import Select from "react-select";
 import { Label } from "@/components/ui/label";
-
 import { toast } from "react-toastify";
 import { interests } from "../(data)/interests";
 import { useSession } from "@/app/(components)/SessionProvider";
 import { PaperclipIcon } from "lucide-react";
+
 function NewDiscussion({ setDiscussions }) {
-  const {session,socket}=useSession();
+  const { session, socket } = useSession();
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
   const [groupTitle, setGroupTitle] = useState("");
   const [content, setContent] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
@@ -64,11 +62,15 @@ function NewDiscussion({ setDiscussions }) {
     "collaboration",
     "event",
     "support",
-  ];
+  ].map((type) => ({
+    label: type[0].toUpperCase() + type.slice(1),
+    value: type,
+  }));
 
   const handleImageChange = (event) => {
     setSelectedImage(event.target.files?.[0]);
   };
+
   const handleSubCategoryChange = (selectedSubCategories) => {
     setSelectedSubCategories(selectedSubCategories);
   };
@@ -80,9 +82,10 @@ function NewDiscussion({ setDiscussions }) {
     formData.append("groupTitle", groupTitle);
     formData.append("title", title);
     formData.append("content", content);
-    formData.append("type", type);
+    formData.append("type", type?.value);
     formData.append("privacy", privacy);
     formData.append("coverImage", selectedImage);
+
     if (
       !title ||
       !content ||
@@ -90,15 +93,16 @@ function NewDiscussion({ setDiscussions }) {
       !selectedCategory ||
       !selectedSubCategories.length
     ) {
+      setIsDisabled(false);
       return toast.error("Please fill out all fields");
     }
-    if (!selectedCategory) {
-      return toast.error("Please select a category");
-    }
+
     selectedSubCategories.forEach((subcategory) => {
       formData.append("subcategories", subcategory.value);
     });
+
     const toastId = toast.loading("Creating discussion...");
+
     try {
       const result = await fetch(`/api/discussion`, {
         method: "POST",
@@ -106,16 +110,18 @@ function NewDiscussion({ setDiscussions }) {
       });
 
       if (result.ok) {
-        
-        // SOCKET CALL FOR NOTIFICATION
-
-        socket.emit("discussion_Created");
         const discussion = await result.json();
+
+        socket.emit("discussionCreated", {
+          discussion: discussion.result,
+          user: session,
+        });
 
         setDiscussions((prevDiscussions) => [
           discussion.result,
           ...prevDiscussions,
         ]);
+
         toast.update(toastId, {
           render: "Discussion created! Go to chat room.",
           type: "success",
@@ -126,7 +132,7 @@ function NewDiscussion({ setDiscussions }) {
     } catch (error) {
       console.error("Error uploading discussion:", error);
       toast.update(toastId, {
-        render: "Error creating discussiont",
+        render: "Error creating discussion",
         type: "error",
         isLoading: false,
         autoClose: 4000,
@@ -135,7 +141,7 @@ function NewDiscussion({ setDiscussions }) {
 
     setSelectedImage("");
     setTitle("");
-    setType("");
+    setType(null); // Reset type to null
     setIsDisabled(false);
     setGroupTitle("");
     setSelectedCategories([]);
@@ -164,19 +170,16 @@ function NewDiscussion({ setDiscussions }) {
             onChange={(e) => setContent(e.target.value)}
           />
         </div>
-        <div className="flex ">
-          <select
+        <div className="w-1/2 my-3">
+          <Label htmlFor="type">Select a type</Label>
+          <Select
+            name="type"
+            options={typeOptions}
+            className="basic-multi-select"
+            classNamePrefix="select"
             value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="w-1/2 py-2 px-4 border border-gray-300 bg-white rounded-md shadow-sm text-base text-gray-700"
-          >
-            <option value="">Select a type</option>
-            {typeOptions.map((option, index) => (
-              <option key={index} value={option}>
-                {option.charAt(0).toUpperCase() + option.slice(1)}
-              </option>
-            ))}
-          </select>
+            onChange={(selectedType) => setType(selectedType)}
+          />
         </div>
         <div className="w-1/2 my-3">
           <Label htmlFor="interests">Categories</Label>

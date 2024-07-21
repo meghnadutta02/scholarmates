@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Group from "./groupModel";
 import User from "./userModel";
 import GroupRequest from "./groupRequestModel";
-import DiscussionNotification from "./discussionNotification";
+import Notification from "./notificationModel";
 import Message from "./messageModel";
 
 const discussionSchema = new mongoose.Schema(
@@ -44,7 +44,6 @@ const discussionSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-  
   },
   { timestamps: true }
 );
@@ -59,10 +58,6 @@ discussionSchema.pre(
     session.startTransaction();
 
     try {
-      await DiscussionNotification.deleteMany({
-        discussionId: discussion._id,
-      }).session(session);
-
       const group = await Group.findByIdAndDelete(discussion.groupId).session(
         session
       );
@@ -81,7 +76,7 @@ discussionSchema.pre(
           { $pull: { groupsJoined: discussion.groupId } }
         ).session(session);
 
-        await DiscussionNotification.deleteMany({
+        await Notification.deleteMany({
           discussionId: discussion._id,
         }).session(session);
 
