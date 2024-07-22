@@ -1,6 +1,7 @@
 import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/app/config/db";
 import { getServerSession } from "next-auth";
+
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
 

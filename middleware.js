@@ -3,12 +3,12 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req, res) {
-    const adminRoutes = [
-      "/CreateUser",
-      "/AdminRoute1",
-      "/AdminRoute2",
-      "/AdminRoute3",
-    ];
+    // const adminRoutes = [
+
+    //   "/AdminRoute1",
+    //   "/AdminRoute2",
+    //   "/AdminRoute3",
+    // ];
 
     if (
       adminRoutes.some((route) => req.nextUrl.pathname.startsWith(route)) &&
@@ -27,5 +27,14 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/api/:path*", "/posts", "/chats", "/discussions/:path*"],
+  matcher: [
+    "/api/:path*",
+    "/find-people",
+    "/chats",
+    "/discussions/:path*",
+    "/my-engagements",
+    "/notification",
+    "/profile/:path*",
+    "/requests",
+  ],
 };

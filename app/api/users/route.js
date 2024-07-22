@@ -1,7 +1,7 @@
 import connect from "@/app/config/db";
 
 import { NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
+import {ObjectId} from "mongodb";
 import User from "@/app/(models)/userModel";
 
 export async function GET(req) {

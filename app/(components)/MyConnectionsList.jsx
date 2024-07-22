@@ -52,7 +52,7 @@ const Connection = () => {
             You have no connections.
           </p>
           <Link
-            href="/find-match"
+            href="/find-people"
             className="flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-700 transition-all hover:bg-gray-900 dark:bg-gray-400 dark:hover:bg-gray-50 text-white "
           >
             Find Connections

@@ -25,12 +25,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
-    connection: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+    connection: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+      default: [],
+    },
     requestPending: {
       type: [
         {
@@ -69,28 +67,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    groupsJoined: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Group",
-      },
-    ],
-    posts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Postkaro",
-      },
-    ],
-    interestCategories: [
-      {
-        type: String,
-      },
-    ],
-    interestSubcategories: [
-      {
-        type: String,
-      },
-    ],
+    groupsJoined: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Group",
+        },
+      ],
+      default: [],
+    },
+    interestCategories: {
+      type: [String],
+      default: [],
+    },
+    interestSubcategories: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );

@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import ProfileCarousel from "@/app/(components)/ProfileCarousel";
-import { useRouter } from "next/navigation";
 
 import {
   Carousel,
@@ -25,14 +24,12 @@ const getYearWithSuffix = (year) => {
 };
 
 export default function Component() {
-  const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState();
-  const [requestPend, setRequestPen] = useState([]);
   const [connectingProfile, setConnectingProfile] = useState(null);
-  const [requestReceived, setrequestReceived] = useState([]);
+  const [requestedProfiles, setRequestedProfiles] = useState(new Set());
 
   useEffect(() => {
     if (session) {
@@ -52,9 +49,6 @@ export default function Component() {
             throw new Error("Failed to fetch data");
           }
           const data = await res.json();
-
-          setrequestReceived(data.requestReceived);
-          setRequestPen(data.requests);
 
           setProfiles(data.result);
         }
@@ -88,7 +82,7 @@ export default function Component() {
             autoClose: 4000,
             closeOnClick: true,
           });
-          setRequestPen((prev) => [...prev, profileId]);
+          setRequestedProfiles((prev) => new Set(prev).add(profileId));
         }
       } else {
         console.log("Profile ID not found");
@@ -110,8 +104,8 @@ export default function Component() {
           {loading ? (
             <Loading />
           ) : profiles.length === 0 ? (
-            <div className=" md:my-8 my-6 font-sans gap-2 flex flex-col justify-center">
-              <div className=" text-md italic text-gray-600 mb-2 text-center">
+            <div className="md:my-8 my-6 font-sans gap-2 flex flex-col justify-center">
+              <div className="text-md italic text-gray-600 mb-2 text-center">
                 Our website is growing, and while there are no matches with your
                 interests yet, you can still connect with others.
               </div>
@@ -124,10 +118,10 @@ export default function Component() {
                   {profiles.map((profile) => (
                     <CarouselItem key={profile._id}>
                       <div className="grid gap-2">
-                        <div className="p-2 ">
+                        <div className="p-2">
                           <div className="flex md:flex-row flex-col justify-between items-center">
                             <Link href={`/profile/${profile._id}`} asChild>
-                              <div className="flex gap-4 cursor-pointer items-center ">
+                              <div className="flex gap-4 cursor-pointer items-center">
                                 <Image
                                   alt="Thumbnail"
                                   className="rounded-full object-cover aspect-square md:h-20 md:w-20 h-16 w-16"
@@ -135,7 +129,7 @@ export default function Component() {
                                   src={profile.profilePic}
                                   width={80}
                                 />
-                                <div className=" flex flex-col ">
+                                <div className="flex flex-col">
                                   <div className="font-semibold">
                                     {profile.name}
                                   </div>
@@ -162,34 +156,27 @@ export default function Component() {
                               </div>
                             </Link>
 
-                            <div className="flex flex-row md:flex-col w-full md:w-[24%] justify-between  items-center">
+                            <div className="flex flex-row md:flex-col w-full md:w-[24%] justify-between items-center">
                               <p className="text-sm text-gray-600">
                                 {profile.connection.length} connection
                                 {profile.connection.length > 1 ? "s" : ""}
                               </p>
                               <div className="mt-2">
-                                {requestPend.includes(profile._id) ? (
-                                  <Button disabled>Requested</Button>
-                                ) : requestReceived.includes(profile._id) ? (
-                                  <Button
-                                    onClick={() => router.push("/requests")}
-                                    disabled={connectingProfile === profile._id}
-                                  >
-                                    {" "}
-                                    Accept Request
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    onClick={() =>
-                                      handleConnectClick(profile._id)
-                                    }
-                                    disabled={connectingProfile === profile._id}
-                                  >
-                                    {connectingProfile === profile._id
-                                      ? "Sending.."
-                                      : "Connect"}
-                                  </Button>
-                                )}
+                                <Button
+                                  onClick={() =>
+                                    handleConnectClick(profile._id)
+                                  }
+                                  disabled={
+                                    connectingProfile === profile._id ||
+                                    requestedProfiles.has(profile._id)
+                                  }
+                                >
+                                  {requestedProfiles.has(profile._id)
+                                    ? "Requested"
+                                    : connectingProfile === profile._id
+                                    ? "Sending.."
+                                    : "Connect"}
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -231,7 +218,7 @@ export default function Component() {
             className="flex justify-center"
           >
             <span className="text-blue-600 font-xl">
-              <u> Go to Profile</u>
+              <u>Go to Profile</u>
             </span>
           </Link>
         </div>

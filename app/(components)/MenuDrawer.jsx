@@ -53,7 +53,7 @@ const MenuDrawer = () => {
           </Link>
           <Link
             onClick={closeDrawer}
-            href="/find-match"
+            href="/find-people"
             className="flex items-center gap-3 rounded-lg px-2 py-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           >
             <MdOutlineConnectWithoutContact className="h-4 w-4" />

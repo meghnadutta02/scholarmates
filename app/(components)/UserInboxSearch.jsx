@@ -108,7 +108,7 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
               <div className="p-4 text-center">
                 <p>You have no connections right now</p>
                 Head to{" "}
-                <Link className="text-blue-600" href="/find-match">
+                <Link className="text-blue-600" href="/find-people">
                   <u> Find people</u>
                 </Link>{" "}
                 to add some.

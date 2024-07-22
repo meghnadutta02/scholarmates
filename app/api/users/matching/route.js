@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";
-
+import { ObjectId } from "mongodb";
 //get matching user profiles
 export async function GET(req) {
   try {
@@ -9,28 +9,31 @@ export async function GET(req) {
     const id = req.nextUrl.searchParams.get("id");
 
     const user = await User.findById(id).select(
-      "interestCategories connection requestPending"
+      "interestCategories connection requestPending requestReceived"
     );
-    const getReq = await User.findById(id).select("requestReceived");
 
-    console.log("user", user);
     if (user.interestCategories.length > 0) {
       const interests = user.interestCategories;
 
       const connections = user.connection;
-      connections.push(id);
+      const requestsPending = user.requestPending;
+
+      const requestsReceived = user.requestReceived;
+
+      const idsToExclude = connections.concat(
+        requestsPending,
+        requestsReceived,
+        new ObjectId(id)
+      );
 
       const users = await User.aggregate([
-        { $match: { _id: { $nin: connections } } },
+        { $match: { _id: { $nin: idsToExclude } } },
         { $match: { interestCategories: { $in: interests } } },
       ]);
-      console.log("user 3", user);
       if (users.length > 0)
         return NextResponse.json(
           {
             result: users,
-            requests: user.requestPending,
-            requestReceived: getReq.requestReceived,
           },
           { status: 200 }
         );
