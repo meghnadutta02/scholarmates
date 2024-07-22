@@ -84,7 +84,7 @@ const DiscussionDetails = ({ params }) => {
           method: "GET",
         });
         const data = await res.json();
-        console.log(data.discussion);
+
         setDiscussion(data.discussion);
         setLikedByUsers(data.discussion.likedBy);
         setStatus(data.status);
@@ -110,6 +110,29 @@ const DiscussionDetails = ({ params }) => {
         ? prevDiscussion.dislikes - 1
         : prevDiscussion.dislikes,
     }));
+
+    if (!isLikedByUser === true) {
+      // user liked the discussion
+      setLikedByUsers((prev) => {
+        const isAlreadyLiked = prev.some((user) => user._id === session?.db_id);
+        if (!isAlreadyLiked) {
+          return [
+            ...prev,
+            {
+              _id: session?.db_id,
+              name: session?.name,
+              profilePic: session?.profilePic,
+            },
+          ];
+        }
+        return prev;
+      });
+    } else if (!isLikedByUser === false) {
+      //like is removed
+      setLikedByUsers((prev) =>
+        prev.filter((user) => user._id != session?.db_id)
+      );
+    }
     setIsLikedByUser(!isLikedByUser);
     if (isDislikedByUser) {
       setIsDislikedByUser(false);
@@ -136,6 +159,9 @@ const DiscussionDetails = ({ params }) => {
     setIsDislikedByUser(!isDislikedByUser);
     if (isLikedByUser) {
       setIsLikedByUser(false);
+      setLikedByUsers((prev) =>
+        prev.filter((user) => user._id != session?.db_id)
+      );
     }
 
     await fetch(`/api/discussion/${discussionId}/dislike`, {

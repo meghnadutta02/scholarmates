@@ -27,7 +27,7 @@ const discussionSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     categories: { type: [String], default: [] },
     subcategories: { type: [String], default: [] },
-    likes: { type: Number, default: 0 },
+    likes: { type: Number, default: 0, min: 0 },
     likedBy: {
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
       default: [],
@@ -36,7 +36,7 @@ const discussionSchema = new mongoose.Schema(
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
       default: [],
     },
-    dislikes: { type: Number, default: 0 },
+    dislikes: { type: Number, default: 0, min: 0 },
     coverImage: { type: String, default: "" },
     groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group" },
     previousRank: { type: Number, default: 21 },
