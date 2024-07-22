@@ -10,12 +10,12 @@ export default withAuth(
     //   "/AdminRoute3",
     // ];
 
-    if (
-      adminRoutes.some((route) => req.nextUrl.pathname.startsWith(route)) &&
-      req.nextauth.token.role !== "admin"
-    ) {
-      return NextResponse.rewrite(new URL("/denied", req.url));
-    }
+    // if (
+    //   adminRoutes.some((route) => req.nextUrl.pathname.startsWith(route)) &&
+    //   req.nextauth.token.role !== "admin"
+    // ) {
+    //   return NextResponse.rewrite(new URL("/denied", req.url));
+    // }
 
     return NextResponse.next();
   },
