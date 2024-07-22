@@ -101,7 +101,7 @@ const Page = () => {
     <div className="md:mt-7 mt-4 w-full mx-auto md:w-[85%]">
       {notifications.length === 0 ? (
         <div className="flex items-center justify-center">
-          <p className="text-lg text-gray-500 dark:text-gray-400">
+          <p className="sm:text-lg text-md text-gray-500 dark:text-gray-400">
             You have caught up with everything!
           </p>
         </div>

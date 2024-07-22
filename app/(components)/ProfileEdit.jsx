@@ -151,6 +151,8 @@ const ProfileEdit = ({ user, setUser }) => {
             name="name"
             value={userState.name}
             required
+            minLength="3"
+            maxLength="35"
             onChange={(e) => handleChange("name", e.target.value)}
           />
         </div>
