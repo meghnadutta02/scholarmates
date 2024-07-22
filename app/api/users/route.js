@@ -1,7 +1,7 @@
 import connect from "@/app/config/db";
 
 import { NextResponse } from "next/server";
-
+import { ObjectId } from "mongodb";
 import User from "@/app/(models)/userModel";
 
 export async function GET(req) {
@@ -9,7 +9,7 @@ export async function GET(req) {
     await connect();
 
     const searchQuery = req.nextUrl.searchParams.get("searchQuery");
-
+    const id = req.nextUrl.searchParams.get("id");
     const results = await User.aggregate([
       {
         $search: {
@@ -19,6 +19,11 @@ export async function GET(req) {
             path: "name",
             tokenOrder: "sequential",
           },
+        },
+      },
+      {
+        $match: {
+          _id: { $ne: new ObjectId(id) },
         },
       },
       { $limit: 10 },

@@ -96,7 +96,9 @@ const NavbarClient = () => {
             </div>
           </div>
           <ProfileProgress />
-          {isSearchOpen && <NavbarSearch setIsSearchOpen={setIsSearchOpen} />}
+          {isSearchOpen && session?.user && (
+            <NavbarSearch id={session.user.db_id} />
+          )}
         </header>
       </div>
     </>

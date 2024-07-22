@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-export default function Component() {
+export default function Component({ id }) {
   const [showList, setShowList] = useState(false);
   const [connections, setConnections] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,7 +16,7 @@ export default function Component() {
     const fetchConnections = async (q) => {
       if (q.length >= 2) {
         const response = await fetch(
-          `/api/users?searchQuery=${encodeURIComponent(q)}`
+          `/api/users?searchQuery=${encodeURIComponent(q)}&id=${id}`
         );
         const data = await response.json();
         setConnections(data.result);
@@ -56,7 +56,7 @@ export default function Component() {
           onChange={handleSearch}
         />
       </div>
-      {showList && searchQuery.length > 0 && (
+      {showList && searchQuery.length > 0 && connections && (
         <div ref={componentRef}>
           <CardContent className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 shadow-inner bg-gray-50 max-h-[300px] z-50">
             {connections.length > 0 ? (
