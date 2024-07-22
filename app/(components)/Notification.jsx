@@ -109,7 +109,7 @@ const Notification = ({ requestData, setRequestData }) => {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => actionHandler("accept", item.requestData)}
-                    className="flex items-center p-2 border hover:border-blue-400 shadow-md rounded-md transform transition-transform hover:scale-125"
+                    className="flex items-center p-2 border hover:border-green-400 shadow-md rounded-md transform transition-transform hover:scale-125"
                     disabled={loading}
                   >
                     <FaCheck className="h-4 w-4 text-green-500 " />

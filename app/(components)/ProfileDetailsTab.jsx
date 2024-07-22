@@ -212,17 +212,17 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             <div className="flex items-center md:gap-3 gap-2">
               <button
                 onClick={() => acceptHandle("accept")}
-                className="bg-green-500 text-white flex items-center p-2 rounded-lg transform transition-transform hover:scale-125"
+                className="flex items-center p-2 border hover:border-green-400 shadow-md rounded-md transform transition-transform hover:scale-125"
                 disabled={loading}
               >
-                <FaCheck className="h-4 w-4" />
+                <FaCheck className="h-4 w-4 text-green-500" />
               </button>
               <button
                 onClick={() => acceptHandle("decline")}
-                className="bg-red-500 text-white flex items-center p-2 rounded-lg transform transition-transform hover:scale-125"
+                className="flex items-center p-2 border hover:border-red-400 shadow-md rounded-md transform transition-transform hover:scale-125"
                 disabled={loading}
               >
-                <FaTimes className="h-[17px] w-[17px]" />
+                <FaTimes className="h-[17px] w-[17px] text-red-500" />
               </button>
             </div>
           </div>

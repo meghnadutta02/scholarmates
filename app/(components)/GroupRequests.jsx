@@ -118,15 +118,15 @@ const GroupRequests = () => {
                   <div className="flex gap-3">
                     <button
                       onClick={() => handleAcceptRequest(request)}
-                      className="flex items-center p-1"
+                      className="flex items-center p-2 border hover:border-green-400 shadow-md rounded-md transform transition-transform hover:scale-125"
                     >
-                      <FaCheck className="h-4 w-4 text-green-500 transform transition-transform hover:scale-125" />
+                      <FaCheck className="h-4 w-4 text-green-500" />
                     </button>
                     <button
                       onClick={() => handleRejectRequest(request)}
-                      className="flex items-center p-1"
+                      className="flex items-center p-2 border hover:border-red-400 shadow-md rounded-md transform transition-transform hover:scale-125"
                     >
-                      <FaTimes className="h-[17px] w-[17px] text-red-500 transform transition-transform hover:scale-125" />
+                      <FaTimes className="h-[17px] w-[17px] text-red-500" />
                     </button>
                   </div>
                 </div>

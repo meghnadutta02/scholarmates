@@ -250,8 +250,8 @@ const Trending = () => {
       ) : (
         <div className="grid grid-cols-1  gap-6 ">
           {discussions.map((discussion) => (
-            <div className="rounded-lg shadow-sm p-2">
-              <div key={discussion._id} className="flex items-start gap-4 ">
+            <div key={discussion._id} className="rounded-lg shadow-sm p-2">
+              <div className="flex items-start gap-4 ">
                 <Image
                   alt="Avatar"
                   className="rounded-full hidden sm:block"
@@ -263,22 +263,24 @@ const Trending = () => {
                   }}
                   width="48"
                 />
-                <Image
-                  alt="Avatar"
-                  className="rounded-full sm:hidden block"
-                  height="38"
-                  src={discussion.creator.profilePic}
-                  style={{
-                    aspectRatio: "38/38",
-                    objectFit: "cover",
-                  }}
-                  width="38"
-                />
 
                 <div className="flex-1 grid gap-2">
                   <div className="flex flex-col  gap-2">
                     <div className="flex justify-between items-center w-full ">
-                      <div className="flex md:flex-row flex-col justify-between md:items-center items-start md:w-full">
+                      <div className="mr-3 mt-1 sm:hidden block">
+                        <Image
+                          alt="Avatar"
+                          className="rounded-full bg-cover"
+                          height="48"
+                          width="48"
+                          style={{
+                            aspectRatio: "48/48",
+                            objectFit: "cover",
+                          }}
+                          src={discussion.creator.profilePic}
+                        />
+                      </div>
+                      <div className="flex md:flex-row flex-col justify-between md:items-center items-start w-full">
                         <Link href={`/profile/${discussion.creator._id}`}>
                           <span className="text-sm text-gray-500 font-medium dark:text-gray-400">
                             {discussion.creator.name}
@@ -319,31 +321,17 @@ const Trending = () => {
                     </p>
                   </div>
                   {/* buttons here */}
-                  <div className="hidden sm:block">
-                    <DiscussionActions
-                      {...{
-                        discussion,
-                        toggleLike,
-                        toggleDislike,
-                        handleButtonClick,
+                  <DiscussionActions
+                    {...{
+                      discussion,
+                      toggleLike,
+                      toggleDislike,
+                      handleButtonClick,
 
-                        animationState,
-                      }}
-                    />
-                  </div>
+                      animationState,
+                    }}
+                  />
                 </div>
-              </div>
-              <div className="sm:hidden block">
-                <DiscussionActions
-                  {...{
-                    discussion,
-                    toggleLike,
-                    toggleDislike,
-                    handleButtonClick,
-
-                    animationState,
-                  }}
-                />
               </div>
             </div>
           ))}
@@ -362,7 +350,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="grid w-full grid-cols-4 place-items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2">
+    <div className="grid w-full grid-cols-4 items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2 pl-2">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"

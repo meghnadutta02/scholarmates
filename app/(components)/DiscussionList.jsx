@@ -337,8 +337,8 @@ const DiscussionList = ({
       ) : (
         <div className="grid grid-cols-1  gap-6 ">
           {discussions.map((discussion) => (
-            <div className=" rounded-lg shadow-sm p-2 ">
-              <div key={discussion._id} className="flex items-start gap-4 ">
+            <div key={discussion._id} className=" rounded-lg shadow-sm p-2 ">
+              <div className="flex items-start gap-4 ">
                 <Image
                   alt="Avatar"
                   className="rounded-full hidden sm:block"
@@ -350,21 +350,23 @@ const DiscussionList = ({
                   }}
                   width="48"
                 />
-                <Image
-                  alt="Avatar"
-                  className="rounded-full sm:hidden block"
-                  height="38"
-                  src={discussion.creatorData.profilePic}
-                  style={{
-                    aspectRatio: "38/38",
-                    objectFit: "cover",
-                  }}
-                  width="38"
-                />
 
                 <div className="flex-1 grid gap-2">
                   <div className="flex flex-col  gap-2">
                     <div className="flex justify-between">
+                      <div className="mr-3 mt-1 sm:hidden block">
+                        <Image
+                          alt="Avatar"
+                          className="rounded-full bg-cover"
+                          height="48"
+                          width="48"
+                          style={{
+                            aspectRatio: "48/48",
+                            objectFit: "cover",
+                          }}
+                          src={discussion.creatorData.profilePic}
+                        />
+                      </div>
                       <div className="flex md:flex-row flex-col justify-between md:items-center w-full items-start">
                         <Link href={`/profile/${discussion.creatorData._id}`}>
                           <span className="text-sm text-gray-500 font-medium dark:text-gray-400">
@@ -402,37 +404,22 @@ const DiscussionList = ({
                   </div>
                   <div className="prose max-w-none  md:block hidden ">
                     <p className="cursor-pointer">
-                      {" "}
                       <Link href={`/discussions/${discussion._id}`}>
                         {discussion.content}
                       </Link>
                     </p>
                   </div>
-                  <div className="hidden sm:block">
-                    <DiscussionActions
-                      {...{
-                        discussion,
-                        toggleLike,
-                        toggleDislike,
-                        handleButtonClick,
-                        handleShare,
-                        animationState,
-                      }}
-                    />
-                  </div>
+                  <DiscussionActions
+                    {...{
+                      discussion,
+                      toggleLike,
+                      toggleDislike,
+                      handleButtonClick,
+                      handleShare,
+                      animationState,
+                    }}
+                  />
                 </div>
-              </div>
-              <div className="sm:hidden block">
-                <DiscussionActions
-                  {...{
-                    discussion,
-                    toggleLike,
-                    toggleDislike,
-                    handleButtonClick,
-                    handleShare,
-                    animationState,
-                  }}
-                />
               </div>
             </div>
           ))}
@@ -453,7 +440,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="grid w-full grid-cols-4 place-items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2">
+    <div className="grid w-full grid-cols-4 items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2 pl-2">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"
@@ -504,7 +491,7 @@ const DiscussionActions = ({
         </Button>
       )}
       <Button
-        className="h-10"
+        className="h-10 ml-4"
         size="icon"
         variant="icon"
         onClick={() => handleShare(discussion)}

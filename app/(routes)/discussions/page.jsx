@@ -105,11 +105,11 @@ const DiscussionsPage = () => {
   }, [searchQuery]);
 
   return (
-    <div className="flex-1 md:pt-3 sm:pt-2 pt-0 md:px-6 px-3 ">
+    <div className="flex-1 md:pt-3 sm:pt-2 pt-0 md:px-6 px-2">
       {/* search button */}
-      <div className="flex mb-8 md:mt-5 sm:mt-3 mt-2 md:justify-center md:flex-row flex-col gap-4 w-full ">
-        <div className="flex gap-2 md:gap-0 md:justify-between  pl-6 items-center  relative">
-          <div className=" w-[85%]">
+      <div className="flex mb-8 md:mt-5 sm:mt-3 mt-2 md:justify-center md:flex-row flex-col w-full ">
+        <div className="flex md:justify-between  md:pl-6 items-center relative">
+          <div className="w-full">
             <input
               type="text"
               placeholder="Looking for a ml engineer?"
@@ -137,31 +137,31 @@ const DiscussionsPage = () => {
             )}
           </div>
 
-          <Button
-            variant="icon"
-            onClick={handleSearch}
-            className="h-8 w-8 bg-slate-900 rounded-full p-2 mx-1"
-          >
-            <AiOutlineSearch className="h-full w-full  text-white " />
-          </Button>
-        </div>
-        <div className="flex justify-between px-4 md:px-0">
-          <FilterDrawer applyFilters={handleFilterApplication} />
+          <div className="flex justify-between items-center sm:gap-4 pl-2">
+            <Button
+              variant="icon"
+              onClick={handleSearch}
+              className="h-7 w-7 bg-slate-900 rounded-full p-2 mx-1"
+            >
+              <AiOutlineSearch className="h-full w-full  text-white " />
+            </Button>
+            <FilterDrawer applyFilters={handleFilterApplication} />
 
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <CgPlayListAdd className="h-9 w-9 ml-4 mt-2 cursor-pointer" />
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[720px] overflow-y-auto max-h-[95%]">
-              <DialogHeader>
-                <DialogTitle>New Discussion</DialogTitle>
-                <DialogDescription>
-                  Start a new discussion and interact with your peers.
-                </DialogDescription>
-              </DialogHeader>
-              <CreateDiscussion setDiscussions={setDiscussions} />
-            </DialogContent>
-          </Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <CgPlayListAdd className="h-9 w-9 mt-1 cursor-pointer" />
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[720px] overflow-y-auto max-h-[95%]">
+                <DialogHeader>
+                  <DialogTitle>New Discussion</DialogTitle>
+                  <DialogDescription>
+                    Start a new discussion and interact with your peers.
+                  </DialogDescription>
+                </DialogHeader>
+                <CreateDiscussion setDiscussions={setDiscussions} />
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </div>
 
