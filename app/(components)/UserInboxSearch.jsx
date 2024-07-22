@@ -81,7 +81,6 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
                       href="#"
                       onClick={(e) => {
                         setSelectedUser(connection);
-                        console.log(connection._id);
                         setToggleChatView(false);
                         setShowList(false);
                       }}

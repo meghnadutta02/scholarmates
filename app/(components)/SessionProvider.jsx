@@ -94,7 +94,6 @@ export const SessionProvider = ({ children }) => {
     const newSocket = io(`${process.env.NEXT_PUBLIC_NODE_SERVER}`);
 
     newSocket.on("connect", () => {
-      console.log("Successfully connected in socket context!");
       newSocket.emit("setup", session?.db_id);
     });
 

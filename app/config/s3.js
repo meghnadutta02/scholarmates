@@ -1,4 +1,9 @@
-import { S3Client, GetObjectCommand, PutObjectCommand,DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { URL } from "url"; // Import the URL module
@@ -21,10 +26,13 @@ export const postObject = async (name, file) => {
   });
   await s3Client.send(command);
 
-  const signedUrl = await getSignedUrl(s3Client, new GetObjectCommand({
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: name,
-  }));
+  const signedUrl = await getSignedUrl(
+    s3Client,
+    new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: name,
+    })
+  );
 
   // Parse the signed URL
   const parsedUrl = new URL(signedUrl);
@@ -34,17 +42,16 @@ export const postObject = async (name, file) => {
 
   return desiredUrl;
 };
-  // DELETE THE PREVIOUS IMAGE;
+// DELETE THE PREVIOUS IMAGE;
 
-  export const deleteObject = async (key) => {
-    console.log(`Deleting object with key: ${key}`);
-    const command = new DeleteObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: key,
-    });
-    await s3Client.send(command);
-    console.log(`Deleted object with key: ${key}`);
-  };
+export const deleteObject = async (key) => {
+  const command = new DeleteObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: key,
+  });
+  await s3Client.send(command);
+  console.log(`Deleted object with key: ${key}`);
+};
 
 const getObjectURL = async (key) => {
   const command = new GetObjectCommand({

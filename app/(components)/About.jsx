@@ -1,6 +1,8 @@
 import React from "react";
 import logo from "@/public/logo.png";
 import Image from "next/image";
+import { GitHubLogoIcon, LinkedInLogoIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 const About = () => {
   return (
@@ -21,9 +23,14 @@ const About = () => {
       <div className="flex flex-col ">
         <div className="flex text-sm flex-col justify-start p-4">
           <h4 className="text-base font-semibold">Creators</h4>
-          <p>Meghna Dutta</p>
-          <p>Ankush Roy</p>
-          <p>Jyotiraditya Mishra</p>
+          {authors.map((user, index) => (
+            <span key={index} className="flex items-center justify-between">
+              {user.name}
+              <Link href={user.linkedIn} target="_blank">
+                <LinkedInLogoIcon />
+              </Link>
+            </span>
+          ))}
         </div>
         <div className="border-t border-gray-500 mb-10 text-center text-sm text-gray-500">
           &copy; 2024 ScholarMates. All rights reserved.
@@ -32,5 +39,20 @@ const About = () => {
     </section>
   );
 };
+
+const authors = [
+  {
+    name: "Meghna Dutta",
+    linkedIn: "https://www.linkedin.com/in/meghna-dutta-a44060266/",
+  },
+  {
+    name: "Ankush Roy",
+    linkedIn: "https://www.linkedin.com/in/ankush-roy-b141b2224/",
+  },
+  {
+    name: "Jyotiraditya Mishra",
+    linkedIn: "https://www.linkedin.com/in/jyotiraditya-mishra-090047204/",
+  },
+];
 
 export default About;
