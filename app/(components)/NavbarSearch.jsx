@@ -24,7 +24,7 @@ export default function Component({ id }) {
       }
     };
     fetchConnections(searchQuery);
-  }, [searchQuery]);
+  }, [searchQuery, id]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.trim());

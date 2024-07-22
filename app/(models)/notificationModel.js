@@ -28,6 +28,9 @@ const notificationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       // ref: "Discussion"
     },
+    groupId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
     message: {
       type: String,
       // required: true

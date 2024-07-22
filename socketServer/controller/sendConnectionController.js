@@ -146,7 +146,7 @@ export const receiveConnectionController = async (req, resp) => {
         });
         await notification.save();
 
-        const senderSocketId = ActiveUsers.getActiveUsers(
+        const senderSocketId = ActiveUsers.getUserSocketId(
           friendshipRequest.user.toString()
         );
         if (senderSocketId) {
@@ -160,13 +160,9 @@ export const receiveConnectionController = async (req, resp) => {
             message: "accepted your connection request",
             notificationId: notification._id,
           });
-          await friendshipRequest.deleteOne();
-        } else {
-          friendshipRequest.notificationRecipt = true;
-          friendshipRequest.recepitnotificationId = notification._id;
-          await friendshipRequest.save();
-          // Handle case where recipient is not connected
         }
+
+        await friendshipRequest.deleteOne();
 
         return resp.status(200).send({
           message: "accepted",
