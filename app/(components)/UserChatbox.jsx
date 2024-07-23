@@ -130,7 +130,10 @@ const UserChatbox = ({
 
     try {
       if (message.text.trim() == "" && message.attachments.length === 0) {
-        toast.warning("Message empty");
+        toast.warning("Message empty",{
+          autoClose:4000,
+          closeOnClick:true,
+        });
         throw new Error("Message empty");
       }
       // Temporary message update for the UI
@@ -178,7 +181,10 @@ const UserChatbox = ({
         scrollDown();
         updateLastMessage(userID, message.text, message.createdAt);
       } else {
-        toast.error("Failed to send message");
+        toast.error("Failed to send message",{
+          autoClose:4000,
+          closeOnClick:true,
+        });
         // Remove the temporary message from the UI on failure
         setInboxMessages((prevMessages) =>
           prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)

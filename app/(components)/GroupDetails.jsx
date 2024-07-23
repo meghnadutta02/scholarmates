@@ -63,10 +63,13 @@ const GroupDetails = ({
             (participant) => participant._id !== memberId
           ),
         }));
-        toast.success("Member removed successfully", { autoClose: 5000 });
+        toast.success("Member removed successfully", { autoClose: 5000,closeOnClick:true, });
       }
     } catch (error) {
-      toast.error("Failed to remove member");
+      toast.error("Failed to remove member",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
       console.error(error);
     }
   };
@@ -92,11 +95,15 @@ const GroupDetails = ({
         window.location.reload();
         toast.success("You are no longer a member", {
           autoClose: 5000,
+          closeOnClick:true
         });
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error exiting group");
+      toast.error("Error exiting group",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     }
   };
   const handleModeratorStatus = async (memberId, action) => {
@@ -114,7 +121,7 @@ const GroupDetails = ({
             ...prevGroup,
             moderators: [...prevGroup.moderators, memberId],
           }));
-          toast.success("Member is now a moderator", { autoClose: 5000 });
+          toast.success("Member is now a moderator", { autoClose: 5000,closeOnClick:true });
         } else {
           setGroup((prevGroup) => ({
             ...prevGroup,
@@ -124,11 +131,15 @@ const GroupDetails = ({
           }));
           toast.success("Moderator is no longer a moderator", {
             autoClose: 5000,
+            closeOnClick:true,
           });
         }
       }
     } catch (error) {
-      toast.error("Error updating moderator status");
+      toast.error("Error updating moderator status",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
       console.error(error);
     }
   };
@@ -146,11 +157,15 @@ const GroupDetails = ({
         setGroup((prevGroup) => ({ ...prevGroup, name }));
         toast.success("Group name updated successfully", {
           autoClose: 5000,
+          closeOnClick:true
         });
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating group name");
+      toast.error("Error updating group name",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     }
   };
   const handleUpdateDescription = async () => {
@@ -167,11 +182,15 @@ const GroupDetails = ({
         setGroup((prevGroup) => ({ ...prevGroup, description }));
         toast.success("Group description updated successfully", {
           autoClose: 5000,
+          closeOnClick:true
         });
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating group description");
+      toast.error("Error updating group description",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     }
   };
 
@@ -191,11 +210,15 @@ const GroupDetails = ({
         toast.success(`Group is now ${isPublic ? "Private" : "Public"}`, {
           //reversed value of toast because state variable doesn't change immediately
           autoClose: 5000,
+          closeOnClick:true
         });
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating group privacy");
+      toast.error("Error updating group privacy",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     }
   };
 

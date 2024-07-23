@@ -64,12 +64,18 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           }));
           setLoading(false);
         } else {
-          toast.error("Failed to fetch updated user data");
+          toast.error("Failed to fetch updated user data",{
+            autoClose:4000,
+            closeOnClick:true,
+          });
           setLoading(false);
         }
       } catch (error) {
-        console.error("Error fetching updated user data:", error);
-        toast.error("An error occurred while fetching updated user data");
+        // console.error("Error fetching updated user data:", error);
+        toast.error("An error occurred while fetching updated user data",{
+          autoClose:4000,
+          closeOnClick:true,
+        });
         setLoading(false);
       }
     };
@@ -101,10 +107,16 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           connection: session.user.connection.filter((conn) => conn !== id),
         });
       } else {
-        toast.error("Failed to remove connection");
+        toast.error("Failed to remove connection",{
+          autoClose:4000,
+          closeOnClick:true,
+        });
       }
     } catch (error) {
-      toast.error("An error occurred while removing connection");
+      toast.error("An error occurred while removing connection",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     } finally {
       setLoading(false);
     }
@@ -132,13 +144,22 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           });
           setUser((prevUser) => ({ ...prevUser, isRequestPending: true }));
         } else {
-          toast.error("Failed to send connection request");
+          toast.error("Failed to send connection request",{
+            autoClose:4000,
+            closeOnClick:true,
+          });
         }
       } else {
-        toast.error("Profile ID is missing");
+        toast.error("Profile ID is missing",{
+          autoClose:4000,
+          closeOnClick:true,
+        });
       }
     } catch (error) {
-      toast.error("An error occurred while sending connection request");
+      toast.error("An error occurred while sending connection request",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     } finally {
       setLoading(false);
     }
@@ -166,7 +187,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
 
         if (res.status === 200) {
           toast.success(
-            action === "accept" ? "Request accepted" : "Request declined"
+            action === "accept" ? "Request accepted" : "Request declined",{
+              autoClose:4000,
+              closeOnClick:true,
+            }
           );
 
           if (action === "accept") {
@@ -194,7 +218,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
       }
     } catch (error) {
       console.error(error.message);
-      toast.error("An error occurred");
+      toast.error("An error occurred",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     } finally {
       setLoading(false);
     }

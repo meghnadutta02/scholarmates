@@ -140,7 +140,10 @@ const FilterDrawer = ({ applyFilters }) => {
                                 setCollege(true);
                               } else {
                                 toast.info(
-                                  "Please provide your college name to complete your profile."
+                                  "Please provide your college name to complete your profile.",{
+            autoClose:4000,
+            closeOnClick:true,
+          }
                                 );
                               }
                             } else {

@@ -37,7 +37,10 @@ const Page = () => {
         if (resp.ok) {
           clearUnreadCount();
           setNotifications([]);
-          toast.success("All notifications cleared successfully");
+          toast.success("All notifications cleared successfully",{
+            autoClose:4000,
+            closeOnClick:true,
+          });
         }
       } catch (error) {
         console.error("Failed to mark notifications as seen", error);

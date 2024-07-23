@@ -138,7 +138,10 @@ const GroupChatbox = ({
         });
         scrollDown();
       } else {
-        toast.error("Message not sent");
+        toast.error("Message not sent",{
+          autoClose:4000,
+          closeOnClick:true,
+        });
         // Remove the temporary message if the API call fails
         setInboxMessages((prevMessages) => {
           const newMessages = new Map(prevMessages);

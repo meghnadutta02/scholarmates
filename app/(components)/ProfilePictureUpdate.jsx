@@ -24,7 +24,10 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
     const maxSize = 2 * 1024 * 1024;
 
     if (file.size > maxSize) {
-      toast.info("File size should not exceed 2MB.");
+      toast.info("File size should not exceed 2MB.",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
       return;
     }
 
@@ -40,7 +43,10 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
 
   const handleImageViewDialogClose = async () => {
     if (!uploadFile) {
-      toast.error("Please upload a picture");
+      toast.error("Please upload a picture",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
       return;
     }
     setLoading(true);
@@ -59,14 +65,23 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
         }));
         update({ profilePic: URL.createObjectURL(img) });
 
-        toast.success("Profile updated successfully");
+        toast.success("Profile updated successfully",{
+          autoClose:4000,
+          closeOnClick:true,
+        });
         setDialogOpen(false);
       } else {
-        toast.error("Profile update failed");
+        toast.error("Profile update failed",{
+          autoClose:4000,
+          closeOnClick:true,
+        });
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error("Failed to update profile");
+      toast.error("Failed to update profile",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     } finally {
       resetState();
       setLoading(false);

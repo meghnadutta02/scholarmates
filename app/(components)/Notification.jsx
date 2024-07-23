@@ -48,7 +48,10 @@ const Notification = ({ requestData, setRequestData }) => {
 
         if (res.status === 200) {
           toast.success(
-            action === "accept" ? "Request accepted" : "Request declined"
+            action === "accept" ? "Request accepted" : "Request declined",{
+              autoClose:4000,
+              closeOnClick:true,
+            }
           );
 
           if (action === "accept") {
@@ -65,7 +68,10 @@ const Notification = ({ requestData, setRequestData }) => {
       }
     } catch (error) {
       console.error(error.message);
-      toast.error("An error occurred");
+      toast.error("An error occurred",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     } finally {
       setLoading(false);
     }
