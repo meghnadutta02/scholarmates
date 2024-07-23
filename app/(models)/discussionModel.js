@@ -79,7 +79,9 @@ discussionSchema.pre(
         await Notification.deleteMany({
           discussionId: discussion._id,
         }).session(session);
-
+        await Notification.deleteMany({
+          groupId: discussion.groupId,
+        }).session(session);
         await session.commitTransaction();
         session.endSession();
 

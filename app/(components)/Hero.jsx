@@ -10,7 +10,7 @@ const Hero = () => {
   const subtitle = "Your Network of Like-Minded Individuals".split(" ");
 
   return (
-    <div className="mt-8 px-4">
+    <div className="mt-8 md:px-4 px-2">
       <div className="flex flex-col lg:flex-row md:gap-8 gap-6 w-full px-4 md:px-8 mt-8">
         <div className="w-full lg:w-1/2 flex justify-center mx-auto md:mt-8 pt-8">
           <Image src={main} alt="jumbotron" height={420} width={420} />
