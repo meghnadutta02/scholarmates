@@ -15,8 +15,6 @@ function JoinNotification() {
   }, []);
 
   const handleJoinRequest = (data) => {
-    console.log("Received join request:", data);
-
     setJoinRequests((prevRequests) => [...prevRequests, data]);
   };
 

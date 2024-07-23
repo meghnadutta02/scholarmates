@@ -61,7 +61,7 @@ const Notification = ({ requestData, setRequestData }) => {
           throw new Error("Failed to update request");
         }
       } else {
-        console.log("NO SENDER AND RECEIVER ID'S PRESENT");
+        console.log("Ids are not present");
       }
     } catch (error) {
       console.error(error.message);

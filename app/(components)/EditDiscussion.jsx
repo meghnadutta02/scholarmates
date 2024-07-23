@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
+import { FaInfoCircle } from "react-icons/fa";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import Select from "react-select";
@@ -13,7 +13,7 @@ import { PaperclipIcon } from "lucide-react";
 const EditDiscussion = ({ discussion, setDiscussion }) => {
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
-
+  const [subCategoryError, setSubCategoryError] = useState(false);
   const [title, setTitle] = useState(discussion.title || "");
   const [content, setContent] = useState(discussion.content || "");
   const [type, setType] = useState(discussion.type || "");
@@ -90,6 +90,13 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
   };
 
   const handleSubCategoryChange = (selectedSubCategories) => {
+    if (selectedSubCategories.length > 10) {
+      setSubCategoryError(true);
+      return;
+    } else {
+      setSubCategoryError(false);
+    }
+
     setSelectedSubCategories(selectedSubCategories);
   };
 
@@ -215,6 +222,12 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
             onChange={handleSubCategoryChange}
             placeholder="Select a category first"
           />
+          {subCategoryError && (
+            <div className="text-red-500 flex items-center mt-2 text-sm">
+              <FaInfoCircle className="mr-1" />
+              You can only select up to 10 subcategories
+            </div>
+          )}
         </div>
 
         <div className="flex justify-start my-3 p-[10px] border rounded items-center">

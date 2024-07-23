@@ -1,27 +1,41 @@
 import { NextResponse } from "next/server";
 import User from "@/app/(models)/userModel";
 import connect from "@/app/config/db";
+import { ObjectId } from "mongodb";
 
 export async function GET(req) {
   try {
     await connect();
     const id = req.nextUrl.searchParams.get("id");
 
-    const user = await User.findById(id).select("connection requestPending");
-    const getReq = await User.findById(id).select("requestReceived");
+    const user = await User.findById(id).select(
+      "connection requestPending requestReceived"
+    );
     const connections = user.connection;
-    connections.push(id);
+    const requestsPending = user.requestPending;
+
+    const requestsReceived = user.requestReceived;
+
+    const idsToExclude = connections.concat(
+      requestsPending,
+      requestsReceived,
+      new ObjectId(id)
+    );
 
     const users = await User.aggregate([
-      { $match: { _id: { $nin: connections } } },
+      {
+        $match: {
+          _id: { $nin: idsToExclude },
+          interestCategories: { $exists: true, $not: { $size: 0 } },
+          interestSubcategories: { $exists: true, $not: { $size: 0 } },
+        },
+      },
     ]);
 
     if (users.length > 0)
       return NextResponse.json(
         {
           result: users,
-          requests: user.requestPending,
-          requestReceived: getReq.requestReceived,
         },
         { status: 200 }
       );

@@ -19,9 +19,9 @@ const Page = () => {
 
   const deleteAllNotifications = async () => {
     if (session?.db_id && notifications.length > 0) {
-      const notificationIds = notifications
-        .filter((n) => !n.isSeen)
-        .map((n) => (n._id ? n._id : n.notificationId));
+      const notificationIds = notifications.map((n) =>
+        n._id ? n._id : n.notificationId
+      );
 
       try {
         const resp = await fetch(
@@ -64,6 +64,9 @@ const Page = () => {
           );
           if (resp.ok) {
             clearUnreadCount();
+            setNotifications((prev) =>
+              prev.map((n) => ({ ...n, isSeen: true }))
+            );
           }
         } catch (error) {
           console.error("Failed to mark notifications as seen", error);
@@ -78,7 +81,7 @@ const Page = () => {
     try {
       const id = item.notificationId || item._id;
       if (!id) {
-        console.log("No Id");
+        console.log("No Id present");
       }
       const resp = await fetch(
         `${process.env.NEXT_PUBLIC_NODE_SERVER}/notification/remove/${id}`,

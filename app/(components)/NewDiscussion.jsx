@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { interests } from "../(data)/interests";
 import { useSession } from "@/app/(components)/SessionProvider";
 import { PaperclipIcon } from "lucide-react";
+import { FaInfoCircle } from "react-icons/fa";
 
 function NewDiscussion({ setDiscussions }) {
   const { session, socket } = useSession();
@@ -30,6 +31,7 @@ function NewDiscussion({ setDiscussions }) {
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
   const [privacy, setPrivacy] = useState("public");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [subCategoryError, setSubCategoryError] = useState(false);
 
   const categories = interests.flatMap(
     (categoryObject) => Object.values(categoryObject)[0]
@@ -72,6 +74,13 @@ function NewDiscussion({ setDiscussions }) {
   };
 
   const handleSubCategoryChange = (selectedSubCategories) => {
+    if (selectedSubCategories.length > 10) {
+      setSubCategoryError(true);
+      return;
+    } else {
+      setSubCategoryError(false);
+    }
+
     setSelectedSubCategories(selectedSubCategories);
   };
 
@@ -204,6 +213,12 @@ function NewDiscussion({ setDiscussions }) {
             onChange={handleSubCategoryChange}
             placeholder="Select a category first"
           />
+          {subCategoryError && (
+            <div className="text-red-500 flex items-center mt-2 text-sm">
+              <FaInfoCircle className="mr-1" />
+              You can only select up to 10 subcategories
+            </div>
+          )}
         </div>
         <div className="">
           <Label htmlFor="privacy">Configure Group Preferences</Label>

@@ -81,7 +81,7 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
                       href="#"
                       onClick={(e) => {
                         setSelectedUser(connection);
-                        setToggleChatView(false);
+
                         setShowList(false);
                       }}
                       className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"

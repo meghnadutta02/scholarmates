@@ -28,6 +28,7 @@ export const options = {
         }
         return {
           ...profile,
+          id: profile.sub,
           isAdmin,
         };
       },

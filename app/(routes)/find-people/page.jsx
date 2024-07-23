@@ -12,8 +12,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 const getYearWithSuffix = (year) => {
@@ -30,6 +28,7 @@ export default function Component() {
   const [userId, setUserId] = useState();
   const [connectingProfile, setConnectingProfile] = useState(null);
   const [requestedProfiles, setRequestedProfiles] = useState(new Set());
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (session) {
@@ -41,7 +40,6 @@ export default function Component() {
     const fetchProfiles = async () => {
       try {
         if (userId) {
-          setLoading(true);
           const res = await fetch(`/api/users/matching?id=${userId.db_id}`, {
             cache: "no-cache",
           });
@@ -94,17 +92,20 @@ export default function Component() {
     }
   };
 
+  const handleDotClick = (index) => {
+    setCurrentIndex(index);
+  };
+
+  if (loading) return <Loading />;
   return (
     <>
       {session &&
       session.user &&
       session.user.interestCategories.length > 0 &&
       session.user.interestSubcategories.length > 0 ? (
-        <div className="">
-          {loading ? (
-            <Loading />
-          ) : profiles.length === 0 ? (
-            <div className="md:my-8 my-6 font-sans gap-2 flex flex-col justify-center">
+        <>
+          {profiles.length === 0 ? (
+            <div className="md:my-8 my-6 font-sans gap-2 flex flex-col items-center w-full ">
               <div className="text-md italic text-gray-600 mb-2 text-center">
                 Our website is growing, and while there are no matches with your
                 interests yet, you can still connect with others.
@@ -112,11 +113,14 @@ export default function Component() {
               <ProfileCarousel user={userId} />
             </div>
           ) : (
-            <div>
-              <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl md:my-8 my-6">
+            <div className="md:my-8 my-6 font-sans gap-2 flex flex-col items-center w-full max-w-xs md:max-w-md lg:max-w-2xl">
+              <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full md:my-8 my-6">
                 <CarouselContent>
-                  {profiles.map((profile) => (
-                    <CarouselItem key={profile._id}>
+                  {profiles.map((profile, index) => (
+                    <CarouselItem
+                      key={profile._id}
+                      className={currentIndex === index ? "block" : "hidden"}
+                    >
                       <div className="grid gap-2">
                         <div className="p-2">
                           <div className="flex md:flex-row flex-col justify-between items-center">
@@ -189,24 +193,39 @@ export default function Component() {
                         )}
                         <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
                           <h2 className="font-semibold text-lg">Interests</h2>
-                          <ul className="list-disc list-inside">
-                            {profile.interestCategories.map((interest) => (
-                              <div key={interest._id}>
-                                <li>{interest}</li>
-                              </div>
-                            ))}
+                          <ul
+                            className={`list-disc list-inside ${
+                              profile.interestCategories.length > 5
+                                ? "grid grid-cols-2 gap-x-4"
+                                : ""
+                            }`}
+                          >
+                            {profile.interestCategories.map(
+                              (interest, index) => (
+                                <li key={index}>{interest}</li>
+                              )
+                            )}
                           </ul>
                         </div>
                       </div>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
+                <div className="flex justify-center mt-4 space-x-2">
+                  {profiles.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`sm:w-3 sm:h-3 rounded-full w-[10px] h-[10px] transform transition-transform hover:scale-125 ${
+                        currentIndex === index ? "bg-gray-700" : "bg-gray-400"
+                      }`}
+                      onClick={() => handleDotClick(index)}
+                    />
+                  ))}
+                </div>
               </Carousel>
             </div>
           )}
-        </div>
+        </>
       ) : (
         <div className="text-center my-8 font-sans">
           <div className="font-semibold text-2xl mb-2">

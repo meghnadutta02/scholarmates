@@ -56,7 +56,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
                   href="#"
                   onClick={(e) => {
                     setRoomID(setRoomID);
-                    console.log(group._id);
+
                     setToggleChatView(false);
                     setShowList(false);
                   }}

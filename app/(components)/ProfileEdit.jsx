@@ -34,6 +34,7 @@ const ProfileEdit = ({ user, setUser }) => {
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
   const [date, setDate] = useState(user.dob ? new Date(user.dob) : "");
   const [formOpen, setFormOpen] = useState(true);
+  const [subCategoryError, setSubCategoryError] = useState(false);
 
   const categories = interests.flatMap(
     (categoryObject) => Object.values(categoryObject)[0]
@@ -76,6 +77,13 @@ const ProfileEdit = ({ user, setUser }) => {
   };
 
   const handleSubcategoryChange = (selectedSubCategories) => {
+    if (selectedSubCategories.length > 10) {
+      setSubCategoryError(true);
+      return;
+    } else {
+      setSubCategoryError(false);
+    }
+
     setSelectedSubCategories(selectedSubCategories);
 
     const newSelectedCategories = selectedSubCategories.map((subCategory) => {
@@ -258,6 +266,12 @@ const ProfileEdit = ({ user, setUser }) => {
             onChange={handleSubcategoryChange}
             placeholder="Select a category first"
           />
+          {subCategoryError && (
+            <div className="text-red-500 flex items-center mt-2 text-sm">
+              <FaInfoCircle className="mr-1" />
+              You can only select up to 10 interests
+            </div>
+          )}
         </div>
         {formOpen ? (
           <Button type="submit">Save changes</Button>
