@@ -487,9 +487,11 @@ const DiscussionActions = ({
       </Button>
 
       {discussion.isMember ? (
-        <Button variant="icon" className="flex md:ml-4">
+       <Link href='/chats'>
+       <Button variant="icon" className="flex md:ml-4">
           <IoChatboxOutline className="h-6 w-6" />
         </Button>
+       </Link>
       ) : (
         <Button
           className={`${

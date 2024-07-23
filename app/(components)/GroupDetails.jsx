@@ -236,7 +236,7 @@ const GroupDetails = ({
             <DialogTrigger asChild>
               <MdEdit className="cursor-pointer" />
             </DialogTrigger>
-            <DialogContent className="w-[45%]">
+            <DialogContent className="w-[80%]">
               <DialogHeader>
                 <DialogTitle>Edit Group Name</DialogTitle>
                 <DialogDescription>
@@ -310,7 +310,7 @@ const GroupDetails = ({
                 <DialogTrigger asChild>
                   <MdEdit className="cursor-pointer" />
                 </DialogTrigger>
-                <DialogContent className="w-[45%]">
+                <DialogContent className="w-[80%]">
                   <DialogHeader>
                     <DialogTitle>Edit Group Description</DialogTitle>
                     <DialogDescription>
