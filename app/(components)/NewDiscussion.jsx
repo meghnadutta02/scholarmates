@@ -100,12 +100,13 @@ function NewDiscussion({ setDiscussions }) {
       !content ||
       !type ||
       !selectedCategory ||
-      !selectedSubCategories.length
+      !selectedSubCategories.length ||
+      !groupTitle
     ) {
       setIsDisabled(false);
-      return toast.error("Please fill out all fields",{
-        autoClose:4000,
-        closeOnClick:true,
+      return toast.error("Please fill out all fields", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     }
 
@@ -113,9 +114,9 @@ function NewDiscussion({ setDiscussions }) {
       formData.append("subcategories", subcategory.value);
     });
 
-    const toastId = toast.loading("Creating discussion...",{
-      autoClose:4000,
-      closeOnClick:true,
+    const toastId = toast.loading("Creating discussion...", {
+      autoClose: 4000,
+      closeOnClick: true,
     });
 
     try {
@@ -142,7 +143,7 @@ function NewDiscussion({ setDiscussions }) {
           type: "success",
           isLoading: false,
           autoClose: 4000,
-          closeOnClick:true
+          closeOnClick: true,
         });
       }
     } catch (error) {
@@ -152,7 +153,7 @@ function NewDiscussion({ setDiscussions }) {
         type: "error",
         isLoading: false,
         autoClose: 4000,
-        closeOnClick:true
+        closeOnClick: true,
       });
     }
 

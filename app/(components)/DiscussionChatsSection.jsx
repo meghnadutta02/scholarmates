@@ -7,7 +7,7 @@ import Loading from "@/app/(components)/Loading";
 import Link from "next/link";
 
 const Page = ({ selectDiscussion }) => {
-  const [roomID, setRoomID] = useState("");
+  const [roomID, setRoomID] = useState(null);
   const [isRoomSelected, setIsRoomSelected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
@@ -58,8 +58,8 @@ const Page = ({ selectDiscussion }) => {
   }, []);
 
   const updateLastMessage = (gid, message, name) => {
-    setGroups((prevGroups) =>
-      prevGroups.map((group) =>
+    setGroups((prevGroups) => {
+      const updatedGroups = prevGroups.map((group) =>
         group.groupId === gid
           ? {
               ...group,
@@ -71,8 +71,13 @@ const Page = ({ selectDiscussion }) => {
               },
             }
           : group
-      )
-    );
+      );
+      updatedGroups.sort(
+        (a, b) =>
+          new Date(b.latestMessage.time) - new Date(a.latestMessage.time)
+      );
+      return updatedGroups;
+    });
   };
 
   useEffect(() => {

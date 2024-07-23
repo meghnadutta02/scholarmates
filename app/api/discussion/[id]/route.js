@@ -46,8 +46,14 @@ export async function GET(req, { params }) {
         status = groupRequests[0].status;
       }
     }
-    const isLikedByUser = discussion.likedBy.includes(userId);
-    const isDislikedByUser = discussion.dislikedBy.includes(userId);
+    const isLikedByUser = discussion.likedBy
+      .map((user) => user._id.toString())
+      .includes(userId.toString());
+
+    const isDislikedByUser = discussion.dislikedBy
+      .map((user) => user._id.toString())
+      .includes(userId.toString());
+
     return NextResponse.json(
       { discussion, isLikedByUser, status, isDislikedByUser },
       { status: 200 }

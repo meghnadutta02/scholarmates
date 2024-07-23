@@ -24,6 +24,7 @@ const GroupChatbox = ({
   setToggleChatView,
   updateLastMessage,
 }) => {
+  console.log(roomID);
   const { socket } = useCustomSession();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const GroupChatbox = ({
     groupId: roomID,
     attachments: [],
   });
-  const [groupId, setGroupId] = useState(roomID);
+  const groupId = roomID;
   const [inboxMessages, setInboxMessages] = useState(new Map());
   const [groupDetails, setGroupDetails] = useState({});
   const messagesEndRef = useRef(null);
@@ -138,9 +139,9 @@ const GroupChatbox = ({
         });
         scrollDown();
       } else {
-        toast.error("Message not sent",{
-          autoClose:4000,
-          closeOnClick:true,
+        toast.error("Message not sent", {
+          autoClose: 4000,
+          closeOnClick: true,
         });
         // Remove the temporary message if the API call fails
         setInboxMessages((prevMessages) => {
