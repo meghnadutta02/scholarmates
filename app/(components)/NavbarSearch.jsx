@@ -51,7 +51,7 @@ export default function Component({ id }) {
       <div className="flex mx-auto py-3 px-3 w-[90%] justify-center items-center">
         <Input
           type="search"
-          placeholder="Search contacts..."
+          placeholder="Search profiles..."
           className="pl-10 pr-4 py-2 rounded-full bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
           onChange={handleSearch}
         />

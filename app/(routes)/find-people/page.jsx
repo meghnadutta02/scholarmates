@@ -12,6 +12,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 const getYearWithSuffix = (year) => {
@@ -28,7 +30,6 @@ export default function Component() {
   const [userId, setUserId] = useState();
   const [connectingProfile, setConnectingProfile] = useState(null);
   const [requestedProfiles, setRequestedProfiles] = useState(new Set());
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (session) {
@@ -92,39 +93,29 @@ export default function Component() {
     }
   };
 
-  const handleDotClick = (index) => {
-    setCurrentIndex(index);
-  };
-
   if (loading) return <Loading />;
   return (
     <>
       {session &&
       session.user &&
       session.user.interestCategories.length > 0 &&
-      session.user.interestSubcategories.length > 0 ? (
+      session.user.interestSubcategories.length > 0 &&
+      !loading ? (
         <>
-          {profiles.length === 0 ? (
-            <div className="md:my-8 my-6 font-sans gap-2 flex flex-col items-center w-full ">
-              <div className="text-md italic text-gray-600 mb-2 text-center">
-                Our website is growing, and while there are no matches with your
-                interests yet, you can still connect with others.
-              </div>
+          {profiles && profiles.length === 0 && !loading ? (
+            <div className="my-6 font-sans gap-2 flex flex-col items-center w-full ">
               <ProfileCarousel user={userId} />
             </div>
           ) : (
             <div className="md:my-8 my-6 font-sans gap-2 flex flex-col items-center w-full max-w-xs md:max-w-md lg:max-w-2xl">
-              <Carousel className="border-2 border-gray-300 rounded-lg p-4 w-full md:my-8 my-6">
+              <Carousel className="relative border-2 border-gray-300 rounded-lg p-4 w-full md:my-8 my-6 min-h-[30rem]">
                 <CarouselContent>
                   {profiles.map((profile, index) => (
-                    <CarouselItem
-                      key={profile._id}
-                      className={currentIndex === index ? "block" : "hidden"}
-                    >
+                    <CarouselItem key={profile._id}>
                       <div className="grid gap-2">
                         <div className="p-2">
                           <div className="flex md:flex-row flex-col justify-between items-center">
-                            <Link href={`/profile/${profile._id}`} asChild>
+                            <Link href={`/profile/${profile._id}`}>
                               <div className="flex gap-4 cursor-pointer items-center">
                                 <Image
                                   alt="Thumbnail"
@@ -159,7 +150,6 @@ export default function Component() {
                                 </div>
                               </div>
                             </Link>
-
                             <div className="flex flex-row md:flex-col w-full md:w-[24%] justify-between items-center">
                               <p className="text-sm text-gray-600">
                                 {profile.connection.length} connection
@@ -211,16 +201,9 @@ export default function Component() {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <div className="flex justify-center mt-4 space-x-2">
-                  {profiles.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`sm:w-3 sm:h-3 rounded-full w-[10px] h-[10px] transform transition-transform hover:scale-125 ${
-                        currentIndex === index ? "bg-gray-700" : "bg-gray-400"
-                      }`}
-                      onClick={() => handleDotClick(index)}
-                    />
-                  ))}
+                <div className="flex absolute left-0 right-0 translate-x-0 bottom-2 justify-between w-full px-4">
+                  <CarouselPrevious />
+                  <CarouselNext />
                 </div>
               </Carousel>
             </div>

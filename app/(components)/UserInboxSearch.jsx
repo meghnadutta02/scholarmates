@@ -35,7 +35,6 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      // Step 4: Clean up
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
@@ -81,7 +80,7 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
                       href="#"
                       onClick={(e) => {
                         setSelectedUser(connection);
-
+                        setToggleChatView(false);
                         setShowList(false);
                       }}
                       className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"
@@ -117,25 +116,5 @@ export default function Component({ setSelectedUser, setToggleChatView }) {
         </CardContent>
       )}
     </Card>
-  );
-}
-
-function SearchIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
   );
 }

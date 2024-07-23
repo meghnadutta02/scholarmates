@@ -7,7 +7,7 @@ import Image from "next/image";
 import puzzle from "@/public/puzzle.png";
 
 const Hero = () => {
-  const subtitle = "Your Network of Like-Minded Innovators".split(" ");
+  const subtitle = "Your Network of Like-Minded Individuals".split(" ");
 
   return (
     <div className="mt-8 px-4">
@@ -67,8 +67,7 @@ const Hero = () => {
             unites individuals with shared interests and goals. Whether for
             professional networking, study groups, or making new friends,
             ScholarMates is your go-to. Join today, connect with like-minded
-            individuals, and foster collaboration, inspiration, and growth.
-            Welcome to your new hub!
+            individuals, at the speed of a 4 moves scholar&apos;s-mate
           </motion.div>
           <motion.div
             initial="hidden"
@@ -86,10 +85,8 @@ const Hero = () => {
             passions, and goals. Whether you&apos;re looking to network
             professionally, find a study group, or simply make new friends who
             understand your hobbies, ScholarMates is your go-to destination.
-            Join our community today and discover the joy of connecting with
-            others who truly get you. Together, we can build a network that
-            fosters collaboration, inspiration, and growth. Welcome to your new
-            hub of like-minded connections!
+            Join today, connect with like-minded individuals, at the speed of a
+            4 moves scholar&apos;s-mate
             <Image
               src={puzzle}
               alt="Puzzle"

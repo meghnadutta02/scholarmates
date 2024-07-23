@@ -16,13 +16,13 @@ const Header = async () => {
           <Image
             src={logo}
             alt="Likeminds"
-            className="md:h-16 md:w-16 h-10 w-10"
+            className="md:h-16 md:w-16 h-12 w-10"
           />
           <span className="text-lg md:text-md">ScholarMates</span>
         </Link>
       </div>
-      <div className="flex  px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
-        <nav className="flex flex-row items-center gap-4 ml-auto flex-1  justify-end">
+      <div className="flex text-nowrap px-6 items-center gap-4 rounded-e-xl bg-zinc-700 dark:bg-gray-800/40">
+        <nav className="flex flex-row items-center gap-4 w-full  justify-end">
           <Link
             href={session ? "" : "/api/auth/signin?callbackUrl=/discussions"}
             className=" text-white font-semibold md:text-lg text-md "

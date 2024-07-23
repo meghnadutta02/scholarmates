@@ -141,9 +141,9 @@ const DiscussionsPage = () => {
             <Button
               variant="icon"
               onClick={handleSearch}
-              className="h-7 w-7 bg-slate-900 rounded-full p-2 mx-1"
+              className="h-7 w-7 bg-slate-900 rounded-full p-1.5 mr-1 sm:ml-3"
             >
-              <AiOutlineSearch className="h-full w-full  text-white " />
+              <AiOutlineSearch className="h-full w-full  text-white font-bold" />
             </Button>
             <FilterDrawer applyFilters={handleFilterApplication} />
 

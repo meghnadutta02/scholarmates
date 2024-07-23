@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
   const [showList, setShowList] = useState(false);
   const [groups, setGroups] = useState([]);
   const [filteredGroups, setFilteredGroups] = useState([]);
+  const componentRef = useRef(null);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -18,6 +19,22 @@ export default function Component({ setRoomID, setToggleChatView }) {
       setFilteredGroups(data.groups);
     };
     fetchGroups();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        componentRef.current &&
+        !componentRef.current.contains(event.target)
+      ) {
+        setShowList(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleSearch = (e) => {
@@ -42,7 +59,10 @@ export default function Component({ setRoomID, setToggleChatView }) {
         />
       </div>
       {showList && (
-        <CardContent className="absolute w-full pt-4 overflow-y-auto scrollbar-none bg-gray-100 max-h-[400px]">
+        <CardContent
+          ref={componentRef}
+          className="absolute w-full pt-4 overflow-y-auto scrollbar-none bg-gray-100 max-h-[400px]"
+        >
           {filteredGroups.length === 0 ? (
             <p className="text-red-400 mt-4 text-center">
               No discussion matched your search
@@ -74,25 +94,5 @@ export default function Component({ setRoomID, setToggleChatView }) {
         </CardContent>
       )}
     </Card>
-  );
-}
-
-function SearchIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
   );
 }

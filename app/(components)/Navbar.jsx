@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import profilePic from "@/public/pfp.png";
@@ -24,6 +24,24 @@ const NavbarClient = () => {
   const { unreadCount } = useCustomSession();
   const { data: session } = useSession();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const componentRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      console.log("first");
+      if (
+        componentRef.current &&
+        !componentRef.current.contains(event.target)
+      ) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSearchOpen]);
 
   return (
     <>
@@ -97,7 +115,9 @@ const NavbarClient = () => {
           </div>
           <ProfileProgress />
           {isSearchOpen && session?.user && (
-            <NavbarSearch id={session.user.db_id} />
+            <div ref={componentRef}>
+              <NavbarSearch id={session.user.db_id} />
+            </div>
           )}
         </header>
       </div>
