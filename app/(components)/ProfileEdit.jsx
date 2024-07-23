@@ -20,9 +20,7 @@ const ProfileEdit = ({ user, setUser }) => {
   const { update } = useSession();
 
   const maxDate = format(subYears(new Date(), 11), "yyyy-MM-dd");
-  const [selectedCategories, setSelectedCategories] = useState(
-    user.interestCategories
-  );
+  const [selectedCategories, setSelectedCategories] = useState(user.interestCategories);
   const [selectedSubCategories, setSelectedSubCategories] = useState(
     user.interestSubcategories.map((subcategory) => ({
       label: subcategory,
@@ -35,10 +33,9 @@ const ProfileEdit = ({ user, setUser }) => {
   const [date, setDate] = useState(user.dob ? new Date(user.dob) : "");
   const [formOpen, setFormOpen] = useState(true);
   const [subCategoryError, setSubCategoryError] = useState(false);
+  const [minInterestError, setMinInterestError] = useState(false);
 
-  const categories = interests.flatMap(
-    (categoryObject) => Object.values(categoryObject)[0]
-  );
+  const categories = interests.flatMap((categoryObject) => Object.values(categoryObject)[0]);
 
   const categoryOptions = categories.map((category) => ({
     label: category,
@@ -65,8 +62,7 @@ const ProfileEdit = ({ user, setUser }) => {
     setSelectedCategory(selectedCategory);
 
     const newSubcategories =
-      interests.find((interest) => interest.category === selectedCategory.value)
-        ?.subcategories || [];
+      interests.find((interest) => interest.category === selectedCategory.value)?.subcategories || [];
 
     const newSubcategoryOptions = newSubcategories.map((subcategory) => ({
       label: subcategory,
@@ -86,10 +82,14 @@ const ProfileEdit = ({ user, setUser }) => {
 
     setSelectedSubCategories(selectedSubCategories);
 
+    if (selectedSubCategories.length < 3) {
+      setMinInterestError(true);
+    } else {
+      setMinInterestError(false);
+    }
+
     const newSelectedCategories = selectedSubCategories.map((subCategory) => {
-      return interests.find((interest) =>
-        interest.subcategories.includes(subCategory.value)
-      ).category;
+      return interests.find((interest) => interest.subcategories.includes(subCategory.value)).category;
     });
 
     const uniqueSelectedCategories = [
@@ -169,9 +169,7 @@ const ProfileEdit = ({ user, setUser }) => {
           <Select
             name="collegeName"
             options={collegesOptions}
-            value={collegesOptions.find(
-              (option) => option.value === userState.collegeName
-            )}
+            value={collegesOptions.find((option) => option.value === userState.collegeName)}
             onChange={handleCollegeChange}
           />
         </div>
@@ -181,9 +179,7 @@ const ProfileEdit = ({ user, setUser }) => {
             <Select
               name="degree"
               options={degreesOptions}
-              value={degreesOptions.find(
-                (option) => option.value === userState.degree
-              )}
+              value={degreesOptions.find((option) => option.value === userState.degree)}
               onChange={handleDegreeChange}
             />
           </div>
@@ -192,9 +188,7 @@ const ProfileEdit = ({ user, setUser }) => {
             <Select
               name="department"
               options={departmentsOptions}
-              value={departmentsOptions.find(
-                (option) => option.value === userState.department
-              )}
+              value={departmentsOptions.find((option) => option.value === userState.department)}
               onChange={handleDepartmentChange}
             />
           </div>
@@ -243,9 +237,7 @@ const ProfileEdit = ({ user, setUser }) => {
               max={maxDate}
               className="w-full p-1 rounded-sm border border-gray-350"
               onChange={(e) => {
-                const newDate = e.target.value
-                  ? new Date(e.target.value)
-                  : null;
+                const newDate = e.target.value ? new Date(e.target.value) : null;
                 setDate(newDate);
               }}
             />
@@ -272,9 +264,17 @@ const ProfileEdit = ({ user, setUser }) => {
               You can only select up to 10 interests
             </div>
           )}
+          {minInterestError && (
+            <div className="text-red-500 flex items-center mt-2 text-sm">
+              <FaInfoCircle className="mr-1" />
+              You need to select at least 3 interests
+            </div>
+          )}
         </div>
         {formOpen ? (
-          <Button type="submit">Save changes</Button>
+          <Button type="submit" disabled={selectedSubCategories.length < 3}>
+            Save changes
+          </Button>
         ) : (
           <Button>Updated</Button>
         )}
