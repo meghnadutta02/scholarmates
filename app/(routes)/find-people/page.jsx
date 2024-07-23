@@ -108,7 +108,7 @@ export default function Component() {
             </div>
           ) : (
             <div className="md:my-8 my-6 font-sans gap-2 flex flex-col items-center w-full max-w-xs md:max-w-md lg:max-w-2xl">
-              <Carousel className="relative border-2 border-gray-300 rounded-lg p-4 w-full md:my-8 my-6 min-h-[30rem]">
+              <Carousel className="relative border-2 border-gray-300 rounded-lg p-4 w-full md:my-8 my-6 min-h-[28rem] ">
                 <CarouselContent>
                   {profiles.map((profile, index) => (
                     <CarouselItem key={profile._id}>

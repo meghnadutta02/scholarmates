@@ -33,9 +33,11 @@ const ProfileDetails = ({ user, setUser }) => {
                   </Avatar>
                   <ProfilePictureUpdate user={user} setUser={setUser} />
                 </div>
-                <h1 className="font-bold text-2xl mt-4">{user.name}</h1>
+                <h1 className="font-bold text-2xl sm:mt-4 mt-3">{user.name}</h1>
                 {user.bio ? (
-                  <p className="mt-2 text-gray-600 italic">{user.bio}</p>
+                  <p className="sm:mt-2 mt-[6px] text-gray-600 italic">
+                    {user.bio}
+                  </p>
                 ) : (
                   <div className="flex items-center justify-center text-gray-600">
                     <p>Add a bio.</p>

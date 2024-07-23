@@ -28,7 +28,6 @@ const NavbarClient = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      console.log("first");
       if (
         componentRef.current &&
         !componentRef.current.contains(event.target)

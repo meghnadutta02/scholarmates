@@ -241,10 +241,12 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             <ProfilePictureView user={user} />
           </div>
 
-          <h1 className="mt-4 font-bold text-2xl">{user.name}</h1>
+          <h1 className="sm:mt-4 mt-3 font-bold  text-2xl">{user.name}</h1>
 
-          {user.bio && <p className="mt-2 text-gray-600 italic">{user.bio}</p>}
-          <div className="flex justify-between gap-4 mt-4">
+          {user.bio && (
+            <p className="sm:mt-2 mt-[6px] text-gray-600 italic ">{user.bio}</p>
+          )}
+          <div className="flex justify-between gap-4 sm:mt-4 mt-3">
             {user.isConnected ? (
               <Button
                 onClick={() => handleremoveClick(user._id)}

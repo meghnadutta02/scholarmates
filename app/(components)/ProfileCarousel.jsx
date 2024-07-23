@@ -97,7 +97,7 @@ export default function ProfileCarousel({ user }) {
             Our website is growing, and while there are no matches with your
             interests yet, you can still connect with others.
           </div>
-          <Carousel className="relative border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl md:my-8 my-6 min-h-[28rem] sm:min-h-[32rem]">
+          <Carousel className="relative border-2 border-gray-300 rounded-lg p-4 w-full max-w-xs md:max-w-md lg:max-w-2xl md:my-8 my-6 min-h-[28rem]">
             <CarouselContent>
               {profiles.map((profile, index) => (
                 <CarouselItem key={profile._id}>
