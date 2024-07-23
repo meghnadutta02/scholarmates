@@ -6,7 +6,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "socket-server": "nodemon server.js"
+    "socket-server": "nodemon server.js",
+    "build": "npm i"
   },
   "author": "Builders of ScholarMates",
   "license": "ISC",

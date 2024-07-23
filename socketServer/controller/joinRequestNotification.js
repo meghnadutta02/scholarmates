@@ -16,6 +16,7 @@ export const handleJoinRequestNotification = async (data) => {
         recipientId: moderatorId,
         senderId: fromUser,
         status: "joinRequest",
+        groupId,
       });
 
       // Create and save new notification
@@ -27,6 +28,7 @@ export const handleJoinRequestNotification = async (data) => {
         status: "joinRequest",
         message: `has requested to join "${group.name}"`,
         timestamp: createdAt,
+        groupId,
       });
 
       await newNotification.save();

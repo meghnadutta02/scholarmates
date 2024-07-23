@@ -20,9 +20,7 @@ import { CgPlayListAdd } from "react-icons/cg";
 
 const getSuggestions = async (q) => {
   const response = await fetch(
-    `${
-      process.env.NEXT_PUBLIC_API_URL
-    }/api/discussion/autocomplete?searchQuery=${encodeURIComponent(q)}`
+    `/api/discussion/autocomplete?searchQuery=${encodeURIComponent(q)}`
   );
   return response.json();
 };
