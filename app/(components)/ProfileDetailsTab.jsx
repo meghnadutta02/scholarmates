@@ -64,17 +64,17 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           }));
           setLoading(false);
         } else {
-          toast.error("Failed to fetch updated user data",{
-            autoClose:4000,
-            closeOnClick:true,
+          toast.error("Failed to fetch updated user data", {
+            autoClose: 4000,
+            closeOnClick: true,
           });
           setLoading(false);
         }
       } catch (error) {
         // console.error("Error fetching updated user data:", error);
-        toast.error("An error occurred while fetching updated user data",{
-          autoClose:4000,
-          closeOnClick:true,
+        toast.error("An error occurred while fetching updated user data", {
+          autoClose: 4000,
+          closeOnClick: true,
         });
         setLoading(false);
       }
@@ -87,6 +87,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   const handleremoveClick = async (id) => {
     setLoading(true);
     try {
+     
       const res = await fetch(`/api/users/profile?seconduserId=${id}`, {
         method: "POST",
       });
@@ -107,15 +108,15 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           connection: session.user.connection.filter((conn) => conn !== id),
         });
       } else {
-        toast.error("Failed to remove connection",{
-          autoClose:4000,
-          closeOnClick:true,
+        toast.error("Failed to remove connection", {
+          autoClose: 4000,
+          closeOnClick: true,
         });
       }
     } catch (error) {
-      toast.error("An error occurred while removing connection",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.error("An error occurred while removing connection", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     } finally {
       setLoading(false);
@@ -126,39 +127,70 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
     setLoading(true);
     try {
       if (profileId && session) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${session.user.db_id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ recipientId: profileId }),
-          }
-        );
+    //========UNSEND CONNECTION REQUEST============
+        if (user.isRequestPending) {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/unsendconnection/${session.user.db_id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ recipientId: profileId }),
+              cache: "no-cache",
+            }
+          );
+          if (res.ok) {
+            toast.success("Connection request removed", {
+              autoClose: 4000,
+              closeOnClick: true,
+            });
+            setUser((prevUser) => ({ ...prevUser, isRequestPending: false }));
 
-        if (res.ok) {
-          toast.success("Connection request sent", {
-            autoClose: 4000,
-            closeOnClick: true,
-          });
-          setUser((prevUser) => ({ ...prevUser, isRequestPending: true }));
+          }
+          else {
+            toast.error("Failed to send connection request", {
+              autoClose: 4000,
+              closeOnClick: true,
+            });
+          }
         } else {
-          toast.error("Failed to send connection request",{
-            autoClose:4000,
-            closeOnClick:true,
-          });
+      // ===========SEND CONNECTION REQUEST=======
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${session.user.db_id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ recipientId: profileId }),
+            }
+          );
+
+          if (res.ok) {
+            toast.success("Connection request sent", {
+              autoClose: 4000,
+              closeOnClick: true,
+            });
+            setUser((prevUser) => ({ ...prevUser, isRequestPending: true }));
+          } else {
+            toast.error("Failed to send connection request", {
+              autoClose: 4000,
+              closeOnClick: true,
+            });
+          }
         }
+
       } else {
-        toast.error("Profile ID is missing",{
-          autoClose:4000,
-          closeOnClick:true,
+        toast.error("Profile ID is missing", {
+          autoClose: 4000,
+          closeOnClick: true,
         });
       }
     } catch (error) {
-      toast.error("An error occurred while sending connection request",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.error("An error occurred while sending connection request", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     } finally {
       setLoading(false);
@@ -187,10 +219,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
 
         if (res.status === 200) {
           toast.success(
-            action === "accept" ? "Request accepted" : "Request declined",{
-              autoClose:4000,
-              closeOnClick:true,
-            }
+            action === "accept" ? "Request accepted" : "Request declined", {
+            autoClose: 4000,
+            closeOnClick: true,
+          }
           );
 
           if (action === "accept") {
@@ -218,9 +250,9 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
       }
     } catch (error) {
       console.error(error.message);
-      toast.error("An error occurred",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.error("An error occurred", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     } finally {
       setLoading(false);
@@ -282,7 +314,12 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
                 Remove
               </Button>
             ) : user.isRequestPending ? (
-              <Button disabled={true}>Requested</Button>
+              <Button
+                onClick={() => handleConnectClick(user._id)}
+                disabled={loading}
+                className={
+                user.isRequestPending ? "bg-gray-500 text-white cursor-pointer"
+                    : ""}>Requested</Button>
             ) : !user.isRequestReceived ? (
               <Button
                 onClick={() => handleConnectClick(user._id)}

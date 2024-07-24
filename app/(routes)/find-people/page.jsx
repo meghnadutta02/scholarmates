@@ -65,24 +65,50 @@ export default function Component() {
       setConnectingProfile(profileId);
 
       if (profileId && userId) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${userId.db_id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ recipientId: profileId }),
-            cache: "no-cache",
+        if(requestedProfiles.has(profileId)){
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/unsendconnection/${userId.db_id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ recipientId: profileId }),
+              cache: "no-cache",
+            }
+          );
+          if (res.ok) {
+            toast.success("Connection request removed", {
+              autoClose: 4000,
+              closeOnClick: true,
+            });
+            setRequestedProfiles((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(profileId);
+              return newSet;
+            });
           }
-        );
-        if (res.ok) {
-          toast.success("Connection request sent", {
-            autoClose: 4000,
-            closeOnClick: true,
-          });
-          setRequestedProfiles((prev) => new Set(prev).add(profileId));
+        }else{
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${userId.db_id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ recipientId: profileId }),
+              cache: "no-cache",
+            }
+          );
+          if (res.ok) {
+            toast.success("Connection request sent", {
+              autoClose: 4000,
+              closeOnClick: true,
+            });
+            setRequestedProfiles((prev) => new Set(prev).add(profileId));
+          }
         }
+       
       } else {
         console.log("Profile ID not found");
       }
@@ -157,12 +183,16 @@ export default function Component() {
                               </p>
                               <div className="mt-2">
                                 <Button
-                                  onClick={() =>
+                                 onClick={() =>
                                     handleConnectClick(profile._id)
                                   }
                                   disabled={
-                                    connectingProfile === profile._id ||
+                                    connectingProfile === profile._id 
+                                  }
+                                  className={
                                     requestedProfiles.has(profile._id)
+                                      ? "bg-gray-500 text-white cursor-pointer"
+                                      : ""
                                   }
                                 >
                                   {requestedProfiles.has(profile._id)

@@ -198,3 +198,49 @@ export const receiveConnectionController = async (req, resp) => {
     });
   }
 };
+
+
+// REMOVE CONNECTION
+
+export const removeConnectionController = async (req, resp) => {
+  try {
+   
+    const { recipientId } = req.body;
+    const senderId = req.params.senderId;
+
+    // Find the friendship request
+    const friendshipRequest = await Request.findOne({
+      participants: { $all: [senderId, recipientId] },
+      user: senderId,
+      requestTo: recipientId,
+    });
+
+    if (!friendshipRequest) {
+      return resp.status(404).json({ message: "Friendship request not found" });
+    }
+
+    // Remove the request from the users' pending and received lists
+    await User.updateOne({ _id: senderId }, { $pull: { requestPending: recipientId } });
+    await User.updateOne({ _id: recipientId }, { $pull: { requestReceived: senderId } });
+
+    // Delete the friendship request
+    await friendshipRequest.deleteOne();
+
+    // Delete the corresponding notification
+    await Notification.deleteOne({
+      recipientId: recipientId,
+      senderId: senderId,
+      status: "requestSend",
+    });
+
+    return resp.status(200).send({
+      success: true,
+      message: "Connection request removed",
+    });
+  } catch (error) {
+    return resp.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
