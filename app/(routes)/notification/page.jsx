@@ -131,18 +131,18 @@ const Page = () => {
               key={index}
               className="md:p-2 p-1 bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 my-auto "
             >
-              <Link
-                href={
-                  item.status === "discussNotify"
-                    ? `/discussions/${item.discussionId}`
-                    : item.status === "joinRequestAccepted"
-                    ? "/chats"
-                    : "/requests"
-                }
-                className="inline my-auto "
-              >
+              <div className="inline my-auto ">
                 <div className="flex flex-row items-start gap-2 justify-between">
-                  <div className="flex gap-2 justify-start">
+                  <Link
+                    href={
+                      item.status === "discussNotify"
+                        ? `/discussions/${item.discussionId}`
+                        : item.status === "joinRequestAccepted"
+                        ? "/chats"
+                        : "/requests"
+                    }
+                    className="flex gap-2 justify-start"
+                  >
                     <div className="text-center mt-1">
                       <Image
                         src={item.profilePic}
@@ -166,7 +166,7 @@ const Page = () => {
                         "joinRequestAccepted",
                       ].includes(item.status) && <span> {item.message}.</span>}
                     </p>
-                  </div>
+                  </Link>
                   <button
                     type="button"
                     className="text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
@@ -189,7 +189,7 @@ const Page = () => {
                     </svg>
                   </button>
                 </div>
-              </Link>
+              </div>
 
               <span className="text-xs text-gray-700 flex justify-end">
                 {item.timestamp ? (

@@ -81,7 +81,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
                     setToggleChatView(false);
                     setShowList(false);
                   }}
-                  className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"
+                  className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-red-200"
                 >
                   <div className="">
                     <p className="text-sm font-medium leading-none">

@@ -235,12 +235,12 @@ const GroupDetails = ({
 
   return (
     <div className="flex flex-col justify-between bg-gray-100  dark:bg-gray-800 pb-2 relative">
-      <div className="flex justify-between p-4 items-center gap-1">
+      <div className="flex justify-between p-3 pl-[5px] items-center gap-1 ">
         <IoArrowBackCircleOutline
           className="w-6 h-6 cursor-pointer"
           onClick={() => setShowGroupDetails(false)}
         />
-        <div className="flex justify-center gap-4 ml-[-10px] w-[90%] items-center">
+        <div className="flex justify-center gap-4 ml-[-10px] w-[95%] items-center ">
           <span className="font-semibold text-base md:text-xl ">
             {group.name}
           </span>
@@ -249,7 +249,7 @@ const GroupDetails = ({
               <DialogTrigger asChild>
                 <MdEdit className="cursor-pointer" />
               </DialogTrigger>
-              <DialogContent className="w-[80%]">
+              <DialogContent className="w-[67%]">
                 <DialogHeader>
                   <DialogTitle>Edit Group Name</DialogTitle>
                   <DialogDescription>
@@ -260,6 +260,7 @@ const GroupDetails = ({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="mt-4"
+                  maxLength={30}
                 />
                 <DialogFooter>
                   <Button onClick={handleUpdateName}>Save</Button>
@@ -318,7 +319,7 @@ const GroupDetails = ({
                 <DialogTrigger asChild>
                   <MdEdit className="cursor-pointer" />
                 </DialogTrigger>
-                <DialogContent className="w-[80%]">
+                <DialogContent className="w-[70%]">
                   <DialogHeader>
                     <DialogTitle>Edit Group Description</DialogTitle>
                     <DialogDescription>
@@ -329,6 +330,7 @@ const GroupDetails = ({
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="mt-4"
+                    maxLength={70}
                   />
                   <DialogFooter>
                     <Button onClick={handleUpdateDescription}>Save</Button>

@@ -186,6 +186,7 @@ function NewDiscussion({ setDiscussions }) {
             placeholder="Write a description"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            maxLength={800}
           />
         </div>
         <div className="w-1/2 my-3">
