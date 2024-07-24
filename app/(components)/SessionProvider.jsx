@@ -32,6 +32,10 @@ export const SessionProvider = ({ children }) => {
       return prev - 1;
     });
   };
+  const unsendConnectionNotification = (notificationId) => {
+    setNotifications((prev) => prev.filter((noti) => noti.notificationId !== notificationId));
+    setUnreadCount((prev) => (prev > 0 ? prev - 1 : 0));
+  };
 
   const removeDuplicates = (array) => {
     const uniqueSet = new Map();
@@ -115,9 +119,13 @@ export const SessionProvider = ({ children }) => {
       "discussionNotification",
       "joinRequestNotification",
       "joinRequestAcceptedNotification",
+      
     ].forEach((event) => {
       newSocket.on(event, handleNewNotification);
     });
+    newSocket.on("unsendconnection",(data)=>{
+      unsendConnectionNotification(data.notificationId);
+    })
 
     return () => {
       [
@@ -129,6 +137,7 @@ export const SessionProvider = ({ children }) => {
       ].forEach((event) => {
         newSocket.off(event, handleNewNotification);
       });
+      newSocket.off("unsendconnection");
       newSocket.close();
     };
   }, [session?.db_id]);

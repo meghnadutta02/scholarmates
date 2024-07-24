@@ -227,12 +227,18 @@ export const removeConnectionController = async (req, resp) => {
     await friendshipRequest.deleteOne();
 
     // Delete the corresponding notification
-    await Notification.deleteOne({
+   const deletedNotification= await Notification.findOneAndDelete({
       recipientId: recipientId,
       senderId: senderId,
       status: "requestSend",
     });
 
+    const recipientSocketId = ActiveUsers.getUserSocketId(recipientId);
+    if(recipientSocketId){
+      io.to(recipientSocketId).emit("unsendconnection", {
+        notificationId: deletedNotification._id,
+      });
+    }
     return resp.status(200).send({
       success: true,
       message: "Connection request removed",
