@@ -414,6 +414,12 @@ const DiscussionDetails = ({ params }) => {
                     <Drawer.Portal>
                       <Drawer.Overlay className="fixed inset-0 " />
                       <Drawer.Content className="rounded-se-lg bg-gray-100 dark:bg-gray-800  h-full max-w-[80%] w-[380px] fixed bottom-0 right-0  overflow-y-auto overflow-x-hidden scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-300 scrollbar-thumb-rounded-full shadow-lg shadow-gray-600">
+                        <Drawer.Title className="sr-only">
+                          Liked By
+                        </Drawer.Title>
+                        <Drawer.Description className="sr-only">
+                          All user that liked the discussion
+                        </Drawer.Description>
                         <LikedBy likedByUsers={likedByUsers} />
                       </Drawer.Content>
                     </Drawer.Portal>

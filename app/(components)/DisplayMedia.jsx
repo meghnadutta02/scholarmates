@@ -2,7 +2,13 @@ import { DownloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import React from "react";
 import { FaFilePdf } from "react-icons/fa";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { IoIosDocument } from "react-icons/io";
 import { FileArchiveIcon } from "lucide-react";
 import { SiMicrosoftexcel } from "react-icons/si";
@@ -25,6 +31,10 @@ const FileItem = ({ fileType, fileName, url, onClick }) => {
             />
           </DialogTrigger>
           <DialogContent className="fixed top-1/2 left-1/2 w-screen flex items-center justify-center">
+            <DialogTitle className="sr-only">Media</DialogTitle>
+            <DialogDescription className="sr-only">
+              Zoomed on screen image media
+            </DialogDescription>
             <Image
               className="rounded-md w-[100vw]"
               height={2000}

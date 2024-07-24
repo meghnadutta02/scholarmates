@@ -5,19 +5,15 @@ import { Button } from "@/components/ui/button";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Loading from "@/app/(components)/Loading";
 import Link from "next/link";
+import FormatDate from "../utils/FormatDate";
 
 const Page = ({ selectDiscussion }) => {
-  const [roomID, setRoomID] = useState(null);
-  const [isRoomSelected, setIsRoomSelected] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
   const [toggleChatView, setToggleChatView] = useState(true);
   const linktoChatRef = useRef("");
-  useEffect(() => {
-    if (roomID) {
-      setIsRoomSelected(true);
-    }
-  }, [roomID]);
+
   const fetchGroups = async () => {
     try {
       const response = await fetch(`/api/chats/group`);
@@ -49,17 +45,16 @@ const Page = ({ selectDiscussion }) => {
     }
   };
 
-  const handleGroupSelection = useCallback(async (gid) => {
-    setRoomID(gid);
-    linktoChatRef.current = gid;
-    setIsRoomSelected(true);
+  const handleGroupSelection = useCallback(async (grp) => {
+    setSelectedGroup(grp);
+    linktoChatRef.current = grp.groupId;
     setToggleChatView(false);
     setGroups((prevGroups) =>
       prevGroups.map((group) =>
-        group.groupId === gid ? { ...group, unreadCount: 0 } : group
+        group.groupId === grp.groupId ? { ...group, unreadCount: 0 } : group
       )
     );
-    updateReadStatus(gid);
+    updateReadStatus(grp.groupId);
   }, []);
 
   const updateLastMessage = (gid, message, name) => {
@@ -101,7 +96,7 @@ const Page = ({ selectDiscussion }) => {
         <div>
           {toggleChatView && (
             <GroupsInboxSearch
-              setRoomID={setRoomID}
+              setSelectedGroup={setSelectedGroup}
               setToggleChatView={setToggleChatView}
             />
           )}
@@ -117,7 +112,7 @@ const Page = ({ selectDiscussion }) => {
                           className="border-b py-2 hover:bg-gray-100"
                         >
                           <Button
-                            onClick={() => handleGroupSelection(group.groupId)}
+                            onClick={() => handleGroupSelection(group)}
                             variant="icon"
                             className="flex h-12 w-full justify-between items-center truncate"
                           >
@@ -134,30 +129,18 @@ const Page = ({ selectDiscussion }) => {
                               )}
                             </div>
 
-                            <div className="flex gap-3 text-xs font-normal">
-                              {group.unreadCount > 0 && (
-                                <div className="relative inline-block">
-                                  <p
-                                    className="font-bold text-white rounded-full shadow-sm shadow-blue-300 bg-blue-800 flex items-center justify-center"
-                                    style={{
-                                      width: "1.5rem",
-                                      height: "1.5rem",
-                                      lineHeight: "1.5rem",
-                                    }}
-                                  >
-                                    {group.unreadCount}
-                                  </p>
-                                </div>
-                              )}
+                            <div className="items-end font-normal text-xs flex flex-col gap-1">
                               {group.latestMessage.time && (
-                                <p>
-                                  {new Date(
-                                    group.latestMessage?.time
-                                  ).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                </p>
+                                <span>
+                                  <FormatDate
+                                    lastMessageTime={group.latestMessage?.time}
+                                  />
+                                </span>
+                              )}
+                              {group.unreadCount > 0 && (
+                                <div className="font-bold w-5 h-5 text-white rounded-full shadow-sm shadow-blue-300  bg-blue-600">
+                                  <p className="mt-0.5">{group.unreadCount}</p>
+                                </div>
                               )}
                             </div>
                           </Button>
@@ -165,21 +148,16 @@ const Page = ({ selectDiscussion }) => {
                       ))}
                     </div>
                   ) : (
-                    <>
-                      {isRoomSelected && (
-                        <div className="min-h-[34rem] min-w-[372px] sm:min-w-[480px] md:min-w-[750px]">
-                          <GroupChatbox
-                            key={roomID || linktoChatRef.current}
-                            roomID={roomID || linktoChatRef.current}
-                            setGroups={setGroups}
-                            setIsRoomSelected={setIsRoomSelected}
-                            setRoomID={setRoomID}
-                            setToggleChatView={setToggleChatView}
-                            updateLastMessage={updateLastMessage}
-                          />
-                        </div>
-                      )}
-                    </>
+                    <div className="min-h-[34rem] min-w-[372px] sm:min-w-[480px] md:min-w-[750px]">
+                      <GroupChatbox
+                        key={selectedGroup.groupId || linktoChatRef.current}
+                        selectedGroup={selectedGroup || linktoChatRef.current}
+                        setGroups={setGroups}
+                        setSelectedGroup={setSelectedGroup}
+                        setToggleChatView={setToggleChatView}
+                        updateLastMessage={updateLastMessage}
+                      />
+                    </div>
                   )}
                 </div>
               </div>

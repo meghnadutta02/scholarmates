@@ -10,6 +10,7 @@ import Loading from "@/app/(components)/Loading";
 import { useSearchParams } from "next/navigation";
 import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
 import { useSession } from "next-auth/react";
+import FormatDate from "@/app/utils/FormatDate";
 
 export default function Chats() {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -187,12 +188,11 @@ export default function Chats() {
 
                                   <div className="items-end font-normal text-xs flex flex-col gap-1">
                                     <span>
-                                      {new Date(
-                                        connection.lastMessageTime
-                                      ).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
+                                      <FormatDate
+                                        lastMessageTime={
+                                          connection.lastMessageTime
+                                        }
+                                      />
                                     </span>
                                     {connection.unreadMessagesCount > 0 && (
                                       <div className="font-bold w-5 h-5 text-white rounded-full shadow-sm shadow-blue-300  bg-blue-600">

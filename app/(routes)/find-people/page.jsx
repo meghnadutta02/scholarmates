@@ -65,7 +65,7 @@ export default function Component() {
       setConnectingProfile(profileId);
 
       if (profileId && userId) {
-        if(requestedProfiles.has(profileId)){
+        if (requestedProfiles.has(profileId)) {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/unsendconnection/${userId.db_id}`,
             {
@@ -88,7 +88,7 @@ export default function Component() {
               return newSet;
             });
           }
-        }else{
+        } else {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${userId.db_id}`,
             {
@@ -108,7 +108,6 @@ export default function Component() {
             setRequestedProfiles((prev) => new Set(prev).add(profileId));
           }
         }
-       
       } else {
         console.log("Profile ID not found");
       }
@@ -183,12 +182,10 @@ export default function Component() {
                               </p>
                               <div className="mt-2">
                                 <Button
-                                 onClick={() =>
+                                  onClick={() =>
                                     handleConnectClick(profile._id)
                                   }
-                                  disabled={
-                                    connectingProfile === profile._id 
-                                  }
+                                  disabled={connectingProfile === profile._id}
                                   className={
                                     requestedProfiles.has(profile._id)
                                       ? "bg-gray-500 text-white cursor-pointer"
@@ -246,7 +243,6 @@ export default function Component() {
           </div>
           <Link
             href={`/profile/${session?.user?.db_id}`}
-            asChild
             className="flex justify-center"
           >
             <span className="text-blue-600 font-xl">

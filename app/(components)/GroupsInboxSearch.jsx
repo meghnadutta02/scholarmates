@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function Component({ setRoomID, setToggleChatView }) {
+export default function Component({ setSelectedGroup, setToggleChatView }) {
   const [showList, setShowList] = useState(false);
   const [groups, setGroups] = useState([]);
   const [filteredGroups, setFilteredGroups] = useState([]);
@@ -75,8 +75,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
                   key={group._id}
                   href="#"
                   onClick={(e) => {
-                    setRoomID(group._id);
-
+                    setSelectedGroup(group);
                     setToggleChatView(false);
                     setShowList(false);
                   }}

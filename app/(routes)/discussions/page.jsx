@@ -146,7 +146,7 @@ const DiscussionsPage = () => {
             <FilterDrawer applyFilters={handleFilterApplication} />
 
             <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
+              <DialogTrigger>
                 <CgPlayListAdd className="h-9 w-9 mt-1 cursor-pointer" />
               </DialogTrigger>
               <DialogContent className="sm:max-w-[720px] overflow-y-auto max-h-[95%]">

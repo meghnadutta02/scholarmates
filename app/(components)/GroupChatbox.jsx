@@ -17,26 +17,24 @@ import Image from "next/image";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 const GroupChatbox = ({
-  roomID,
+  selectedGroup,
   setGroups,
-  setIsRoomSelected,
-  setRoomID,
+  setSelectedGroup,
   setToggleChatView,
   updateLastMessage,
 }) => {
   const { socket } = useCustomSession();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
-
+  const groupId = selectedGroup.groupId || selectedGroup._id;
   const [showGroupDetails, setShowGroupDetails] = useState(false);
   const [message, setMessage] = useState({
     text: "",
-    groupId: roomID,
+    groupId: groupId,
     attachments: [],
   });
-  const groupId = roomID;
   const [inboxMessages, setInboxMessages] = useState(new Map());
-  const [groupDetails, setGroupDetails] = useState({});
+  const [groupDetails, setGroupDetails] = useState(null);
   const messagesEndRef = useRef(null);
   const [filePreviews, setFilePreviews] = useState([]);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
@@ -110,9 +108,9 @@ const GroupChatbox = ({
 
       const formData = new FormData();
       formData.append("text", message.text);
-      formData.append("sender", session.user.db_id);
+      formData.append("sender", session?.user.db_id);
       formData.append("groupId", groupId);
-      formData.append("senderName", session.user.name);
+      formData.append("senderName", session?.user.name);
 
       if (message.attachments != null) {
         message.attachments.forEach((file) => {
@@ -134,7 +132,7 @@ const GroupChatbox = ({
         });
         socket.emit("send-message", {
           message: data.result,
-          roomID: roomID,
+          roomID: groupId,
         });
         scrollDown();
       } else {
@@ -152,7 +150,7 @@ const GroupChatbox = ({
       updateLastMessage(groupId, message.text, session.user.name);
       setMessage({
         text: "",
-        groupId: roomID,
+        groupId: groupId,
         attachments: [],
       });
       setFilePreviews([]);
@@ -189,7 +187,7 @@ const GroupChatbox = ({
         socket.off("receive-message", messageHandler);
       };
     }
-  }, [groupId, socket, session.user.name, updateLastMessage]);
+  }, [groupId, socket, session?.user.name, updateLastMessage]);
 
   const scrollDown = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -234,7 +232,6 @@ const GroupChatbox = ({
     (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
   );
 
- 
   const [showScrollButton, setShowScrollButton] = useState(false);
   const chatContainerRef = useRef(null);
 
@@ -260,13 +257,12 @@ const GroupChatbox = ({
 
   return (
     <>
-      {showGroupDetails ? (
+      {showGroupDetails && groupDetails ? (
         <GroupDetails
           groupDetails={groupDetails}
           setShowGroupDetails={setShowGroupDetails}
           setGroups={setGroups}
-          setIsRoomSelected={setIsRoomSelected}
-          setRoomID={setRoomID}
+          setSelectedGroup={setSelectedGroup}
           setToggleChatView={setToggleChatView}
         />
       ) : (
@@ -282,10 +278,10 @@ const GroupChatbox = ({
             )}
             <div className="flex items-center justify-between p-3">
               <h2
-                className="text-center font-semibold text-xl py-4 cursor-pointer"
+                className="text-left w-[80%] font-semibold text-xl py-2 cursor-pointer"
                 onClick={() => setShowGroupDetails(true)}
               >
-                {groupDetails?.name}
+                {selectedGroup.groupName || selectedGroup.name}
               </h2>
               <div className=" p-1 rounded-lg">
                 <IoArrowBackCircleOutline
