@@ -64,7 +64,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
           className="absolute w-full pt-4 overflow-y-auto scrollbar-none bg-gray-100 max-h-[400px]"
         >
           {filteredGroups.length === 0 ? (
-            <p className="text-red-400 mt-4 text-center">
+            <p className="text-gray-700 mt-4 text-center">
               No discussion matched your search
             </p>
           ) : (
@@ -75,13 +75,12 @@ export default function Component({ setRoomID, setToggleChatView }) {
                   key={group._id}
                   href="#"
                   onClick={(e) => {
-                    console.log(group);
                     setRoomID(group._id);
 
                     setToggleChatView(false);
                     setShowList(false);
                   }}
-                  className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-red-200"
+                  className="flex items-center justify-start gap-4 px-2 h-14 w-full rounded-md hover:bg-gray-200"
                 >
                   <div className="">
                     <p className="text-sm font-medium leading-none">

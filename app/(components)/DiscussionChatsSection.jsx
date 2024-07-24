@@ -13,6 +13,11 @@ const Page = ({ selectDiscussion }) => {
   const [groups, setGroups] = useState([]);
   const [toggleChatView, setToggleChatView] = useState(true);
   const linktoChatRef = useRef("");
+  useEffect(() => {
+    if (roomID) {
+      setIsRoomSelected(true);
+    }
+  }, [roomID]);
   const fetchGroups = async () => {
     try {
       const response = await fetch(`/api/chats/group`);
