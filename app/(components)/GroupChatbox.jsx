@@ -24,7 +24,6 @@ const GroupChatbox = ({
   setToggleChatView,
   updateLastMessage,
 }) => {
-  console.log(roomID);
   const { socket } = useCustomSession();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
