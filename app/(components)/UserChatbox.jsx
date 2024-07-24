@@ -522,6 +522,8 @@ const UserChatbox = ({
                     layout="fill"
                     objectFit="cover"
                     className="rounded-lg"
+                    height="auto"
+                    width="auto"
                   />
                   <button
                     className="absolute top-0 right-0 bg-white rounded-full p-1"

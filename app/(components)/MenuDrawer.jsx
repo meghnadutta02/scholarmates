@@ -6,6 +6,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  DrawerDescription,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { IoMdMenu } from "react-icons/io";
@@ -33,6 +34,9 @@ const MenuDrawer = () => {
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Menu</DrawerTitle>
+          <DrawerDescription className="sr-only">
+            Menu Drawer for mobile screens
+          </DrawerDescription>
         </DrawerHeader>
         <nav className="flex flex-col items-start gap-4 p-4">
           <Link
@@ -86,7 +90,9 @@ const MenuDrawer = () => {
         </nav>
         <DrawerFooter>
           <DrawerClose>
-            <Button variant="outline">Close</Button>
+            <span className="p-2 border-2 border-gray-500 font-semibold rounded-md">
+              Close
+            </span>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

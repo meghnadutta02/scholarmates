@@ -141,7 +141,7 @@ const Page = () => {
                         ? "/chats"
                         : "/requests"
                     }
-                    className="flex gap-2 justify-start"
+                    className="flex gap-2 justify-start items-center"
                   >
                     <div className="text-center mt-1">
                       <Image
