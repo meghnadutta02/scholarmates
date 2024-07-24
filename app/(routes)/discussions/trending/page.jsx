@@ -161,26 +161,14 @@ const Trending = () => {
   }, [session, college]);
 
   const handleButtonClick = async (discussionId, id) => {
+    const toastId = toast.loading("Sending request...", {
+      autoClose: 4000,
+      closeOnClick: true,
+    });
     try {
-      const toastId = toast.loading("Sending request...",{
-        autoClose:4000,
-        closeOnClick:true,
-      });
-
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
       });
-
-      if (!res.ok) {
-        toast.update(toastId, {
-          render: "Error sending request",
-          type: "error",
-          isLoading: false,
-          autoClose: 5000,
-          closeOnClick:true
-        });
-        throw new Error("Error sending request");
-      }
 
       //if the group is private and request is sent to moderators
       if (res.status === 200) {
@@ -190,7 +178,7 @@ const Trending = () => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
-          closeOnClick:true
+          closeOnClick: true,
         });
         socket.emit("joinRequest", { request: data.result, user: userData });
         setDiscussions((prevDiscussions) =>
@@ -209,7 +197,7 @@ const Trending = () => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
-          closeOnClick:true
+          closeOnClick: true,
         });
 
         setDiscussions((prevDiscussions) =>
@@ -223,9 +211,13 @@ const Trending = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request",{
-        autoClose:4000,
-        closeOnClick:true,
+
+      toast.update(toastId, {
+        render: "Error sending request",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+        closeOnClick: true,
       });
     }
   };
@@ -242,10 +234,11 @@ const Trending = () => {
             session?.user?.collegeName
               ? setCollege(e.target.checked)
               : toast.info(
-                  "Please update your college in profile settings to filter discussions by college.",{
-            autoClose:4000,
-            closeOnClick:true,
-          }
+                  "Please update your college in profile settings to filter discussions by college.",
+                  {
+                    autoClose: 4000,
+                    closeOnClick: true,
+                  }
                 )
           }
         />

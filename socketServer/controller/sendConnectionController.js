@@ -199,12 +199,10 @@ export const receiveConnectionController = async (req, resp) => {
   }
 };
 
-
 // REMOVE CONNECTION
 
 export const removeConnectionController = async (req, resp) => {
   try {
-   
     const { recipientId } = req.body;
     const senderId = req.params.senderId;
 
@@ -220,18 +218,33 @@ export const removeConnectionController = async (req, resp) => {
     }
 
     // Remove the request from the users' pending and received lists
-    await User.updateOne({ _id: senderId }, { $pull: { requestPending: recipientId } });
-    await User.updateOne({ _id: recipientId }, { $pull: { requestReceived: senderId } });
+    await User.updateOne(
+      { _id: senderId },
+      { $pull: { requestPending: recipientId } }
+    );
+    await User.updateOne(
+      { _id: recipientId },
+      { $pull: { requestReceived: senderId } }
+    );
 
     // Delete the friendship request
     await friendshipRequest.deleteOne();
 
     // Delete the corresponding notification
-    await Notification.deleteOne({
+    const deletedNotification = await Notification.findOneAndDelete({
       recipientId: recipientId,
       senderId: senderId,
       status: "requestSend",
     });
+    console.log(deletedNotification);
+    // Removing the notification from the recipient's socket
+    const socketId = ActiveUsers.getUserSocketId(recipientId);
+    if (socketId && deletedNotification) {
+      console.log("Sending..");
+      io.to(socketId).emit("removeConnectionRequestNotification", {
+        notificationId: deletedNotification._id,
+      });
+    }
 
     return resp.status(200).send({
       success: true,

@@ -174,26 +174,14 @@ const DiscussionDetails = ({ params }) => {
   };
 
   const handleButtonClick = async (id) => {
+    const toastId = toast.loading("Sending request...", {
+      autoClose: 4000,
+      closeOnClick: true,
+    });
     try {
-      const toastId = toast.loading("Sending request...", {
-        autoClose: 4000,
-        closeOnClick: true,
-      });
-
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
       });
-
-      if (!res.ok) {
-        toast.update(toastId, {
-          render: "Error sending request",
-          type: "error",
-          isLoading: false,
-          autoClose: 5000,
-          closeOnClick: true,
-        });
-        throw new Error("Error sending request");
-      }
 
       //if the group is private and request is sent to moderators
       if (res.status === 200) {
@@ -222,8 +210,11 @@ const DiscussionDetails = ({ params }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request", {
-        autoClose: 4000,
+      toast.update(toastId, {
+        render: "Error sending request",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
         closeOnClick: true,
       });
     }

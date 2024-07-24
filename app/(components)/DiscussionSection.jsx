@@ -147,9 +147,9 @@ const DiscussionSection = ({ user }) => {
       navigator.clipboard.writeText(
         `${window.location.origin}/discussions/${discussion._id}`
       );
-      toast.success("Link copied to clipboard!",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.success("Link copied to clipboard!", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     }
   };
@@ -229,26 +229,14 @@ const DiscussionSection = ({ user }) => {
   };
 
   const handleButtonClick = async (discussionId, id) => {
+    const toastId = toast.loading("Sending request...", {
+      autoClose: 4000,
+      closeOnClick: true,
+    });
     try {
-      const toastId = toast.loading("Sending request...",{
-        autoClose:4000,
-        closeOnClick:true,
-      });
-
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
       });
-
-      if (!res.ok) {
-        toast.update(toastId, {
-          render: "Error sending request",
-          type: "error",
-          isLoading: false,
-          autoClose: 5000,
-          closeOnClick:true,
-        });
-        throw new Error("Error sending request");
-      }
 
       //if the group is private and request is sent to moderators
       if (res.status === 200) {
@@ -258,7 +246,7 @@ const DiscussionSection = ({ user }) => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
-          closeOnClick:true,
+          closeOnClick: true,
         });
         socket.emit("joinRequest", { request: data.result, user: session });
         setDiscussions((prevDiscussions) =>
@@ -277,7 +265,7 @@ const DiscussionSection = ({ user }) => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
-          closeOnClick:true,
+          closeOnClick: true,
         });
 
         setDiscussions((prevDiscussions) =>
@@ -291,9 +279,12 @@ const DiscussionSection = ({ user }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.update(toastId, {
+        render: "Error sending request",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+        closeOnClick: true,
       });
     }
   };

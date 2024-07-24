@@ -119,6 +119,26 @@ export const SessionProvider = ({ children }) => {
       newSocket.on(event, handleNewNotification);
     });
 
+    newSocket.on("removeConnectionRequestNotification", (data) => {
+      setNotifications((prevNotifications) => {
+        const foundNotification = prevNotifications.find(
+          (noti) =>
+            noti.notificationId === data.notificationId ||
+            noti._id === data.notificationId
+        );
+
+        if (foundNotification && !foundNotification.isSeen) {
+          setUnreadCount((prevUnreadCount) => prevUnreadCount - 1);
+        }
+
+        return prevNotifications.filter(
+          (noti) =>
+            noti.notificationId !== data.notificationId &&
+            noti._id !== data.notificationId
+        );
+      });
+    });
+
     return () => {
       [
         "connectionRequest",
