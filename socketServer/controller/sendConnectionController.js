@@ -240,7 +240,6 @@ export const removeConnectionController = async (req, resp) => {
     // Removing the notification from the recipient's socket
     const socketId = ActiveUsers.getUserSocketId(recipientId);
     if (socketId && deletedNotification) {
-      console.log("Sending..");
       io.to(socketId).emit("removeConnectionRequestNotification", {
         notificationId: deletedNotification._id,
       });

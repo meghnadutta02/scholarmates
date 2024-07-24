@@ -138,6 +138,7 @@ export const SessionProvider = ({ children }) => {
         );
       });
     });
+    newSocket.off("removeConnectionRequestNotification");
 
     return () => {
       [
@@ -149,6 +150,7 @@ export const SessionProvider = ({ children }) => {
       ].forEach((event) => {
         newSocket.off(event, handleNewNotification);
       });
+
       newSocket.close();
     };
   }, [session?.db_id]);
