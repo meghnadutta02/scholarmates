@@ -138,7 +138,6 @@ export const SessionProvider = ({ children }) => {
         );
       });
     });
-    newSocket.off("removeConnectionRequestNotification");
 
     return () => {
       [
