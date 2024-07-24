@@ -175,7 +175,10 @@ const DiscussionDetails = ({ params }) => {
 
   const handleButtonClick = async (id) => {
     try {
-      const toastId = toast.loading("Sending request...");
+      const toastId = toast.loading("Sending request...", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
 
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
@@ -187,6 +190,7 @@ const DiscussionDetails = ({ params }) => {
           type: "error",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick: true,
         });
         throw new Error("Error sending request");
       }
@@ -199,6 +203,7 @@ const DiscussionDetails = ({ params }) => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick: true,
         });
         socket.emit("joinRequest", { request: data.result, user: session });
         setStatus("pending");
@@ -210,13 +215,17 @@ const DiscussionDetails = ({ params }) => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick: true,
         });
 
         setStatus("accepted");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request");
+      toast.error("Error sending request", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
     }
   };
 
@@ -233,7 +242,10 @@ const DiscussionDetails = ({ params }) => {
       navigator.clipboard.writeText(
         `${window.location.origin}/discussions/${discussion._id}`
       );
-      toast.success("Link copied to clipboard!");
+      toast.success("Link copied to clipboard!", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
     }
   };
 
@@ -365,20 +377,25 @@ const DiscussionDetails = ({ params }) => {
                   <span className="sr-only">Dislike</span>
                   <span className="ml-2">{discussion.dislikes}</span>
                 </Button>
-                <Button
-                  className={`${
-                    status === "pending" ? "w-20" : "w-16 "
-                  } h-8 md:h-10 md:w-20`}
-                  variant="secondary"
-                  disabled={status === "accepted" || status === "pending"}
-                  onClick={() => handleButtonClick(discussion.groupId)}
-                >
-                  {status === "accepted"
-                    ? "Member"
-                    : status === "pending"
-                    ? "Requested"
-                    : "Join"}
-                </Button>
+
+                {status === "accepted" ? (
+                  <Link href={`/chats?discussionId=${discussion._id}`}>
+                    <Button variant="icon" className="flex md:ml-4">
+                      <IoChatboxOutline className="h-6 w-6" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    className={`${
+                      status === "pending" ? "w-20" : "w-16 "
+                    } h-8 md:h-10 md:w-20`}
+                    variant="secondary"
+                    disabled={status === "accepted" || status === "pending"}
+                    onClick={() => handleButtonClick(discussion.groupId)}
+                  >
+                    {status === "pending" ? "Requested" : "Join"}
+                  </Button>
+                )}
                 <Button
                   className="h-10"
                   size="icon"
@@ -397,6 +414,12 @@ const DiscussionDetails = ({ params }) => {
                     <Drawer.Portal>
                       <Drawer.Overlay className="fixed inset-0 " />
                       <Drawer.Content className="rounded-se-lg bg-gray-100 dark:bg-gray-800  h-full max-w-[80%] w-[380px] fixed bottom-0 right-0  overflow-y-auto overflow-x-hidden scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-300 scrollbar-thumb-rounded-full shadow-lg shadow-gray-600">
+                        <Drawer.Title className="sr-only">
+                          Liked By
+                        </Drawer.Title>
+                        <Drawer.Description className="sr-only">
+                          All user that liked the discussion
+                        </Drawer.Description>
                         <LikedBy likedByUsers={likedByUsers} />
                       </Drawer.Content>
                     </Drawer.Portal>

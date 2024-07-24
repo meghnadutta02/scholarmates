@@ -130,7 +130,10 @@ const UserChatbox = ({
 
     try {
       if (message.text.trim() == "" && message.attachments.length === 0) {
-        toast.warning("Message empty");
+        toast.warning("Message empty", {
+          autoClose: 4000,
+          closeOnClick: true,
+        });
         throw new Error("Message empty");
       }
       // Temporary message update for the UI
@@ -176,9 +179,16 @@ const UserChatbox = ({
           sender: session?.user?.db_id,
         });
         scrollDown();
-        updateLastMessage(userID, message.text, message.createdAt);
+        updateLastMessage(
+          userID,
+          message.text,
+          data.result.createdAt || new Date()
+        );
       } else {
-        toast.error("Failed to send message");
+        toast.error("Failed to send message", {
+          autoClose: 4000,
+          closeOnClick: true,
+        });
         // Remove the temporary message from the UI on failure
         setInboxMessages((prevMessages) =>
           prevMessages.filter((msg) => msg.tempId !== tempMessage.tempId)
@@ -362,7 +372,7 @@ const UserChatbox = ({
 
               <div className="flex flex-col">
                 <h1 className="text-lg font-semibold">
-                  {selectedUser.userName}
+                  {selectedUser.userName || selectedUser.name}
                 </h1>
               </div>
             </div>
@@ -512,6 +522,8 @@ const UserChatbox = ({
                     layout="fill"
                     objectFit="cover"
                     className="rounded-lg"
+                    height="auto"
+                    width="auto"
                   />
                   <button
                     className="absolute top-0 right-0 bg-white rounded-full p-1"

@@ -162,7 +162,10 @@ const Trending = () => {
 
   const handleButtonClick = async (discussionId, id) => {
     try {
-      const toastId = toast.loading("Sending request...");
+      const toastId = toast.loading("Sending request...",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
 
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
@@ -174,6 +177,7 @@ const Trending = () => {
           type: "error",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick:true
         });
         throw new Error("Error sending request");
       }
@@ -186,6 +190,7 @@ const Trending = () => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick:true
         });
         socket.emit("joinRequest", { request: data.result, user: userData });
         setDiscussions((prevDiscussions) =>
@@ -204,6 +209,7 @@ const Trending = () => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick:true
         });
 
         setDiscussions((prevDiscussions) =>
@@ -217,7 +223,10 @@ const Trending = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request");
+      toast.error("Error sending request",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     }
   };
   if (loading) return <Loading />;
@@ -233,7 +242,10 @@ const Trending = () => {
             session?.user?.collegeName
               ? setCollege(e.target.checked)
               : toast.info(
-                  "Please update your college in profile settings to filter discussions by college."
+                  "Please update your college in profile settings to filter discussions by college.",{
+            autoClose:4000,
+            closeOnClick:true,
+          }
                 )
           }
         />

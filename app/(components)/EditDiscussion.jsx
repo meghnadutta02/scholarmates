@@ -111,9 +111,15 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
       !selectedCategory ||
       !selectedSubCategories.length
     ) {
-      return toast.error("Please fill out all fields");
+      return toast.error("Please fill out all fields", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
     }
-    const toastId = toast.loading("Updating discussion...");
+    const toastId = toast.loading("Updating discussion...", {
+      autoClose: 4000,
+      closeOnClick: true,
+    });
 
     formData.append("title", title);
     formData.append("content", content);
@@ -142,6 +148,7 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
           type: "success",
           isLoading: false,
           autoClose: 4000,
+          closeOnClick: true,
         });
       }
     } catch (error) {
@@ -150,6 +157,7 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
         type: "error",
         isLoading: false,
         autoClose: 4000,
+        closeOnClick: true,
       });
       console.error("Error updating discussion:", error);
     }
@@ -183,6 +191,7 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
             placeholder="Write a description"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            maxLength={800}
           />
         </div>
         <div className="flex ">

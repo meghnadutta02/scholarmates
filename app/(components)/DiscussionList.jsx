@@ -247,7 +247,10 @@ const DiscussionList = ({
 
   const handleButtonClick = async (discussionId, id) => {
     try {
-      const toastId = toast.loading("Sending request...");
+      const toastId = toast.loading("Sending request...", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
 
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
@@ -259,6 +262,7 @@ const DiscussionList = ({
           type: "error",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick: true,
         });
         throw new Error("Error sending request");
       }
@@ -271,6 +275,7 @@ const DiscussionList = ({
           type: "success",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick: true,
         });
 
         socket.emit("joinRequest", { request: data.result, user: session });
@@ -290,6 +295,7 @@ const DiscussionList = ({
           type: "success",
           isLoading: false,
           autoClose: 5000,
+          closeOnClick: true,
         });
 
         setDiscussions((prevDiscussions) =>
@@ -303,7 +309,10 @@ const DiscussionList = ({
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request");
+      toast.error("Error sending request", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
     }
   };
 
@@ -320,7 +329,10 @@ const DiscussionList = ({
       navigator.clipboard.writeText(
         `${window.location.origin}/discussions/${discussion._id}`
       );
-      toast.success("Link copied to clipboard!");
+      toast.success("Link copied to clipboard!", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
     }
   };
 
@@ -475,9 +487,11 @@ const DiscussionActions = ({
       </Button>
 
       {discussion.isMember ? (
-        <Button variant="icon" className="flex md:ml-4">
-          <IoChatboxOutline className="h-6 w-6" />
-        </Button>
+        <Link href={`/chats?discussionId=${discussion._id}`}>
+          <Button variant="icon" className="flex md:ml-4">
+            <IoChatboxOutline className="h-6 w-6" />
+          </Button>
+        </Link>
       ) : (
         <Button
           className={`${

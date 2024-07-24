@@ -62,7 +62,7 @@ const NavbarClient = () => {
                   <BellIcon className="relative h-5 w-5 text-white cursor-pointer" />
                   {unreadCount > 0 && (
                     <span className="z-10 md:block text-center p-[2px] w-4 h-4 text-[11px] font-bold leading-none top-[-9px] text-red-100 bg-red-600 rounded-full right-[-5px] absolute">
-                      {unreadCount}
+                      {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                   )}
                 </div>

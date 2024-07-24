@@ -100,17 +100,24 @@ function NewDiscussion({ setDiscussions }) {
       !content ||
       !type ||
       !selectedCategory ||
-      !selectedSubCategories.length
+      !selectedSubCategories.length ||
+      !groupTitle
     ) {
       setIsDisabled(false);
-      return toast.error("Please fill out all fields");
+      return toast.error("Please fill out all fields", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
     }
 
     selectedSubCategories.forEach((subcategory) => {
       formData.append("subcategories", subcategory.value);
     });
 
-    const toastId = toast.loading("Creating discussion...");
+    const toastId = toast.loading("Creating discussion...", {
+      autoClose: 4000,
+      closeOnClick: true,
+    });
 
     try {
       const result = await fetch(`/api/discussion`, {
@@ -136,6 +143,7 @@ function NewDiscussion({ setDiscussions }) {
           type: "success",
           isLoading: false,
           autoClose: 4000,
+          closeOnClick: true,
         });
       }
     } catch (error) {
@@ -145,6 +153,7 @@ function NewDiscussion({ setDiscussions }) {
         type: "error",
         isLoading: false,
         autoClose: 4000,
+        closeOnClick: true,
       });
     }
 
@@ -177,6 +186,7 @@ function NewDiscussion({ setDiscussions }) {
             placeholder="Write a description"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            maxLength={800}
           />
         </div>
         <div className="w-1/2 my-3">

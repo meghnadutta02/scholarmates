@@ -143,9 +143,15 @@ const ProfileEdit = ({ user, setUser }) => {
       setUser(data.result);
       update(data.result);
       setFormOpen(false);
-      toast.success("Profile updated successfully");
+      toast.success("Profile updated successfully",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     } else {
-      toast.error("Profile update failed");
+      toast.error("Profile update failed",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     }
   };
 

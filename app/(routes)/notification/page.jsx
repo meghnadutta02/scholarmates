@@ -2,7 +2,7 @@
 import TimeAgo from "javascript-time-ago";
 import Image from "next/image";
 import ReactTimeAgo from "react-time-ago";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import en from "javascript-time-ago/locale/en";
 import { toast } from "react-toastify";
@@ -16,6 +16,7 @@ TimeAgo.addLocale(ru);
 const Page = () => {
   const { session, notifications, clearUnreadCount, setNotifications } =
     useSession();
+  const hasMarkedAsSeen = useRef(false);
 
   const deleteAllNotifications = async () => {
     if (session?.db_id && notifications.length > 0) {
@@ -37,7 +38,10 @@ const Page = () => {
         if (resp.ok) {
           clearUnreadCount();
           setNotifications([]);
-          toast.success("All notifications cleared successfully");
+          toast.success("All notifications cleared successfully", {
+            autoClose: 4000,
+            closeOnClick: true,
+          });
         }
       } catch (error) {
         console.error("Failed to mark notifications as seen", error);
@@ -74,7 +78,10 @@ const Page = () => {
       }
     };
 
-    markAllAsSeen();
+    if (!hasMarkedAsSeen.current) {
+      markAllAsSeen();
+      hasMarkedAsSeen.current = true;
+    }
   }, [session?.db_id, notifications, setNotifications, clearUnreadCount]);
 
   const handleClose = async (index, item) => {
@@ -124,60 +131,64 @@ const Page = () => {
               key={index}
               className="md:p-2 p-1 bg-white border font-sans border-gray-200 rounded-md shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 my-auto "
             >
-              <div className="flex flex-row items-center justify-between">
-                <Link
-                  href={
-                    item.status === "discussNotify"
-                      ? `/discussions/${item.discussionId}`
-                      : item.status === "joinRequestAccepted"
-                      ? "/chats"
-                      : "/requests"
-                  }
-                  className="inline my-auto "
-                >
-                  <Image
-                    src={item.profilePic}
-                    alt={item.sendername}
-                    width={36}
-                    height={36}
-                    style={{
-                      aspectRatio: "32/32",
-                      objectFit: "cover",
-                    }}
-                    className="rounded-full mr-2 inline"
-                  />
-                  <span className="font-semibold text-gray-900 mr-1 dark:text-white">
-                    {item.sendername}{" "}
-                  </span>
-                  {[
-                    "requestSend",
-                    "requestaccept",
-                    "discussNotify",
-                    "joinRequest",
-                    "joinRequestAccepted",
-                  ].includes(item.status) && <span> {item.message}.</span>}
-                </Link>
-                <button
-                  type="button"
-                  className="text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
-                  aria-label="Close"
-                  onClick={() => handleClose(index, item)}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
+              <div className="inline my-auto ">
+                <div className="flex flex-row items-start gap-2 justify-between">
+                  <Link
+                    href={
+                      item.status === "discussNotify"
+                        ? `/discussions/${item.discussionId}`
+                        : item.status === "joinRequestAccepted"
+                        ? "/chats"
+                        : "/requests"
+                    }
+                    className="flex gap-2 justify-start items-center"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+                    <div className="text-center mt-1">
+                      <Image
+                        src={item.profilePic}
+                        alt={item.sendername}
+                        width={36}
+                        height={36}
+                        style={{
+                          aspectRatio: "36/36",
+                          objectFit: "cover",
+                        }}
+                        className="rounded-full"
+                      />
+                    </div>
+                    <p className="text-xs sm:text-sm lg:text-lg font-semibold text-gray-900 dark:text-white">
+                      {item.sendername}{" "}
+                      {[
+                        "requestSend",
+                        "requestaccept",
+                        "discussNotify",
+                        "joinRequest",
+                        "joinRequestAccepted",
+                      ].includes(item.status) && <span> {item.message}.</span>}
+                    </p>
+                  </Link>
+                  <button
+                    type="button"
+                    className="text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
+                    aria-label="Close"
+                    onClick={() => handleClose(index, item)}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <span className="text-xs text-gray-700 flex justify-end">

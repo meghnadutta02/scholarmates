@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function Component({ setRoomID, setToggleChatView }) {
+export default function Component({ setSelectedGroup, setToggleChatView }) {
   const [showList, setShowList] = useState(false);
   const [groups, setGroups] = useState([]);
   const [filteredGroups, setFilteredGroups] = useState([]);
@@ -64,7 +64,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
           className="absolute w-full pt-4 overflow-y-auto scrollbar-none bg-gray-100 max-h-[400px]"
         >
           {filteredGroups.length === 0 ? (
-            <p className="text-red-400 mt-4 text-center">
+            <p className="text-gray-700 mt-4 text-center">
               No discussion matched your search
             </p>
           ) : (
@@ -75,8 +75,7 @@ export default function Component({ setRoomID, setToggleChatView }) {
                   key={group._id}
                   href="#"
                   onClick={(e) => {
-                    setRoomID(setRoomID);
-
+                    setSelectedGroup(group);
                     setToggleChatView(false);
                     setShowList(false);
                   }}

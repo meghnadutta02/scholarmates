@@ -161,7 +161,10 @@ const DiscussionList = () => {
       navigator.clipboard.writeText(
         `${window.location.origin}/discussions/${discussion._id}`
       );
-      toast.success("Link copied to clipboard!");
+      toast.success("Link copied to clipboard!",{
+        autoClose:4000,
+        closeOnClick:true,
+      });
     }
   };
 
