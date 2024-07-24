@@ -14,9 +14,14 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const Page = () => {
-  const { session, notifications, clearUnreadCount, setNotifications } =
-    useSession();
-  const hasMarkedAsSeen = useRef(false);
+  const {
+    session,
+    notifications,
+    clearUnreadCount,
+    setNotifications,
+    allNotificationsSeen,
+    setAllNotificationsSeen,
+  } = useSession();
 
   const deleteAllNotifications = async () => {
     if (session?.db_id && notifications.length > 0) {
@@ -78,11 +83,18 @@ const Page = () => {
       }
     };
 
-    if (!hasMarkedAsSeen.current) {
+    if (!allNotificationsSeen) {
       markAllAsSeen();
-      hasMarkedAsSeen.current = true;
+      setAllNotificationsSeen(true);
     }
-  }, [session?.db_id, notifications, setNotifications, clearUnreadCount]);
+  }, [
+    session?.db_id,
+    notifications,
+    setNotifications,
+    clearUnreadCount,
+    allNotificationsSeen,
+    setAllNotificationsSeen,
+  ]);
 
   const handleClose = async (index, item) => {
     try {

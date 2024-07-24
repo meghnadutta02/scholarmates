@@ -9,7 +9,7 @@ export const SessionProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [request, setRequest] = useState();
   const [loading, setLoading] = useState(true);
-
+  const [allNotificationsSeen, setAllNotificationsSeen] = useState(true);
   const [notifications, setNotifications] = useState([]);
   const [socket, setSocket] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -34,6 +34,7 @@ export const SessionProvider = ({ children }) => {
   };
 
   const removeDuplicates = (array) => {
+    console.log(array);
     const uniqueSet = new Map();
 
     array.forEach((item) => {
@@ -78,9 +79,13 @@ export const SessionProvider = ({ children }) => {
             const data = await res.json(); // contains all notifications
 
             setNotifications(data.notifications);
-            setUnreadCount(() => {
-              return data.notifications.filter((noti) => !noti.isSeen).length;
-            });
+            var unreadNotifications = data.notifications.filter(
+              (noti) => !noti.isSeen
+            );
+            setUnreadCount(unreadNotifications.length);
+            if (unreadNotifications.length > 0) {
+              setAllNotificationsSeen(false);
+            }
           }
         } catch (error) {
           console.error("Failed to fetch notifications", error);
@@ -106,6 +111,7 @@ export const SessionProvider = ({ children }) => {
           return uniqueNotifications.sort((a, b) => a.timestamp - b.timestamp);
         });
         setUnreadCount((prev) => prev + 1);
+        setAllNotificationsSeen(false);
       }
     };
 
@@ -162,6 +168,8 @@ export const SessionProvider = ({ children }) => {
         socket,
         notifications,
         unreadCount,
+        allNotificationsSeen,
+        setAllNotificationsSeen,
         setSession,
         setRequest,
         setNotifications,

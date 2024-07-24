@@ -130,8 +130,8 @@ export const receiveConnectionController = async (req, resp) => {
         await sender.save();
 
         await Notification.deleteOne({
-          recipientId: user._id,
-          senderId: sender._id,
+          recipientId: sender._id,
+          senderId: userId,
           status: "requestaccept",
         });
 
@@ -153,6 +153,7 @@ export const receiveConnectionController = async (req, resp) => {
           // Emit a notification event only to the recipient's socket
           io.to(senderSocketId).emit("receiveRequest", {
             timestamp: new Date(),
+            recipientId: sender._id,
             senderId: userId,
             sendername: user.name,
             status: "requestaccept",
