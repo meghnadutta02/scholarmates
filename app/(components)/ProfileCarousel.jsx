@@ -53,24 +53,51 @@ export default function ProfileCarousel({ user }) {
     try {
       setConnectingProfile(profileId);
       if (profileId && user) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${user.db_id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ recipientId: profileId }),
-            cache: "no-cache",
+        if (requestedProfiles.has(profileId)) {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/unsendconnection/${user.db_id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ recipientId: profileId }),
+              cache: "no-cache",
+            }
+          );
+          if (res.ok) {
+            toast.success("Connection request removed", {
+              autoClose: 4000,
+              closeOnClick: true,
+            });
+            setRequestedProfiles((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(profileId);
+              return newSet;
+            });
           }
-        );
-        if (res.ok) {
-          toast.success("Connection request sent", {
-            autoClose: 4000,
-            closeOnClick: true,
-          });
-          setRequestedProfiles((prev) => new Set(prev).add(profileId));
+        } else {
+
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${user.db_id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ recipientId: profileId }),
+              cache: "no-cache",
+            }
+          );
+          if (res.ok) {
+            toast.success("Connection request sent", {
+              autoClose: 4000,
+              closeOnClick: true,
+            });
+            setRequestedProfiles((prev) => new Set(prev).add(profileId));
+          }
         }
+
       } else {
         console.log("Profile ID not found");
       }
@@ -144,18 +171,22 @@ export default function ProfileCarousel({ user }) {
                           </p>
                           <div className="mt-2">
                             <Button
-                              className="h-8 sm:h-10"
+                              className={`h-8 sm:h-10 ${requestedProfiles.has(profile._id)
+                                ? "bg-gray-500 text-white cursor-pointer"
+                                : ""
+                                }`}
                               onClick={() => handleConnectClick(profile._id)}
                               disabled={
-                                connectingProfile === profile._id ||
-                                requestedProfiles.has(profile._id)
+                                connectingProfile === profile._id
+
                               }
+
                             >
                               {requestedProfiles.has(profile._id)
                                 ? "Requested"
                                 : connectingProfile === profile._id
-                                ? "Sending.."
-                                : "Connect"}
+                                  ? "Sending.."
+                                  : "Connect"}
                             </Button>
                           </div>
                         </div>
@@ -170,11 +201,10 @@ export default function ProfileCarousel({ user }) {
                     <div className="bg-gray-100 rounded-xl p-4 text-sm dark:bg-gray-800">
                       <h2 className="font-semibold text-lg">Interests</h2>
                       <ul
-                        className={`list-disc list-inside ${
-                          profile.interestCategories.length > 5
+                        className={`list-disc list-inside ${profile.interestCategories.length > 5
                             ? "grid grid-cols-2 gap-x-4"
                             : ""
-                        }`}
+                          }`}
                       >
                         {profile.interestCategories.map((interest, index) => (
                           <li key={index}>{interest}</li>
