@@ -3,7 +3,7 @@ import User from "@/app/(models)/userModel";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import connect from "@/app/config/db";
-
+import Notification from "@/app/(models)/notificationModel";
 //get user profile
 export async function GET(req) {
   try {

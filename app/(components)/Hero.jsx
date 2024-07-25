@@ -26,7 +26,7 @@ const Hero = () => {
               ]}
               wrapper="span"
               speed={2}
-              className="font-bold  md:pt-16 pt-6  text-blue-800 text-2xl md:text-5xl font-serif dark:text-gray-200"
+              className="font-bold  md:pt-16 pt-6  text-blue-800 text-2xl md:text-5xl sm:text-3xl font-serif dark:text-gray-200"
               repeat={2}
             />
           </div>
@@ -45,7 +45,7 @@ const Hero = () => {
               {subtitle.map((el, i) => (
                 <span
                   key={i}
-                  className="font-semibold text-gray-600 text-md md:text-2xl dark:text-gray-400"
+                  className="font-semibold text-gray-600 text-md sm:text-lg md:text-2xl dark:text-gray-400"
                 >
                   {el}{" "}
                 </span>

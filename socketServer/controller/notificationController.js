@@ -1,6 +1,8 @@
 import Request from "../model/requestModel.js";
 import User from "../model/userModel.js";
+import { io } from "../server.js";
 import Notification from "../model/notificationModel.js";
+import ActiveUsers from "../activeUser.js";
 export const requestNotificationController = async (req, resp) => {
   try {
     const user = req.params.userId;
@@ -211,5 +213,33 @@ export const DeleteNotificationController = async (req, resp) => {
       success: false,
       message: error.message,
     });
+  }
+};
+export const handleUnfollowNotification = async (data) => {
+  try {
+    const { secondUserId, userId } = data;
+    const notifications = await Notification.find({
+      $or: [
+        { senderId: userId, recipientId: secondUserId },
+        { senderId: secondUserId, recipientId: userId },
+      ],
+      status: { $in: ["requestSend", "requestaccept"] },
+    });
+    const notificationIds = notifications.map(
+      (notification) => notification._id
+    );
+    for (let notification of notifications) {
+      const socketId = ActiveUsers.getUserSocketId(
+        notification.recipientId.toString()
+      );
+      if (socketId) {
+        io.to(socketId).emit("removeConnectionRequestNotification", {
+          notificationId: notification._id,
+        });
+      }
+    }
+    await Notification.deleteMany({ _id: { $in: notificationIds } });
+  } catch (error) {
+    console.error("Error handling unfollow notification:", error);
   }
 };

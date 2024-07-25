@@ -12,6 +12,7 @@ import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
 import Notification from "./model/notificationModel.js";
 import { handleJoinRequestNotification } from "./controller/joinRequestNotification.js";
+import { handleUnfollowNotification } from "./controller/notificationController.js";
 import {
   handleDiscussionNotification,
   handleDeletedDiscussionNotification,
@@ -84,6 +85,9 @@ io.on("connection", async (socket) => {
 
   socket.on("discussionDeleted", async (data) => {
     await handleDeletedDiscussionNotification(data);
+  });
+  socket.on("unfollow", async (data) => {
+    await handleUnfollowNotification(data);
   });
 
   // ---------------------Group chat events ----------------------------
