@@ -47,3 +47,33 @@ export const handleDiscussionNotification = async (data) => {
     console.error("Error handling discussion notification:", error);
   }
 };
+
+export const handleDeletedDiscussionNotification = async (data) => {
+  try {
+    const { discussionId, groupId } = data;
+
+    const notifications = await Notification.find({
+      $or: [{ discussionId }, { groupId }],
+    });
+
+    const notificationIds = notifications.map(
+      (notification) => notification._id
+    );
+
+    for (let notification of notifications) {
+      const socketId = ActiveUsers.getUserSocketId(
+        notification.recipientId.toString()
+      );
+
+      if (socketId) {
+        io.to(socketId).emit("deletedDiscussionNotification", {
+          notificationId: notification._id,
+        });
+      }
+    }
+
+    await Notification.deleteMany({ _id: { $in: notificationIds } });
+  } catch (error) {
+    console.error("Error handling deleted discussion notification:", error);
+  }
+};

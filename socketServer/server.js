@@ -12,7 +12,10 @@ import joinRequest from "./route/joinRequestRoute.js";
 import User from "./model/userModel.js";
 import Notification from "./model/notificationModel.js";
 import { handleJoinRequestNotification } from "./controller/joinRequestNotification.js";
-import { handleDiscussionNotification } from "./controller/discussionNotification.js";
+import {
+  handleDiscussionNotification,
+  handleDeletedDiscussionNotification,
+} from "./controller/discussionNotification.js";
 import { handleJoinRequestAcceptedNotification } from "./controller/joinRequestAcceptedNotification.js";
 import ActiveUsers from "./activeUser.js";
 dotenv.config();
@@ -77,6 +80,10 @@ io.on("connection", async (socket) => {
   socket.on("joinRequestAccepted", async (data) => {
     console.log("joinRequestAccepted", data);
     await handleJoinRequestAcceptedNotification(data);
+  });
+
+  socket.on("discussionDeleted", async (data) => {
+    await handleDeletedDiscussionNotification(data);
   });
 
   // ---------------------Group chat events ----------------------------

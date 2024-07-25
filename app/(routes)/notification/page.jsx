@@ -2,7 +2,7 @@
 import TimeAgo from "javascript-time-ago";
 import Image from "next/image";
 import ReactTimeAgo from "react-time-ago";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import en from "javascript-time-ago/locale/en";
 import { toast } from "react-toastify";

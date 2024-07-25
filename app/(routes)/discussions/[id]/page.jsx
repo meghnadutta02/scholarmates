@@ -54,11 +54,16 @@ const DiscussionDetails = ({ params }) => {
       });
 
       if (res.ok) {
+        const data = await res.json();
         toast.success("Discussion deleted successfully", {
           autoClose: 4000,
           closeOnClick: true,
         });
         router.push("/my-engagements");
+        socket.emit("discussionDeleted", {
+          discussionId: deleteDiscussionId,
+          groupId: data.groupId,
+        });
       }
     } catch (error) {
       console.error("Failed to delete discussion:", error);
