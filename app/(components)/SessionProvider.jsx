@@ -127,16 +127,15 @@ export const SessionProvider = ({ children }) => {
 
     newSocket.on("removeConnectionRequestNotification", (data) => {
       setNotifications((prevNotifications) => {
-        let unreadNotificationsToRemove = prevNotifications.filter(
+        const foundNotification = prevNotifications.find(
           (noti) =>
-            (noti.notificationId === data.notificationId ||
-              noti._id === data.notificationId) &&
-            !noti.isSeen
-        ).length;
-
-        setUnreadCount(
-          (prevUnreadCount) => prevUnreadCount - unreadNotificationsToRemove
+            noti.notificationId === data.notificationId ||
+            noti._id === data.notificationId
         );
+
+        if (foundNotification && !foundNotification.isSeen) {
+          setUnreadCount((prevUnreadCount) => prevUnreadCount - 1);
+        }
 
         return prevNotifications.filter(
           (noti) =>

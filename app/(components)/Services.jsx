@@ -67,7 +67,7 @@ const Services = () => {
         </Button>
       </div>
 
-      <div className="container mx-auto  px-4 sm:px-6 lg:px-8 font-serif md:mt-0 mt-7">
+      <div className="container mx-auto  px-3 sm:px-6 lg:px-8 font-serif md:mt-0 mt-7">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -96,7 +96,7 @@ const Services = () => {
               <video
                 src={service.video}
                 alt={service.title}
-                className="w-[88%] md:w-2/5 mb-4 md:mb-0 rounded-lg shadow-xl shadow-blue-300"
+                className="w-[88%] md:w-2/5 mb-[18px] md:mb-0 rounded-lg shadow-xl shadow-blue-300"
                 loop
                 muted
                 autoPlay

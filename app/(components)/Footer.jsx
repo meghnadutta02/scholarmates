@@ -6,20 +6,20 @@ import { LinkedInLogoIcon } from "@radix-ui/react-icons";
 
 const Footer = () => {
   return (
-    <footer className="bg-zinc-700 text-gray-300 py-6 min-w-full">
+    <footer className="bg-zinc-700 text-gray-300 md:py-6 py-4 min-w-full">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center md:items-start mb-8 md:mb-0 text-center md:text-left">
+        <div className="flex flex-col items-center md:items-start mb-6 md:mb-0 text-center md:text-left">
           <Image
             src={logo}
             alt="ScholarMates Logo"
-            className="w-32 h-auto mb-4"
+            className="md:w-32 h-auto mb-4 w-28"
           />
           <p className="text-lg">
             &quot;ScholarMates - Checkmate your goals. Together. &quot;
           </p>
         </div>
         <div className="flex flex-col items-center md:items-start">
-          <h4 className="text-xl font-semibold mb-4">Creators</h4>
+          <h4 className="text-xl font-semibold md:mb-4 mb-[9px]">Creators</h4>
           {authors.map((user, index) => (
             <Link key={index} href={user.linkedIn} target="_blank">
               <p className="my-1">{user.name}</p>
