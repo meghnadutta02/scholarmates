@@ -5,10 +5,12 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useSession as useCustomSession } from "./SessionProvider";
 
 const Notification = ({ requestData, setRequestData }) => {
   const [loading, setLoading] = useState(false);
   const { data: session, update } = useSession();
+  const { handleNotificationRemoval } = useCustomSession();
 
   const updateConnectionReqList = async (id, action) => {
     if (action === "accept") {
@@ -48,9 +50,10 @@ const Notification = ({ requestData, setRequestData }) => {
 
         if (res.status === 200) {
           toast.success(
-            action === "accept" ? "Request accepted" : "Request declined",{
-              autoClose:4000,
-              closeOnClick:true,
+            action === "accept" ? "Request accepted" : "Request declined",
+            {
+              autoClose: 4000,
+              closeOnClick: true,
             }
           );
 
@@ -60,6 +63,9 @@ const Notification = ({ requestData, setRequestData }) => {
             });
           }
           updateConnectionReqList(data._id, action);
+          const result = await res.json();
+
+          handleNotificationRemoval(result);
         } else {
           throw new Error("Failed to update request");
         }
@@ -68,9 +74,9 @@ const Notification = ({ requestData, setRequestData }) => {
       }
     } catch (error) {
       console.error(error.message);
-      toast.error("An error occurred",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.error("An error occurred", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     } finally {
       setLoading(false);

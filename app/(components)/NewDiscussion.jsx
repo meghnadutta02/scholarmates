@@ -114,10 +114,7 @@ function NewDiscussion({ setDiscussions }) {
       formData.append("subcategories", subcategory.value);
     });
 
-    const toastId = toast.loading("Creating discussion...", {
-      autoClose: 4000,
-      closeOnClick: true,
-    });
+    const toastId = toast.loading("Creating discussion...");
 
     try {
       const result = await fetch(`/api/discussion`, {
@@ -142,7 +139,7 @@ function NewDiscussion({ setDiscussions }) {
           render: "Discussion created! Go to chat room.",
           type: "success",
           isLoading: false,
-          autoClose: 4000,
+          autoClose: 2500,
           closeOnClick: true,
         });
       }
@@ -152,7 +149,7 @@ function NewDiscussion({ setDiscussions }) {
         render: "Error creating discussion",
         type: "error",
         isLoading: false,
-        autoClose: 4000,
+        autoClose: 2500,
         closeOnClick: true,
       });
     }

@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 const GroupRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { socket, session } = useSession();
+  const { socket, session, handleNotificationRemoval } = useSession();
 
   const fetchRequests = async () => {
     try {
@@ -37,13 +37,8 @@ const GroupRequests = () => {
           method: "PUT",
         }
       );
-      if (response.ok) {
-        const data = await response.json();
 
-        socket.emit("joinRequestAccepted", {
-          request: data.result,
-          user: session,
-        });
+      if (response.ok) {
         setRequests((prevRequests) =>
           prevRequests.filter((r) => r._id !== request._id)
         );
@@ -53,6 +48,18 @@ const GroupRequests = () => {
             Request from {request?.fromUser?.name} to join group is accepted
           </div>
         );
+        const data = await response.json();
+        socket.emit("joinRequestAccepted", {
+          request: data.result,
+          user: session,
+        });
+        console.log(data.ids);
+        if (data && data.ids && data.ids.length > 0) {
+          data.ids.forEach((id) => {
+            console.log("notification removed", id);
+            handleNotificationRemoval({ notificationId: id });
+          });
+        }
       }
     } catch (error) {
       console.error(error);
@@ -77,6 +84,12 @@ const GroupRequests = () => {
             Request from {request?.fromUser?.name} to join group is rejected
           </div>
         );
+        const data = await response.json();
+        if (data && data.ids && data.ids.length > 0) {
+          data.ids.forEach((id) => {
+            handleNotificationRemoval({ notificationId: id });
+          });
+        }
       }
     } catch (error) {
       console.error(error);

@@ -110,68 +110,78 @@ export const receiveConnectionController = async (req, resp) => {
         .status(403)
         .json({ message: "You do not have permission to accept this request" });
     }
+
     const user = await User.findById(friendshipRequest.requestTo);
     const sender = await User.findById(friendshipRequest.user);
 
+    if (!user || !sender) {
+      return resp.status(404).json({ message: "User or sender not found" });
+    }
+
     // IF USER ACCEPT CONNECTION REQUEST
-
     if (action === "accept") {
-      if (user && sender) {
-        if (!user.connection.includes(sender._id)) {
-          user.connection.push(sender._id);
-        }
+      if (!user.connection.includes(sender._id)) {
+        user.connection.push(sender._id);
+      }
 
-        if (!sender.connection.includes(user._id)) {
-          sender.connection.push(user._id);
-        }
-        await user.updateOne({ $pull: { requestReceived: sender._id } });
-        await sender.updateOne({ $pull: { requestPending: user._id } });
-        await user.save();
-        await sender.save();
+      if (!sender.connection.includes(user._id)) {
+        sender.connection.push(user._id);
+      }
 
-        await Notification.deleteOne({
-          recipientId: sender._id,
-          senderId: userId,
-          status: "requestaccept",
-        });
+      await user.updateOne({ $pull: { requestReceived: sender._id } });
+      await sender.updateOne({ $pull: { requestPending: user._id } });
+      await user.save();
+      await sender.save();
 
-        const notification = new Notification({
+      // delete the old accepted notification (if any)
+      await Notification.deleteOne({
+        recipientId: sender._id,
+        senderId: userId,
+        status: "requestaccept",
+      });
+
+      // Create a new notification for the sender
+      const notification = new Notification({
+        recipientId: sender._id,
+        senderId: userId,
+        sendername: user.name,
+        profilePic: user.profilePic,
+        status: "requestaccept",
+        timestamp: new Date(),
+        message: "accepted your connection request",
+      });
+      await notification.save();
+
+      // Emit a notification event only to the recipient's socket
+      const senderSocketId = ActiveUsers.getUserSocketId(
+        friendshipRequest.user.toString()
+      );
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("receiveRequest", {
+          timestamp: new Date(),
           recipientId: sender._id,
           senderId: userId,
           sendername: user.name,
-          profilePic: user.profilePic,
           status: "requestaccept",
-          timestamp: new Date(),
+          profilePic: user.profilePic,
           message: "accepted your connection request",
+          notificationId: notification._id,
         });
-        await notification.save();
-
-        const senderSocketId = ActiveUsers.getUserSocketId(
-          friendshipRequest.user.toString()
-        );
-        if (senderSocketId) {
-          // Emit a notification event only to the recipient's socket
-          io.to(senderSocketId).emit("receiveRequest", {
-            timestamp: new Date(),
-            recipientId: sender._id,
-            senderId: userId,
-            sendername: user.name,
-            status: "requestaccept",
-            profilePic: user.profilePic,
-            message: "accepted your connection request",
-            notificationId: notification._id,
-          });
-        }
-
-        await friendshipRequest.deleteOne();
-
-        return resp.status(200).send({
-          message: "accepted",
-          success: true,
-        });
-      } else {
-        return resp.status(404).json({ message: "User or sender not found" });
       }
+
+      // delete the request notification from the db after the request is accepted
+
+      const deletedNotification = await Notification.findOneAndDelete({
+        recipientId: userId,
+        senderId: sender._id,
+        status: "requestSend",
+      });
+
+      await friendshipRequest.deleteOne();
+
+      return resp.status(200).send({
+        notificationId: deletedNotification ? deletedNotification._id : null,
+      });
 
       // IF USER DECLINE CONNECTION REQUEST
     } else if (action === "decline") {
@@ -180,9 +190,15 @@ export const receiveConnectionController = async (req, resp) => {
 
       await friendshipRequest.deleteOne();
 
+      // delete the request notification from the db after the request is declined
+      const deletedNotification = await Notification.findOneAndDelete({
+        recipientId: userId,
+        senderId: sender._id,
+        status: "requestSend",
+      });
+
       return resp.status(200).send({
-        message: "declined",
-        success: true,
+        notificationId: deletedNotification ? deletedNotification._id : null,
       });
     } else {
       return resp.status(400).send({
@@ -200,7 +216,7 @@ export const receiveConnectionController = async (req, resp) => {
   }
 };
 
-// REMOVE CONNECTION
+// REMOVE CONNECTION REQUEST
 
 export const removeConnectionController = async (req, resp) => {
   try {
@@ -241,7 +257,6 @@ export const removeConnectionController = async (req, resp) => {
     // Removing the notification from the recipient's socket
     const socketId = ActiveUsers.getUserSocketId(recipientId);
     if (socketId && deletedNotification) {
-      console.log("Removing notification from recipient's socket");
       io.to(socketId).emit("removeConnectionRequestNotification", {
         notificationId: deletedNotification._id,
       });

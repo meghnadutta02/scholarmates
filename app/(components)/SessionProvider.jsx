@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useContext, createContext } from "react";
+import { useState, useEffect, useContext, createContext, useRef } from "react";
 import { getSession } from "next-auth/react";
 import io from "socket.io-client";
 
@@ -18,23 +18,41 @@ export const SessionProvider = ({ children }) => {
     setUnreadCount(0);
   };
 
-  const removeConnectionNotification = (currentUserId, requestFromUserId) => {
-    setNotifications((prev) => {
-      return prev.filter((noti) => {
-        return (
-          noti.recipientId !== currentUserId &&
-          noti.senderId !== requestFromUserId &&
-          noti.status !== "requestSend"
-        );
-      });
-    });
-    setUnreadCount((prev) => {
-      return prev - 1;
-    });
-  };
+  const handleNotificationRemoval = (() => {
+    let hasUpdated = false;
 
+    return (data) => {
+      console.log(data);
+
+      setNotifications((prevNotifications) => {
+        if (hasUpdated) return prevNotifications;
+        hasUpdated = true;
+
+        const unreadNotificationsToRemove = prevNotifications.filter(
+          (noti) =>
+            (noti.notificationId === data.notificationId ||
+              noti._id === data.notificationId) &&
+            !noti.isSeen
+        ).length;
+
+        // Update unread count
+        console.log(unreadNotificationsToRemove);
+        setUnreadCount(
+          (prevUnreadCount) => prevUnreadCount - unreadNotificationsToRemove
+        );
+
+        // Filter out the removed notifications
+        const updatedNotifications = prevNotifications.filter(
+          (noti) =>
+            noti.notificationId !== data.notificationId &&
+            noti._id !== data.notificationId
+        );
+
+        return updatedNotifications;
+      });
+    };
+  })();
   const removeDuplicates = (array) => {
-    console.log(array);
     const uniqueSet = new Map();
 
     array.forEach((item) => {
@@ -125,45 +143,11 @@ export const SessionProvider = ({ children }) => {
       newSocket.on(event, handleNewNotification);
     });
 
-    newSocket.on("removeConnectionRequestNotification", (data) => {
-      setNotifications((prevNotifications) => {
-        const foundNotification = prevNotifications.find(
-          (noti) =>
-            noti.notificationId === data.notificationId ||
-            noti._id === data.notificationId
-        );
-
-        if (foundNotification && !foundNotification.isSeen) {
-          setUnreadCount((prevUnreadCount) => prevUnreadCount - 1);
-        }
-
-        return prevNotifications.filter(
-          (noti) =>
-            noti.notificationId !== data.notificationId &&
-            noti._id !== data.notificationId
-        );
-      });
-    });
-    newSocket.on("deletedDiscussionNotification", (data) => {
-      setNotifications((prevNotifications) => {
-        let unreadNotificationsToRemove = prevNotifications.filter(
-          (noti) =>
-            (noti.notificationId === data.notificationId ||
-              noti._id === data.notificationId) &&
-            !noti.isSeen
-        ).length;
-
-        setUnreadCount(
-          (prevUnreadCount) => prevUnreadCount - unreadNotificationsToRemove
-        );
-
-        return prevNotifications.filter(
-          (noti) =>
-            noti.notificationId !== data.notificationId &&
-            noti._id !== data.notificationId
-        );
-      });
-    });
+    newSocket.on(
+      "removeConnectionRequestNotification",
+      handleNotificationRemoval
+    );
+    newSocket.on("deletedDiscussionNotification", handleNotificationRemoval);
 
     return () => {
       [
@@ -195,7 +179,7 @@ export const SessionProvider = ({ children }) => {
         setNotifications,
         setUnreadCount,
         clearUnreadCount,
-        removeConnectionNotification,
+        handleNotificationRemoval,
       }}
     >
       {!loading && children}

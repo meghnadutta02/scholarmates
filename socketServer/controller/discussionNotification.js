@@ -4,11 +4,11 @@ import { io } from "../server.js";
 
 export const handleDiscussionNotification = async (data) => {
   try {
-    console.log(data);
     const { discussion, user } = data;
     const { db_id, name, profilePic, connection: connections } = user;
     const { _id: discussionId, title, createdAt } = discussion;
-
+    if (connections.length === 0) return;
+    console.log("connections", connections);
     for (let connectionId of connections) {
       // Create and save new notification
       const newNotification = new Notification({
@@ -38,6 +38,8 @@ export const handleDiscussionNotification = async (data) => {
           status: "discussNotify",
           discussionId: discussionId,
           notificationId: newNotification._id,
+          recipientId: connectionId,
+          senderId: db_id,
         });
 
         console.log(`Notified user: ${connectionId}`);

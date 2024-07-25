@@ -37,6 +37,8 @@ export const handleJoinRequestNotification = async (data) => {
       if (socketId) {
         io.to(socketId).emit("joinRequestNotification", {
           timestamp: createdAt,
+          recipientId: moderatorId,
+          senderId: fromUser,
           message: `has requested to join "${group.name}"`,
           sendername: name,
           profilePic: profilePic,
