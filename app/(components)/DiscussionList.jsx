@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Loading from "./Loading";
 import Image from "next/image";
-
+import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
@@ -45,7 +45,8 @@ const DiscussionList = ({
 
   const [animationState, setAnimationState] = useState({});
   const [loading, setLoading] = useState(true);
-  const { socket, session } = useCustomSession();
+  const { socket } = useCustomSession();
+  const { data: session } = useSession();
   const limit = 10;
   const observer = useRef(null);
 
@@ -94,7 +95,7 @@ const DiscussionList = ({
           result = discussionsResult.value.result;
         }
 
-        const userId = session?.db_id;
+        const userId = session?.user?.db_id;
 
         const updatedResult = result.map((discussion) => {
           const isLiked = discussion.likedBy?.includes(userId);
@@ -157,6 +158,7 @@ const DiscussionList = ({
       const target = entries[0];
 
       if (target.isIntersecting && hasMore) {
+        console.log("Intersecting");
         setOffset((prevOffset) => prevOffset + limit);
       }
     };
@@ -266,7 +268,10 @@ const DiscussionList = ({
           closeOnClick: true,
         });
 
-        socket.emit("joinRequest", { request: data.result, user: session });
+        socket.emit("joinRequest", {
+          request: data.result,
+          user: session?.user,
+        });
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussionId) {

@@ -7,13 +7,16 @@ import Link from "next/link";
 import { RiShareForwardLine } from "react-icons/ri";
 import { InfoIcon } from "lucide-react";
 
-const getDiscussions = async () => {
-  const response = await fetch(`/api/users/my-discussions`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "GET",
-  });
+const getDiscussions = async (offset = 0, limit = 10) => {
+  const response = await fetch(
+    `/api/users/my-discussions?offset=${offset}&limit=${limit}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "GET",
+    }
+  );
   return response.json();
 };
 
@@ -25,19 +28,21 @@ const DiscussionList = () => {
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const limit = 5;
+  const limit = 10;
+  const [totalDiscussions, setTotalDiscussions] = useState(0);
   const observer = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [discussionsResult] = await Promise.allSettled([
-          getDiscussions(),
+          getDiscussions(offset, limit),
         ]);
         let result = [];
 
         if (discussionsResult.status === "fulfilled") {
           result = discussionsResult.value.result;
+          if (offset === 0) setTotalDiscussions(discussionsResult.value.total);
         }
 
         const userId = session?.user?.db_id;
@@ -83,6 +88,7 @@ const DiscussionList = () => {
     const observerCallback = (entries) => {
       const target = entries[0];
       if (target.isIntersecting && hasMore) {
+        console.log("Fetching more discussions");
         setOffset((prevOffset) => prevOffset + limit);
       }
     };
@@ -161,9 +167,9 @@ const DiscussionList = () => {
       navigator.clipboard.writeText(
         `${window.location.origin}/discussions/${discussion._id}`
       );
-      toast.success("Link copied to clipboard!",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.success("Link copied to clipboard!", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     }
   };
@@ -187,7 +193,7 @@ const DiscussionList = () => {
       ) : (
         <div className="md:mt-7 mt-4">
           <h2 className=" md:text-xl sm:text-lg text-md font-semibold">
-            {discussions.length} discussion{discussions.length !== 1 ? "s" : ""}
+            {totalDiscussions} discussion{totalDiscussions !== 1 ? "s" : ""}
           </h2>
           <div className="grid grid-cols-1 gap-6 mt-4">
             {discussions?.map((discussion) => (

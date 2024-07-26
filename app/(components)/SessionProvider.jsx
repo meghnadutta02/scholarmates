@@ -18,40 +18,38 @@ export const SessionProvider = ({ children }) => {
     setUnreadCount(0);
   };
 
-  const handleNotificationRemoval = (() => {
-    let hasUpdated = false;
+  const handleNotificationRemoval = (data) => {
+    console.log(data, "inside handle noti removal");
+    let unreadNotificationsToRemove = 0;
+    setNotifications((prevNotifications) => {
+      unreadNotificationsToRemove = prevNotifications.filter(
+        (noti) =>
+          (noti.notificationId === data.notificationId ||
+            noti._id === data.notificationId) &&
+          !noti.isSeen
+      ).length;
 
-    return (data) => {
-      console.log(data);
+      // Update unread count
+      console.log(unreadNotificationsToRemove, "inside set noti");
 
-      setNotifications((prevNotifications) => {
-        if (hasUpdated) return prevNotifications;
-        hasUpdated = true;
+      // Filter out the removed notifications
+      const updatedNotifications = prevNotifications.filter(
+        (noti) =>
+          noti.notificationId !== data.notificationId &&
+          noti._id !== data.notificationId
+      );
 
-        const unreadNotificationsToRemove = prevNotifications.filter(
-          (noti) =>
-            (noti.notificationId === data.notificationId ||
-              noti._id === data.notificationId) &&
-            !noti.isSeen
-        ).length;
-
-        // Update unread count
-        console.log(unreadNotificationsToRemove);
-        setUnreadCount(
-          (prevUnreadCount) => prevUnreadCount - unreadNotificationsToRemove
-        );
-
-        // Filter out the removed notifications
-        const updatedNotifications = prevNotifications.filter(
-          (noti) =>
-            noti.notificationId !== data.notificationId &&
-            noti._id !== data.notificationId
-        );
-
-        return updatedNotifications;
-      });
-    };
-  })();
+      return updatedNotifications;
+    });
+    setUnreadCount((prevUnreadCount) => {
+      console.log("Previous unread count:", prevUnreadCount);
+      console.log(
+        "Unread notifications to remove:",
+        unreadNotificationsToRemove
+      );
+      return prevUnreadCount - unreadNotificationsToRemove;
+    });
+  };
   const removeDuplicates = (array) => {
     const uniqueSet = new Map();
 

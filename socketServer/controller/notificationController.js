@@ -10,7 +10,6 @@ export const requestNotificationController = async (req, resp) => {
     if (user) {
       // Find requests directed to the user
       const data = await Request.find({ requestTo: user });
-      console.log("data", data);
 
       if (data && data.length > 0) {
         // Extract unique user ids from the requests
@@ -30,7 +29,7 @@ export const requestNotificationController = async (req, resp) => {
           requestData: item,
           userData: userDataMap[item.user],
         }));
-        console.log(requestData);
+
         resp.status(200).send({
           success: true,
           message: "Data retrieved successfully",
@@ -59,7 +58,7 @@ export const requestNotificationController = async (req, resp) => {
 export const userRequestsController = async (req, res) => {
   try {
     const { userId, recipientId } = req.params;
-    console.log(userId);
+
     if (!userId || !recipientId) {
       return res.status(400).send({
         success: false,
@@ -136,9 +135,8 @@ export const checkIsSeenController = async (req, resp) => {
 export const deleteBatchNotification = async (req, resp) => {
   try {
     const { userId } = req.params;
-    console.log(userId);
+
     const { notificationIds } = req.body;
-    console.log(notificationIds);
 
     if (!notificationIds || !Array.isArray(notificationIds)) {
       return resp.status(400).send({

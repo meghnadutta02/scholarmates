@@ -9,7 +9,6 @@ export const handleJoinRequestAcceptedNotification = async (data) => {
     const { fromUser, groupId } = request;
     const { name, profilePic, db_id } = user;
     const group = await Group.findById(groupId).select("name");
-    console.log("Here accepted");
 
     // Delete existing notification if it exists
     await Notification.deleteOne({

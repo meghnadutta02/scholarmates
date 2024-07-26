@@ -151,7 +151,9 @@ const Page = () => {
                         ? `/discussions/${item.discussionId}`
                         : item.status === "joinRequestAccepted"
                         ? "/chats"
-                        : "/requests"
+                        : item.status === "joinRequest"
+                        ? `/requests?tab=groups`
+                        : "/requests?tab=connections"
                     }
                     className="flex gap-2 justify-start items-center"
                   >

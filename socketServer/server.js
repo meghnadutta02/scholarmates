@@ -79,7 +79,6 @@ io.on("connection", async (socket) => {
     await handleJoinRequestNotification(data);
   });
   socket.on("joinRequestAccepted", async (data) => {
-    console.log("joinRequestAccepted", data);
     await handleJoinRequestAcceptedNotification(data);
   });
 

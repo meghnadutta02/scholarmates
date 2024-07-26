@@ -7,11 +7,12 @@ export async function GET(req, { params }) {
     await connect();
 
     const offset = parseInt(req.nextUrl.searchParams.get("offset")) || 0;
-    const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 5;
+    const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
 
     const discussions = await Discussion.find({ creator: params.id })
       .skip(offset)
-      .limit(limit);
+      .limit(limit)
+      .sort({ createdAt: -1 });
 
     return NextResponse.json({ result: discussions }, { status: 200 });
   } catch (error) {

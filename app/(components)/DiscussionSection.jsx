@@ -3,14 +3,14 @@ import React, { useState, useEffect, useRef } from "react";
 import Loading from "../(routes)/discussions/loading";
 import { Button } from "@/components/ui/button";
 import { IoChatboxOutline } from "react-icons/io5";
-
+import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
 import { RiShareForwardLine } from "react-icons/ri";
 
-const getDiscussions = async (id, offset = 0, limit = 5) => {
+const getDiscussions = async (id, offset = 0, limit = 10) => {
   const response = await fetch(
     `/api/users/${id}?offset=${offset}&limit=${limit}`,
     {
@@ -30,15 +30,15 @@ const getJoinRequests = async () => {
 
 const DiscussionSection = ({ user }) => {
   const [expandedDiscussion, setExpandedDiscussion] = useState([]);
-
+  const { data: session } = useSession();
   const [animationState, setAnimationState] = useState({});
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const limit = 5;
+  const limit = 10;
   const observer = useRef(null);
-  const { socket, session } = useCustomSession();
+  const { socket } = useCustomSession();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,7 +59,7 @@ const DiscussionSection = ({ user }) => {
           result = discussionsResult.value.result;
         }
 
-        const userId = session?.db_id;
+        const userId = session?.user?.db_id;
 
         const updatedResult = result.map((discussion) => {
           const isLiked = discussion.likedBy?.includes(userId);
@@ -248,7 +248,10 @@ const DiscussionSection = ({ user }) => {
           autoClose: 5000,
           closeOnClick: true,
         });
-        socket.emit("joinRequest", { request: data.result, user: session });
+        socket.emit("joinRequest", {
+          request: data.result,
+          user: session?.user,
+        });
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussionId) {

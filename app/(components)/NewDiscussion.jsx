@@ -13,12 +13,14 @@ import Select from "react-select";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { interests } from "../(data)/interests";
-import { useSession } from "@/app/(components)/SessionProvider";
+import { useSession } from "next-auth/react";
+import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
 import { PaperclipIcon } from "lucide-react";
 import { FaInfoCircle } from "react-icons/fa";
 
 function NewDiscussion({ setDiscussions }) {
-  const { session, socket } = useSession();
+  const { socket } = useCustomSession();
+  const { data: session } = useSession();
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
@@ -127,7 +129,7 @@ function NewDiscussion({ setDiscussions }) {
 
         socket.emit("discussionCreated", {
           discussion: discussion.result,
-          user: session,
+          user: session?.user,
         });
 
         setDiscussions((prevDiscussions) => [

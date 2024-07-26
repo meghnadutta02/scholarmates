@@ -8,7 +8,7 @@ export const handleDiscussionNotification = async (data) => {
     const { db_id, name, profilePic, connection: connections } = user;
     const { _id: discussionId, title, createdAt } = discussion;
     if (connections.length === 0) return;
-    console.log("connections", connections);
+
     for (let connectionId of connections) {
       // Create and save new notification
       const newNotification = new Notification({

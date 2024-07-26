@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import Loading from "@/app/(components)/Loading";
 import Image from "next/image";
 import { FaTimes, FaCheck } from "react-icons/fa";
-import { useSession } from "./SessionProvider";
+import { useSession } from "next-auth/react";
+import { useSession as useCustomSession } from "./SessionProvider";
 import { toast } from "react-toastify";
 
 const GroupRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { socket, session, handleNotificationRemoval } = useSession();
+  const { data: session } = useSession();
+  const { socket, handleNotificationRemoval } = useCustomSession();
 
   const fetchRequests = async () => {
     try {
@@ -51,9 +53,9 @@ const GroupRequests = () => {
         const data = await response.json();
         socket.emit("joinRequestAccepted", {
           request: data.result,
-          user: session,
+          user: session?.user,
         });
-        console.log(data.ids);
+
         if (data && data.ids && data.ids.length > 0) {
           data.ids.forEach((id) => {
             console.log("notification removed", id);

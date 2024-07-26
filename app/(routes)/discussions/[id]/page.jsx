@@ -59,7 +59,7 @@ const DiscussionDetails = ({ params }) => {
           autoClose: 4000,
           closeOnClick: true,
         });
-        router.push("/my-engagements");
+        router.push("/my-engagements?tab=discussions");
         socket.emit("discussionDeleted", {
           discussionId: deleteDiscussionId,
           groupId: data.groupId,
