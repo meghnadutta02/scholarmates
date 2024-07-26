@@ -333,7 +333,7 @@ const DiscussionList = ({
   };
 
   return (
-    <div className="">
+    <div className="lg:w-[85%] mx-auto">
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
@@ -343,37 +343,40 @@ const DiscussionList = ({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1  gap-6 ">
+        <div className="flex flex-col gap-4">
           {discussions.map((discussion) => (
-            <div key={discussion._id} className=" rounded-lg shadow-sm p-2 ">
-              <div className="flex items-start gap-4 ">
-                <Image
-                  alt="Avatar"
-                  className="rounded-full hidden sm:block"
-                  height="48"
-                  src={discussion.creatorData.profilePic}
-                  style={{
-                    aspectRatio: "48/48",
-                    objectFit: "cover",
-                  }}
-                  width="48"
-                />
-
+            <div key={discussion._id} className="rounded-lg shadow-sm px-3">
+              <div className="flex items-start gap-4 pt-4">
+                <Link href={`/profile/${discussion.creatorData._id}`}>
+                  <Image
+                    alt="Avatar"
+                    className="rounded-full hidden sm:block"
+                    height="48"
+                    src={discussion.creatorData.profilePic}
+                    style={{
+                      aspectRatio: "48/48",
+                      objectFit: "cover",
+                    }}
+                    width="48"
+                  />
+                </Link>
                 <div className="flex-1 grid gap-2">
                   <div className="flex flex-col  gap-2">
                     <div className="flex justify-between">
                       <div className="mr-3 mt-1 sm:hidden block">
-                        <Image
-                          alt="Avatar"
-                          className="rounded-full bg-cover"
-                          height="48"
-                          width="48"
-                          style={{
-                            aspectRatio: "48/48",
-                            objectFit: "cover",
-                          }}
-                          src={discussion.creatorData.profilePic}
-                        />
+                        <Link href={`/profile/${discussion.creatorData._id}`}>
+                          <Image
+                            alt="Avatar"
+                            className="rounded-full bg-cover"
+                            height="48"
+                            width="48"
+                            style={{
+                              aspectRatio: "48/48",
+                              objectFit: "cover",
+                            }}
+                            src={discussion.creatorData.profilePic}
+                          />
+                        </Link>
                       </div>
                       <div className="flex md:flex-row flex-col justify-between md:items-center w-full items-start">
                         <Link href={`/profile/${discussion.creatorData._id}`}>
@@ -381,7 +384,7 @@ const DiscussionList = ({
                             {discussion.creatorData.name}
                           </span>{" "}
                         </Link>
-                        <span className="md:text-sm sm:mr-8 text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
+                        <span className="md:text-sm text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
                           {discussion.creatorData.collegeName}
                         </span>
                       </div>
@@ -448,7 +451,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="grid w-full grid-cols-4 items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2 pl-2">
+    <div className="flex justify-between items-center gap-5 border-t text-center md:gap-8 py-3">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"

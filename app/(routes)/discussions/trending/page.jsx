@@ -223,7 +223,7 @@ const Trending = () => {
   };
   if (loading) return <Loading />;
   return (
-    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full">
+    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full lg:w-[85%]">
       <div className="flex justify-end gap-2 items-center md:mt-4 mt-3 mr-4">
         <input
           type="checkbox"
@@ -253,9 +253,9 @@ const Trending = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1  gap-6 ">
+        <div className="flex flex-col gap-4">
           {discussions.map((discussion) => (
-            <div key={discussion._id} className="rounded-lg shadow-sm p-2">
+            <div key={discussion._id} className="rounded-lg shadow-sm p-3">
               <div className="flex items-start gap-4 ">
                 <Image
                   alt="Avatar"
@@ -355,7 +355,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="grid w-full grid-cols-4 items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2 pl-2">
+    <div className="flex justify-between items-center gap-5 text-center md:gap-8 py-2 border-t">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"
@@ -389,18 +389,6 @@ const DiscussionActions = ({
         <span className="ml-2">{discussion.dislikes}</span>
       </Button>
 
-      <Button className="h-10" size="icon" variant="icon">
-        <span className="sr-only">Popularity</span>
-        <span className="ml-2 flex">
-          {discussion.rankChange === "decrease" ? (
-            <LuTrendingDown className="w-5 h-5 text-red-400" />
-          ) : (
-            <TrendingUpIcon className="w-5 h-5 text-green-400" />
-          )}
-
-          <p className="font-normal ml-2"> {discussion.rankJump}</p>
-        </span>
-      </Button>
       {discussion.isMember ? (
         <Link href={`/chats?discussionId=${discussion._id}`}>
           <Button variant="icon" className="flex ml-4">
@@ -421,6 +409,19 @@ const DiscussionActions = ({
           {discussion.isRequested ? "Requested" : "Join"}
         </Button>
       )}
+
+      <Button className="h-10" size="icon" variant="icon">
+        <span className="sr-only">Popularity</span>
+        <span className="mr-4 flex">
+          {discussion.rankChange === "decrease" ? (
+            <LuTrendingDown className="w-5 h-5 text-red-400" />
+          ) : (
+            <TrendingUpIcon className="w-5 h-5 text-green-400" />
+          )}
+
+          <p className="font-normal ml-2"> {discussion.rankJump}</p>
+        </span>
+      </Button>
     </div>
   );
 };

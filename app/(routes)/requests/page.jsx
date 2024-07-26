@@ -43,9 +43,17 @@ const Request = () => {
           setRequestData(data.data);
         } else {
           console.log("Error:", response.statusText);
+          toast.error("Failed to fetch connection requests", {
+            autoClose: 4000,
+            closeOnClick: true,
+          });
         }
       } catch (error) {
         console.log(error);
+        toast.error("Failed to fetch connection requests", {
+          autoClose: 4000,
+          closeOnClick: true,
+        });
       } finally {
         setLoading(false);
       }
