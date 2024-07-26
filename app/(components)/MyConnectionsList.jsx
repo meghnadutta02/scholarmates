@@ -34,6 +34,10 @@ const Connection = () => {
         }
       } catch (error) {
         console.log(error.message);
+        toast.error("Failed to fetch your connections.", {
+          autoClose: 4000,
+          closeOnClick: true,
+        });
       }
     };
 

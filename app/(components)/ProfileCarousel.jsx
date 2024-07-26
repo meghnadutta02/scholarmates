@@ -98,9 +98,17 @@ export default function ProfileCarousel({ user }) {
         }
       } else {
         console.info("Profile Id is not provided");
+        toast.error("Profile not found.", {
+          autoClose: 4000,
+          closeOnClick: true,
+        });
       }
     } catch (error) {
       console.log("Error: ", error.message);
+      toast.error("Failed to process request. Please try again.", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
     } finally {
       setConnectingProfile(null);
     }

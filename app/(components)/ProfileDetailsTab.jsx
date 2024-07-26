@@ -247,6 +247,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             }));
           }
         } else {
+          toast.error("Failed to process request. Please try again.", {
+            autoClose: 4000,
+            closeOnClick: true,
+          });
           throw new Error("Failed to update request");
         }
       } else {

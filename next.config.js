@@ -11,7 +11,7 @@ const nextConfig = {
     ],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: process.env.NEXT_APP_ENVIRONMENT === "production",
   },
 };
 
