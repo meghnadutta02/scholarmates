@@ -57,11 +57,6 @@ const Notification = ({ requestData, setRequestData }) => {
             }
           );
 
-          if (action === "accept") {
-            update({
-              connection: [...session.user.connection, data.user],
-            });
-          }
           updateConnectionReqList(data._id, action);
           const result = await res.json();
 

@@ -224,7 +224,7 @@ const Trending = () => {
   if (loading) return <Loading />;
   return (
     <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full lg:w-[85%]">
-      <div className="flex justify-end gap-2 items-center md:mt-4 mt-3 mr-4">
+      <div className="flex justify-end gap-2 items-center md:my-4 my-2 mr-4">
         <input
           type="checkbox"
           id="college"
@@ -255,7 +255,10 @@ const Trending = () => {
       ) : (
         <div className="flex flex-col gap-4">
           {discussions.map((discussion) => (
-            <div key={discussion._id} className="rounded-lg shadow-sm p-3">
+            <div
+              key={discussion._id}
+              className="rounded-lg lg:rounded-xl discussion-card p-3 md:p-5"
+            >
               <div className="flex items-start gap-4 ">
                 <Image
                   alt="Avatar"
@@ -355,7 +358,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="flex justify-between items-center gap-5 text-center md:gap-8 py-2 border-t">
+    <div className="flex justify-between items-center gap-5 text-center md:gap-8 pt-2 border-t">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"

@@ -343,9 +343,12 @@ const DiscussionList = ({
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           {discussions.map((discussion) => (
-            <div key={discussion._id} className="rounded-lg shadow-sm px-3">
+            <div
+              key={discussion._id}
+              className="rounded-lg lg:rounded-xl discussion-card md:px-5"
+            >
               <div className="flex items-start gap-4 pt-4">
                 <Link href={`/profile/${discussion.creatorData._id}`}>
                   <Image
@@ -380,11 +383,11 @@ const DiscussionList = ({
                       </div>
                       <div className="flex md:flex-row flex-col justify-between md:items-center w-full items-start">
                         <Link href={`/profile/${discussion.creatorData._id}`}>
-                          <span className="text-sm text-gray-500 font-medium dark:text-gray-400">
+                          <span className="text-sm text-gray-700 font-medium dark:text-gray-400">
                             {discussion.creatorData.name}
                           </span>{" "}
                         </Link>
-                        <span className="md:text-sm text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
+                        <span className="md:text-sm text-[13px] line-clamp-1 text-gray-700 dark:text-gray-400">
                           {discussion.creatorData.collegeName}
                         </span>
                       </div>
@@ -392,8 +395,8 @@ const DiscussionList = ({
                         href={`/discussions/${discussion._id}`}
                         className="md:hidden"
                       >
-                        <Button className="p-0" variant="icon">
-                          <InfoIcon className="w-5 h-5" />
+                        <Button className="pr-2" variant="icon">
+                          <InfoIcon className="w-5 h-5 text-gray-700" />
                         </Button>
                       </Link>
                     </div>
@@ -451,7 +454,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="flex justify-between items-center gap-5 border-t text-center md:gap-8 py-3">
+    <div className="flex justify-between items-center border-t text-center md:gap-8 py-3">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"
@@ -504,12 +507,12 @@ const DiscussionActions = ({
         </Button>
       )}
       <Button
-        className="h-10 ml-4"
+        className="h-10 pr-2"
         size="icon"
         variant="icon"
         onClick={() => handleShare(discussion)}
       >
-        <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
+        <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-700" />
       </Button>
     </div>
   );

@@ -105,10 +105,6 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           ),
         }));
 
-        update({
-          connection: session.user.connection.filter((conn) => conn !== id),
-        });
-
         socket.emit("unfollow", {
           secondUserId: id,
           userId: session.user.db_id,
@@ -230,9 +226,6 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
           );
 
           if (action === "accept") {
-            update({
-              connection: [...session.user.connection, user._id],
-            });
             setUser((prevUser) => ({
               ...prevUser,
               isConnected: true,

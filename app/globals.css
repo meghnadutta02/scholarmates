@@ -117,12 +117,10 @@ body::-webkit-scrollbar {
 
 .checkbox-wrapper-26 * {
   -webkit-tap-highlight-color: transparent;
- 
 }
 
 .checkbox-wrapper-26 input[type="checkbox"] {
   display: none;
-  
 }
 
 .checkbox-wrapper-26 label {
@@ -215,4 +213,9 @@ body::-webkit-scrollbar {
 .checkbox-wrapper-26 input[type="checkbox"]:checked + label .tick_mark:after {
   transform: translate(0);
   opacity: 1;
+}
+
+.discussion-card {
+  @apply bg-card text-card-foreground;
+  box-shadow: 0px 1px 4px 0px rgba(214, 208, 208, 0.563);
 }

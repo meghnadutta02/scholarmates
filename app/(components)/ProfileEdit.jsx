@@ -14,6 +14,13 @@ import { degrees } from "../(data)/degree_list";
 import { FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { format, subYears } from "date-fns";
+import { HelpCircle } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Link from "next/link";
 
 const ProfileEdit = ({ user, setUser }) => {
   const [userState, setUserState] = useState(user);
@@ -182,7 +189,24 @@ const ProfileEdit = ({ user, setUser }) => {
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="collegeName">College Name</Label>
+          <Label className="flex items-center gap-2" htmlFor="collegeName">
+            College Name{" "}
+            <Popover>
+              <PopoverTrigger>
+                <HelpCircle
+                  size={16}
+                  className="text-gray-500 hover:text-yellow-600"
+                />
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                College name not on the list or having trouble finding it?{" "}
+                <Link href="/contact" className="underline text-blue-500">
+                  Drop us a message
+                </Link>{" "}
+                We got you covered.
+              </PopoverContent>
+            </Popover>
+          </Label>
           <Select
             name="collegeName"
             options={collegesOptions}
