@@ -197,6 +197,7 @@ function NewDiscussion({ setDiscussions }) {
             classNamePrefix="select"
             value={type}
             onChange={(selectedType) => setType(selectedType)}
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
           />
         </div>
         <div className="w-1/2 my-3">
@@ -208,6 +209,7 @@ function NewDiscussion({ setDiscussions }) {
             classNamePrefix="select"
             value={selectedCategory}
             onChange={handleCategoryChange}
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
           />
         </div>
         <div className="grid gap-2 mb-3">
@@ -221,6 +223,7 @@ function NewDiscussion({ setDiscussions }) {
             value={selectedSubCategories}
             onChange={handleSubCategoryChange}
             placeholder="Select a category first"
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
           />
           {subCategoryError && (
             <div className="text-red-500 flex items-center mt-2 text-sm">

@@ -198,6 +198,7 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
             className="w-1/2 py-2 px-4 border border-gray-300 bg-white rounded-md shadow-sm text-base text-gray-700"
           >
             <option value="">Select a type</option>
@@ -216,6 +217,7 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
             className="basic-multi-select"
             classNamePrefix="select"
             value={selectedCategory}
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
             onChange={handleCategoryChange}
           />
         </div>
@@ -229,6 +231,7 @@ const EditDiscussion = ({ discussion, setDiscussion }) => {
             classNamePrefix="select"
             value={selectedSubCategories}
             onChange={handleSubCategoryChange}
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
             placeholder="Select a category first"
           />
           {subCategoryError && (
