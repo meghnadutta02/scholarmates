@@ -104,9 +104,11 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             (conn) => conn !== session?.user?.db_id
           ),
         }));
+
         update({
           connection: session.user.connection.filter((conn) => conn !== id),
         });
+
         socket.emit("unfollow", {
           secondUserId: id,
           userId: session.user.db_id,

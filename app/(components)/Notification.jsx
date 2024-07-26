@@ -11,7 +11,7 @@ const Notification = ({ requestData, setRequestData }) => {
   const [loading, setLoading] = useState(false);
   const { data: session, update } = useSession();
   const { handleNotificationRemoval } = useCustomSession();
-  console.log(session?.user?.connection);
+
   const updateConnectionReqList = async (id, action) => {
     if (action === "accept") {
       setRequestData((prevData) =>
@@ -62,7 +62,6 @@ const Notification = ({ requestData, setRequestData }) => {
               connection: [...session.user.connection, data.user],
             });
           }
-
           updateConnectionReqList(data._id, action);
           const result = await res.json();
 

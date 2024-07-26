@@ -1,13 +1,19 @@
 import Notification from "../model/notificationModel.js";
 import ActiveUsers from "../activeUser.js";
 import { io } from "../server.js";
+import User from "../model/userModel.js";
 
 export const handleDiscussionNotification = async (data) => {
   try {
     const { discussion, user } = data;
-    const { db_id, name, profilePic, connection: connections } = user;
-    const { _id: discussionId, title, createdAt } = discussion;
+    const { db_id, name, profilePic } = user;
+    const res = await User.findById(db_id).select("connection -_id");
+
+    const connections = res.connection.map((connection) =>
+      connection.toString()
+    );
     if (connections.length === 0) return;
+    const { _id: discussionId, title, createdAt } = discussion;
 
     for (let connectionId of connections) {
       // Create and save new notification
