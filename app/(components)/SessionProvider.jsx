@@ -19,7 +19,6 @@ export const SessionProvider = ({ children }) => {
   };
 
   const handleNotificationRemoval = (data) => {
-    console.log(data, "inside handle noti removal");
     let unreadNotificationsToRemove = 0;
     setNotifications((prevNotifications) => {
       unreadNotificationsToRemove = prevNotifications.filter(
@@ -28,9 +27,6 @@ export const SessionProvider = ({ children }) => {
             noti._id === data.notificationId) &&
           !noti.isSeen
       ).length;
-
-      // Update unread count
-      console.log(unreadNotificationsToRemove, "inside set noti");
 
       // Filter out the removed notifications
       const updatedNotifications = prevNotifications.filter(
@@ -42,11 +38,6 @@ export const SessionProvider = ({ children }) => {
       return updatedNotifications;
     });
     setUnreadCount((prevUnreadCount) => {
-      console.log("Previous unread count:", prevUnreadCount);
-      console.log(
-        "Unread notifications to remove:",
-        unreadNotificationsToRemove
-      );
       return prevUnreadCount - unreadNotificationsToRemove;
     });
   };

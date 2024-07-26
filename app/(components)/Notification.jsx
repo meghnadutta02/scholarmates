@@ -67,10 +67,10 @@ const Notification = ({ requestData, setRequestData }) => {
 
           handleNotificationRemoval(result);
         } else {
-          throw new Error("Failed to update request");
+          toast.error("Failed to update request");
         }
       } else {
-        console.log("Ids are not present");
+        toast.error("Invalid request");
       }
     } catch (error) {
       console.error(error.message);

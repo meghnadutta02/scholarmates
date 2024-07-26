@@ -97,7 +97,7 @@ export default function ProfileCarousel({ user }) {
           }
         }
       } else {
-        console.log("Profile ID not found");
+        console.info("Profile Id is not provided");
       }
     } catch (error) {
       console.log("Error: ", error.message);
