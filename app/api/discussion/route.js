@@ -48,6 +48,7 @@ export async function POST(req) {
       moderators: [session?.user?.db_id],
       description: `Group for discussion: ${title}`,
       type: type,
+      discussionId: discussion._id,
     });
     discussion.groupId = group._id;
     const user = await User.findById(session?.user?.db_id);

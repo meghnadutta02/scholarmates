@@ -347,7 +347,7 @@ const DiscussionDetails = ({ params }) => {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center gap-4 border-t py-2">
+              <div className="flex justify-between items-center gap-4 py-2">
                 <Button className="h-10" size="icon" variant="icon">
                   <ThumbsUpIcon
                     className={`w-4 h-4 cursor-pointer ${

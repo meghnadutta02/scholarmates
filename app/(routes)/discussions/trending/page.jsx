@@ -223,7 +223,7 @@ const Trending = () => {
   };
   if (loading) return <Loading />;
   return (
-    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full lg:w-[85%]">
+    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full lg:w-[89%]">
       <div className="flex justify-end gap-2 items-center md:my-4 my-2 mr-4">
         <input
           type="checkbox"
@@ -358,7 +358,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="flex justify-between items-center gap-5 text-center md:gap-8 pt-2 border-t">
+    <div className="flex justify-between items-center gap-5 text-center md:gap-8 pt-2 ">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"

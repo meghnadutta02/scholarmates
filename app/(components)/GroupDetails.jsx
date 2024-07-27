@@ -59,7 +59,24 @@ const GroupDetails = ({
       setName(groupDetails.name);
     }
   }, [groupDetails]);
-
+  const handleShare = (id) => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: groupDetails.name,
+          url: `${window.location.origin}/discussions/${id}`,
+        })
+        .catch(console.error);
+    } else {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/discussions/${id}`
+      );
+      toast.success("Link copied to clipboard!", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
+    }
+  };
   const handleKickMember = async (memberId) => {
     try {
       const response = await fetch(`/api/groups/${group._id}/${memberId}`, {
@@ -295,7 +312,7 @@ const GroupDetails = ({
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     Once you leave the group, you will no longer have access to
-                    its discussions and content.
+                    its content.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -359,6 +376,16 @@ const GroupDetails = ({
             </p>
           </div>
           <div className="my-3 flex justify-between items-center">
+            <div className="text-sm text-gray-500">
+              {" "}
+              <Button
+                size="icon"
+                variant="icon"
+                onClick={() => handleShare(groupDetails.discussionId)}
+              >
+                Invite
+              </Button>
+            </div>
             <div className="text-sm text-gray-500">
               Created on{" "}
               {new Date(group?.createdAt).toLocaleDateString("en-US", {

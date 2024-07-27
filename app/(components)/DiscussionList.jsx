@@ -333,7 +333,7 @@ const DiscussionList = ({
   };
 
   return (
-    <div className="lg:w-[85%] mx-auto">
+    <div className="lg:w-[89%] mx-auto">
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
@@ -454,7 +454,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="flex justify-between items-center border-t text-center md:gap-8 py-3">
+    <div className="flex justify-between items-center  text-center md:gap-8 py-3">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"
