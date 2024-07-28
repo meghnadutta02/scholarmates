@@ -109,7 +109,7 @@ const NavbarClient = () => {
                   <Link href={`/support`} className="md:hidden block">
                     <DropdownMenuItem>Support</DropdownMenuItem>
                   </Link>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="md:hidden block" />
                   <Link href={`/api/auth/signout?callbackUrl=/`}>
                     <DropdownMenuItem>Sign Out</DropdownMenuItem>
                   </Link>
