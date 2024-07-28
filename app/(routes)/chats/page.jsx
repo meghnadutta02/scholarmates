@@ -241,7 +241,10 @@ export default function Chats() {
           </TabsContent>
 
           <TabsContent value="g" className="w-full">
-            <DiscussionChatsSection selectDiscussion={selectDiscussion} />
+            <DiscussionChatsSection
+              socket={socket}
+              selectDiscussion={selectDiscussion}
+            />
           </TabsContent>
         </Tabs>
       )}

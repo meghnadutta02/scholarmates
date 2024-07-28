@@ -19,6 +19,7 @@ import {
 } from "./controller/discussionNotification.js";
 import { handleJoinRequestAcceptedNotification } from "./controller/joinRequestAcceptedNotification.js";
 import ActiveUsers from "./activeUser.js";
+import Group from "./model/groupModel.js";
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -98,14 +99,36 @@ io.on("connection", async (socket) => {
     } else console.log(`Group ${groupId} not found`);
   });
 
-  socket.on("send-message", (data) => {
+  socket.on("send-message", async (data) => {
     if (data.roomID) {
-      io.to(data.roomID).emit("receive-message", data.message);
-    } else {
-      io.emit("receive-message", data);
+      io.to(data.roomID).emit("receive-message", data.message); //emit to the group chat
+      //emit to the active group members as the inbox update
+      console.log(data);
+      for (let member of data.groupMembers) {
+        if (
+          member._id != userId &&
+          ActiveUsers.getActiveUsers().has(member._id.toString())
+        ) {
+          console.log("Emitting to user", member.name);
+          io.to(ActiveUsers.getUserSocketId(member._id.toString())).emit(
+            "groupchat-inbox",
+            data
+          );
+        }
+      }
     }
   });
 
+  socket.on("groupchat-close", async (data) => {
+    if (!data || !data.roomID) {
+      console.error("Invalid data received:", data);
+      return;
+    }
+
+    if (socket.rooms.has(data.roomID)) {
+      socket.leave(data.roomID);
+    }
+  });
   // ---------------------User chat events ----------------------------
 
   socket.on("userchat-setup", async (data) => {

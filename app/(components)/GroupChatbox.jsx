@@ -15,6 +15,7 @@ import { useSession as useCustomSession } from "./SessionProvider";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { Clock12Icon } from "lucide-react";
 
 const GroupChatbox = ({
   selectedGroup,
@@ -70,7 +71,7 @@ const GroupChatbox = ({
       }
       const data = await response.json();
       setGroupDetails(data.groupDetails);
-
+      console.log(data.groupDetails);
       setInboxMessages((prevMessages) => {
         const newMessages = new Map(prevMessages);
         data.messagesWithSenderName.forEach((message) => {
@@ -133,6 +134,7 @@ const GroupChatbox = ({
         socket.emit("send-message", {
           message: data.result,
           roomID: groupId,
+          groupMembers: groupDetails.participants,
         });
         scrollDown();
       } else {
@@ -154,7 +156,7 @@ const GroupChatbox = ({
         attachments: [],
       });
       setFilePreviews([]);
-      updateReadStatus(groupId);
+      // updateReadStatus(groupId);
     }
   };
 
@@ -172,7 +174,7 @@ const GroupChatbox = ({
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
-        updateLastMessage(groupId, msg.text, session.user.name);
+        updateLastMessage(groupId, msg.text, msg.senderName);
         setInboxMessages((prevMessages) => {
           const newMessages = new Map(prevMessages);
           newMessages.set(msg._id, msg);
@@ -180,7 +182,6 @@ const GroupChatbox = ({
         });
         updateReadStatus(groupId);
       };
-      socket.emit("groupchat-setup", groupId);
       socket.on("receive-message", messageHandler);
 
       return () => {
@@ -255,6 +256,14 @@ const GroupChatbox = ({
     };
   }, []);
 
+  const closeChatHandler = () => {
+    socket.emit("groupchat-close", {
+      roomID: groupId,
+    });
+    setToggleChatView(true);
+    setInboxMessages([]);
+  };
+
   return (
     <>
       {showGroupDetails && groupDetails ? (
@@ -286,7 +295,7 @@ const GroupChatbox = ({
               <div className=" p-1 rounded-lg">
                 <IoArrowBackCircleOutline
                   className="cursor-pointer hover:text-gray-500 transition-colors duration-200 ease-in-out"
-                  onClick={() => setToggleChatView(true)}
+                  onClick={closeChatHandler}
                   size={30}
                 />
               </div>
@@ -379,9 +388,9 @@ const GroupChatbox = ({
                             />
                             <p className="text-xs flex justify-end font-light">
                               {msg.sending ? (
-                                <>Sending...</>
+                                <Clock12Icon className="w-4 h-4" />
                               ) : (
-                                <>
+                                <p className="text-[9px]">
                                   {new Date(msg.updatedAt).toLocaleTimeString(
                                     [],
                                     {
@@ -389,7 +398,7 @@ const GroupChatbox = ({
                                       minute: "2-digit",
                                     }
                                   )}
-                                </>
+                                </p>
                               )}
                             </p>
                           </div>
