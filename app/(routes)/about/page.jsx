@@ -167,7 +167,12 @@ const About = () => {
                   target="_blank"
                   className="transform transition-transform hover:scale-125"
                 >
-                  <Image src={logo} width={40} height={40} />
+                  <Image
+                    src={logo}
+                    className="md:w-10 md:h-10 w-8 h-10"
+                    width={40}
+                    height={40}
+                  />
                 </Link>
                 <Link
                   href={user.linktree}

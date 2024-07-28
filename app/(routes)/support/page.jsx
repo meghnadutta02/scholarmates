@@ -5,7 +5,9 @@ import puzzle from "@/public/puzzle.png";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { toast } from "react-toastify";
+import FAQ from "@/app/(components)/FAQ";
 
 const Contact = () => {
   const { data: session } = useSession();
@@ -60,14 +62,19 @@ const Contact = () => {
       <section className="md:py-20 py-10 dark:bg-dark lg:py-[120px] flex items-center w-full sm:w-auto">
         <div className="container mx-auto px-4">
           <div className="-mx-4 flex flex-wrap lg:justify-between">
-            <div className="w-full px-3 md:w-[43%] md:max-w-[550px]">
+            <div className="w-full px-1 md:w-[45%] md:max-w-[590px]">
               <h2 className="md:mb-5 mb-3 text-[28px] font-bold uppercase text-dark dark:text-white sm:text-[30px] lg:text-[34px] xl:text-[40px]">
                 GET IN TOUCH
               </h2>
               <p className="mb-9 text-base leading-relaxed text-body-color dark:text-dark-6">
-                Here are some commonly asked questions about our product. Check
-                this out and if you still have any questions, feel free to
-                contact us by submitting the form alongside.
+                If you are stuck somewhere or need help, please reach out to us.
+                Our support team is always ready to assist you with any
+                inquiries or issues you might have. Also, you can check out our{" "}
+                <Link href="#faq" className="font-semibold">
+                  FAQ section
+                </Link>{" "}
+                for answers to commonly asked questions. We strive to ensure
+                that all your concerns are addressed promptly.
               </p>
             </div>
             <div className="w-full sm:px-4 px-[14px] md:w-[55%]">
@@ -140,7 +147,7 @@ const Contact = () => {
                     ease: "linear",
                     repeat: Infinity,
                   }}
-                  className="absolute -left-12 -bottom-9 z-[-1]"
+                  className="absolute -left-12 -bottom-10 z-[-1]"
                 >
                   <Image
                     src={puzzle}
@@ -151,6 +158,8 @@ const Contact = () => {
               </div>
             </div>
           </div>
+
+          <FAQ />
         </div>
       </section>
     </>
@@ -173,7 +182,7 @@ const ContactTextArea = ({
         placeholder={placeholder}
         name={name}
         disabled={disabled}
-        className="w-full resize-none rounded border border-stroke px-[14px] py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:bg-dark dark:text-dark-6 relative z-10"
+        className="w-full resize-none rounded border border-stroke px-[14px] py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:bg-dark dark:text-dark-6 relative "
         defaultValue={defaultValue}
       />
     </div>
@@ -195,7 +204,7 @@ const ContactInputBox = ({
         name={name}
         defaultValue={defaultValue}
         disabled={disabled}
-        className="w-full rounded border border-stroke px-[14px] py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:bg-dark dark:text-dark-6 relative z-10"
+        className="w-full rounded border border-stroke px-[14px] py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:bg-dark dark:text-dark-6 relative "
       />
     </div>
   );
