@@ -119,7 +119,7 @@ const FilterDrawer = ({ applyFilters }) => {
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 " />
-        <Drawer.Content className="rounded-se-lg bg-gray-100 dark:bg-gray-800 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-scroll scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-300 scrollbar-thumb-rounded-full shadow-lg shadow-gray-600">
+        <Drawer.Content className="rounded-se-lg bg-gray-100 dark:bg-gray-800 flex flex-col h-full max-w-[90%] w-[380px] md:w-[380px] fixed bottom-0 left-0 overflow-y-auto scrollbar pb-5 mt-24 z-50 scrollbar-thumb-gray-300 scrollbar-thumb-rounded-full shadow-lg shadow-gray-600">
           <Drawer.Title className="sr-only">
             Discussion Filter Options
           </Drawer.Title>

@@ -68,8 +68,8 @@ const About = () => {
               ]}
               wrapper="span"
               speed={2}
-              className="font-bold text-blue-800 text-2xl md:text-5xl sm:text-3xl font-serif dark:text-gray-200"
-              repeat={4}
+              className="font-bold text-blue-800 text-2xl md:text-5xl sm:text-3xl font-sans dark:text-gray-200"
+              repeat={1}
             />
           </div>
           <div className="">
@@ -161,15 +161,16 @@ const About = () => {
               <p className="text-lg text-blue-800 dark:text-gray-200">
                 {user.name}
               </p>
-              <div className="flex gap-2 items-end">
+              <div className="flex gap-2 items-center">
                 <Link
                   href={user.scholarMates}
                   target="_blank"
                   className="transform transition-transform hover:scale-125"
                 >
                   <Image
+                    alt="Scholarmates"
                     src={logo}
-                    className="md:w-10 md:h-10 w-8 h-10"
+                    className="md:w-10 md:h-10 w-8 h-8"
                     width={40}
                     height={40}
                   />
@@ -179,7 +180,7 @@ const About = () => {
                   target="_blank"
                   className="transform transition-transform hover:scale-125"
                 >
-                  <MdInsertLink className=" w-[30px] h-[30px]" />
+                  <MdInsertLink className=" w-7 h-7 -rotate-45" />
                 </Link>
               </div>
             </motion.div>

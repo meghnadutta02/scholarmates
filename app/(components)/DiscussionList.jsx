@@ -395,7 +395,7 @@ const DiscussionList = ({
                         href={`/discussions/${discussion._id}`}
                         className="md:hidden"
                       >
-                        <Button className="pr-2" variant="icon">
+                        <Button className="pr-3" variant="icon">
                           <InfoIcon className="w-5 h-5 text-gray-700" />
                         </Button>
                       </Link>

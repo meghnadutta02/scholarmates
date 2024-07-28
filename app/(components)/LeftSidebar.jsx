@@ -3,7 +3,7 @@ import React from "react";
 import { MdOutlineConnectWithoutContact } from "react-icons/md";
 import { MdGroupAdd } from "react-icons/md";
 import { TrendingUp } from "lucide-react";
-import { MdPeopleAlt } from "react-icons/md";
+import { HiOutlineRectangleGroup } from "react-icons/hi2";
 
 const LeftSidebar = async () => {
   return (
@@ -14,13 +14,13 @@ const LeftSidebar = async () => {
           href="/chats"
         >
           <MessageSquareIcon className="h-5 w-5" />
-          Chats
+          Messages
         </Link>
         <Link
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           href="/discussions"
         >
-          <UsersIcon className="h-5 w-5" />
+          <HiOutlineRectangleGroup className="h-5 w-5" />
           Discussions
         </Link>
 
@@ -35,7 +35,7 @@ const LeftSidebar = async () => {
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           href="/my-engagements"
         >
-          <MdPeopleAlt className="mt-1 h-5 w-5" />
+          <UsersIcon className="h-5 w-5" />
           Engagements
         </Link>
         <Link

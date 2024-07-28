@@ -7,14 +7,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { AccordionHeader } from "@radix-ui/react-accordion";
 
 const FAQ = () => {
   return (
     <Accordion
       type="single"
       collapsible
-      className="md:mt-16 mt-10  mx-auto md:w-[900px] sm:w-[600px] w-full  font-sans"
+      className="mt-16 mx-auto md:w-[900px] sm:w-[600px] w-full font-sans"
     >
+      <p className="mb-2 font-bold text-lg md:text-2xl text-center">
+        Frequently asked questions
+      </p>
       <AccordionItem value="item-1">
         <AccordionTrigger>
           My college is not listed in the college selection dropdown. What
@@ -32,9 +36,9 @@ const FAQ = () => {
           dropdown. How can I add it?
         </AccordionTrigger>
         <AccordionContent>
-          If you cannot find the interest or discussion category you're looking
-          for, please send us a support request. We are constantly updating our
-          categories to better serve our users.
+          If you cannot find the interest or discussion category you&apos;re
+          looking for, please send us a support request. We are constantly
+          updating our categories to better serve our users.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
@@ -42,7 +46,7 @@ const FAQ = () => {
           I am facing technical issues with the platform. How can I get help?
         </AccordionTrigger>
         <AccordionContent>
-          If you're experiencing technical issues, please reach out to our
+          If you&apos;re experiencing technical issues, please reach out to our
           support team through the support request form on our website. We will
           assist you as soon as possible.
         </AccordionContent>
@@ -59,12 +63,12 @@ const FAQ = () => {
       </AccordionItem>
       <AccordionItem value="item-5">
         <AccordionTrigger>
-          I cannot access the 'Find Match' page. What should I do?
+          I cannot access the &apos;Find Match&apos; page. What should I do?
         </AccordionTrigger>
         <AccordionContent>
-          This is probably because you haven't updated your profile to include
-          your interests. Please make sure your profile is complete to access
-          the 'Find Match' page.
+          This is probably because you haven&apos;t updated your profile to
+          include your interests. Please make sure your profile is complete to
+          access the &apos;Find Match&apos; page.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-6">
@@ -72,9 +76,9 @@ const FAQ = () => {
           I cannot filter by college in discussions. How can I fix this?
         </AccordionTrigger>
         <AccordionContent>
-          This is likely because you haven't added your college name to your
-          profile. Please update your profile with your college name to access
-          all filtering features in discussions.
+          This is likely because you haven&apos;t added your college name to
+          your profile. Please update your profile with your college name to
+          access all filtering features in discussions.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-7">

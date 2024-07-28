@@ -109,7 +109,7 @@ const Contact = () => {
                     defaultValue={session?.user?.email}
                   />
                   <ContactTextArea
-                    row="6"
+                    row="3"
                     placeholder="Your Message"
                     name="details"
                     defaultValue=""

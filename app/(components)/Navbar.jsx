@@ -105,9 +105,13 @@ const NavbarClient = () => {
                   <Link href={`/profile/${session?.user?.db_id}`}>
                     <DropdownMenuItem>Profile</DropdownMenuItem>
                   </Link>
-                  <DropdownMenuSeparator />{" "}
+                  <DropdownMenuSeparator />
                   <Link href={`/support`} className="md:hidden block">
                     <DropdownMenuItem>Support</DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator className="md:hidden block" />
+                  <Link href={`/about`} className="md:hidden block">
+                    <DropdownMenuItem>About</DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator className="md:hidden block" />
                   <Link href={`/api/auth/signout?callbackUrl=/`}>
