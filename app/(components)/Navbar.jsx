@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
+
 import profilePic from "@/public/pfp.png";
 import MenuDrawer from "@/app/(components)/MenuDrawer";
 import NavbarSearch from "./NavbarSearch";
@@ -103,6 +104,10 @@ const NavbarClient = () => {
                   <DropdownMenuSeparator />
                   <Link href={`/profile/${session?.user?.db_id}`}>
                     <DropdownMenuItem>Profile</DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />{" "}
+                  <Link href={`/support`} className="md:hidden block">
+                    <DropdownMenuItem>Support</DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />
                   <Link href={`/api/auth/signout?callbackUrl=/`}>

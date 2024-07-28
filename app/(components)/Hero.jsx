@@ -87,16 +87,38 @@ const Hero = () => {
             understand your hobbies, ScholarMates is your go-to destination.
             Join today, connect with like-minded individuals, at the speed of a
             4 moves scholar&apos;s-mate
-            <Image
-              src={puzzle}
-              alt="Puzzle"
-              className=" w-16 h-16 md:w-28 md:h-28 absolute right-4 md:right-16 top-20 md:top-36 opacity-30 transform rotate-12"
-            />
-            <Image
-              src={puzzle}
-              alt="Puzzle"
-              className=" w-12 h-12 md:w-20 md:h-20 absolute left-[-26px] top-[-31px] opacity-30 -rotate-45"
-            />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 20,
+                ease: "linear",
+                repeat: Infinity,
+                delay: 2.4,
+              }}
+              className="absolute right-4 md:right-16 top-20 md:top-36 "
+            >
+              <Image
+                src={puzzle}
+                alt="Puzzle"
+                className="w-16 h-16 md:w-28 md:h-28 opacity-30 transform rotate-12"
+              />
+            </motion.div>
+            <motion.div
+              animate={{ rotate: -360 }}
+              transition={{
+                duration: 20,
+                ease: "linear",
+                repeat: Infinity,
+                delay: 2.4,
+              }}
+              className="absolute left-[-26px] top-[-31px] "
+            >
+              <Image
+                src={puzzle}
+                alt="Puzzle"
+                className="w-12 h-12 md:w-20 md:h-20 opacity-30 -rotate-45"
+              />
+            </motion.div>
           </motion.div>
         </div>
       </div>

@@ -8,7 +8,7 @@ import {
   DrawerTrigger,
   DrawerDescription,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 import { IoMdMenu } from "react-icons/io";
 import Link from "next/link";
 import { MdPeopleAlt } from "react-icons/md";
@@ -86,6 +86,14 @@ const MenuDrawer = () => {
           >
             <TrendingUp className="mt-1 h-5 w-5" />
             Trending
+          </Link>
+          <Link
+            onClick={closeDrawer}
+            className="flex w-full items-center gap-3 rounded-lg p-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+            href="/About"
+          >
+            <IoMdInformationCircleOutline className="mt-1 h-5 w-5" />
+            About
           </Link>
         </nav>
         <DrawerFooter>

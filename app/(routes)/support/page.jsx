@@ -4,6 +4,7 @@ import Image from "next/image";
 import puzzle from "@/public/puzzle.png";
 import { useSession } from "next-auth/react";
 import React from "react";
+import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
 const Contact = () => {
@@ -41,7 +42,7 @@ const Contact = () => {
       );
 
       if (response.ok) {
-        toast.success("Support request submitted!");
+        toast.info("We have received your message. We will get back to you.");
         setLoading(false);
         form.reset();
       } else {
@@ -117,16 +118,36 @@ const Contact = () => {
                   </div>
                 </form>
 
-                <Image
-                  src={puzzle}
-                  alt="Puzzle"
-                  className="w-12 hidden sm:block h-12 md:w-24 md:h-24 opacity-30 -rotate-45 absolute -right-12 -top-12 z-[-1]"
-                />
-                <Image
-                  src={puzzle}
-                  alt="Puzzle"
-                  className="w-12 hidden sm:block h-12 md:w-24 md:h-24 opacity-30 -rotate-30 absolute -left-12 -bottom-9 z-[-1]"
-                />
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 20,
+                    ease: "linear",
+                    repeat: Infinity,
+                  }}
+                  className="absolute -right-12 -top-12 z-[-1]"
+                >
+                  <Image
+                    src={puzzle}
+                    alt="Puzzle"
+                    className="w-12 hidden sm:block h-12 md:w-24 md:h-24 opacity-30 -rotate-45"
+                  />
+                </motion.div>
+                <motion.div
+                  animate={{ rotate: -360 }}
+                  transition={{
+                    duration: 20,
+                    ease: "linear",
+                    repeat: Infinity,
+                  }}
+                  className="absolute -left-12 -bottom-9 z-[-1]"
+                >
+                  <Image
+                    src={puzzle}
+                    alt="Puzzle"
+                    className="w-12 hidden sm:block h-12 md:w-24 md:h-24 opacity-30 -rotate-30"
+                  />
+                </motion.div>
               </div>
             </div>
           </div>

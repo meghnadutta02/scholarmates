@@ -2,7 +2,6 @@ import React from "react";
 import logo from "@/public/logo.png";
 import Image from "next/image";
 import Link from "next/link";
-import { LinkedInLogoIcon } from "@radix-ui/react-icons";
 
 const Footer = () => {
   return (

@@ -58,7 +58,6 @@ const GroupRequests = () => {
 
         if (data && data.ids && data.ids.length > 0) {
           data.ids.forEach((id) => {
-            console.log("notification removed", id);
             handleNotificationRemoval({ notificationId: id });
           });
         }
