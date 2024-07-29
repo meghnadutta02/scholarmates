@@ -86,42 +86,47 @@ const Page = ({ selectDiscussion, socket }) => {
       return updatedGroups;
     });
   };
+  const handleNewMessage = (data) => {
+    setGroups((prevGroups) => {
+      const updatedGroups = prevGroups.map((group) =>
+        group.groupId === data.roomID
+          ? {
+              ...group,
+              latestMessage: {
+                ...group.latestMessage,
+                text: data.message.text,
+                senderName: data.message.senderName,
+                time: data.message.createdAt,
+              },
+              unreadCount: group.unreadCount + 1,
+            }
+          : group
+      );
+
+      updatedGroups.sort(
+        (a, b) =>
+          new Date(b.latestMessage.time) - new Date(a.latestMessage.time)
+      );
+
+      return updatedGroups;
+    });
+  };
 
   useEffect(() => {
     fetchGroups();
     updateLastMessage();
     if (socket) {
-      socket.on("groupchat-inbox", (data) => {
-        console.log(data);
-        setGroups((prevGroups) => {
-          const updatedGroups = prevGroups.map((group) =>
-            group.groupId === data.roomID
-              ? {
-                  ...group,
-                  latestMessage: {
-                    ...group.latestMessage,
-                    text: data.message.text,
-                    senderName: data.message.senderName,
-                    time: data.message.createdAt,
-                  },
-                  unreadCount: group.unreadCount + 1,
-                }
-              : group
-          );
-
-          updatedGroups.sort(
-            (a, b) =>
-              new Date(b.latestMessage.time) - new Date(a.latestMessage.time)
-          );
-
-          return updatedGroups;
-        });
-      });
+      socket.on("groupchat-inbox", handleNewMessage);
     }
 
     // if (selectDiscussion) {
     //   handleGroupSelection(selectDiscussion);
     // }
+    return () => {
+      if (socket) {
+        socket.off("groupchat-inbox", handleNewMessage);
+      }
+    };
   }, [socket]);
 
   return (
@@ -192,6 +197,7 @@ const Page = ({ selectDiscussion, socket }) => {
                         setSelectedGroup={setSelectedGroup}
                         setToggleChatView={setToggleChatView}
                         updateLastMessage={updateLastMessage}
+                        updateReadStatus={updateReadStatus}
                       />
                     </div>
                   )}

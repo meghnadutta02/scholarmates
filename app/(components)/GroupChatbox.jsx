@@ -23,6 +23,7 @@ const GroupChatbox = ({
   setSelectedGroup,
   setToggleChatView,
   updateLastMessage,
+  updateReadStatus,
 }) => {
   const { socket } = useCustomSession();
   const { data: session } = useSession();
@@ -43,22 +44,6 @@ const GroupChatbox = ({
   const observerRef = useRef(null);
   const lastMessageRef = useRef(null);
   const limit = 20;
-
-  const updateReadStatus = async (gid) => {
-    try {
-      const response = await fetch(`/api/chats/group/${gid}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to mark messages as read");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const getGroupMessages = useCallback(async (groupId, page) => {
     try {
@@ -109,9 +94,9 @@ const GroupChatbox = ({
 
       const formData = new FormData();
       formData.append("text", message.text);
-      formData.append("sender", session?.user.db_id);
+      formData.append("sender", session?.user?.db_id);
       formData.append("groupId", groupId);
-      formData.append("senderName", session?.user.name);
+      formData.append("senderName", session?.user?.name);
 
       if (message.attachments != null) {
         message.attachments.forEach((file) => {

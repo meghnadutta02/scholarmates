@@ -55,6 +55,10 @@ const UserChatbox = ({
           `/api/chats/user/${userID}?limit=${limit}&skip=${skip}`
         );
         if (!response.ok) {
+          toast.error("Failed to load messages.", {
+            autoClose: 4000,
+            closeOnClick: true,
+          });
           throw new Error("Failed to fetch messages");
         }
         const data = await response.json();
@@ -196,6 +200,10 @@ const UserChatbox = ({
         throw new Error("Failed to send message");
       }
     } catch (error) {
+      toast.error("Failed to send the message.", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
       console.error(error);
     }
   };
