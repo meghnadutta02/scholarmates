@@ -333,7 +333,7 @@ const DiscussionList = ({
   };
 
   return (
-    <div className="lg:w-[89%] mx-auto">
+    <div className="lg:w-[85%] mx-auto">
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
@@ -347,7 +347,7 @@ const DiscussionList = ({
           {discussions.map((discussion) => (
             <div
               key={discussion._id}
-              className="rounded-lg lg:rounded-xl discussion-card md:px-5"
+              className="rounded-lg lg:rounded-xl discussion-card sm:px-5"
             >
               <div className="flex items-start gap-4 pt-4">
                 <Link href={`/profile/${discussion.creatorData._id}`}>
@@ -498,7 +498,7 @@ const DiscussionActions = ({
         <Button
           className={`${
             discussion.isRequested ? "w-20" : "w-16 "
-          } h-8 md:h-10 md:w-20`}
+          } h-8 lg:h-10 lg:w-20`}
           variant="secondary"
           disabled={discussion.isRequested}
           onClick={() => handleButtonClick(discussion._id, discussion.groupId)}

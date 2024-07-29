@@ -180,7 +180,7 @@ const About = () => {
                   target="_blank"
                   className="transform transition-transform hover:scale-125"
                 >
-                  <MdInsertLink className=" w-7 h-7 -rotate-45" />
+                  <MdInsertLink className="w-7 h-7 -rotate-45 text-gray-700" />
                 </Link>
               </div>
             </motion.div>

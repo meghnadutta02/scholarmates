@@ -42,7 +42,7 @@ const DetailSection = ({ user }) => {
           )}
           {user.department && user.degree && (
             <div className="my-4">
-              <h3 className="text-lg font-semibold">Degree</h3>
+              <h3 className="text-lg font-semibold">Pursuing</h3>
 
               <p className="text-md font-semibold text-gray-600">
                 {user.degree} in {user.department} (

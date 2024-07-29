@@ -223,7 +223,7 @@ const Trending = () => {
   };
   if (loading) return <Loading />;
   return (
-    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full lg:w-[89%]">
+    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full lg:w-[85%]">
       <div className="flex justify-end gap-2 items-center md:my-4 my-2 mr-4">
         <input
           type="checkbox"
@@ -402,7 +402,7 @@ const DiscussionActions = ({
         <Button
           className={`${
             discussion.isRequested ? "w-20" : "w-16"
-          } h-8 md:h-10  md:w-20`}
+          } h-8 lg:h-10  lg:w-20`}
           variant="secondary"
           disabled={discussion.isRequested}
           onClick={() =>
