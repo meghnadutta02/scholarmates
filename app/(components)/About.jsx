@@ -10,14 +10,10 @@ const About = () => {
   return (
     <section className="text-gray-800 flex flex-col justify-between h-full">
       <div className="   p-4">
-        <div className="flex flex-col items-center text-center mb-8">
-          <p className="font-bold text-lg"> ScholarMates</p>
-          <Image
-            src={logo}
-            alt="ScholarMates Logo"
-            className="w-32 h-auto mb-4"
-          />
-          <p className="text-md">
+        <div className="flex flex-col items-center text-center mb-8 mt-4">
+          <p className="font-bold text-md"> ScholarMates</p>
+          <Image src={logo} alt="ScholarMates Logo" className="w-24 h-auto" />
+          <p className="">
             <i>&quot;Checkmate your goals. Together. &quot;</i>
           </p>
         </div>
