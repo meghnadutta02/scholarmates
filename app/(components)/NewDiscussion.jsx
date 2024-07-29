@@ -13,12 +13,14 @@ import Select from "react-select";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { interests } from "../(data)/interests";
-import { useSession } from "@/app/(components)/SessionProvider";
+import { useSession } from "next-auth/react";
+import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
 import { PaperclipIcon } from "lucide-react";
 import { FaInfoCircle } from "react-icons/fa";
 
 function NewDiscussion({ setDiscussions }) {
-  const { session, socket } = useSession();
+  const { socket } = useCustomSession();
+  const { data: session } = useSession();
   let formData = new FormData();
   const [isDisabled, setIsDisabled] = useState(false);
   const [title, setTitle] = useState("");
@@ -114,10 +116,7 @@ function NewDiscussion({ setDiscussions }) {
       formData.append("subcategories", subcategory.value);
     });
 
-    const toastId = toast.loading("Creating discussion...", {
-      autoClose: 4000,
-      closeOnClick: true,
-    });
+    const toastId = toast.loading("Creating discussion...");
 
     try {
       const result = await fetch(`/api/discussion`, {
@@ -130,7 +129,7 @@ function NewDiscussion({ setDiscussions }) {
 
         socket.emit("discussionCreated", {
           discussion: discussion.result,
-          user: session,
+          user: session?.user,
         });
 
         setDiscussions((prevDiscussions) => [
@@ -142,7 +141,7 @@ function NewDiscussion({ setDiscussions }) {
           render: "Discussion created! Go to chat room.",
           type: "success",
           isLoading: false,
-          autoClose: 4000,
+          autoClose: 2500,
           closeOnClick: true,
         });
       }
@@ -152,7 +151,7 @@ function NewDiscussion({ setDiscussions }) {
         render: "Error creating discussion",
         type: "error",
         isLoading: false,
-        autoClose: 4000,
+        autoClose: 2500,
         closeOnClick: true,
       });
     }
@@ -198,6 +197,7 @@ function NewDiscussion({ setDiscussions }) {
             classNamePrefix="select"
             value={type}
             onChange={(selectedType) => setType(selectedType)}
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
           />
         </div>
         <div className="w-1/2 my-3">
@@ -209,6 +209,7 @@ function NewDiscussion({ setDiscussions }) {
             classNamePrefix="select"
             value={selectedCategory}
             onChange={handleCategoryChange}
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
           />
         </div>
         <div className="grid gap-2 mb-3">
@@ -222,6 +223,7 @@ function NewDiscussion({ setDiscussions }) {
             value={selectedSubCategories}
             onChange={handleSubCategoryChange}
             placeholder="Select a category first"
+            onFocus={() => window.scrollTo(0, 0)} // Force the keyboard to hide on focus
           />
           {subCategoryError && (
             <div className="text-red-500 flex items-center mt-2 text-sm">

@@ -13,6 +13,7 @@ const groupSchema = new mongoose.Schema(
     ],
     moderators: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     description: String,
+    discussionId: { type: String, required: true },
   },
   { timestamps: true }
 );

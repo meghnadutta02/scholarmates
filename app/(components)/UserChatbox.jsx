@@ -55,6 +55,10 @@ const UserChatbox = ({
           `/api/chats/user/${userID}?limit=${limit}&skip=${skip}`
         );
         if (!response.ok) {
+          toast.error("Failed to load messages.", {
+            autoClose: 4000,
+            closeOnClick: true,
+          });
           throw new Error("Failed to fetch messages");
         }
         const data = await response.json();
@@ -134,8 +138,26 @@ const UserChatbox = ({
           autoClose: 4000,
           closeOnClick: true,
         });
-        throw new Error("Message empty");
+        return;
       }
+      const formData = new FormData();
+      formData.append("text", message.text);
+      formData.append("sender", session?.user?.db_id);
+
+      if (message.attachments != null) {
+        if (message.attachments.length > 10) {
+          toast.warning("Maximum 10 attachments allowed at a time", {
+            autoClose: 4000,
+            closeOnClick: true,
+          });
+          return;
+        }
+
+        message.attachments.forEach((file) => {
+          formData.append(`attachments`, file);
+        });
+      }
+
       // Temporary message update for the UI
       const tempMessage = {
         ...message,
@@ -146,15 +168,6 @@ const UserChatbox = ({
       setInboxMessages((prevMessages) => [...prevMessages, tempMessage]);
       scrollDown();
 
-      const formData = new FormData();
-      formData.append("text", message.text);
-      formData.append("sender", session?.user?.db_id);
-
-      if (message.attachments != null) {
-        message.attachments.forEach((file) => {
-          formData.append(`attachments`, file);
-        });
-      }
       setMessage({
         text: "",
         attachments: [],
@@ -196,6 +209,10 @@ const UserChatbox = ({
         throw new Error("Failed to send message");
       }
     } catch (error) {
+      toast.error(error.message, {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
       console.error(error);
     }
   };
@@ -454,7 +471,11 @@ const UserChatbox = ({
                           }`}
                         >
                           {msg.attachments != null && (
-                            <div className="flex flex-wrap justify-evenly max-w-lg gap-2">
+                            <div
+                              className={`grid ${
+                                msg.attachments.length >= 2 ? "grid-cols-2" : ""
+                              }  w-fit gap-2`}
+                            >
                               {msg.attachments.map((attachment, index) => (
                                 <DisplayMedia
                                   key={index}
@@ -463,10 +484,12 @@ const UserChatbox = ({
                               ))}
                             </div>
                           )}
-                          <Interweave
-                            content={msg.text}
-                            matchers={[new UrlMatcher("url")]}
-                          />
+                          {msg.text != "" && (
+                            <Interweave
+                              content={msg.text}
+                              matchers={[new UrlMatcher("url")]}
+                            />
+                          )}
                           <p className="text-[10px] max-w-1/2 flex justify-end items-center font-light">
                             {msg.sending ? (
                               <Clock12Icon className="w-4 h-4" />
@@ -511,22 +534,20 @@ const UserChatbox = ({
             )}
           </div>
         </div>
-        <div className="flex-shrink-0">
+        <div className="relative">
           {filePreviews.length > 0 && (
-            <div className="flex gap-2 mb-2">
-              {filePreviews.map((preview, index) => (
+            <div className="flex gap-2 mb-2 absolute -top-12 left-3">
+              {filePreviews.slice(0, 4).map((preview, index) => (
                 <div key={index} className="relative w-16 h-16">
                   <Image
                     src={preview}
-                    alt="preview"
+                    alt={`preview-${index}`}
                     layout="fill"
                     objectFit="cover"
                     className="rounded-lg"
-                    height="auto"
-                    width="auto"
                   />
                   <button
-                    className="absolute top-0 right-0 bg-white rounded-full p-1"
+                    className="absolute -top-2 -right-2 bg-white rounded-full border border-red-600 px-1.5"
                     onClick={() => {
                       const newPreviews = filePreviews.filter(
                         (_, i) => i !== index
@@ -544,6 +565,13 @@ const UserChatbox = ({
                   </button>
                 </div>
               ))}
+              {filePreviews.length > 4 && (
+                <div className="flex items-center justify-center">
+                  <span className="w-8 h-8 pt-1.5 text-white text-sm text-center font-semibold bg-zinc-800 rounded-full">
+                    <p> +{filePreviews.length - 4}</p>
+                  </span>
+                </div>
+              )}
             </div>
           )}
           {selectedUser?.connection?.includes(session?.user?.db_id) ? (

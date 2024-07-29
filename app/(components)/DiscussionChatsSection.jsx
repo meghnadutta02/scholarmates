@@ -7,7 +7,7 @@ import Loading from "@/app/(components)/Loading";
 import Link from "next/link";
 import FormatDate from "../utils/FormatDate";
 
-const Page = ({ selectDiscussion }) => {
+const Page = ({ selectDiscussion, socket }) => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
@@ -45,17 +45,23 @@ const Page = ({ selectDiscussion }) => {
     }
   };
 
-  const handleGroupSelection = useCallback(async (grp) => {
-    setSelectedGroup(grp);
-    linktoChatRef.current = grp.groupId;
-    setToggleChatView(false);
-    setGroups((prevGroups) =>
-      prevGroups.map((group) =>
-        group.groupId === grp.groupId ? { ...group, unreadCount: 0 } : group
-      )
-    );
-    updateReadStatus(grp.groupId);
-  }, []);
+  const handleGroupSelection = useCallback(
+    async (grp) => {
+      setSelectedGroup(grp);
+      if (socket && toggleChatView === true) {
+        socket.emit("groupchat-setup", grp.groupId);
+      }
+      linktoChatRef.current = grp.groupId;
+      setToggleChatView(false);
+      setGroups((prevGroups) =>
+        prevGroups.map((group) =>
+          group.groupId === grp.groupId ? { ...group, unreadCount: 0 } : group
+        )
+      );
+      // updateReadStatus(grp.groupId);
+    },
+    [socket, toggleChatView]
+  );
 
   const updateLastMessage = (gid, message, name) => {
     setGroups((prevGroups) => {
@@ -69,6 +75,7 @@ const Page = ({ selectDiscussion }) => {
                 senderName: name,
                 time: new Date().getTime(),
               },
+              unreadCount: 0,
             }
           : group
       );
@@ -79,14 +86,48 @@ const Page = ({ selectDiscussion }) => {
       return updatedGroups;
     });
   };
+  const handleNewMessage = (data) => {
+    setGroups((prevGroups) => {
+      const updatedGroups = prevGroups.map((group) =>
+        group.groupId === data.roomID
+          ? {
+              ...group,
+              latestMessage: {
+                ...group.latestMessage,
+                text: data.message.text,
+                senderName: data.message.senderName,
+                time: data.message.createdAt,
+              },
+              unreadCount: group.unreadCount + 1,
+            }
+          : group
+      );
+
+      updatedGroups.sort(
+        (a, b) =>
+          new Date(b.latestMessage.time) - new Date(a.latestMessage.time)
+      );
+
+      return updatedGroups;
+    });
+  };
 
   useEffect(() => {
     fetchGroups();
+    updateLastMessage();
+    if (socket) {
+      socket.on("groupchat-inbox", handleNewMessage);
+    }
 
     // if (selectDiscussion) {
     //   handleGroupSelection(selectDiscussion);
     // }
-  }, []);
+    return () => {
+      if (socket) {
+        socket.off("groupchat-inbox", handleNewMessage);
+      }
+    };
+  }, [socket]);
 
   return (
     <div className="flex flex-col">
@@ -156,6 +197,7 @@ const Page = ({ selectDiscussion }) => {
                         setSelectedGroup={setSelectedGroup}
                         setToggleChatView={setToggleChatView}
                         updateLastMessage={updateLastMessage}
+                        updateReadStatus={updateReadStatus}
                       />
                     </div>
                   )}

@@ -10,12 +10,13 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { FaTimes, FaCheck } from "react-icons/fa";
+import { useSession as useCustomSession } from "./SessionProvider";
 
 const ProfileDetailsTab = ({ user: initialUser }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(initialUser);
-
+  const { socket } = useCustomSession();
   const { data: session, update } = useSession();
 
   useEffect(() => {
@@ -87,7 +88,6 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
   const handleremoveClick = async (id) => {
     setLoading(true);
     try {
-     
       const res = await fetch(`/api/users/profile?seconduserId=${id}`, {
         method: "POST",
       });
@@ -104,8 +104,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             (conn) => conn !== session?.user?.db_id
           ),
         }));
-        update({
-          connection: session.user.connection.filter((conn) => conn !== id),
+
+        socket.emit("unfollow", {
+          secondUserId: id,
+          userId: session.user.db_id,
         });
       } else {
         toast.error("Failed to remove connection", {
@@ -127,7 +129,7 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
     setLoading(true);
     try {
       if (profileId && session) {
-    //========UNSEND CONNECTION REQUEST============
+        //========UNSEND CONNECTION REQUEST============
         if (user.isRequestPending) {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/unsendconnection/${session.user.db_id}`,
@@ -146,16 +148,14 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
               closeOnClick: true,
             });
             setUser((prevUser) => ({ ...prevUser, isRequestPending: false }));
-
-          }
-          else {
+          } else {
             toast.error("Failed to send connection request", {
               autoClose: 4000,
               closeOnClick: true,
             });
           }
         } else {
-      // ===========SEND CONNECTION REQUEST=======
+          // ===========SEND CONNECTION REQUEST=======
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_NODE_SERVER}/sendconnection/${session.user.db_id}`,
             {
@@ -180,7 +180,6 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             });
           }
         }
-
       } else {
         toast.error("Profile ID is missing", {
           autoClose: 4000,
@@ -219,16 +218,14 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
 
         if (res.status === 200) {
           toast.success(
-            action === "accept" ? "Request accepted" : "Request declined", {
-            autoClose: 4000,
-            closeOnClick: true,
-          }
+            action === "accept" ? "Request accepted" : "Request declined",
+            {
+              autoClose: 4000,
+              closeOnClick: true,
+            }
           );
 
           if (action === "accept") {
-            update({
-              connection: [...session.user.connection, user._id],
-            });
             setUser((prevUser) => ({
               ...prevUser,
               isConnected: true,
@@ -243,6 +240,10 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
             }));
           }
         } else {
+          toast.error("Failed to process request. Please try again.", {
+            autoClose: 4000,
+            closeOnClick: true,
+          });
           throw new Error("Failed to update request");
         }
       } else {
@@ -318,8 +319,13 @@ const ProfileDetailsTab = ({ user: initialUser }) => {
                 onClick={() => handleConnectClick(user._id)}
                 disabled={loading}
                 className={
-                user.isRequestPending ? "bg-gray-500 text-white cursor-pointer"
-                    : ""}>Requested</Button>
+                  user.isRequestPending
+                    ? "bg-gray-500 text-white cursor-pointer"
+                    : ""
+                }
+              >
+                Requested
+              </Button>
             ) : !user.isRequestReceived ? (
               <Button
                 onClick={() => handleConnectClick(user._id)}

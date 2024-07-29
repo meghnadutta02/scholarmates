@@ -6,15 +6,14 @@ import GroupDetails from "@/app/(components)/GroupDetails";
 import DisplayMedia from "./DisplayMedia";
 import Loading from "@/app/(components)/Loading";
 import { toast } from "react-toastify";
-
 import { VscSend } from "react-icons/vsc";
-
 import { Interweave } from "interweave";
 import { UrlMatcher } from "interweave-autolink";
 import { useSession as useCustomSession } from "./SessionProvider";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { Clock12Icon } from "lucide-react";
 
 const GroupChatbox = ({
   selectedGroup,
@@ -22,6 +21,7 @@ const GroupChatbox = ({
   setSelectedGroup,
   setToggleChatView,
   updateLastMessage,
+  updateReadStatus,
 }) => {
   const { socket } = useCustomSession();
   const { data: session } = useSession();
@@ -31,6 +31,7 @@ const GroupChatbox = ({
   const [message, setMessage] = useState({
     text: "",
     groupId: groupId,
+    sender: session?.user?.db_id,
     attachments: [],
   });
   const [inboxMessages, setInboxMessages] = useState(new Map());
@@ -43,22 +44,6 @@ const GroupChatbox = ({
   const lastMessageRef = useRef(null);
   const limit = 20;
 
-  const updateReadStatus = async (gid) => {
-    try {
-      const response = await fetch(`/api/chats/group/${gid}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to mark messages as read");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const getGroupMessages = useCallback(async (groupId, page) => {
     try {
       const skip = page * limit;
@@ -70,7 +55,6 @@ const GroupChatbox = ({
       }
       const data = await response.json();
       setGroupDetails(data.groupDetails);
-
       setInboxMessages((prevMessages) => {
         const newMessages = new Map(prevMessages);
         data.messagesWithSenderName.forEach((message) => {
@@ -93,69 +77,84 @@ const GroupChatbox = ({
 
   const sendMessageHandler = async (e) => {
     e.preventDefault();
-    if (message.text.trim() !== "" || message.attachments.length > 0) {
-      const tempMessage = {
-        ...message,
-        tempId: Date.now(), // Generate a temporary ID
-        sending: true,
-      };
-      // Add the temporary message to the state to ensure the messages get updated only once
-      setInboxMessages((prevMessages) => {
-        const newMessages = new Map(prevMessages);
-        newMessages.set(tempMessage.tempId, tempMessage);
-        return newMessages;
+    if (message.text.trim() == "" && message.attachments.length === 0) {
+      toast.warning("Message empty", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
 
-      const formData = new FormData();
-      formData.append("text", message.text);
-      formData.append("sender", session?.user.db_id);
-      formData.append("groupId", groupId);
-      formData.append("senderName", session?.user.name);
+      return;
+    }
+    const formData = new FormData();
+    formData.append("text", message.text);
+    formData.append("sender", session?.user?.db_id);
+    formData.append("groupId", groupId);
+    formData.append("senderName", session?.user?.name);
 
-      if (message.attachments != null) {
-        message.attachments.forEach((file) => {
-          formData.append("attachments", file);
-        });
-      }
-
-      const res = await fetch(`/api/chats/group/${groupId}`, {
-        method: "POST",
-        body: formData,
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setInboxMessages((prevMessages) => {
-          const newMessages = new Map(prevMessages);
-          newMessages.delete(tempMessage.tempId); // Remove the temporary message
-          newMessages.set(data.result._id, data.result); // Add the new message
-          return newMessages;
-        });
-        socket.emit("send-message", {
-          message: data.result,
-          roomID: groupId,
-        });
-        scrollDown();
-      } else {
-        toast.error("Message not sent", {
+    if (message.attachments != null) {
+      if (message.attachments.length > 10) {
+        toast.warning("Maximum 10 attachments allowed", {
           autoClose: 4000,
           closeOnClick: true,
         });
-        // Remove the temporary message if the API call fails
-        setInboxMessages((prevMessages) => {
-          const newMessages = new Map(prevMessages);
-          newMessages.delete(tempMessage.tempId);
-          return newMessages;
-        });
+        return;
       }
-      updateLastMessage(groupId, message.text, session.user.name);
-      setMessage({
-        text: "",
-        groupId: groupId,
-        attachments: [],
+
+      message.attachments.forEach((file) => {
+        formData.append("attachments", file);
       });
-      setFilePreviews([]);
-      updateReadStatus(groupId);
     }
+
+    const tempMessage = {
+      ...message,
+      tempId: Date.now(), // Generate a temporary ID
+      sending: true,
+    };
+    // Add the temporary message to the state to ensure the messages get updated only once
+    setInboxMessages((prevMessages) => {
+      const newMessages = new Map(prevMessages);
+      newMessages.set(tempMessage.tempId, tempMessage);
+      return newMessages;
+    });
+
+    const res = await fetch(`/api/chats/group/${groupId}`, {
+      method: "POST",
+      body: formData,
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setInboxMessages((prevMessages) => {
+        const newMessages = new Map(prevMessages);
+        newMessages.delete(tempMessage.tempId); // Remove the temporary message
+        newMessages.set(data.result._id, data.result); // Add the new message
+        return newMessages;
+      });
+      socket.emit("send-message", {
+        message: data.result,
+        roomID: groupId,
+        groupMembers: groupDetails.participants,
+      });
+      scrollDown();
+    } else {
+      toast.error("Message not sent", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
+      // Remove the temporary message if the API call fails
+      setInboxMessages((prevMessages) => {
+        const newMessages = new Map(prevMessages);
+        newMessages.delete(tempMessage.tempId);
+        return newMessages;
+      });
+    }
+    updateLastMessage(groupId, message.text, session.user.name);
+    setMessage({
+      text: "",
+      groupId: groupId,
+      attachments: [],
+    });
+    setFilePreviews([]);
+    // updateReadStatus(groupId);
   };
 
   useEffect(() => {
@@ -167,12 +166,12 @@ const GroupChatbox = ({
 
     fetchData();
     updateReadStatus(groupId);
-  }, [groupId, getGroupMessages]);
+  }, [groupId, getGroupMessages, updateReadStatus]);
 
   useEffect(() => {
     if (socket) {
       const messageHandler = (msg) => {
-        updateLastMessage(groupId, msg.text, session.user.name);
+        updateLastMessage(groupId, msg.text, msg.senderName);
         setInboxMessages((prevMessages) => {
           const newMessages = new Map(prevMessages);
           newMessages.set(msg._id, msg);
@@ -180,14 +179,19 @@ const GroupChatbox = ({
         });
         updateReadStatus(groupId);
       };
-      socket.emit("groupchat-setup", groupId);
       socket.on("receive-message", messageHandler);
 
       return () => {
         socket.off("receive-message", messageHandler);
       };
     }
-  }, [groupId, socket, session?.user.name, updateLastMessage]);
+  }, [
+    groupId,
+    socket,
+    session?.user.name,
+    updateLastMessage,
+    updateReadStatus,
+  ]);
 
   const scrollDown = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -255,6 +259,14 @@ const GroupChatbox = ({
     };
   }, []);
 
+  const closeChatHandler = () => {
+    socket.emit("groupchat-close", {
+      roomID: groupId,
+    });
+    setToggleChatView(true);
+    setInboxMessages([]);
+  };
+
   return (
     <>
       {showGroupDetails && groupDetails ? (
@@ -286,7 +298,7 @@ const GroupChatbox = ({
               <div className=" p-1 rounded-lg">
                 <IoArrowBackCircleOutline
                   className="cursor-pointer hover:text-gray-500 transition-colors duration-200 ease-in-out"
-                  onClick={() => setToggleChatView(true)}
+                  onClick={closeChatHandler}
                   size={30}
                 />
               </div>
@@ -364,7 +376,13 @@ const GroupChatbox = ({
                               </p>
                             )}
                             {msg.attachments.length !== 0 && (
-                              <div className="flex flex-wrap justify-evenly max-w-lg gap-2 my-1 py-1 rounded-md bg-white">
+                              <div
+                                className={`grid  w-fit gap-2 ${
+                                  msg.attachments.length >= 2
+                                    ? "grid-cols-2"
+                                    : ""
+                                }  `}
+                              >
                                 {msg.attachments.map((attachment, index) => (
                                   <DisplayMedia
                                     key={index}
@@ -373,15 +391,17 @@ const GroupChatbox = ({
                                 ))}
                               </div>
                             )}
-                            <Interweave
-                              content={msg.text}
-                              matchers={[new UrlMatcher("url")]}
-                            />
+                            {msg.text != "" && (
+                              <Interweave
+                                content={msg.text}
+                                matchers={[new UrlMatcher("url")]}
+                              />
+                            )}
                             <p className="text-xs flex justify-end font-light">
                               {msg.sending ? (
-                                <>Sending...</>
+                                <Clock12Icon className="w-4 h-4 text-gray-700" />
                               ) : (
-                                <>
+                                <p className="text-[9px]">
                                   {new Date(msg.updatedAt).toLocaleTimeString(
                                     [],
                                     {
@@ -389,7 +409,7 @@ const GroupChatbox = ({
                                       minute: "2-digit",
                                     }
                                   )}
-                                </>
+                                </p>
                               )}
                             </p>
                           </div>
@@ -402,10 +422,10 @@ const GroupChatbox = ({
               <div ref={messagesEndRef} />
             </div>
           </div>
-          <div>
+          <div className="relative">
             {filePreviews.length > 0 && (
-              <div className="flex gap-2 mb-2">
-                {filePreviews.map((preview, index) => (
+              <div className="flex gap-2 mb-2 absolute -top-12 left-3">
+                {filePreviews.slice(0, 4).map((preview, index) => (
                   <div key={index} className="relative w-16 h-16">
                     <Image
                       src={preview}
@@ -415,7 +435,7 @@ const GroupChatbox = ({
                       className="rounded-lg"
                     />
                     <button
-                      className="absolute top-0 right-0 bg-white rounded-full p-1"
+                      className="absolute -top-2 -right-2 bg-white rounded-full border border-red-600 px-1.5"
                       onClick={() => {
                         const newPreviews = filePreviews.filter(
                           (_, i) => i !== index
@@ -433,6 +453,13 @@ const GroupChatbox = ({
                     </button>
                   </div>
                 ))}
+                {filePreviews.length > 4 && (
+                  <div className="flex items-center justify-center">
+                    <span className="w-8 h-8 pt-1.5 text-white text-sm text-center font-semibold bg-zinc-800 rounded-full">
+                      <p> +{filePreviews.length - 4}</p>
+                    </span>
+                  </div>
+                )}
               </div>
             )}
             <form

@@ -161,26 +161,14 @@ const Trending = () => {
   }, [session, college]);
 
   const handleButtonClick = async (discussionId, id) => {
+    const toastId = toast.loading("Sending request...", {
+      autoClose: 4000,
+      closeOnClick: true,
+    });
     try {
-      const toastId = toast.loading("Sending request...",{
-        autoClose:4000,
-        closeOnClick:true,
-      });
-
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
       });
-
-      if (!res.ok) {
-        toast.update(toastId, {
-          render: "Error sending request",
-          type: "error",
-          isLoading: false,
-          autoClose: 5000,
-          closeOnClick:true
-        });
-        throw new Error("Error sending request");
-      }
 
       //if the group is private and request is sent to moderators
       if (res.status === 200) {
@@ -190,7 +178,7 @@ const Trending = () => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
-          closeOnClick:true
+          closeOnClick: true,
         });
         socket.emit("joinRequest", { request: data.result, user: userData });
         setDiscussions((prevDiscussions) =>
@@ -209,7 +197,7 @@ const Trending = () => {
           type: "success",
           isLoading: false,
           autoClose: 5000,
-          closeOnClick:true
+          closeOnClick: true,
         });
 
         setDiscussions((prevDiscussions) =>
@@ -223,16 +211,20 @@ const Trending = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request",{
-        autoClose:4000,
-        closeOnClick:true,
+
+      toast.update(toastId, {
+        render: "Error sending request",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+        closeOnClick: true,
       });
     }
   };
   if (loading) return <Loading />;
   return (
-    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full">
-      <div className="flex justify-end gap-2 items-center md:mt-4 mt-3 mr-4">
+    <div className="md:pt-5 pt-2  md:px-6 px-1 relative w-full lg:w-[85%]">
+      <div className="flex justify-end gap-2 items-center md:my-4 my-2 mr-4">
         <input
           type="checkbox"
           id="college"
@@ -242,10 +234,11 @@ const Trending = () => {
             session?.user?.collegeName
               ? setCollege(e.target.checked)
               : toast.info(
-                  "Please update your college in profile settings to filter discussions by college.",{
-            autoClose:4000,
-            closeOnClick:true,
-          }
+                  "Please update your college in profile settings to filter discussions by college.",
+                  {
+                    autoClose: 4000,
+                    closeOnClick: true,
+                  }
                 )
           }
         />
@@ -260,9 +253,12 @@ const Trending = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1  gap-6 ">
+        <div className="flex flex-col gap-4">
           {discussions.map((discussion) => (
-            <div key={discussion._id} className="rounded-lg shadow-sm p-2">
+            <div
+              key={discussion._id}
+              className="rounded-lg lg:rounded-xl discussion-card p-3 md:p-5"
+            >
               <div className="flex items-start gap-4 ">
                 <Image
                   alt="Avatar"
@@ -362,7 +358,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="grid w-full grid-cols-4 items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2 pl-2">
+    <div className="flex justify-between items-center gap-5 text-center md:gap-8 pt-2 ">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"
@@ -396,18 +392,6 @@ const DiscussionActions = ({
         <span className="ml-2">{discussion.dislikes}</span>
       </Button>
 
-      <Button className="h-10" size="icon" variant="icon">
-        <span className="sr-only">Popularity</span>
-        <span className="ml-2 flex">
-          {discussion.rankChange === "decrease" ? (
-            <LuTrendingDown className="w-5 h-5 text-red-400" />
-          ) : (
-            <TrendingUpIcon className="w-5 h-5 text-green-400" />
-          )}
-
-          <p className="font-normal ml-2"> {discussion.rankJump}</p>
-        </span>
-      </Button>
       {discussion.isMember ? (
         <Link href={`/chats?discussionId=${discussion._id}`}>
           <Button variant="icon" className="flex ml-4">
@@ -418,7 +402,7 @@ const DiscussionActions = ({
         <Button
           className={`${
             discussion.isRequested ? "w-20" : "w-16"
-          } h-8 md:h-10  md:w-20`}
+          } h-8 lg:h-10  lg:w-20`}
           variant="secondary"
           disabled={discussion.isRequested}
           onClick={() =>
@@ -428,6 +412,19 @@ const DiscussionActions = ({
           {discussion.isRequested ? "Requested" : "Join"}
         </Button>
       )}
+
+      <Button className="h-10" size="icon" variant="icon">
+        <span className="sr-only">Popularity</span>
+        <span className="mr-4 flex">
+          {discussion.rankChange === "decrease" ? (
+            <LuTrendingDown className="w-5 h-5 text-red-400" />
+          ) : (
+            <TrendingUpIcon className="w-5 h-5 text-green-400" />
+          )}
+
+          <p className="font-normal ml-2"> {discussion.rankJump}</p>
+        </span>
+      </Button>
     </div>
   );
 };

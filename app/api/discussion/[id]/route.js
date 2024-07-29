@@ -100,7 +100,7 @@ export async function DELETE(req, { params }) {
       await discussion.deleteOne();
 
       return NextResponse.json(
-        { result: "Discussion deleted successfully" },
+        { groupId: discussion.groupId },
         { status: 200 }
       );
     }

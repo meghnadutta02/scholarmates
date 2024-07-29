@@ -1,6 +1,8 @@
 import Request from "../model/requestModel.js";
 import User from "../model/userModel.js";
+import { io } from "../server.js";
 import Notification from "../model/notificationModel.js";
+import ActiveUsers from "../activeUser.js";
 export const requestNotificationController = async (req, resp) => {
   try {
     const user = req.params.userId;
@@ -8,7 +10,6 @@ export const requestNotificationController = async (req, resp) => {
     if (user) {
       // Find requests directed to the user
       const data = await Request.find({ requestTo: user });
-      console.log("data", data);
 
       if (data && data.length > 0) {
         // Extract unique user ids from the requests
@@ -28,7 +29,7 @@ export const requestNotificationController = async (req, resp) => {
           requestData: item,
           userData: userDataMap[item.user],
         }));
-        console.log(requestData);
+
         resp.status(200).send({
           success: true,
           message: "Data retrieved successfully",
@@ -57,7 +58,7 @@ export const requestNotificationController = async (req, resp) => {
 export const userRequestsController = async (req, res) => {
   try {
     const { userId, recipientId } = req.params;
-    console.log(userId);
+
     if (!userId || !recipientId) {
       return res.status(400).send({
         success: false,
@@ -134,9 +135,8 @@ export const checkIsSeenController = async (req, resp) => {
 export const deleteBatchNotification = async (req, resp) => {
   try {
     const { userId } = req.params;
-    console.log(userId);
+
     const { notificationIds } = req.body;
-    console.log(notificationIds);
 
     if (!notificationIds || !Array.isArray(notificationIds)) {
       return resp.status(400).send({
@@ -211,5 +211,33 @@ export const DeleteNotificationController = async (req, resp) => {
       success: false,
       message: error.message,
     });
+  }
+};
+export const handleUnfollowNotification = async (data) => {
+  try {
+    const { secondUserId, userId } = data;
+    const notifications = await Notification.find({
+      $or: [
+        { senderId: userId, recipientId: secondUserId },
+        { senderId: secondUserId, recipientId: userId },
+      ],
+      status: { $in: ["requestSend", "requestaccept"] },
+    });
+    const notificationIds = notifications.map(
+      (notification) => notification._id
+    );
+    for (let notification of notifications) {
+      const socketId = ActiveUsers.getUserSocketId(
+        notification.recipientId.toString()
+      );
+      if (socketId) {
+        io.to(socketId).emit("removeConnectionRequestNotification", {
+          notificationId: notification._id,
+        });
+      }
+    }
+    await Notification.deleteMany({ _id: { $in: notificationIds } });
+  } catch (error) {
+    console.error("Error handling unfollow notification:", error);
   }
 };

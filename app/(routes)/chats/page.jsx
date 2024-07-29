@@ -33,6 +33,10 @@ export default function Chats() {
       const data = await response.json();
       setConnections(data.messages);
     } catch (error) {
+      toast.error("Failed to load your chats.", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
       console.error(error);
     } finally {
       setLoading(false);
@@ -94,6 +98,26 @@ export default function Chats() {
       return updatedConnections;
     });
   };
+  const handleNewMessage = (msg) => {
+    setConnections((prevConnections) => {
+      const updatedConnections = prevConnections.map((connection) =>
+        connection.userId === msg.sender
+          ? {
+              ...connection,
+              lastMessageText: msg.text,
+              lastMessageTime: msg.createdAt,
+              unreadMessagesCount: connection.unreadMessagesCount + 1,
+            }
+          : connection
+      );
+
+      updatedConnections.sort(
+        (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
+      );
+
+      return updatedConnections;
+    });
+  };
 
   useEffect(() => {
     if (selectDiscussion) {
@@ -103,27 +127,13 @@ export default function Chats() {
     updateLastMessage();
 
     if (socket) {
-      socket.on("userchat-inbox", (msg) => {
-        setConnections((prevConnections) => {
-          const updatedConnections = prevConnections.map((connection) =>
-            connection.userId === msg.sender
-              ? {
-                  ...connection,
-                  lastMessageText: msg.text,
-                  lastMessageTime: msg.createdAt,
-                  unreadMessagesCount: connection.unreadMessagesCount + 1,
-                }
-              : connection
-          );
-
-          updatedConnections.sort(
-            (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
-          );
-
-          return updatedConnections;
-        });
-      });
+      socket.on("userchat-inbox", handleNewMessage);
     }
+    return () => {
+      if (socket) {
+        socket.off("userchat-inbox", handleNewMessage);
+      }
+    };
   }, [searchParams, selectDiscussion, socket]);
 
   return (
@@ -241,7 +251,10 @@ export default function Chats() {
           </TabsContent>
 
           <TabsContent value="g" className="w-full">
-            <DiscussionChatsSection selectDiscussion={selectDiscussion} />
+            <DiscussionChatsSection
+              socket={socket}
+              selectDiscussion={selectDiscussion}
+            />
           </TabsContent>
         </Tabs>
       )}

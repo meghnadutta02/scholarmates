@@ -8,14 +8,14 @@ import {
   DrawerTrigger,
   DrawerDescription,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
 import { IoMdMenu } from "react-icons/io";
 import Link from "next/link";
-import { MdPeopleAlt } from "react-icons/md";
 import { MessageSquareIcon, UsersIcon } from "lucide-react";
 import { MdOutlineConnectWithoutContact, MdGroupAdd } from "react-icons/md";
 import { TrendingUp } from "lucide-react";
 import { useState } from "react";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { HiOutlineRectangleGroup } from "react-icons/hi2";
 
 const MenuDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,14 +45,14 @@ const MenuDrawer = () => {
             className="flex w-full items-center gap-3 rounded-lg p-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           >
             <MessageSquareIcon className="h-4 w-4" />
-            <span>Chats</span>
+            <span>Messages</span>
           </Link>
           <Link
             onClick={closeDrawer}
             href="/discussions"
             className="flex w-full items-center gap-3 rounded-lg p-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           >
-            <UsersIcon className="h-4 w-4" />
+            <HiOutlineRectangleGroup className="h-5 w-5" />
             <span>Discussions</span>
           </Link>
           <Link
@@ -68,7 +68,7 @@ const MenuDrawer = () => {
             className="flex w-full items-center gap-3 rounded-lg p-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
             href="/my-engagements"
           >
-            <MdPeopleAlt className="mt-1 h-5 w-5" />
+            <UsersIcon className="h-5 w-5" />
             Engagements
           </Link>
           <Link
@@ -89,9 +89,9 @@ const MenuDrawer = () => {
           </Link>
         </nav>
         <DrawerFooter>
-          <DrawerClose>
-            <span className="p-2 border-2 border-gray-500 font-semibold rounded-md">
-              Close
+          <DrawerClose className="place-content-center">
+            <span className="flex mt-[-12px] justify-center">
+              <CrossCircledIcon className="h-8 w-8 text-gray-600" />
             </span>
           </DrawerClose>
         </DrawerFooter>

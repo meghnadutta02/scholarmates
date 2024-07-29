@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useContext, createContext } from "react";
+import { useState, useEffect, useContext, createContext, useRef } from "react";
 import { getSession } from "next-auth/react";
 import io from "socket.io-client";
 
@@ -9,7 +9,7 @@ export const SessionProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [request, setRequest] = useState();
   const [loading, setLoading] = useState(true);
-
+  const [allNotificationsSeen, setAllNotificationsSeen] = useState(true);
   const [notifications, setNotifications] = useState([]);
   const [socket, setSocket] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -18,21 +18,29 @@ export const SessionProvider = ({ children }) => {
     setUnreadCount(0);
   };
 
-  const removeConnectionNotification = (currentUserId, requestFromUserId) => {
-    setNotifications((prev) => {
-      return prev.filter((noti) => {
-        return (
-          noti.recipientId !== currentUserId &&
-          noti.senderId !== requestFromUserId &&
-          noti.status !== "requestSend"
-        );
-      });
+  const handleNotificationRemoval = (data) => {
+    let unreadNotificationsToRemove = 0;
+    setNotifications((prevNotifications) => {
+      unreadNotificationsToRemove = prevNotifications.filter(
+        (noti) =>
+          (noti.notificationId === data.notificationId ||
+            noti._id === data.notificationId) &&
+          !noti.isSeen
+      ).length;
+
+      // Filter out the removed notifications
+      const updatedNotifications = prevNotifications.filter(
+        (noti) =>
+          noti.notificationId !== data.notificationId &&
+          noti._id !== data.notificationId
+      );
+
+      return updatedNotifications;
     });
-    setUnreadCount((prev) => {
-      return prev - 1;
+    setUnreadCount((prevUnreadCount) => {
+      return prevUnreadCount - unreadNotificationsToRemove;
     });
   };
-
   const removeDuplicates = (array) => {
     const uniqueSet = new Map();
 
@@ -78,9 +86,13 @@ export const SessionProvider = ({ children }) => {
             const data = await res.json(); // contains all notifications
 
             setNotifications(data.notifications);
-            setUnreadCount(() => {
-              return data.notifications.filter((noti) => !noti.isSeen).length;
-            });
+            var unreadNotifications = data.notifications.filter(
+              (noti) => !noti.isSeen
+            );
+            setUnreadCount(unreadNotifications.length);
+            if (unreadNotifications.length > 0) {
+              setAllNotificationsSeen(false);
+            }
           }
         } catch (error) {
           console.error("Failed to fetch notifications", error);
@@ -106,6 +118,7 @@ export const SessionProvider = ({ children }) => {
           return uniqueNotifications.sort((a, b) => a.timestamp - b.timestamp);
         });
         setUnreadCount((prev) => prev + 1);
+        setAllNotificationsSeen(false);
       }
     };
 
@@ -119,6 +132,12 @@ export const SessionProvider = ({ children }) => {
       newSocket.on(event, handleNewNotification);
     });
 
+    newSocket.on(
+      "removeConnectionRequestNotification",
+      handleNotificationRemoval
+    );
+    newSocket.on("deletedDiscussionNotification", handleNotificationRemoval);
+
     return () => {
       [
         "connectionRequest",
@@ -129,6 +148,7 @@ export const SessionProvider = ({ children }) => {
       ].forEach((event) => {
         newSocket.off(event, handleNewNotification);
       });
+
       newSocket.close();
     };
   }, [session?.db_id]);
@@ -141,12 +161,14 @@ export const SessionProvider = ({ children }) => {
         socket,
         notifications,
         unreadCount,
+        allNotificationsSeen,
+        setAllNotificationsSeen,
         setSession,
         setRequest,
         setNotifications,
         setUnreadCount,
         clearUnreadCount,
-        removeConnectionNotification,
+        handleNotificationRemoval,
       }}
     >
       {!loading && children}

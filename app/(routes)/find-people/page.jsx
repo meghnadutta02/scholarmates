@@ -78,7 +78,7 @@ export default function Component() {
             }
           );
           if (res.ok) {
-            toast.success("Connection request removed", {
+            toast.success("Connection request revoked.", {
               autoClose: 4000,
               closeOnClick: true,
             });
@@ -86,6 +86,11 @@ export default function Component() {
               const newSet = new Set(prev);
               newSet.delete(profileId);
               return newSet;
+            });
+          } else {
+            toast.error("Failed to revoke connection request", {
+              autoClose: 4000,
+              closeOnClick: true,
             });
           }
         } else {
@@ -110,9 +115,17 @@ export default function Component() {
         }
       } else {
         console.log("Profile ID not found");
+        toast.error("Profile not found", {
+          autoClose: 4000,
+          closeOnClick: true,
+        });
       }
     } catch (error) {
       console.log("Error: ", error.message);
+      toast.error("Failed to process your request. Please try again.", {
+        autoClose: 4000,
+        closeOnClick: true,
+      });
     } finally {
       setConnectingProfile(null);
     }

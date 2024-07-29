@@ -9,6 +9,7 @@ import puzzle from "@/public/puzzle.png";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+
 const Services = () => {
   const router = useRouter();
   const item = {
@@ -67,7 +68,7 @@ const Services = () => {
         </Button>
       </div>
 
-      <div className="container mx-auto  px-4 sm:px-6 lg:px-8 font-serif md:mt-0 mt-7">
+      <div className="container mx-auto  px-3 sm:px-6 lg:px-8 font-serif md:mt-0 mt-7">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -96,7 +97,7 @@ const Services = () => {
               <video
                 src={service.video}
                 alt={service.title}
-                className="w-[88%] md:w-2/5 mb-4 md:mb-0 rounded-lg shadow-xl shadow-blue-300"
+                className="w-[88%] md:w-2/5 mb-[18px] md:mb-0 rounded-lg shadow-xl shadow-blue-300"
                 loop
                 muted
                 autoPlay
@@ -111,11 +112,21 @@ const Services = () => {
                 />
                 <p className="text-gray-600 dark:text-gray-400 font-serif text-base sm:text-lg md:text-xl relative">
                   {service.description}
-                  <Image
-                    src={puzzle}
-                    alt="Puzzle"
-                    className={`w-20 h-20 lg:w-24 lg:h-24 absolute right-4 md:right-16 top-[60px] opacity-30 hidden md:block transform ${service.rotation}`}
-                  />
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 20,
+                      ease: "linear",
+                      repeat: Infinity,
+                    }}
+                    className={`absolute right-4 md:right-16 top-[55px] `}
+                  >
+                    <Image
+                      src={puzzle}
+                      alt="Puzzle"
+                      className={`w-20 h-20 lg:w-24 lg:h-24 opacity-30 hidden md:block transform ${service.rotation}`}
+                    />
+                  </motion.div>
                 </p>
               </div>
             </motion.div>

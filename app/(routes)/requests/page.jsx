@@ -5,11 +5,23 @@ import Notification from "@/app/(components)/Notification";
 import { useSession } from "@/app/(components)/SessionProvider";
 import GroupRequests from "@/app/(components)/GroupRequests";
 import Loading from "./loading";
+import { useSearchParams } from "next/navigation";
 
 const Request = () => {
   const { session } = useSession();
   const [requestData, setRequestData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const tabParams = useSearchParams();
+  const [defaultTab, setDefaultTab] = useState("connections");
+
+  useEffect(() => {
+    const tab = tabParams.get("tab");
+    if (tab === "connections" || tab === "groups") {
+      setDefaultTab(tab);
+    } else {
+      setDefaultTab("connections");
+    }
+  }, [tabParams]);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -31,9 +43,17 @@ const Request = () => {
           setRequestData(data.data);
         } else {
           console.log("Error:", response.statusText);
+          toast.error("Failed to fetch connection requests", {
+            autoClose: 4000,
+            closeOnClick: true,
+          });
         }
       } catch (error) {
         console.log(error);
+        toast.error("Failed to fetch connection requests", {
+          autoClose: 4000,
+          closeOnClick: true,
+        });
       } finally {
         setLoading(false);
       }
@@ -44,13 +64,13 @@ const Request = () => {
 
   return (
     <div className="md:mt-7 mt-4 flex md:px-2 px-0 w-full">
-      <Tabs defaultValue="c" className="w-full">
+      <Tabs value={defaultTab} className="w-full" onValueChange={setDefaultTab}>
         <TabsList className="flex mx-auto w-min">
-          <TabsTrigger value="c">Connections</TabsTrigger>
-          <TabsTrigger value="g">Groups</TabsTrigger>
+          <TabsTrigger value="connections">Connections</TabsTrigger>
+          <TabsTrigger value="groups">Groups</TabsTrigger>
         </TabsList>
         <div className="flex w-full justify-center pt-6 pb-8">
-          <TabsContent value="c" className="md:w-[80%] w-full m-auto">
+          <TabsContent value="connections" className="md:w-[80%] w-full m-auto">
             <div className="items-center flex-col space-y-4 w-full">
               {loading ? (
                 <Loading />
@@ -63,7 +83,7 @@ const Request = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="g" className="md:w-[80%] w-full">
+          <TabsContent value="groups" className="md:w-[80%] w-full">
             <GroupRequests />
           </TabsContent>
         </div>

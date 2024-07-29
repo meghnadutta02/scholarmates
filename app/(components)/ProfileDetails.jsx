@@ -83,7 +83,7 @@ const ProfileDetails = ({ user, setUser }) => {
                 )}
               </div>
               <div className="my-4">
-                <h3 className="text-lg font-semibold">Degree</h3>
+                <h3 className="text-lg font-semibold">Pursuing</h3>
                 {user.degree ? (
                   <p className="text-md font-semibold text-gray-600">
                     {user.degree}{" "}

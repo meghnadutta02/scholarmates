@@ -14,13 +14,22 @@ import { degrees } from "../(data)/degree_list";
 import { FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { format, subYears } from "date-fns";
+import { HelpCircle } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Link from "next/link";
 
 const ProfileEdit = ({ user, setUser }) => {
   const [userState, setUserState] = useState(user);
   const { update } = useSession();
 
   const maxDate = format(subYears(new Date(), 11), "yyyy-MM-dd");
-  const [selectedCategories, setSelectedCategories] = useState(user.interestCategories);
+  const [selectedCategories, setSelectedCategories] = useState(
+    user.interestCategories
+  );
   const [selectedSubCategories, setSelectedSubCategories] = useState(
     user.interestSubcategories.map((subcategory) => ({
       label: subcategory,
@@ -35,7 +44,9 @@ const ProfileEdit = ({ user, setUser }) => {
   const [subCategoryError, setSubCategoryError] = useState(false);
   const [minInterestError, setMinInterestError] = useState(false);
 
-  const categories = interests.flatMap((categoryObject) => Object.values(categoryObject)[0]);
+  const categories = interests.flatMap(
+    (categoryObject) => Object.values(categoryObject)[0]
+  );
 
   const categoryOptions = categories.map((category) => ({
     label: category,
@@ -62,7 +73,8 @@ const ProfileEdit = ({ user, setUser }) => {
     setSelectedCategory(selectedCategory);
 
     const newSubcategories =
-      interests.find((interest) => interest.category === selectedCategory.value)?.subcategories || [];
+      interests.find((interest) => interest.category === selectedCategory.value)
+        ?.subcategories || [];
 
     const newSubcategoryOptions = newSubcategories.map((subcategory) => ({
       label: subcategory,
@@ -89,14 +101,20 @@ const ProfileEdit = ({ user, setUser }) => {
     }
 
     const newSelectedCategories = selectedSubCategories.map((subCategory) => {
-      return interests.find((interest) => interest.subcategories.includes(subCategory.value)).category;
+      return interests.find((interest) =>
+        interest.subcategories.includes(subCategory.value)
+      ).category;
     });
 
-    const uniqueSelectedCategories = [
-      ...new Set([...selectedCategories, ...newSelectedCategories]),
-    ];
+    const uniqueSelectedCategories = [...new Set(newSelectedCategories)];
 
-    setSelectedCategories(uniqueSelectedCategories);
+    const finalSelectedCategories = selectedCategories.filter((category) =>
+      newSelectedCategories.includes(category)
+    );
+
+    setSelectedCategories([
+      ...new Set([...uniqueSelectedCategories, ...finalSelectedCategories]),
+    ]);
   };
 
   const handleCollegeChange = (selectedOption) => {
@@ -143,14 +161,14 @@ const ProfileEdit = ({ user, setUser }) => {
       setUser(data.result);
       update(data.result);
       setFormOpen(false);
-      toast.success("Profile updated successfully",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.success("Profile updated successfully", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     } else {
-      toast.error("Profile update failed",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.error("Profile update failed", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     }
   };
@@ -171,11 +189,30 @@ const ProfileEdit = ({ user, setUser }) => {
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="collegeName">College Name</Label>
+          <Label className="flex items-center gap-2" htmlFor="collegeName">
+            College Name{" "}
+            <Popover>
+              <PopoverTrigger>
+                <HelpCircle
+                  size={16}
+                  className="text-gray-500 hover:text-yellow-600"
+                />
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                College name not on the list or having trouble finding it?{" "}
+                <Link href="/contact" className="underline text-blue-500">
+                  Drop us a message
+                </Link>{" "}
+                We got you covered.
+              </PopoverContent>
+            </Popover>
+          </Label>
           <Select
             name="collegeName"
             options={collegesOptions}
-            value={collegesOptions.find((option) => option.value === userState.collegeName)}
+            value={collegesOptions.find(
+              (option) => option.value === userState.collegeName
+            )}
             onChange={handleCollegeChange}
           />
         </div>
@@ -185,7 +222,9 @@ const ProfileEdit = ({ user, setUser }) => {
             <Select
               name="degree"
               options={degreesOptions}
-              value={degreesOptions.find((option) => option.value === userState.degree)}
+              value={degreesOptions.find(
+                (option) => option.value === userState.degree
+              )}
               onChange={handleDegreeChange}
             />
           </div>
@@ -194,7 +233,9 @@ const ProfileEdit = ({ user, setUser }) => {
             <Select
               name="department"
               options={departmentsOptions}
-              value={departmentsOptions.find((option) => option.value === userState.department)}
+              value={departmentsOptions.find(
+                (option) => option.value === userState.department
+              )}
               onChange={handleDepartmentChange}
             />
           </div>
@@ -243,7 +284,9 @@ const ProfileEdit = ({ user, setUser }) => {
               max={maxDate}
               className="w-full p-1 rounded-sm border border-gray-350"
               onChange={(e) => {
-                const newDate = e.target.value ? new Date(e.target.value) : null;
+                const newDate = e.target.value
+                  ? new Date(e.target.value)
+                  : null;
                 setDate(newDate);
               }}
             />

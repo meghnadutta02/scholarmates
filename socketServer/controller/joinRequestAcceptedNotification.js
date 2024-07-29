@@ -39,6 +39,8 @@ export const handleJoinRequestAcceptedNotification = async (data) => {
         sendername: name,
         profilePic: profilePic,
         status: "joinRequestAccepted",
+        recipientId: fromUser,
+        senderId: db_id,
         notificationId: newNotification._id,
       });
 

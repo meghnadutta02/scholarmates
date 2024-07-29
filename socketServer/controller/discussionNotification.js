@@ -1,12 +1,18 @@
 import Notification from "../model/notificationModel.js";
 import ActiveUsers from "../activeUser.js";
 import { io } from "../server.js";
+import User from "../model/userModel.js";
 
 export const handleDiscussionNotification = async (data) => {
   try {
-    console.log(data);
     const { discussion, user } = data;
-    const { db_id, name, profilePic, connection: connections } = user;
+    const { db_id, name, profilePic } = user;
+    const res = await User.findById(db_id).select("connection -_id");
+
+    const connections = res.connection.map((connection) =>
+      connection.toString()
+    );
+    if (connections.length === 0) return;
     const { _id: discussionId, title, createdAt } = discussion;
 
     for (let connectionId of connections) {
@@ -38,6 +44,8 @@ export const handleDiscussionNotification = async (data) => {
           status: "discussNotify",
           discussionId: discussionId,
           notificationId: newNotification._id,
+          recipientId: connectionId,
+          senderId: db_id,
         });
 
         console.log(`Notified user: ${connectionId}`);
@@ -45,5 +53,35 @@ export const handleDiscussionNotification = async (data) => {
     }
   } catch (error) {
     console.error("Error handling discussion notification:", error);
+  }
+};
+
+export const handleDeletedDiscussionNotification = async (data) => {
+  try {
+    const { discussionId, groupId } = data;
+
+    const notifications = await Notification.find({
+      $or: [{ discussionId }, { groupId }],
+    });
+
+    const notificationIds = notifications.map(
+      (notification) => notification._id
+    );
+
+    for (let notification of notifications) {
+      const socketId = ActiveUsers.getUserSocketId(
+        notification.recipientId.toString()
+      );
+
+      if (socketId) {
+        io.to(socketId).emit("deletedDiscussionNotification", {
+          notificationId: notification._id,
+        });
+      }
+    }
+
+    await Notification.deleteMany({ _id: { $in: notificationIds } });
+  } catch (error) {
+    console.error("Error handling deleted discussion notification:", error);
   }
 };

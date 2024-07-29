@@ -28,6 +28,7 @@ import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import ReactTimeAgo from "react-time-ago";
 import { useSession } from "@/app/(components)/SessionProvider";
+import { Separator } from "@/components/ui/separator";
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 const DiscussionDetails = ({ params }) => {
@@ -54,11 +55,16 @@ const DiscussionDetails = ({ params }) => {
       });
 
       if (res.ok) {
+        const data = await res.json();
         toast.success("Discussion deleted successfully", {
           autoClose: 4000,
           closeOnClick: true,
         });
-        router.push("/my-engagements");
+        router.push("/my-engagements?tab=discussions");
+        socket.emit("discussionDeleted", {
+          discussionId: deleteDiscussionId,
+          groupId: data.groupId,
+        });
       }
     } catch (error) {
       console.error("Failed to delete discussion:", error);
@@ -174,26 +180,14 @@ const DiscussionDetails = ({ params }) => {
   };
 
   const handleButtonClick = async (id) => {
+    const toastId = toast.loading("Sending request...", {
+      autoClose: 4000,
+      closeOnClick: true,
+    });
     try {
-      const toastId = toast.loading("Sending request...", {
-        autoClose: 4000,
-        closeOnClick: true,
-      });
-
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
       });
-
-      if (!res.ok) {
-        toast.update(toastId, {
-          render: "Error sending request",
-          type: "error",
-          isLoading: false,
-          autoClose: 5000,
-          closeOnClick: true,
-        });
-        throw new Error("Error sending request");
-      }
 
       //if the group is private and request is sent to moderators
       if (res.status === 200) {
@@ -222,8 +216,11 @@ const DiscussionDetails = ({ params }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request", {
-        autoClose: 4000,
+      toast.update(toastId, {
+        render: "Error sending request",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
         closeOnClick: true,
       });
     }
@@ -266,9 +263,13 @@ const DiscussionDetails = ({ params }) => {
 
   return (
     <>
-      <div className={`w-full p-4 ${showConfirmDelete ? "blur-md" : ""}`}>
-        <div className="flex flex-col gap-2 md:gap-4 w-full">
-          <div className="flex justify-between  py-1 px-2 shadow-sm rounded-md md:py-[10px] md:px-4">
+      <div
+        className={`w-full lg:w-[80%] p-4 ${
+          showConfirmDelete ? "blur-md" : ""
+        }`}
+      >
+        <div className="flex flex-col gap-2 md:gap-4 w-full rounded-md shadow-md">
+          <div className="flex justify-between border-b rounded-t-lg p-2 md:pt-3 md:px-4 ">
             <div className="flex">
               <Link href={`/profile/${discussion.creator._id}`}>
                 <Image
@@ -324,14 +325,14 @@ const DiscussionDetails = ({ params }) => {
           </div>
 
           <div
-            className={`grid grid-cols-1 justify-between gap-6 py-3 w-full px-1 sm:px-4 shadow-md rounded-md ${
+            className={`grid grid-cols-1 justify-between gap-6 w-full px-1 sm:px-4 ${
               discussion.coverImage != "" ? "md:grid-cols-2" : ""
             }`}
           >
             {discussion.coverImage != "" && (
               <Image
                 alt="Cover"
-                className="w-full h-[270px] md:w-[520px] md:h-[370px] rounded-md"
+                className="w-full h-[270px] md:w-[520px] md:h-[370px] rounded-md mb-4"
                 src={discussion.coverImage}
                 style={{ aspectRatio: "1", objectFit: "cover" }}
                 width={280}
@@ -339,18 +340,14 @@ const DiscussionDetails = ({ params }) => {
               />
             )}
             <div className="flex flex-col md:justify-between h-full gap-3">
-              <div className="flex flex-col gap-2 md:gap-4  ">
+              <div className="flex flex-col gap-2 md:gap-4 py-2">
                 <h4 className=" text-md font-semibold">{discussion.title}</h4>
                 <div className="prose max-w-none">
                   <p>{discussion.content}</p>
                 </div>
               </div>
 
-              <div
-                className={`grid w-full gap-4 md:gap-8 ${
-                  likedByUsers.length > 0 ? "grid-cols-5" : "grid-cols-4"
-                }`}
-              >
+              <div className="flex justify-between items-center gap-4 py-2">
                 <Button className="h-10" size="icon" variant="icon">
                   <ThumbsUpIcon
                     className={`w-4 h-4 cursor-pointer ${

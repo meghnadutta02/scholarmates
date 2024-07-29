@@ -37,6 +37,7 @@ export async function GET(req, { params }) {
       .populate("moderators", "_id")
       .populate("participants", "_id name profilePic");
     const userId = session?.user?.db_id;
+
     const groupDetails = {
       _id: group._id,
       name: group.name,
@@ -46,7 +47,7 @@ export async function GET(req, { params }) {
       creator: group.moderators[0]._id,
       participants: group.participants,
       moderators: group.moderators.map((mod) => mod._id),
-
+      discussionId: group.discussionId,
       currentUser: userId,
     };
 

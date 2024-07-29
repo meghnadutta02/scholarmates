@@ -2,7 +2,7 @@
 import TimeAgo from "javascript-time-ago";
 import Image from "next/image";
 import ReactTimeAgo from "react-time-ago";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import en from "javascript-time-ago/locale/en";
 import { toast } from "react-toastify";
@@ -14,9 +14,14 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const Page = () => {
-  const { session, notifications, clearUnreadCount, setNotifications } =
-    useSession();
-  const hasMarkedAsSeen = useRef(false);
+  const {
+    session,
+    notifications,
+    clearUnreadCount,
+    setNotifications,
+    allNotificationsSeen,
+    setAllNotificationsSeen,
+  } = useSession();
 
   const deleteAllNotifications = async () => {
     if (session?.db_id && notifications.length > 0) {
@@ -78,11 +83,18 @@ const Page = () => {
       }
     };
 
-    if (!hasMarkedAsSeen.current) {
+    if (!allNotificationsSeen) {
       markAllAsSeen();
-      hasMarkedAsSeen.current = true;
+      setAllNotificationsSeen(true);
     }
-  }, [session?.db_id, notifications, setNotifications, clearUnreadCount]);
+  }, [
+    session?.db_id,
+    notifications,
+    setNotifications,
+    clearUnreadCount,
+    allNotificationsSeen,
+    setAllNotificationsSeen,
+  ]);
 
   const handleClose = async (index, item) => {
     try {
@@ -139,7 +151,9 @@ const Page = () => {
                         ? `/discussions/${item.discussionId}`
                         : item.status === "joinRequestAccepted"
                         ? "/chats"
-                        : "/requests"
+                        : item.status === "joinRequest"
+                        ? `/requests?tab=groups`
+                        : "/requests?tab=connections"
                     }
                     className="flex gap-2 justify-start items-center"
                   >

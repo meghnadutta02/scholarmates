@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Loading from "./Loading";
 import Image from "next/image";
-
+import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
@@ -45,7 +45,8 @@ const DiscussionList = ({
 
   const [animationState, setAnimationState] = useState({});
   const [loading, setLoading] = useState(true);
-  const { socket, session } = useCustomSession();
+  const { socket } = useCustomSession();
+  const { data: session } = useSession();
   const limit = 10;
   const observer = useRef(null);
 
@@ -94,7 +95,7 @@ const DiscussionList = ({
           result = discussionsResult.value.result;
         }
 
-        const userId = session?.db_id;
+        const userId = session?.user?.db_id;
 
         const updatedResult = result.map((discussion) => {
           const isLiked = discussion.likedBy?.includes(userId);
@@ -157,6 +158,7 @@ const DiscussionList = ({
       const target = entries[0];
 
       if (target.isIntersecting && hasMore) {
+        console.log("Intersecting");
         setOffset((prevOffset) => prevOffset + limit);
       }
     };
@@ -246,28 +248,16 @@ const DiscussionList = ({
   };
 
   const handleButtonClick = async (discussionId, id) => {
+    const toastId = toast.loading("Sending request...", {
+      autoClose: 4000,
+      closeOnClick: true,
+    });
     try {
-      const toastId = toast.loading("Sending request...", {
-        autoClose: 4000,
-        closeOnClick: true,
-      });
-
       const res = await fetch(`/api/join-group?groupId=${id}`, {
         method: "GET",
       });
 
-      if (!res.ok) {
-        toast.update(toastId, {
-          render: "Error sending request",
-          type: "error",
-          isLoading: false,
-          autoClose: 5000,
-          closeOnClick: true,
-        });
-        throw new Error("Error sending request");
-      }
-
-      //if the group is private and request is sent to moderators
+      //if the group is private and request is sent to mod6,lrators
       if (res.status === 200) {
         const data = await res.json();
         toast.update(toastId, {
@@ -278,7 +268,10 @@ const DiscussionList = ({
           closeOnClick: true,
         });
 
-        socket.emit("joinRequest", { request: data.result, user: session });
+        socket.emit("joinRequest", {
+          request: data.result,
+          user: session?.user,
+        });
         setDiscussions((prevDiscussions) =>
           prevDiscussions.map((d) => {
             if (d._id === discussionId) {
@@ -309,8 +302,11 @@ const DiscussionList = ({
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error sending request", {
-        autoClose: 4000,
+      toast.update(toastId, {
+        render: "Error sending request",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
         closeOnClick: true,
       });
     }
@@ -337,7 +333,7 @@ const DiscussionList = ({
   };
 
   return (
-    <div className="">
+    <div className="lg:w-[85%] mx-auto">
       {loading ? (
         <Loading />
       ) : discussions.length === 0 ? (
@@ -347,45 +343,51 @@ const DiscussionList = ({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1  gap-6 ">
+        <div className="flex flex-col gap-5">
           {discussions.map((discussion) => (
-            <div key={discussion._id} className=" rounded-lg shadow-sm p-2 ">
-              <div className="flex items-start gap-4 ">
-                <Image
-                  alt="Avatar"
-                  className="rounded-full hidden sm:block"
-                  height="48"
-                  src={discussion.creatorData.profilePic}
-                  style={{
-                    aspectRatio: "48/48",
-                    objectFit: "cover",
-                  }}
-                  width="48"
-                />
-
+            <div
+              key={discussion._id}
+              className="rounded-lg lg:rounded-xl discussion-card sm:px-5"
+            >
+              <div className="flex items-start gap-4 pt-4">
+                <Link href={`/profile/${discussion.creatorData._id}`}>
+                  <Image
+                    alt="Avatar"
+                    className="rounded-full hidden sm:block"
+                    height="48"
+                    src={discussion.creatorData.profilePic}
+                    style={{
+                      aspectRatio: "48/48",
+                      objectFit: "cover",
+                    }}
+                    width="48"
+                  />
+                </Link>
                 <div className="flex-1 grid gap-2">
                   <div className="flex flex-col  gap-2">
                     <div className="flex justify-between">
                       <div className="mr-3 mt-1 sm:hidden block">
-                        <Image
-                          alt="Avatar"
-                          className="rounded-full bg-cover"
-                          height="48"
-                          width="48"
-                          style={{
-                            aspectRatio: "48/48",
-                            objectFit: "cover",
-                          }}
-                          src={discussion.creatorData.profilePic}
-                        />
+                        <Link href={`/profile/${discussion.creatorData._id}`}>
+                          <Image
+                            alt="Avatar"
+                            className="rounded-full bg-cover"
+                            height="48"
+                            width="48"
+                            style={{
+                              aspectRatio: "48/48",
+                              objectFit: "cover",
+                            }}
+                            src={discussion.creatorData.profilePic}
+                          />
+                        </Link>
                       </div>
                       <div className="flex md:flex-row flex-col justify-between md:items-center w-full items-start">
                         <Link href={`/profile/${discussion.creatorData._id}`}>
-                          <span className="text-sm text-gray-500 font-medium dark:text-gray-400">
+                          <span className="text-sm text-gray-700 font-medium dark:text-gray-400">
                             {discussion.creatorData.name}
                           </span>{" "}
                         </Link>
-                        <span className="md:text-sm sm:mr-8 text-[13px] line-clamp-1 text-gray-500 dark:text-gray-400">
+                        <span className="md:text-sm text-[13px] line-clamp-1 text-gray-700 dark:text-gray-400">
                           {discussion.creatorData.collegeName}
                         </span>
                       </div>
@@ -393,8 +395,8 @@ const DiscussionList = ({
                         href={`/discussions/${discussion._id}`}
                         className="md:hidden"
                       >
-                        <Button className="p-0" variant="icon">
-                          <InfoIcon className="w-5 h-5" />
+                        <Button className="pr-3" variant="icon">
+                          <InfoIcon className="w-5 h-5 text-gray-700" />
                         </Button>
                       </Link>
                     </div>
@@ -452,7 +454,7 @@ const DiscussionActions = ({
   animationState,
 }) => {
   return (
-    <div className="grid w-full grid-cols-4 items-center sm:place-items-start gap-5 text-center md:gap-8 mb-2 pl-2">
+    <div className="flex justify-between items-center  text-center md:gap-8 py-3">
       <Button
         onClick={() => toggleLike(discussion._id)}
         className="h-10"
@@ -496,7 +498,7 @@ const DiscussionActions = ({
         <Button
           className={`${
             discussion.isRequested ? "w-20" : "w-16 "
-          } h-8 md:h-10 md:w-20`}
+          } h-8 lg:h-10 lg:w-20`}
           variant="secondary"
           disabled={discussion.isRequested}
           onClick={() => handleButtonClick(discussion._id, discussion.groupId)}
@@ -505,12 +507,12 @@ const DiscussionActions = ({
         </Button>
       )}
       <Button
-        className="h-10 ml-4"
+        className="h-10 pr-2"
         size="icon"
         variant="icon"
         onClick={() => handleShare(discussion)}
       >
-        <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-800" />
+        <RiShareForwardLine className="w-5 h-5 cursor-pointer text-gray-700" />
       </Button>
     </div>
   );

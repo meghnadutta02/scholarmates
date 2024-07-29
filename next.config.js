@@ -10,6 +10,9 @@ const nextConfig = {
       },
     ],
   },
+  compiler: {
+    removeConsole: process.env.NEXT_APP_ENVIRONMENT === "production",
+  },
 };
 
 module.exports = withVideos(nextConfig);
