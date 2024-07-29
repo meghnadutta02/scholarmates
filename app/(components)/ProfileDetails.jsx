@@ -5,6 +5,27 @@ import { Badge } from "@/components/ui/badge";
 import { useSession } from "./SessionProvider";
 import ProfileDetailsTab from "./ProfileDetailsTab";
 import ProfilePictureUpdate from "./ProfilePictureUpdate";
+import { MdEdit } from "react-icons/md";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import ProfileEdit from "@/app/(components)/ProfileEdit";
 
 const getYearWithSuffix = (year) => {
   const suffixes = ["th", "st", "nd", "rd"];
@@ -13,7 +34,7 @@ const getYearWithSuffix = (year) => {
   return `${year}${suffix}`;
 };
 
-const ProfileDetails = ({ user, setUser }) => {
+const ProfileDetails = ({ user, setUser, open, setOpen }) => {
   const { session } = useSession();
 
   return (
@@ -27,13 +48,32 @@ const ProfileDetails = ({ user, setUser }) => {
                 {user.connection.length > 1 ? "connections" : "connection"}
               </h3>
               <div className="flex flex-col items-center text-center ">
-                <div className="relative max-h-[97px] ">
+                <div className="relative max-h-[97px]">
                   <Avatar className="w-24 h-24">
                     <AvatarImage alt={user.name} src={user?.profilePic} />
                   </Avatar>
                   <ProfilePictureUpdate user={user} setUser={setUser} />
                 </div>
-                <h1 className="font-bold text-2xl sm:mt-4 mt-3">{user.name}</h1>
+                <div className="relative">
+                  <h1 className="font-bold text-2xl sm:mt-4 mt-3">
+                    {user.name}
+                  </h1>
+                  <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
+                      <MdEdit className="absolute z-10 top-1 -right-6 h-6 w-6 text-gray-600 shadow-md rounded-full cursor-pointer p-1 text-center" />
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[720px] overflow-y-auto max-h-[95%]">
+                      <DialogHeader>
+                        <DialogTitle>Edit profile</DialogTitle>
+                        <DialogDescription>
+                          Make changes to your profile here. Click save when
+                          done.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <ProfileEdit user={user} setUser={setUser} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 {user.bio ? (
                   <p className="sm:mt-2 mt-[6px] text-gray-600 italic">
                     {user.bio}

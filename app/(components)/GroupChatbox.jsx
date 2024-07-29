@@ -46,6 +46,7 @@ const GroupChatbox = ({
 
   const getGroupMessages = useCallback(async (groupId, page) => {
     try {
+      setLoading(true);
       const skip = page * limit;
       const response = await fetch(
         `/api/chats/group/${groupId}?limit=${limit}&skip=${skip}`
@@ -159,7 +160,6 @@ const GroupChatbox = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       setPage(0);
       await getGroupMessages(groupId, 0);
     };

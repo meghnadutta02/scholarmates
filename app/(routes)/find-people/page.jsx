@@ -152,7 +152,7 @@ export default function Component() {
                     <CarouselItem key={profile._id}>
                       <div className="grid gap-2">
                         <div className="p-2">
-                          <div className="flex md:flex-row flex-col justify-between items-center">
+                          <div className="flex md:flex-row flex-col justify-between items-stretch">
                             <Link href={`/profile/${profile._id}`}>
                               <div className="flex gap-4 cursor-pointer items-center">
                                 <Image

@@ -16,6 +16,7 @@ import { TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { HiOutlineRectangleGroup } from "react-icons/hi2";
+import { LiaUserLockSolid } from "react-icons/lia";
 
 const MenuDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,7 +77,7 @@ const MenuDrawer = () => {
             href="/requests"
             className="flex w-full items-center gap-3 rounded-lg p-2 text-gray-700 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
           >
-            <MdGroupAdd className="h-5 w-5" />
+            <LiaUserLockSolid className="h-5 w-5" />
             <span>Requests</span>
           </Link>
           <Link
