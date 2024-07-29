@@ -12,14 +12,6 @@ import logo from "@/public/logo.png";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import ProfileProgress from "./ProfileProgress";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 
 const NavbarClient = () => {
   const { unreadCount } = useCustomSession();
@@ -76,49 +68,28 @@ const NavbarClient = () => {
               <span className="lg:hidden">
                 <MenuDrawer />
               </span>
+              <Button
+                className="rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800"
+                id="menu-button"
+                size="icon"
+                variant="ghost"
+              >
+                <Link href={`/profile/${session?.user?.db_id}`}>
+                  <Image
+                    alt="Avatar"
+                    className="rounded-full"
+                    height="32"
+                    src={session?.user?.profilePic || profilePic}
+                    style={{
+                      aspectRatio: "32/32",
+                      objectFit: "cover",
+                    }}
+                    width="32"
+                  />
+                </Link>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800"
-                    id="menu-button"
-                    size="icon"
-                    variant="ghost"
-                  >
-                    <Image
-                      alt="Avatar"
-                      className="rounded-full"
-                      height="32"
-                      src={session?.user?.profilePic || profilePic}
-                      style={{
-                        aspectRatio: "32/32",
-                        objectFit: "cover",
-                      }}
-                      width="32"
-                    />
-                    <span className="sr-only">Toggle user menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <Link href={`/profile/${session?.user?.db_id}`}>
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <Link href={`/support`} className="md:hidden block">
-                    <DropdownMenuItem>Support</DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator className="md:hidden block" />
-                  <Link href={`/about`} className="md:hidden block">
-                    <DropdownMenuItem>About</DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator className="md:hidden block" />
-                  <Link href={`/api/auth/signout?callbackUrl=/`}>
-                    <DropdownMenuItem>Sign Out</DropdownMenuItem>
-                  </Link>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
             </div>
           </div>
           <ProfileProgress />
