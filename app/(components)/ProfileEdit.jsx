@@ -241,11 +241,14 @@ const ProfileEdit = ({ user, setUser }) => {
           </div>
 
           <div>
-            <Label htmlFor="yearInCollege">Year</Label>
+            <Label htmlFor="yearInCollege">Year of study</Label>
             <Input
               id="yearInCollege"
               name="yearInCollege"
               value={userState.yearInCollege}
+              type="number"
+              min="1"
+              max="5"
               onChange={(e) => {
                 handleChange("yearInCollege", e.target.value);
               }}

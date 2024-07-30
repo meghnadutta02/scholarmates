@@ -24,9 +24,9 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
     const maxSize = 2 * 1024 * 1024;
 
     if (file.size > maxSize) {
-      toast.info("File size should not exceed 2MB.",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.info("File size should not exceed 2MB.", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
       return;
     }
@@ -43,9 +43,9 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
 
   const handleImageViewDialogClose = async () => {
     if (!uploadFile) {
-      toast.error("Please upload a picture",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.error("Please upload a picture", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
       return;
     }
@@ -65,22 +65,22 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
         }));
         update({ profilePic: URL.createObjectURL(img) });
 
-        toast.success("Profile updated successfully",{
-          autoClose:4000,
-          closeOnClick:true,
+        toast.success("Profile updated successfully", {
+          autoClose: 4000,
+          closeOnClick: true,
         });
         setDialogOpen(false);
       } else {
-        toast.error("Profile update failed",{
-          autoClose:4000,
-          closeOnClick:true,
+        toast.error("Profile update failed", {
+          autoClose: 4000,
+          closeOnClick: true,
         });
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error("Failed to update profile",{
-        autoClose:4000,
-        closeOnClick:true,
+      toast.error("Failed to update profile", {
+        autoClose: 4000,
+        closeOnClick: true,
       });
     } finally {
       resetState();
@@ -123,7 +123,7 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
         <DialogTrigger>
           <MdCameraAlt className="cursor-pointer absolute bottom-[-3px] drop-shadow-lg p-1 bg-white rounded-full right-1 h-[26px] w-[26px]" />
         </DialogTrigger>
-        <DialogContent className="md:w-[22%] sm:w-[70%] w-[80%] p-2 rounded-md">
+        <DialogContent className="lg:w-[25%] md:w-[50%] sm:w-[70%] w-[90%] p-2 rounded-md">
           <div className="flex justify-center flex-col gap-3 items-center">
             <h3 className="text-lg font-semibold text-center">
               Update Profile Picture
@@ -132,25 +132,27 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
               <Image
                 src={selectedImage}
                 alt="Profile"
-                width={250}
-                height={250}
+                width={240}
+                height={240}
                 className="rounded-full"
               />
             )}
             {uploadFile && (
               <div className="w-full flex flex-col items-center">
-                <AvatarEditor
-                  ref={editorRef}
-                  image={selectedImage}
-                  width={250}
-                  height={250}
-                  border={20}
-                  borderRadius={125}
-                  color={[255, 255, 255, 0.6]}
-                  scale={scale}
-                  rotate={0}
-                  className="mx-auto"
-                />
+                <div className="max-w-[250px] max-h-[250px] flex justify-center items-center overflow-hidden">
+                  <AvatarEditor
+                    ref={editorRef}
+                    image={selectedImage}
+                    width={240}
+                    height={240}
+                    border={20}
+                    borderRadius={125}
+                    color={[255, 255, 255, 0.6]}
+                    scale={scale}
+                    rotate={0}
+                    className="mx-auto"
+                  />
+                </div>
                 <input
                   type="range"
                   min="1"
@@ -164,7 +166,7 @@ const ProfilePictureUpdate = ({ user, setUser }) => {
             )}
             <input
               type="file"
-              accept="image/jpeg"
+              accept="image/jpeg/png/heic"
               onChange={handleImageViewDialog}
               className="w-full mt-2"
             />
