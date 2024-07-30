@@ -1,34 +1,29 @@
-## Getting Started
+# ScholarMates
 
-First, run the development server:
+## A platorm for students to raise issues/topics and engage in discussions and connect with recommended people based on personal preferences
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+![Cover](https://github.com/meghnadutta02/scholarmates/blob/main/public/preview.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 📃Features
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+![Features](https://github.com/meghnadutta02/scholarmates/blob/main/public/features.png)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- **Engage in Discussions :** Raise and participate in discussions that automatically forms a group chat when created.
+- **Connect with people :** Find people according to your preferences and interests and get connected with them
+- **Conversation :** Get started with your thoughts, start chatting with your connections and joined groups.
+- **Profile :** Customize your profile based on your interests and get similar recommendation.
+- **Raise issues :** Filter activities based on your college and check what's on the mind of your peers.
 
-## Learn More
+### ⚙️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- Frontend framework - Next, Tailwind, Shadcn, Framer
+- Backend and server - Next, Node, Express
+- Database - MongoDB
+- Web Socket - Socket-io
+- Cloud - AWS
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🧑‍💻 Authors
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[Meghna Dutta](https://github.com/meghnadutta02)
+[Ankush Roy](https://github.com/ankushroy25)
+[Jyotiraditya Mishra](https://github.com/jradityamishra)
