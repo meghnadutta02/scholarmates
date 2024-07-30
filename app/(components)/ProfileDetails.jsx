@@ -1,12 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "./SessionProvider";
 import ProfileDetailsTab from "./ProfileDetailsTab";
 import ProfilePictureUpdate from "./ProfilePictureUpdate";
 import { MdEdit } from "react-icons/md";
-import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -15,16 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import Link from "next/link";
+import { IoEllipsisHorizontal } from "react-icons/io5";
 import ProfileEdit from "@/app/(components)/ProfileEdit";
 
 const getYearWithSuffix = (year) => {
@@ -43,10 +41,37 @@ const ProfileDetails = ({ user, setUser, open, setOpen }) => {
         <div className="md:px-8 px-3 py-4 md:w-[85%] w-full mx-auto">
           <div className="flex flex-col justify-evenly gap-4">
             <section className="bg-white rounded-lg shadow-lg md:p-6 p-4 w-full ">
-              <h3 className="mt-1 font-semibold text-gray-700 text-base justify-start md:justify-end flex">
-                {user.connection.length}{" "}
-                {user.connection.length > 1 ? "connections" : "connection"}
-              </h3>
+              <div className="flex justify-between ">
+                <h3 className="mt-1 font-semibold text-gray-700 text-base ">
+                  {user.connection.length}{" "}
+                  {user.connection.length > 1 ? "connections" : "connection"}
+                </h3>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="outline-none border-none">
+                    <IoEllipsisHorizontal className=" sm:h-[35px] sm:w-[35px] h-[33.5px] w-[33.5px] text-zinc-700    " />{" "}
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="mt-2">
+                    <Link href={`/support`}>
+                      <DropdownMenuItem className="md:text-md">
+                        Support
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuSeparator />
+                    <Link href={`/about`}>
+                      <DropdownMenuItem className="md:text-md">
+                        About
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuSeparator />
+                    <Link href={`/api/auth/signout?callbackUrl=/`}>
+                      <DropdownMenuItem className="md:text-md">
+                        Sign Out
+                      </DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
               <div className="flex flex-col items-center text-center ">
                 <div className="relative max-h-[97px]">
                   <Avatar className="w-24 h-24">
