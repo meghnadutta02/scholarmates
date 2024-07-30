@@ -299,6 +299,18 @@ const ProfileEdit = ({ user, setUser }) => {
 
         <div className="grid gap-2">
           <Label htmlFor="interests">Your interests</Label>
+          {subCategoryError && (
+            <div className="text-red-500 flex items-center mt-1 text-sm">
+              <FaInfoCircle className="mr-1" />
+              You can only select up to 10 interests
+            </div>
+          )}
+          {minInterestError && (
+            <div className="text-red-500 flex items-center mt-1 text-sm">
+              <FaInfoCircle className="mr-1" />
+              You need to select at least 3 interests
+            </div>
+          )}
           <Select
             isMulti
             name="interests"
@@ -307,18 +319,6 @@ const ProfileEdit = ({ user, setUser }) => {
             onChange={handleSubcategoryChange}
             placeholder="Select a category first"
           />
-          {subCategoryError && (
-            <div className="text-red-500 flex items-center mt-2 text-sm">
-              <FaInfoCircle className="mr-1" />
-              You can only select up to 10 interests
-            </div>
-          )}
-          {minInterestError && (
-            <div className="text-red-500 flex items-center mt-2 text-sm">
-              <FaInfoCircle className="mr-1" />
-              You need to select at least 3 interests
-            </div>
-          )}
         </div>
         {formOpen ? (
           <Button type="submit" disabled={selectedSubCategories.length < 3}>

@@ -231,7 +231,7 @@ const DiscussionDetails = ({ params }) => {
       navigator
         .share({
           title: discussion.title,
-          text: discussion.content,
+          text: discussion.title,
           url: `${window.location.origin}/discussions/${discussion._id}`,
         })
         .catch(console.error);
@@ -268,7 +268,7 @@ const DiscussionDetails = ({ params }) => {
           showConfirmDelete ? "blur-md" : ""
         }`}
       >
-        <div className="flex flex-col gap-2 md:gap-4 w-full rounded-md shadow-md">
+        <div className="flex flex-col gap-2 md:gap-4 w-full rounded-lg discussion-card">
           <div className="flex justify-between border-b rounded-t-lg p-2 md:pt-3 md:px-4 ">
             <div className="flex">
               <Link href={`/profile/${discussion.creator._id}`}>
@@ -325,7 +325,7 @@ const DiscussionDetails = ({ params }) => {
           </div>
 
           <div
-            className={`grid grid-cols-1 justify-between gap-6 w-full px-1 sm:px-4 ${
+            className={`grid grid-cols-1 justify-between gap-6 w-full px-1 sm:px-4 pl-4 ${
               discussion.coverImage != "" ? "md:grid-cols-2" : ""
             }`}
           >
@@ -347,7 +347,7 @@ const DiscussionDetails = ({ params }) => {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center gap-4 py-2">
+              <div className="flex justify-between items-center gap-4 pt-2 pb-4">
                 <Button className="h-10" size="icon" variant="icon">
                   <ThumbsUpIcon
                     className={`w-4 h-4 cursor-pointer ${

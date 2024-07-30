@@ -117,11 +117,19 @@ const GroupChatbox = ({
       return newMessages;
     });
 
+    setMessage({
+      text: "",
+      groupId: groupId,
+      attachments: [],
+    });
+
     const res = await fetch(`/api/chats/group/${groupId}`, {
       method: "POST",
       body: formData,
     });
+
     if (res.ok) {
+      setFilePreviews([]);
       const data = await res.json();
       setInboxMessages((prevMessages) => {
         const newMessages = new Map(prevMessages);
@@ -135,6 +143,7 @@ const GroupChatbox = ({
         groupMembers: groupDetails.participants,
       });
       scrollDown();
+      updateLastMessage(groupId, message.text, session.user.name);
     } else {
       toast.error("Message not sent", {
         autoClose: 4000,
@@ -147,19 +156,12 @@ const GroupChatbox = ({
         return newMessages;
       });
     }
-    updateLastMessage(groupId, message.text, session.user.name);
-    setMessage({
-      text: "",
-      groupId: groupId,
-      attachments: [],
-    });
-    setFilePreviews([]);
+
     // updateReadStatus(groupId);
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       setPage(0);
       await getGroupMessages(groupId, 0);
     };

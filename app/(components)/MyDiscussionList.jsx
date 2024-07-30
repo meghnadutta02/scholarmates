@@ -159,7 +159,7 @@ const DiscussionList = () => {
       navigator
         .share({
           title: discussion.title,
-          text: discussion.content,
+          text: discussion.title,
           url: `${window.location.origin}/discussions/${discussion._id}`,
         })
         .catch(console.error);

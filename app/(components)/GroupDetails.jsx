@@ -38,6 +38,7 @@ import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Loading from "./Loading";
+import Link from "next/link";
 
 const GroupDetails = ({
   groupDetails,
@@ -408,7 +409,10 @@ const GroupDetails = ({
                   key={participant._id}
                   className="flex items-center justify-between text-sm"
                 >
-                  <div className="flex items-center gap-2">
+                  <Link
+                    href={`/profile/${participant._id}`}
+                    className="flex items-center gap-2"
+                  >
                     <Image
                       alt="Participant Avatar"
                       src={participant.profilePic}
@@ -430,7 +434,7 @@ const GroupDetails = ({
                           </span>
                         )}
                     </span>
-                  </div>
+                  </Link>
                   {(isCurrentUserCreator || isCurrentUserModerator) &&
                     participant._id !== currentUser &&
                     group?.creator !== participant._id && (
