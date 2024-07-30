@@ -31,6 +31,13 @@ const Contact = () => {
     };
 
     try {
+      setTimeout(() => {
+        setLoading(false);
+        toast.success(
+          "We have received your request. We will get back to you soon."
+        );
+        form.reset();
+      }, 4000);
       const response = await fetch(
         "https://formsubmit.co/ajax/08d1e19a425b12e98a324c64805a676d",
         {
@@ -42,14 +49,10 @@ const Contact = () => {
           body: JSON.stringify(formData),
         }
       );
-
-      if (response.ok) {
-        toast.info("We have received your message. We will get back to you.");
-        setLoading(false);
-        form.reset();
-      } else {
-        toast.error("Form submission failed.");
-        setLoading(false);
+      if (!response.ok) {
+        toast.error(
+          "An error occurred while processing your request. Please try again."
+        );
       }
     } catch (error) {
       toast.error(error.message);
