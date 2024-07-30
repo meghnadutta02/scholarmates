@@ -18,6 +18,7 @@
 ## ⚙️ Tech Stack
 
 - Frontend framework - Next, Tailwind, Shadcn, Framer
+- Auth - NextAuth
 - Backend and server - Next, Node, Express
 - Database - MongoDB
 - Web Socket - Socket-io
