@@ -63,6 +63,14 @@ const ProfileDetails = ({ user, setUser, open, setOpen }) => {
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuSeparator />
+                    {session.isAdmin && (
+                      <Link href={`/dashboard`}>
+                        <DropdownMenuItem className="md:text-md">
+                          Admin Dashboard
+                        </DropdownMenuItem>
+                      </Link>
+                    )}
+                    <DropdownMenuSeparator />
                     <Link href={`/api/auth/signout?callbackUrl=/`}>
                       <DropdownMenuItem className="md:text-md">
                         Sign Out
@@ -114,7 +122,7 @@ const ProfileDetails = ({ user, setUser, open, setOpen }) => {
               <h2 className="text-xl font-bold md:mb-6 mb-4">Interests</h2>
               <div className="space-y-4">
                 {user.interestSubcategories &&
-                user.interestSubcategories.length > 0 ? (
+                  user.interestSubcategories.length > 0 ? (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {user.interestSubcategories.map((interest, index) => (
                       <Badge key={index}>{interest}</Badge>

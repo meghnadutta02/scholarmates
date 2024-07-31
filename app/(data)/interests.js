@@ -3,6 +3,7 @@ export const interests = [
     category: "Programming",
     subcategories: [
       "JavaScript",
+      "Spring Boot",
       "Python",
       "Java",
       "Flutter",
@@ -139,6 +140,7 @@ export const interests = [
     category: "Sports",
     subcategories: [
       "Football",
+      "Badminton",
       "Basketball",
       "Tennis",
       "Soccer",
