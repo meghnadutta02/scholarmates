@@ -31,8 +31,8 @@ export default function Component({ id }) {
   };
 
   return (
-    <Card className="w-full rounded-lg shadow-none z-50">
-      <div className="flex mx-auto sm:p-3 p-[10px] w-[90%] justify-center items-center">
+    <Card className="w-full rounded-lg shadow-none z-50 border border-zinc-600 ">
+      <div className="flex mx-auto sm:p-4 p-[12px] w-[90%] justify-center items-center">
         <Input
           type="search"
           placeholder="Search profiles..."
@@ -42,9 +42,9 @@ export default function Component({ id }) {
       </div>
       {showList && searchQuery.length > 0 && connections && (
         <div ref={componentRef}>
-          <CardContent className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 shadow-inner bg-gray-50 max-h-[300px] z-50">
+          <CardContent className="overflow-y-auto scrollbar-thin pb-4 px-0 rounded-b-md scrollbar-thumb-gray-200 shadow-inner bg-gray-200 max-h-[300px]">
             {connections.length > 0 ? (
-              <div>
+              <div className="z-40">
                 {connections.map((connection, index) => (
                   <Link
                     href={`/profile/${connection._id}`}
@@ -52,7 +52,7 @@ export default function Component({ id }) {
                     onClick={() => {
                       setShowList(false);
                     }}
-                    className={`flex items-center justify-start gap-4 px-2 h-13 w-full hover:bg-gray-200 py-2 z-50 ${
+                    className={`flex items-center justify-start gap-4 px-4 h-13 w-full hover:bg-gray-600 hover:text-white py-2 z-50 ${
                       index === connections.length - 1
                         ? "border-b-0"
                         : "border-b border-1"
