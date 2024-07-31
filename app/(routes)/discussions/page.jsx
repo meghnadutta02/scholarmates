@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import DiscussionList from "@/app/(components)/DiscussionList";
-
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import FilterDrawer from "@/app/(components)/FilterDrawer";
@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CgPlayListAdd } from "react-icons/cg";
+import { toast } from "react-toastify";
 
 const getSuggestions = async (q) => {
   const response = await fetch(
@@ -33,6 +34,7 @@ const DiscussionsPage = () => {
     college: false,
     type: [],
   });
+  const { data: session } = useSession();
   const [offset, setOffset] = useState(0);
   const [reloadList, setReloadList] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -149,14 +151,23 @@ const DiscussionsPage = () => {
               <DialogTrigger>
                 <CgPlayListAdd className="h-9 w-9 mt-1 cursor-pointer" />
               </DialogTrigger>
+
               <DialogContent className="sm:max-w-[720px] overflow-y-auto max-h-[95%]">
                 <DialogHeader>
-                  <DialogTitle>New Discussion</DialogTitle>
+                  <DialogTitle>
+                    {session?.user?.collegeName
+                      ? "New Discussion"
+                      : "Complete your profile"}
+                  </DialogTitle>
                   <DialogDescription>
-                    Start a new discussion and interact with your peers.
+                    {session?.user?.collegeName
+                      ? "Start a new discussion and interact with your peers."
+                      : "Please provide your college name in your profile to start a new discussion."}
                   </DialogDescription>
                 </DialogHeader>
-                <CreateDiscussion setDiscussions={setDiscussions} />
+                {session?.user?.collegeName && (
+                  <CreateDiscussion setDiscussions={setDiscussions} />
+                )}
               </DialogContent>
             </Dialog>
           </div>
