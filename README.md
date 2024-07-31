@@ -1,10 +1,11 @@
 # ScholarMates
 
-## A platorm for students to raise issues/topics and engage in discussions and connect with recommended people based on personal preferences
+### A platorm for students to raise issues/topics and engage in discussions and connect with recommended people based on personal preferences 
+🔗 Join at - [scholarmates.me](scholarmates.me)
 
 ![Cover](https://github.com/meghnadutta02/scholarmates/blob/main/public/preview.png)
 
-### 📃Features
+## 📃Features
 
 ![Features](https://github.com/meghnadutta02/scholarmates/blob/main/public/features.png)
 
@@ -14,9 +15,10 @@
 - **Profile :** Customize your profile based on your interests and get similar recommendation.
 - **Raise issues :** Filter activities based on your college and check what's on the mind of your peers.
 
-### ⚙️ Tech Stack
+## ⚙️ Tech Stack
 
 - Frontend framework - Next, Tailwind, Shadcn, Framer
+- Auth - NextAuth
 - Backend and server - Next, Node, Express
 - Database - MongoDB
 - Web Socket - Socket-io

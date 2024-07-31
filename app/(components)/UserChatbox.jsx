@@ -486,6 +486,7 @@ const UserChatbox = ({
                           )}
                           {msg.text != "" && (
                             <Interweave
+                              className="break-words"
                               content={msg.text}
                               matchers={[new UrlMatcher("url")]}
                             />

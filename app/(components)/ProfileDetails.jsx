@@ -93,7 +93,7 @@ const ProfileDetails = ({ user, setUser, open, setOpen }) => {
                   </h1>
                   <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
-                      <MdEdit className="absolute z-10 top-1 -right-6 h-6 w-6 text-gray-600 shadow-md rounded-full cursor-pointer p-1 text-center" />
+                      <MdEdit className="absolute top-1 -right-6 h-6 w-6 text-gray-600 shadow-md rounded-full cursor-pointer p-1 text-center" />
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[720px] overflow-y-auto max-h-[95%]">
                       <DialogHeader>

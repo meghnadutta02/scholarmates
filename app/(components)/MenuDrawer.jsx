@@ -91,7 +91,7 @@ const MenuDrawer = () => {
         </nav>
         <DrawerFooter>
           <DrawerClose className="place-content-center">
-            <span className="flex mt-[-12px] justify-center">
+            <span className="flex mt-[-14px] justify-center">
               <CrossCircledIcon className="h-8 w-8 text-gray-600" />
             </span>
           </DrawerClose>
