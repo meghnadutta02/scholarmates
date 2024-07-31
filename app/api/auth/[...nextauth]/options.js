@@ -39,13 +39,13 @@ export const options = {
   callbacks: {
     async signIn({ user, profile }) {
       await connect();
-      const { name, email, isAdmin, picture } = user || profile;
+      const { name, email, isAdmin, picture, login } = user || profile;
 
       let currentUser = await User.findOne({ email });
 
       if (!currentUser) {
         currentUser = await User.create({
-          name,
+          name: name || login,
           email,
           isAdmin,
           profilePic: picture,
