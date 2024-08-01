@@ -32,6 +32,7 @@ export async function POST(req) {
       coverImage = await postObject(path, buffer);
     }
 
+    const count = await Discussion.countDocuments();
     const discussion = await Discussion.create({
       title,
       type,
@@ -39,6 +40,7 @@ export async function POST(req) {
       creator: new ObjectId(session?.user?.db_id),
       coverImage: coverImage,
       subcategories,
+      previousRank: count + 1,
     });
 
     const group = await Group.create({
