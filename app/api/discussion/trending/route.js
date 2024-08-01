@@ -137,7 +137,7 @@ export async function GET(req) {
     await Promise.all(updatePromises);
 
     return NextResponse.json(
-      { discussions: rankedDiscussions.slice(0, 10) },
+      { discussions: rankedDiscussions.slice(0, 20) },
       { status: 200 }
     );
   } catch (error) {

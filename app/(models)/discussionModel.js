@@ -39,7 +39,7 @@ const discussionSchema = new mongoose.Schema(
     dislikes: { type: Number, default: 0, min: 0 },
     coverImage: { type: String, default: "" },
     groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group" },
-    previousRank: { type: Number, default: 21 },
+    previousRank: { type: Number, default: 0 },
     notification: {
       type: Boolean,
       default: false,
