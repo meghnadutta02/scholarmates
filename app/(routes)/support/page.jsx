@@ -13,6 +13,44 @@ const Contact = () => {
   const { data: session } = useSession();
   const [loading, setLoading] = React.useState(false);
 
+  const handleRequestSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+
+    const form = event.target;
+    const formData = {
+      name: form.name.value,
+      email: form.email.value,
+      message: form.details.value,
+      subject: form.subject.value,
+    };
+
+    try {
+      const response = await fetch("api/admin/support-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        toast.error(
+          "An error occurred while processing your request. Please try again."
+        );
+      }
+    } catch (error) {
+      toast.error(error.message);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+      toast.success(
+        "We have received your request. We will get back to you soon."
+      );
+      form.reset();
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -82,8 +120,9 @@ const Contact = () => {
             </div>
             <div className="w-full sm:px-4 px-[14px] md:w-[55%]">
               <div className="relative rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2 sm:p-12">
-                <form onSubmit={handleSubmit} method="POST">
-                  <input
+                {/* <form onSubmit={handleSubmit} method="POST"> */}
+                <form onSubmit={handleRequestSubmit} method="POST">
+                  {/* <input
                     type="hidden"
                     name="_cc"
                     value="imankushroy@gmail.com,jyotiradityamishra06@gmail.com"
@@ -96,12 +135,12 @@ const Contact = () => {
                     type="hidden"
                     name="_subject"
                     value="New Support Request"
-                  />
+                  /> */}
                   <ContactInputBox
                     type="text"
                     name="name"
                     placeholder="Your Name"
-                    disabled={false}
+                    disabled={true}
                     defaultValue={session?.user?.name}
                   />
                   <ContactInputBox
@@ -110,6 +149,13 @@ const Contact = () => {
                     disabled={true}
                     placeholder="Your Email"
                     defaultValue={session?.user?.email}
+                  />
+                  <ContactInputBox
+                    type="text"
+                    name="subject"
+                    disabled={false}
+                    placeholder="Subject matter"
+                    defaultValue=""
                   />
                   <ContactTextArea
                     row="3"
