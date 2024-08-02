@@ -31,6 +31,7 @@ export async function POST(req) {
       const path = `public/${file.name}`;
       coverImage = await postObject(path, buffer);
     }
+
     const count = await Discussion.countDocuments();
     const discussion = await Discussion.create({
       title,
