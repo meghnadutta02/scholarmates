@@ -105,7 +105,7 @@ const DiscussionsPage = () => {
   }, [searchQuery]);
 
   return (
-    <div className="flex-1 md:pt-3 sm:pt-2 pt-0 md:px-6 px-2">
+    <div className="flex-1 md:pt-3 sm:pt-2 pt-2 md:px-6 px-2">
       {/* search button */}
       <div className="flex mb-8 md:mt-5 sm:mt-3 mt-2 md:justify-center md:flex-row flex-col w-full ">
         <div className="flex md:justify-between  md:pl-6 items-center relative">

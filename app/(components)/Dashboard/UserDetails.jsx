@@ -1,5 +1,5 @@
-import React from 'react'
-import UserTable from "@/app/(components)/Dashboard/UserTable"
+import React from "react";
+import UserTable from "@/app/(components)/Dashboard/UserTable";
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
 const UserDetails = () => {
   return (
@@ -46,7 +46,7 @@ const UserDetails = () => {
 
       <UserTable />
     </div>
-  )
-}
+  );
+};
 
-export default UserDetails
+export default UserDetails;
