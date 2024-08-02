@@ -1,6 +1,6 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
-
+import { ReloadIcon } from "@radix-ui/react-icons";
 import {
   Table,
   TableBody,
@@ -22,13 +22,14 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Loading from "../Loading";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "react-toastify";
 
 export default function Component() {
   const [supportRequests, setSupportRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [replyText, setReplyText] = useState("");
+  const [sendingReply, setSendingReply] = useState(false);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -48,6 +49,36 @@ export default function Component() {
       setLoading(false);
     }
   };
+
+  const sendReply = async (email, sid) => {
+    try {
+      const response = await fetch("/api/admin/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: email,
+          message: replyText,
+          supportId: sid,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("An error occurred while processing your request.");
+      }
+      toast.success("Email sent successfully");
+      setReplyText("");
+      setSendingReply(false);
+      setSupportRequests((prevRequests) =>
+        prevRequests.map((req) =>
+          req._id === sid ? { ...req, status: "resolved" } : req
+        )
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const deleteSupportRequest = async (id) => {
     try {
       const res = await fetch(`/api/admin/support-request?supportId=${id}`, {
@@ -140,8 +171,23 @@ export default function Component() {
                           rows="4"
                           onChange={(e) => setReplyText(e.target.value)}
                         />
-                        <Button className="w-1/2 mx-auto" type="submit">
-                          Send
+                        <Button
+                          onClick={() => {
+                            sendReply(request.userEmail, request._id);
+                            setSendingReply(true);
+                          }}
+                          className="w-1/2 mx-auto"
+                          type="submit"
+                          disabled={sendingReply}
+                        >
+                          {sendingReply ? (
+                            <>
+                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                              Please wait
+                            </>
+                          ) : (
+                            <>Send</>
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -164,7 +210,7 @@ export default function Component() {
 
                     <DialogClose>
                       <button
-                        className="bg-red-600 p-2 rounded-md"
+                        className="bg-red-600 p-2 rounded-md text-white"
                         onClick={() => {
                           deleteSupportRequest(request._id);
                           setSupportRequests(

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.525.0",
+    "@aws-sdk/client-ses": "^3.622.0",
     "@aws-sdk/s3-request-presigner": "^3.525.0",
     "@hookform/resolvers": "^3.3.4",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -57,7 +58,7 @@
     "next-connect": "^1.0.0",
     "next-themes": "^0.3.0",
     "next-videos": "^1.4.1",
-    "nodemailer": "^6.9.8",
+    "nodemailer": "^6.9.14",
     "npm": "^10.8.1",
     "react": "^18.2.0",
     "react-avatar-editor": "^13.0.2",
