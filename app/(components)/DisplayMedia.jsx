@@ -21,28 +21,31 @@ const FileItem = ({ fileType, fileName, url, onClick }) => {
       return (
         <Dialog>
           <DialogTrigger>
-            <Image
-              className="rounded-md"
-              src={url}
-              alt="Media"
-              height={200}
-              width={200}
-              objectFit="cover"
-            />
+            <div className="relative w-28 h-28 md:w-40 md:h-40 p-0.5">
+              <Image
+                className="rounded-sm"
+                src={url}
+                alt="Media preview"
+                fill={true}
+                objectFit="cover"
+              />
+            </div>
           </DialogTrigger>
-          <DialogContent className="fixed top-1/2 left-1/2 w-screen flex items-center justify-center">
+          <DialogContent className="w-screen h-screen">
             <DialogTitle className="sr-only">Media</DialogTitle>
             <DialogDescription className="sr-only">
-              Zoomed on screen image media
+              Full screen image media
             </DialogDescription>
-            <Image
-              className="rounded-md w-[100vw]"
-              height={2000}
-              width={2000}
-              src={url}
-              alt="Media"
-            />
-          </DialogContent>
+            <div className="relative">
+              <Image
+                className="rounded-md"
+                fill={true}
+                src={url}
+                objectFit="contain"
+                alt="Media"
+              />
+            </div>
+          </DialogContent>{" "}
         </Dialog>
       );
     case "pdf":

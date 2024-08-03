@@ -4,11 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const page = () => {
   return (
-    <div>
+    <div className="mt-4">
       <Tabs className="w-full" defaultValue="userRequest">
         <TabsList className="flex mx-auto w-min">
-          <TabsTrigger value="userRequest">User Request</TabsTrigger>
-          <TabsTrigger value="userDetails">User Details</TabsTrigger>
+          <TabsTrigger value="userRequest">Support Request</TabsTrigger>
+          <TabsTrigger value="userDetails">Analytics</TabsTrigger>
         </TabsList>
         <div className="flex w-full py-6">
           <TabsContent value="userRequest" className="w-full">

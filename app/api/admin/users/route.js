@@ -7,15 +7,29 @@ import Discussion from "@/app/(models)/discussionModel";
 export async function GET(req) {
   try {
     await connect();
-
+    const searchQuery = req.nextUrl.searchParams.get("searchQuery");
     const page = parseInt(req.nextUrl.searchParams.get("page")) || 1;
     const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
     const skip = (page - 1) * limit;
 
-    const allUsers = await User.find({})
-      .select(
-        "-bio -requestPending -requestReceived -dob -interestSubcategories -interestCategories -proficiencies"
-      )
+    const query = searchQuery ? { $text: { $search: searchQuery } } : {};
+    const select = searchQuery
+      ? {
+          score: { $meta: "textScore" },
+          "-bio": 0,
+          "-requestPending": 0,
+          "-requestReceived": 0,
+          "-dob": 0,
+          "-interestSubcategories": 0,
+          "-interestCategories": 0,
+          "-proficiencies": 0,
+        }
+      : "-bio -requestPending -requestReceived -dob -interestSubcategories -interestCategories -proficiencies";
+    const sort = searchQuery ? { score: { $meta: "textScore" } } : {};
+
+    const allUsers = await User.find(query)
+      .select(select)
+      .sort(sort)
       .skip(skip)
       .limit(limit);
 
@@ -40,7 +54,7 @@ export async function GET(req) {
       ).length,
     }));
 
-    const totalUsers = await User.countDocuments({});
+    const totalUsers = await User.countDocuments(query);
 
     return NextResponse.json(
       {

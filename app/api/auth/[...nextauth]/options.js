@@ -8,13 +8,8 @@ export const options = {
   providers: [
     GitHubProvider({
       profile(profile) {
-        let isAdmin = false;
-        if (profile?.email === "meghnakha18@gmail.com") {
-          isAdmin = true;
-        }
         return {
           ...profile,
-          isAdmin,
         };
       },
       clientId: process.env.GITHUB_CLIENT_ID,
@@ -22,14 +17,9 @@ export const options = {
     }),
     GoogleProvider({
       profile(profile) {
-        let isAdmin = false;
-        if (profile?.email === "meghnakha18@gmail.com") {
-          isAdmin = true;
-        }
         return {
           ...profile,
           id: profile.sub,
-          isAdmin,
         };
       },
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -39,7 +29,7 @@ export const options = {
   callbacks: {
     async signIn({ user, profile }) {
       await connect();
-      const { name, email, isAdmin, picture, login } = user || profile;
+      const { name, email, picture, login } = user || profile;
 
       let currentUser = await User.findOne({ email });
 
@@ -47,7 +37,7 @@ export const options = {
         currentUser = await User.create({
           name: name || login,
           email,
-          isAdmin,
+
           profilePic: picture,
         });
       }

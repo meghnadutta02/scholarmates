@@ -17,7 +17,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CgPlayListAdd } from "react-icons/cg";
-import { toast } from "react-toastify";
 
 const getSuggestions = async (q) => {
   const response = await fetch(

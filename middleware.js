@@ -3,19 +3,14 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req, res) {
-    // const adminRoutes = [
+    const adminRoutes = ["/dashboard", "/api/admin/:path*"];
 
-    //   "/AdminRoute1",
-    //   "/AdminRoute2",
-    //   "/AdminRoute3",
-    // ];
-
-    // if (
-    //   adminRoutes.some((route) => req.nextUrl.pathname.startsWith(route)) &&
-    //   req.nextauth.token.role !== "admin"
-    // ) {
-    //   return NextResponse.rewrite(new URL("/denied", req.url));
-    // }
+    if (
+      adminRoutes.some((route) => req.nextUrl.pathname.startsWith(route)) &&
+      req.nextauth.token.role !== "admin"
+    ) {
+      return NextResponse.rewrite(new URL("/denied", req.url));
+    }
 
     return NextResponse.next();
   },

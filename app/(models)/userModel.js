@@ -87,6 +87,7 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+userSchema.index({ name: "text", email: "text" }, { name: "SearchIndex" });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 export default User;
