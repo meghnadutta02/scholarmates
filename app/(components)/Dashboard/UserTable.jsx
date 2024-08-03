@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import { ViewIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,21 +29,40 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "react-toastify";
+import Loading from "../Loading";
+import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 
-const UserTable = ({
-  users,
-  currentPage,
-  setUsers,
-  totalPages,
-  totalUsers,
-  setCurrentPage,
-  setSearchQuery,
-}) => {
+const UserTable = () => {
+  const [users, setUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [usersLoading, setUsersLoading] = useState(true);
+
   const [selectedUser, setSelectedUser] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState("");
   const [disabled, setDisabled] = useState(false);
+
+  const fetchUsers = async (page = 1, query = "") => {
+    try {
+      const response = await fetch(
+        `/api/admin/users?page=${page}&query=${query}`
+      );
+      const data = await response.json();
+      setUsers(data.users);
+      setTotalPages(data.totalPages);
+      setCurrentPage(data.currentPage);
+      setTotalUsers(data.totalUsers);
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
   const openDialog = (user) => {
     setSelectedUser(user);
     setDialogOpen(true);
@@ -50,6 +70,7 @@ const UserTable = ({
 
   const handleSearchClick = (event) => {
     setCurrentPage(1);
+    console.log(event.target.value);
     setSearchQuery(event.target.value);
   };
   const handleGetUserId = (id) => {
@@ -77,17 +98,23 @@ const UserTable = ({
     }
   };
 
+  useEffect(() => {
+    fetchUsers(currentPage, searchQuery);
+  }, [currentPage, searchQuery]);
+
+  if (usersLoading) return <Loading />;
+
   return (
     <div>
       <Card x-chunk="dashboard-05-chunk-3" className="mt-4">
-        <CardHeader className="px-7 flex justify-between">
-          <>
+        <CardHeader className="flex flex-row justify-between px-8">
+          <div>
             <CardTitle>Users ({totalUsers})</CardTitle>
             <CardDescription>
               Details of all the users in the system
             </CardDescription>
-          </>
-          <div className="flex items-center relative sm:w-[50%] w-[80%]">
+          </div>
+          <div className="flex items-center relative w-1/2">
             <input
               type="text"
               placeholder="Search by name or email"
@@ -108,10 +135,8 @@ const UserTable = ({
                 <TableHead className="table-cell">
                   Discussions created
                 </TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Date of Joining
-                </TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead className="table-cell">Date of Joining</TableHead>
+                <TableHead className="table-cell">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -160,7 +185,7 @@ const UserTable = ({
               disabled={currentPage === 1}
               className="mr-2"
             >
-              Previous
+              <BiLeftArrow size={24} />
             </Button>
             <Button
               onClick={() =>
@@ -168,7 +193,7 @@ const UserTable = ({
               }
               disabled={currentPage === totalPages}
             >
-              Next
+              <BiRightArrow size={24} />
             </Button>
           </div>
         </CardContent>

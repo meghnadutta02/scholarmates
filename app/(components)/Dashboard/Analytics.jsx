@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import UserTable from "@/app/(components)/Dashboard/UserTable";
 import {
   Card,
   CardDescription,
@@ -11,21 +10,14 @@ import Charts from "@/app/(components)/Dashboard/Charts";
 import Loading from "../Loading";
 import { FaArrowUp } from "react-icons/fa";
 
-const UserDetails = () => {
+const Analytics = () => {
   const [discussionsLoading, setDiscussionsLoading] = useState(true);
-  const [usersLoading, setUsersLoading] = useState(true);
 
   const [monthlyData, setMonthlyData] = useState([]);
   const [currentMonthDiscussions, setCurrentMonthDiscussions] = useState(0);
   const [lastMonthDiscussions, setLastMonthDiscussions] = useState(0);
   const [percentageChange, setPercentageChange] = useState(0);
   const [trend, setTrend] = useState("");
-
-  const [users, setUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchDiscussions = async () => {
     try {
@@ -43,37 +35,15 @@ const UserDetails = () => {
     }
   };
 
-  const fetchUsers = async (page = 1, query = "") => {
-    try {
-      const response = await fetch(
-        `/api/admin/users?page=${page}&query=${query}`
-      );
-      const data = await response.json();
-      setUsers(data.users);
-      setTotalPages(data.totalPages);
-      setCurrentPage(data.currentPage);
-      setTotalUsers(data.totalUsers);
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
-    } finally {
-      setUsersLoading(false);
-    }
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       await fetchDiscussions();
-      await fetchUsers();
     };
 
     fetchData();
   }, []);
 
-  useEffect(() => {
-    fetchUsers(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
-
-  if (discussionsLoading || usersLoading) return <Loading />;
+  if (discussionsLoading) return <Loading />;
 
   return (
     <div className="p-4">
@@ -110,18 +80,8 @@ const UserDetails = () => {
         Discussion Activity Over the Past 6 Months
       </div>
       <Charts monthlyData={monthlyData} />
-
-      <UserTable
-        users={users}
-        setUsers={setUsers}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalUsers={totalUsers}
-        setCurrentPage={setCurrentPage}
-        setSearchQuery={setSearchQuery}
-      />
     </div>
   );
 };
 
-export default UserDetails;
+export default Analytics;
