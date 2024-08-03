@@ -11,8 +11,18 @@ export async function GET(req) {
     const page = parseInt(req.nextUrl.searchParams.get("page")) || 1;
     const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
     const skip = (page - 1) * limit;
+    let query = {
+      $and: [
+        { email: { $ne: "user-does-not-exist" } },
+        { name: { $ne: "[deleted]" } },
+      ],
+    };
 
-    const query = searchQuery ? { $text: { $search: searchQuery } } : {};
+    if (searchQuery) {
+      query = {
+        $and: [query, { $text: { $search: searchQuery } }],
+      };
+    }
     const select = searchQuery
       ? {
           score: { $meta: "textScore" },
@@ -25,7 +35,9 @@ export async function GET(req) {
           "-proficiencies": 0,
         }
       : "-bio -requestPending -requestReceived -dob -interestSubcategories -interestCategories -proficiencies";
-    const sort = searchQuery ? { score: { $meta: "textScore" } } : {};
+    const sort = searchQuery
+      ? { score: { $meta: "textScore" } }
+      : { createdAt: 1 };
 
     const allUsers = await User.find(query)
       .select(select)

@@ -1,5 +1,4 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ViewIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,7 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import { MdOutlineInfo } from "react-icons/md";
+import Link from "next/link";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,10 +27,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from "react-toastify";
 
 const UserTable = ({
   users,
   currentPage,
+  setUsers,
   totalPages,
   totalUsers,
   setCurrentPage,
@@ -38,16 +40,41 @@ const UserTable = ({
 }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState("");
+  const [disabled, setDisabled] = useState(false);
   const openDialog = (user) => {
     setSelectedUser(user);
     setDialogOpen(true);
   };
 
-  const handleSearchClick = () => {
+  const handleSearchClick = (event) => {
     setCurrentPage(1);
-
     setSearchQuery(event.target.value);
+  };
+  const handleGetUserId = (id) => {
+    setShowConfirmDelete(true);
+    setDeleteUserId(id);
+  };
+  const handleDelete = async () => {
+    try {
+      setDisabled(true);
+      const response = await fetch(`/api/admin/users/${deleteUserId}`);
+      console.log(response);
+      const result = await response.json();
+      console.log(result);
+      if (response.ok) {
+        toast.success("User deleted successfully");
+        setUsers((prev) => prev.filter((user) => user._id !== deleteUserId));
+      } else {
+        toast.error("User deletion failed");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDisabled(false);
+      setShowConfirmDelete(false);
+    }
   };
 
   return (
@@ -91,10 +118,12 @@ const UserTable = ({
               {users.map((user) => (
                 <TableRow key={user._id} className="bg-accent">
                   <TableCell>
-                    <div className="font-medium">{user.name}</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      {user.email}
-                    </div>
+                    <Link href={`/profile/${user._id}`}>
+                      <div className="font-medium">{user.name}</div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        {user.email}
+                      </div>
+                    </Link>
                   </TableCell>
                   <TableCell className="table-cell text-center">
                     {user.numberOfConnections}
@@ -116,7 +145,10 @@ const UserTable = ({
                       className="w-6 h-6 text-blue-800 cursor-pointer"
                       onClick={() => openDialog(user)}
                     />
-                    <MdDeleteOutline className="w-6 h-6 text-red-500 cursor-pointer" />
+                    <MdDeleteOutline
+                      className="w-6 h-6 text-red-500 cursor-pointer"
+                      onClick={() => handleGetUserId(user._id)}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
@@ -182,6 +214,36 @@ const UserTable = ({
             </div>
           </DialogContent>
         </Dialog>
+      )}
+
+      {showConfirmDelete && (
+        <div className="fixed inset-0 flex font-sans items-center justify-center z-50 bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm">
+          <div className="p-4 bg-white rounded-lg dark:bg-gray-800 max-w-lg w-full">
+            <h2 className="text-lg font-semibold">Confirm Deletion</h2>
+            <p className="mt-1">Are you sure you want to delete this user?</p>
+            <span className=" mt-2 text-sm text-red-500 ">
+              <MdOutlineInfo className="text-red-500 mr-1 inline" />
+              Deleting this user will also permanently delete all associated
+              data.
+            </span>
+            <div className="flex justify-end mt-4">
+              <Button
+                variant="secondary"
+                onClick={() => setShowConfirmDelete(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="ml-2"
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={disabled}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

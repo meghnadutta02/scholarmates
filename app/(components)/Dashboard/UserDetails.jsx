@@ -113,6 +113,7 @@ const UserDetails = () => {
 
       <UserTable
         users={users}
+        setUsers={setUsers}
         currentPage={currentPage}
         totalPages={totalPages}
         totalUsers={totalUsers}

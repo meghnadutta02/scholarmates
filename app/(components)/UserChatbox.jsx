@@ -27,6 +27,7 @@ const UserChatbox = ({
 }) => {
   const { data: session } = useSession();
   const { socket } = useCustomSession();
+  console.log(selectedUser);
   const [message, setMessage] = useState({
     text: "",
     attachments: [],
@@ -380,11 +381,16 @@ const UserChatbox = ({
                     )}
                   </div>
                 </PopoverTrigger>
-                <PopoverContent className="max-w-[132px]">
-                  <Link href={`/profile/${userID}`} className="text-blue-600 ">
-                    View Profile
-                  </Link>
-                </PopoverContent>
+                {selectedUser.email !== "user-does-not-exist" && (
+                  <PopoverContent className="max-w-[132px]">
+                    <Link
+                      href={`/profile/${userID}`}
+                      className="text-blue-600 "
+                    >
+                      View Profile
+                    </Link>
+                  </PopoverContent>
+                )}
               </Popover>
 
               <div className="flex flex-col">
@@ -607,9 +613,9 @@ const UserChatbox = ({
                 <VscSend height={50} />
               </Button>
             </form>
-          ) : (
+          ) : selectedUser.email !== "user-does-not-exist" ? (
             <div className="p-2 text-center mb-2 mt-[-4px] rounded-b-lg bg-red-100">
-              <p> You are not connected with this user anymore</p>
+              <p>You are not connected with this user anymore</p>
               <p className="text-sm">
                 <Link
                   href={`/profile/${userID}`}
@@ -619,6 +625,10 @@ const UserChatbox = ({
                 </Link>
                 to start chatting again
               </p>
+            </div>
+          ) : (
+            <div className="p-2 text-center mb-2 mt-[-4px] rounded-b-lg bg-red-100">
+              <p>User has left the platform.</p>
             </div>
           )}
         </div>
