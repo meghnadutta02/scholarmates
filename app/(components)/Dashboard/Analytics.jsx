@@ -32,7 +32,7 @@ const Analytics = () => {
       try {
         const response = await fetch("/api/admin/discussions/time-periods");
         const periods = await response.json();
-        console.log("Time periods:", periods);
+        
         setTimePeriods(periods);
 
         setSelectedPeriod(periods[periods.length - 1]);
@@ -58,7 +58,6 @@ const Analytics = () => {
       const data = await response.json();
 
       if (period === timePeriods[timePeriods.length - 1]) {
-        // If it's the current period, set all details
         setCurrentMonthDiscussions(data.currentMonthDiscussions);
         setLastMonthDiscussions(data.lastMonthDiscussions);
         setPercentageChange(data.percentageChange);
@@ -110,6 +109,7 @@ const Analytics = () => {
           </CardHeader>
         </Card>
       </div>
+
       {/* Title and Period Selection Row */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">
@@ -126,11 +126,11 @@ const Analytics = () => {
                   key={index}
                   onSelect={() => handlePeriodChange(index)}
                 >
-                  {new Date(period.startOfPeriod).toLocaleDateString("en-GB", {
+                  {new Date(period.startOfPeriod).toLocaleDateString("en-US", {
                     month: "long",
                   })}{" "}
                   -{" "}
-                  {new Date(period.endOfPeriod).toLocaleDateString("en-GB", {
+                  {new Date(period.endOfPeriod).toLocaleDateString("en-US", {
                     month: "long",
                   })}
                 </DropdownMenuItem>
@@ -141,16 +141,17 @@ const Analytics = () => {
           <Button className="cursor-default">
             {timePeriods.length === 1
               ? `${new Date(timePeriods[0].startOfPeriod).toLocaleDateString(
-                  "en-GB",
+                  "en-US",
                   { month: "long" }
                 )} - ${new Date(timePeriods[0].endOfPeriod).toLocaleDateString(
-                  "en-GB",
+                  "en-US",
                   { month: "long" }
                 )}`
               : "No periods available"}
           </Button>
         )}
       </div>
+
       {/* Chart Component */}
       <Charts monthlyData={monthlyData} />
     </div>

@@ -1,11 +1,10 @@
-import moment from "moment";
 import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
   await connect();
-
+  const currentDate = new Date();
   const startOfPeriod = new Date(req.nextUrl.searchParams.get("startOfPeriod"));
   const endOfPeriod = new Date(req.nextUrl.searchParams.get("endOfPeriod"));
 
@@ -26,26 +25,43 @@ export async function GET(req) {
         $sort: { _id: 1 },
       },
     ]);
+
     const sixMonthsData = [];
     for (let i = 5; i >= 0; i--) {
-      const month = moment(endOfPeriod).subtract(i, "months");
+      const date = new Date(
+        endOfPeriod.getFullYear(),
+        endOfPeriod.getMonth() - i,
+        1
+      );
+      const monthName = date.toLocaleString("default", { month: "long" });
+
       sixMonthsData.push({
-        month: month.format("MMMM"),
+        month: monthName,
         discussions: (
-          monthlyDiscussions.find((d) => d._id === month.month() + 1) || {
+          monthlyDiscussions.find((d) => d._id === date.getMonth() + 1) || {
             count: 0,
           }
         ).count,
       });
     }
 
-    if (moment(endOfPeriod).isSame(moment(), "month")) {
+    if (
+      endOfPeriod.getFullYear() === currentDate.getFullYear() &&
+      endOfPeriod.getMonth() === currentDate.getMonth()
+    ) {
       const currentMonthData = sixMonthsData.find(
-        (d) => d.month === moment().format("MMMM")
+        (d) =>
+          d.month === new Date().toLocaleString("default", { month: "long" })
       ) || { discussions: 0 };
 
       const lastMonthData = sixMonthsData.find(
-        (d) => d.month === moment().subtract(1, "month").format("MMMM")
+        (d) =>
+          d.month ===
+          new Date(
+            new Date().getFullYear(),
+            new Date().getMonth() - 1,
+            1
+          ).toLocaleString("default", { month: "long" })
       ) || { discussions: 0 };
 
       const percentageChange =

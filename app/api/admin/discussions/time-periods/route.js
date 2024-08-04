@@ -1,4 +1,3 @@
-import moment from "moment";
 import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
@@ -8,22 +7,29 @@ export async function GET(req) {
 
   try {
     const firstDiscussion = await Discussion.findOne().sort({ createdAt: 1 });
-    const firstDiscussionDate = moment(firstDiscussion.createdAt);
-    const currentMonth = moment();
+    const firstDiscussionDate = new Date(firstDiscussion.createdAt);
+    const currentDate = new Date();
     const timePeriods = [];
 
     // Initialize end of the current period as the end of the current month
-    let endOfCurrentPeriod = currentMonth.endOf("month").toDate();
+    let endOfCurrentPeriod = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0
+    );
 
     // Start with the month 5 months before the current month (making a 6-month period)
-    let startOfCurrentPeriod = moment(endOfCurrentPeriod)
-      .subtract(5, "months")
-      .startOf("month")
-      .toDate();
+    let startOfCurrentPeriod = new Date(
+      endOfCurrentPeriod.getFullYear(),
+      endOfCurrentPeriod.getMonth() - 5,
+      1
+    );
 
     while (
-      moment(startOfCurrentPeriod).isAfter(firstDiscussionDate) ||
-      moment(startOfCurrentPeriod).isSame(firstDiscussionDate, "month")
+      startOfCurrentPeriod >= firstDiscussionDate ||
+      (startOfCurrentPeriod.getFullYear() ===
+        firstDiscussionDate.getFullYear() &&
+        startOfCurrentPeriod.getMonth() === firstDiscussionDate.getMonth())
     ) {
       timePeriods.unshift({
         startOfPeriod: startOfCurrentPeriod,
@@ -31,27 +37,29 @@ export async function GET(req) {
       });
 
       // Move to the previous period (6 months before the start of the current period)
-      endOfCurrentPeriod = moment(startOfCurrentPeriod)
-        .subtract(1, "day")
-        .endOf("month")
-        .toDate();
-      startOfCurrentPeriod = moment(endOfCurrentPeriod)
-        .subtract(5, "months")
-        .startOf("month")
-        .toDate();
+      endOfCurrentPeriod = new Date(
+        startOfCurrentPeriod.getFullYear(),
+        startOfCurrentPeriod.getMonth(),
+        0
+      );
+      startOfCurrentPeriod = new Date(
+        endOfCurrentPeriod.getFullYear(),
+        endOfCurrentPeriod.getMonth() - 5,
+        1
+      );
     }
 
-    if (moment(startOfCurrentPeriod).isBefore(firstDiscussionDate)) {
-      if (moment(endOfCurrentPeriod).isBefore(firstDiscussionDate)) {
+    if (startOfCurrentPeriod < firstDiscussionDate) {
+      if (endOfCurrentPeriod < firstDiscussionDate) {
+        // Handle this case if needed
       } else {
         timePeriods.unshift({
-          startOfPeriod: firstDiscussionDate.toDate(),
+          startOfPeriod: firstDiscussionDate,
           endOfPeriod: endOfCurrentPeriod,
         });
       }
     }
 
-    console.log("Time periods:", timePeriods);
     return NextResponse.json(timePeriods, { status: 200 });
   } catch (error) {
     console.error("Error creating time periods:", error);
