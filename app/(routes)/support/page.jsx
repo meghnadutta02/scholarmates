@@ -35,18 +35,16 @@ const Contact = () => {
         body: JSON.stringify(formData),
       });
       if (!response.ok) {
-        toast.error(
-          "An error occurred while processing your request. Please try again."
-        );
+        throw new Error("An error occurred while processing your request.");
       }
+      toast.success(
+        "We have received your request. We will get back to you soon."
+      );
     } catch (error) {
       toast.error(error.message);
       setLoading(false);
     } finally {
       setLoading(false);
-      toast.success(
-        "We have received your request. We will get back to you soon."
-      );
       form.reset();
     }
   };
