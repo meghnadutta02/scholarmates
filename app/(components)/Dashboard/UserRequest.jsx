@@ -41,7 +41,7 @@ export default function Component() {
         },
       });
       const data = await res.json();
-      console.log(data);
+
       setSupportRequests(data.supportRequests);
     } catch (error) {
       console.error(error);
@@ -143,7 +143,8 @@ export default function Component() {
                     <DialogHeader>
                       <DialogTitle>Message details</DialogTitle>
                       <DialogDescription>
-                        The user is asking help support for the following matter
+                        The user is asking for support regarding the following
+                        matter
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid grid-cols-2 justify-between mt-4">
@@ -161,35 +162,37 @@ export default function Component() {
                           <b> Message </b> : {request.message}
                         </p>
                       </div>
-                      <div className="flex flex-col gap-4">
-                        Reply
-                        <Textarea
-                          name="reply"
-                          id="reply"
-                          value={replyText}
-                          placeholder="Write message here to user's email"
-                          rows="4"
-                          onChange={(e) => setReplyText(e.target.value)}
-                        />
-                        <Button
-                          onClick={() => {
-                            sendReply(request.userEmail, request._id);
-                            setSendingReply(true);
-                          }}
-                          className="w-1/2 mx-auto"
-                          type="submit"
-                          disabled={sendingReply}
-                        >
-                          {sendingReply ? (
-                            <>
-                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                              Please wait
-                            </>
-                          ) : (
-                            <>Send</>
-                          )}
-                        </Button>
-                      </div>
+                      {request.status !== "resolved" && (
+                        <div className="flex flex-col gap-4">
+                          Reply
+                          <Textarea
+                            name="reply"
+                            id="reply"
+                            value={replyText}
+                            placeholder="Type your message to the user here..."
+                            rows="4"
+                            onChange={(e) => setReplyText(e.target.value)}
+                          />
+                          <Button
+                            onClick={() => {
+                              sendReply(request.userEmail, request._id);
+                              setSendingReply(true);
+                            }}
+                            className="w-1/2 mx-auto"
+                            type="submit"
+                            disabled={sendingReply}
+                          >
+                            {sendingReply ? (
+                              <>
+                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                                Please wait
+                              </>
+                            ) : (
+                              <>Send</>
+                            )}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </DialogContent>
                 </Dialog>
