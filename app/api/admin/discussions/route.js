@@ -3,20 +3,17 @@ import Discussion from "@/app/(models)/discussionModel";
 import connect from "@/app/config/db";
 import { NextResponse } from "next/server";
 
-export async function calculateMonthlyTrends() {
+export async function GET(req) {
   await connect();
 
-  const startOfSixMonths = moment()
-    .subtract(6, "months")
-    .startOf("month")
-    .toDate();
-  const endOfCurrentMonth = moment().endOf("month").toDate();
+  const startOfPeriod = new Date(req.nextUrl.searchParams.get("startOfPeriod"));
+  const endOfPeriod = new Date(req.nextUrl.searchParams.get("endOfPeriod"));
 
   try {
     const monthlyDiscussions = await Discussion.aggregate([
       {
         $match: {
-          createdAt: { $gte: startOfSixMonths, $lte: endOfCurrentMonth },
+          createdAt: { $gte: startOfPeriod, $lte: endOfPeriod },
         },
       },
       {
@@ -29,11 +26,9 @@ export async function calculateMonthlyTrends() {
         $sort: { _id: 1 },
       },
     ]);
-
     const sixMonthsData = [];
-
     for (let i = 5; i >= 0; i--) {
-      const month = moment().subtract(i, "months");
+      const month = moment(endOfPeriod).subtract(i, "months");
       sixMonthsData.push({
         month: month.format("MMMM"),
         discussions: (
@@ -44,49 +39,36 @@ export async function calculateMonthlyTrends() {
       });
     }
 
-    const currentMonthName = moment().format("MMMM");
-    const lastMonthName = moment().subtract(1, "month").format("MMMM");
+    if (moment(endOfPeriod).isSame(moment(), "month")) {
+      const currentMonthData = sixMonthsData.find(
+        (d) => d.month === moment().format("MMMM")
+      ) || { discussions: 0 };
 
-    const currentMonthData = sixMonthsData.find(
-      (d) => d.month === currentMonthName
-    ) || {
-      discussions: 0,
-    };
-    const lastMonthData = sixMonthsData.find(
-      (d) => d.month === lastMonthName
-    ) || {
-      discussions: 0,
-    };
+      const lastMonthData = sixMonthsData.find(
+        (d) => d.month === moment().subtract(1, "month").format("MMMM")
+      ) || { discussions: 0 };
 
-    const totalDiscussionsLastMonth = lastMonthData.discussions;
+      const percentageChange =
+        lastMonthData.discussions > 0
+          ? ((currentMonthData.discussions - lastMonthData.discussions) /
+              lastMonthData.discussions) *
+            100
+          : 0;
 
-    const percentageChange =
-      totalDiscussionsLastMonth > 0
-        ? ((currentMonthData.discussions - totalDiscussionsLastMonth) /
-            totalDiscussionsLastMonth) *
-          100
-        : 0;
+      const trend = percentageChange > 0 ? "increase" : "decrease";
 
-    const trend = percentageChange > 0 ? "increase" : "decrease";
-
-    return {
-      monthlyData: sixMonthsData,
-      currentMonthDiscussions: currentMonthData.discussions,
-      lastMonthDiscussions: totalDiscussionsLastMonth,
-      percentageChange: Math.abs(Math.round(percentageChange)),
-      trend,
-    };
+      return NextResponse.json({
+        monthlyData: sixMonthsData,
+        currentMonthDiscussions: currentMonthData.discussions,
+        lastMonthDiscussions: lastMonthData.discussions,
+        percentageChange: Math.abs(Math.round(percentageChange)),
+        trend,
+      });
+    } else {
+      return NextResponse.json({ monthlyData: sixMonthsData }, { status: 200 });
+    }
   } catch (error) {
-    console.error("Error calculating monthly trends:", error);
-    throw new Error(error);
-  }
-}
-
-export async function GET(req) {
-  try {
-    const monthlyTrends = await calculateMonthlyTrends();
-    return NextResponse.json(monthlyTrends, { status: 200 });
-  } catch (error) {
+    console.error("Error fetching discussions:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
