@@ -192,7 +192,8 @@ export default function Component() {
                           <b> Message </b> : {request.message}
                         </p>
                       </div>
-                      <div className="flex flex-col gap-4">
+                      {request.status!=="resolved" &&(
+                          <div className="flex flex-col gap-4">
                         Reply
                         <Textarea
                           name="reply"
@@ -249,37 +250,9 @@ export default function Component() {
                        
                        </div>
                       </div>
-                      {request.status !== "resolved" && (
-                        <div className="flex flex-col gap-4">
-                          Reply
-                          <Textarea
-                            name="reply"
-                            id="reply"
-                            value={replyText}
-                            placeholder="Type your message to the user here..."
-                            rows="4"
-                            onChange={(e) => setReplyText(e.target.value)}
-                          />
-                          <Button
-                            onClick={() => {
-                              sendReply(request.userEmail, request._id);
-                              setSendingReply(true);
-                            }}
-                            className="w-1/2 mx-auto"
-                            type="submit"
-                            disabled={sendingReply}
-                          >
-                            {sendingReply ? (
-                              <>
-                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                                Please wait
-                              </>
-                            ) : (
-                              <>Send</>
-                            )}
-                          </Button>
-                        </div>
-                      )}
+                        )
+                      }
+                     
                     </div>
                   </DialogContent>
                 </Dialog>
