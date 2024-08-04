@@ -26,7 +26,7 @@ const Charts = ({ monthlyData }) => {
       className="min-h-[200px] max-h-[300px] w-full mb-8"
     >
       <BarChart data={monthlyData} accessibilityLayer>
-        <CartesianGrid strokeDasharray="3 3" />
+        <CartesianGrid strokeDasharray="5 2" strokeWidth={2} />
         <XAxis dataKey="month" />
         <YAxis
           dataKey="discussions"
