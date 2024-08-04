@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./(components)/Navbar";
 import RightSidebar from "./(components)/RightSidebar";
+import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "./(components)/AuthProvider";
 import LeftSidebar from "./(components)/LeftSidebar";
 import { ToastContainer } from "react-toastify";
@@ -41,6 +42,7 @@ export default async function RootLayout({ children }) {
             </AuthProvider>
           </SessionProvider>
         </div>
+        <Analytics />
       </body>
     </html>
   );
