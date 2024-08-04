@@ -19,17 +19,17 @@ const SES_CONFIG = {
 
 const sesClient = new SESClient(SES_CONFIG);
 
-export const SendMail = async (name, request_message, recept_email,message) => {
+export const SendMail = async (name, Issue, recept_email,Response) => {
     const params = {
         Destination: {
             ToAddresses: [recept_email]
         },
         Source:process.env.SENDER_EMAIL,
-        Template: "My_Template",
+        Template: "SMTemplate",
         TemplateData: JSON.stringify({
-            name: name,
-            message: message,
-            help_request:request_message
+            Name: name,
+            Response: Response,
+            Issue:Issue
         })
     };
 
@@ -41,6 +41,7 @@ export const SendMail = async (name, request_message, recept_email,message) => {
     }
 };
 
+
 // CREATE TEMPLETE
 // ONCE TIME
 
@@ -49,43 +50,32 @@ export const SendMail = async (name, request_message, recept_email,message) => {
 export const CreateTemplate = async () => {
     const params = {
         Template: {
-            TemplateName: "My_Template",
+            TemplateName: "SMTemplate",
             SubjectPart: "Support Team ScholarMates",
             HtmlPart: `
-        <span class="font" style="font-family: verdana; font-weight:bold;">
-        Dear ,{{name}}
-    </span>
-    
-    <br/>
-    <br/>
-     <span class="font" style="font-family: verdana; font-weight:bold;">
-       we've receive your help request:
-    </span>
-     <span class="font" style="font-family: verdana;">
-      {{help_request}}
-    </span>
-    <br/>
-    <br/>
-     <span class="font" style="font-family: verdana;">
-       {{message}}
-    </span>
-    <br/>
-    <br/>
-        <div>
-    <span class="font" style="font-family: verdana;">
-        Best regards,
-    </span>
-    <span class="font" style="font-family: verdana;">
-        <br>
-    </span>
-</div>
-<div>
-    <span class="font" style="font-family: verdana;">
-        Team ScholarMates
-    </span>
-    <br>
-</div>
-<div style="text-align:center;margin-top:10px">
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Reply Email Template</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #ffffff; margin: 0; padding: 0;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border: 1px solid #dddddd;">
+       
+        <div style="padding: 20px;">
+            <h3 style="color: #333333;">Dear {{Name}},</h3>
+            <p style="color: #666666; line-height: 1.6;">Thank you for contacting us. We have reviewed your support request and here is the solution to your issue:</p>
+            <p style="color: #666666; line-height: 1.6; font-weight: bold;"><strong>Request:{{Issue}}</strong> </p>
+            <p style="color: #666666; line-height: 1.6;">{{Response}}</p>
+            <p style="color: #666666; line-height: 1.6;">We hope this resolves your issue. If you need further assistance, please do not hesitate to reach out to us.</p>
+            <span style="display: block; color: #666666;">Best Regards,</span>
+            <span style="display: block; color: #666666;">Support Team </span>
+            <span style="display: block; color: #666666;">Scholarmates</span>
+        </div>
+        
+        <div style="text-align: center; padding: 20px; color: #999999;">
+          <div style="text-align:center;margin-top:10px">
     <div>
         <br>
     </div>
@@ -131,11 +121,14 @@ export const CreateTemplate = async () => {
         </i>
     </div>
 </div>
-<div>
-    <br>
-</div>
-        `,
-            TextPart: " Support ScholarMates"
+            <p>&copy; 2024 ScholarMates. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+            `,
+            TextPart: " Support Team ScholarMates"
         }
     };
     try {

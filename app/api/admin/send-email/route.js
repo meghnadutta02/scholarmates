@@ -11,15 +11,20 @@ export async function POST(req) {
     const { userEmail, message, supportId } = await req.json();
     console.log(userEmail, message, supportId);
 
-     const supportData= await SupportRequest.findById(supportId);
+    // When change the templet call once
     //  CreateTemplate();
+
+     const supportData= await SupportRequest.findById(supportId);
      if(!supportData){
       return NextResponse.json(
         { message: "Not request present" },
         { status: 401 }
       );
      }
-      await SendMail("Meghna Dutta",supportData.subject,"meghnakha18@gmail.com", message);
+      await SendMail(supportData.userName,supportData.subject,userEmail, message);
+     // Set status to 'resolved'
+      supportData.status = 'resolved';
+      await supportData.save();
 
     return NextResponse.json(
       { message: "Reply sent successfully" },
@@ -31,28 +36,3 @@ export async function POST(req) {
   }
 }
 
-const sendEmail = async (userEmail, message) => {
-  const transporter = nodemailer.createTransport({
-    host: "email-smtp.ap-south-1.amazonaws.com",
-    port: 587,
-    auth: {
-      user: process.env.SMTP_USERNAME,
-      pass: process.env.SMTP_PASSWORD,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
-
-  const mailOptions = {
-    from: {
-      name: "ScholarMates Support",
-      address: process.env.SENDER_EMAIL,
-    },
-    to: userEmail,
-    subject: "Re : Support Request",
-    text: message,
-  };
-
-  await transporter.sendMail(mailOptions);
-};
