@@ -65,7 +65,7 @@ export default function Component() {
       if (!response.ok) {
         throw new Error("An error occurred while processing your request.");
       }
-      toast.success("status update successfully");
+      toast.success("Support request resolved successfully");
       setReplyText("");
       setResolve(false);
       setSupportRequests((prevRequests) =>
@@ -73,7 +73,7 @@ export default function Component() {
           req._id === sid
             ? {
                 ...req,
-                status: action === "resolved" ? "in review" : "resolved",
+                status: "resolved",
               }
             : req
         )
