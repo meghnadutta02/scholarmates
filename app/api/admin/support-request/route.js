@@ -28,7 +28,6 @@ export async function POST(req) {
   try {
     await connect();
     const requestData = await req.json();
-    console.log("sjnsknksnd", requestData);
     const newSupportRequest = new SupportRequest({
       userEmail: requestData.email,
       userName: requestData.name,

@@ -16,23 +16,21 @@ const SES_CONFIG = {
 }
 
 //   CREAT SES SERVICES OBJECT
-
 const sesClient = new SESClient(SES_CONFIG);
 
-export const SendMail = async (name, Issue, recept_email,Response) => {
+export const SendMail = async (name, Issue, recept_email, Response) => {
     const params = {
         Destination: {
             ToAddresses: [recept_email]
         },
-        Source:process.env.SENDER_EMAIL,
-        Template: "SMTemplate",
+        Source: process.env.SENDER_EMAIL,
+        Template: process.env.SES_TEMPLET_USE,
         TemplateData: JSON.stringify({
             Name: name,
             Response: Response,
-            Issue:Issue
+            Issue: Issue
         })
     };
-
     try {
         const data = await sesClient.send(new SendTemplatedEmailCommand(params));
         console.log("Email sent successfully", data);
@@ -44,13 +42,10 @@ export const SendMail = async (name, Issue, recept_email,Response) => {
 
 // CREATE TEMPLETE
 // ONCE TIME
-
-
-
 export const CreateTemplate = async () => {
     const params = {
         Template: {
-            TemplateName: "SMTemplate",
+            TemplateName: process.env.SES_TEMPLET_USE,
             SubjectPart: "Support Team ScholarMates",
             HtmlPart: `
             <!DOCTYPE html>
