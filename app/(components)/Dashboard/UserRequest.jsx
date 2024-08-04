@@ -30,7 +30,7 @@ export default function Component() {
   const [loading, setLoading] = useState(true);
   const [replyText, setReplyText] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
-
+  const [resolve,setResolve]=useState(false);
   const fetchRequests = async () => {
     setLoading(true);
     try {
@@ -49,6 +49,35 @@ export default function Component() {
       setLoading(false);
     }
   };
+
+  const Resolve = async (sid,action) => {
+    try {
+      const response = await fetch("/api/admin/send-email", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          supportId: sid,
+          status:action
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("An error occurred while processing your request.");
+      }
+      toast.success("status update successfully");
+      setReplyText("");
+      setResolve(false);
+      setSupportRequests((prevRequests) =>
+        prevRequests.map((req) =>
+          req._id === sid ? { ...req, status: action==="resolved"?"review":"resolved" } : req
+        )
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
   const sendReply = async (email, sid) => {
     try {
@@ -71,7 +100,7 @@ export default function Component() {
       setSendingReply(false);
       setSupportRequests((prevRequests) =>
         prevRequests.map((req) =>
-          req._id === sid ? { ...req, status: "resolved" } : req
+          req._id === sid ? { ...req, status: "review" } : req
         )
       );
     } catch (error) {
@@ -121,8 +150,9 @@ export default function Component() {
             </TableCell>
             <TableCell className="table-cell text-center">
               <Badge
-                className={`text-xs text-white  ${
-                  request.status === "resolved" ? "bg-green-600" : "bg-red-500"
+                className={`text-xs text-white ${
+                  request.status === "resolved" ? "bg-green-600":
+                  request.status==="review"?"bg-yellow-500": "bg-red-500"
                 }`}
               >
                 {request.status}
@@ -171,12 +201,13 @@ export default function Component() {
                           rows="4"
                           onChange={(e) => setReplyText(e.target.value)}
                         />
-                        <Button
+                       <div className="flex justify-between">
+                       <Button
                           onClick={() => {
                             sendReply(request.userEmail, request._id);
                             setSendingReply(true);
                           }}
-                          className="w-1/2 mx-auto"
+                          className="w-1/3 mx-auto"
                           type="submit"
                           disabled={sendingReply}
                         >
@@ -189,6 +220,33 @@ export default function Component() {
                             <>Send</>
                           )}
                         </Button>
+                        
+                          <Button
+                          onClick={() => {
+                            Resolve(request._id,request.status);
+                            setResolve(true);
+                          }}
+                          className={
+                            `w-1/3 ${resolve? 'bg-gray-400'
+                                        : request.status === 'resolved'
+                                        ? 'bg-red-500'
+                                        : 'bg-green-500'
+                                    }`
+                          }
+                          type="submit"
+                          disabled={resolve}
+                        >
+                          {resolve ? (
+                            <>
+                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                              Please wait
+                            </>
+                          ) : (
+                          request.status === "resolved" ? "Unresolve" : "Resolve"
+                          )}
+                        </Button>
+                       
+                       </div>
                       </div>
                     </div>
                   </DialogContent>
