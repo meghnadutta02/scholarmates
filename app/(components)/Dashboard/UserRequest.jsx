@@ -1,6 +1,6 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
-import { ReloadIcon } from "@radix-ui/react-icons";
+
 import {
   Table,
   TableBody,
@@ -30,7 +30,7 @@ export default function Component() {
   const [loading, setLoading] = useState(true);
   const [replyText, setReplyText] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
-  const [resolve,setResolve]=useState(false);
+  const [resolve, setResolve] = useState(false);
   const fetchRequests = async () => {
     setLoading(true);
     try {
@@ -50,7 +50,7 @@ export default function Component() {
     }
   };
 
-  const Resolve = async (sid,action) => {
+  const Resolve = async (sid, action) => {
     try {
       const response = await fetch("/api/admin/send-email", {
         method: "PUT",
@@ -59,7 +59,7 @@ export default function Component() {
         },
         body: JSON.stringify({
           supportId: sid,
-          status:action
+          status: action,
         }),
       });
       if (!response.ok) {
@@ -70,14 +70,18 @@ export default function Component() {
       setResolve(false);
       setSupportRequests((prevRequests) =>
         prevRequests.map((req) =>
-          req._id === sid ? { ...req, status: action==="resolved"?"review":"resolved" } : req
+          req._id === sid
+            ? {
+                ...req,
+                status: action === "resolved" ? "in review" : "resolved",
+              }
+            : req
         )
       );
     } catch (error) {
       console.error(error);
     }
   };
-
 
   const sendReply = async (email, sid) => {
     try {
@@ -100,7 +104,7 @@ export default function Component() {
       setSendingReply(false);
       setSupportRequests((prevRequests) =>
         prevRequests.map((req) =>
-          req._id === sid ? { ...req, status: "review" } : req
+          req._id === sid ? { ...req, status: "in review" } : req
         )
       );
     } catch (error) {
@@ -151,8 +155,11 @@ export default function Component() {
             <TableCell className="table-cell text-center">
               <Badge
                 className={`text-xs text-white ${
-                  request.status === "resolved" ? "bg-green-600":
-                  request.status==="review"?"bg-yellow-500": "bg-red-500"
+                  request.status === "resolved"
+                    ? "bg-green-600"
+                    : request.status === "in review"
+                    ? "bg-yellow-500"
+                    : "bg-red-500"
                 }`}
               >
                 {request.status}
@@ -169,16 +176,36 @@ export default function Component() {
                       <ViewIcon size={22} className="mt-0.5" color="blue" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Message details</DialogTitle>
-                      <DialogDescription>
-                        The user is asking for support regarding the following
-                        matter
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid grid-cols-2 justify-between mt-4">
-                      <div className="flex flex-col gap-3 pr-2">
+                  <DialogContent
+                    className={`${
+                      request.status === "resolved" &&
+                      "md:w-[42%] sm:w-[80%] w-auto"
+                    } `}
+                  >
+                    <div className="flex justify-between items-center ">
+                      <DialogHeader>
+                        <DialogTitle>Message details</DialogTitle>
+                        <DialogDescription>
+                          The user is asking for support regarding the following
+                          matter
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Badge
+                        className={`mr-4 text-sm text-white ${
+                          request.status === "resolved"
+                            ? "bg-green-600"
+                            : request.status === "in review"
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                        }`}
+                      >
+                        {request.status.charAt(0).toUpperCase() +
+                          request.status.substring(1)}
+                      </Badge>
+                    </div>
+
+                    <div className={`grid grid-cols-2 justify-between mt-4`}>
+                      <div className="flex flex-col gap-3 pr-2 w-auto">
                         <p>
                           <b> Name </b>: {request.userName}
                         </p>
@@ -192,67 +219,44 @@ export default function Component() {
                           <b> Message </b> : {request.message}
                         </p>
                       </div>
-                      {request.status!=="resolved" &&(
-                          <div className="flex flex-col gap-4">
-                        Reply
-                        <Textarea
-                          name="reply"
-                          id="reply"
-                          value={replyText}
-                          placeholder="Write message here to user's email"
-                          rows="4"
-                          onChange={(e) => setReplyText(e.target.value)}
-                        />
-                       <div className="flex justify-between">
-                       <Button
-                          onClick={() => {
-                            sendReply(request.userEmail, request._id);
-                            setSendingReply(true);
-                          }}
-                          className="w-1/3 mx-auto"
-                          type="submit"
-                          disabled={sendingReply}
-                        >
-                          {sendingReply ? (
-                            <>
-                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                              Please wait
-                            </>
-                          ) : (
-                            <>Send</>
-                          )}
-                        </Button>
-                        
-                          <Button
-                          onClick={() => {
-                            Resolve(request._id,request.status);
-                            setResolve(true);
-                          }}
-                          className={
-                            `w-1/3 ${resolve? 'bg-gray-400'
-                                        : request.status === 'resolved'
-                                        ? 'bg-red-500'
-                                        : 'bg-green-500'
-                                    }`
-                          }
-                          type="submit"
-                          disabled={resolve}
-                        >
-                          {resolve ? (
-                            <>
-                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                              Please wait
-                            </>
-                          ) : (
-                          request.status === "resolved" ? "Unresolve" : "Resolve"
-                          )}
-                        </Button>
-                       
-                       </div>
-                      </div>
-                        )
-                      }
-                     
+                      {request.status !== "resolved" && (
+                        <div className="flex flex-col gap-4">
+                          Reply
+                          <Textarea
+                            name="reply"
+                            id="reply"
+                            value={replyText}
+                            placeholder="Write message here to user's email"
+                            rows="4"
+                            onChange={(e) => setReplyText(e.target.value)}
+                          />
+                          <div className="flex justify-between ">
+                            <Button
+                              onClick={() => {
+                                sendReply(request.userEmail, request._id);
+                                setSendingReply(true);
+                              }}
+                              className="w-1/3 "
+                              type="submit"
+                              disabled={sendingReply}
+                            >
+                              {sendingReply ? "Sending..." : "Send"}
+                            </Button>
+
+                            <Button
+                              onClick={() => {
+                                Resolve(request._id, request.status);
+                                setResolve(true);
+                              }}
+                              className={`w-1/3 ${resolve && "bg-gray-400"}`}
+                              type="submit"
+                              disabled={resolve}
+                            >
+                              {resolve ? "Processing..." : "Resolve"}
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </DialogContent>
                 </Dialog>

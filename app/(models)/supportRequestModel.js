@@ -25,7 +25,7 @@ const supportRequestSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "resolved","review"],
+      enum: ["pending", "resolved", "in review"],
       default: "pending",
     },
   },

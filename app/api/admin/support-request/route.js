@@ -11,10 +11,33 @@ export async function GET(req) {
     // const session = await getServerSession(options);
     // const userId = session?.user?.db_id;
 
-    const allRequests = await SupportRequest.find({}).sort({
-      status: 1,
-      createdAt: -1,
-    });
+    const allRequests = await SupportRequest.aggregate([
+      {
+        $addFields: {
+          priority: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$status", "pending"] }, then: 1 },
+                { case: { $eq: ["$status", "in review"] }, then: 2 },
+                { case: { $eq: ["$status", "resolved"] }, then: 3 },
+              ],
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          priority: 1,
+          createdAt: {
+            $cond: {
+              if: { $eq: ["$status", "resolved"] },
+              then: -1,
+              else: 1,
+            },
+          },
+        },
+      },
+    ]);
 
     return NextResponse.json({ supportRequests: allRequests }, { status: 200 });
   } catch (error) {
