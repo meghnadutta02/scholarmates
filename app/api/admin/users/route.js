@@ -3,26 +3,23 @@ import connect from "@/app/config/db";
 import User from "@/app/(models)/userModel";
 import Discussion from "@/app/(models)/discussionModel";
 
-// GET all the users with pagination
 export async function GET(req) {
   try {
     await connect();
-    const searchQuery = req.nextUrl.searchParams.get("searchQuery");
+    const searchQuery = req.nextUrl.searchParams.get("query");
     const page = parseInt(req.nextUrl.searchParams.get("page")) || 1;
     const limit = parseInt(req.nextUrl.searchParams.get("limit")) || 10;
     const skip = (page - 1) * limit;
+
     let query = {
-      $and: [
-        { email: { $ne: "user-does-not-exist" } },
-        { name: { $ne: "[deleted]" } },
-      ],
+      email: { $ne: "user-does-not-exist" },
+      name: { $ne: "[deleted]" },
     };
 
     if (searchQuery) {
-      query = {
-        $and: [query, { $text: { $search: searchQuery } }],
-      };
+      query.$text = { $search: searchQuery };
     }
+
     const select = searchQuery
       ? {
           score: { $meta: "textScore" },
@@ -35,6 +32,7 @@ export async function GET(req) {
           "-proficiencies": 0,
         }
       : "-bio -requestPending -requestReceived -dob -interestSubcategories -interestCategories -proficiencies";
+
     const sort = searchQuery
       ? { score: { $meta: "textScore" } }
       : { createdAt: 1 };
@@ -67,7 +65,6 @@ export async function GET(req) {
     }));
 
     const totalUsers = await User.countDocuments(query);
-
     return NextResponse.json(
       {
         users: usersWithCounts,

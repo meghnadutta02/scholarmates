@@ -48,10 +48,12 @@ const UserTable = () => {
 
   const fetchUsers = async (page = 1, query = "") => {
     try {
+      if (query && query.length < 4) return;
       const response = await fetch(
         `/api/admin/users?page=${page}&query=${query}`
       );
       const data = await response.json();
+
       setUsers(data.users);
       setTotalPages(data.totalPages);
       setCurrentPage(data.currentPage);
@@ -68,11 +70,6 @@ const UserTable = () => {
     setDialogOpen(true);
   };
 
-  const handleSearchClick = (event) => {
-    setCurrentPage(1);
-    console.log(event.target.value);
-    setSearchQuery(event.target.value);
-  };
   const handleGetUserId = (id) => {
     setShowConfirmDelete(true);
     setDeleteUserId(id);
@@ -81,9 +78,7 @@ const UserTable = () => {
     try {
       setDisabled(true);
       const response = await fetch(`/api/admin/users/${deleteUserId}`);
-      console.log(response);
-      const result = await response.json();
-      console.log(result);
+
       if (response.ok) {
         toast.success("User deleted successfully");
         setUsers((prev) => prev.filter((user) => user._id !== deleteUserId));
@@ -107,7 +102,7 @@ const UserTable = () => {
   return (
     <div>
       <Card x-chunk="dashboard-05-chunk-3" className="mt-4">
-        <CardHeader className="flex flex-row justify-between px-8">
+        <CardHeader className="flex flex-row justify-between px-8 items-center">
           <div>
             <CardTitle>Users ({totalUsers})</CardTitle>
             <CardDescription>
@@ -118,12 +113,10 @@ const UserTable = () => {
             <input
               type="text"
               placeholder="Search by name or email"
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 w-full"
             />
-            <AiOutlineSearch
-              className="w-6 h-6 text-gray-500 absolute right-2 cursor-pointer"
-              onClick={handleSearchClick}
-            />
+            <AiOutlineSearch className="w-6 h-6 text-gray-500 absolute right-2 cursor-pointer" />
           </div>
         </CardHeader>
         <CardContent>
@@ -183,17 +176,18 @@ const UserTable = () => {
             <Button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="mr-2"
+              className="mr-2 p-[10px]"
             >
-              <BiLeftArrow size={24} />
+              <BiLeftArrow className="w-5 h-5" />
             </Button>
             <Button
               onClick={() =>
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }
               disabled={currentPage === totalPages}
+              className="p-[10px]"
             >
-              <BiRightArrow size={24} />
+              <BiRightArrow className="w-5 h-5" />
             </Button>
           </div>
         </CardContent>
