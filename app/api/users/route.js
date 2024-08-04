@@ -1,7 +1,7 @@
 import connect from "@/app/config/db";
 
 import { NextResponse } from "next/server";
-import {ObjectId} from "mongodb";
+import { ObjectId } from "mongodb";
 import User from "@/app/(models)/userModel";
 
 export async function GET(req) {
@@ -24,6 +24,10 @@ export async function GET(req) {
       {
         $match: {
           _id: { $ne: new ObjectId(id) },
+          $and: [
+            { email: { $ne: "user-does-not-exist" } },
+            { name: { $ne: "[deleted]" } },
+          ],
         },
       },
       { $limit: 10 },

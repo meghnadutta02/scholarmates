@@ -13,7 +13,7 @@ import { options } from "./api/auth/[...nextauth]/options";
 import Header from "./(components)/Header";
 export const metadata = {
   title: "ScholarMates",
-  description: "By Prayash",
+  description: "Checkmate your goals. Together.",
 };
 
 export default async function RootLayout({ children }) {

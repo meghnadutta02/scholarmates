@@ -87,6 +87,7 @@ export async function GET() {
         $project: {
           userId: "$contactInfo._id",
           userName: "$contactInfo.name",
+          email: "$contactInfo.email",
           profilePic: "$contactInfo.profilePic",
           connection: "$contactInfo.connection",
           unreadMessagesCount: { $size: "$unreadMessages" },
@@ -104,6 +105,7 @@ export async function GET() {
       userName: message.userName,
       profilePic: message.profilePic,
       connection: message.connection,
+      email: message.email,
       unreadMessagesCount: message.unreadMessagesCount,
       unreadMessages: message.unreadMessages,
       lastMessageText: message.lastMessageText,
