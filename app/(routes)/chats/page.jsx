@@ -22,7 +22,7 @@ export default function Chats() {
   const { data: session } = useSession();
 
   const searchParams = useSearchParams();
-  const selectDiscussion = searchParams.get("discussionId");
+  const selectDiscussion = searchParams.get("groupId");
 
   const fetchConnections = async () => {
     try {

@@ -20,7 +20,7 @@ const Footer = () => {
         <div className="flex flex-col items-center md:items-start">
           <h4 className="text-xl font-semibold md:mb-4 mb-[9px]">Creators</h4>
           {authors.map((user, index) => (
-            <Link key={index} href={user.linkedIn} target="_blank">
+            <Link key={index} href={user.linktree} target="_blank">
               <p className="my-1">{user.name}</p>
             </Link>
           ))}
@@ -36,15 +36,15 @@ const Footer = () => {
 const authors = [
   {
     name: "Meghna Dutta",
-    linkedIn: "https://www.linkedin.com/in/meghna-dutta-a44060266/",
+    linktree: "https://linktr.ee/Meghna_Dutta/",
   },
   {
     name: "Ankush Roy",
-    linkedIn: "https://www.linkedin.com/in/ankush-roy-b141b2224/",
+    linktree: "https://linktr.ee/ankushroy08",
   },
   {
     name: "Jyotiraditya Mishra",
-    linkedIn: "https://www.linkedin.com/in/jyotiraditya-mishra-090047204/",
+    linktree: "https://linktr.ee/Jrmishra",
   },
 ];
 
