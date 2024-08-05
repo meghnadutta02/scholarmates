@@ -6,6 +6,7 @@ import { useSession } from "@/app/(components)/SessionProvider";
 import GroupRequests from "@/app/(components)/GroupRequests";
 import Loading from "./loading";
 import { useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 
 const Request = () => {
   const { session } = useSession();
@@ -41,12 +42,6 @@ const Request = () => {
         if (response.ok) {
           const data = await response.json();
           setRequestData(data.data);
-        } else {
-          console.log("Error:", response.statusText);
-          toast.error("Failed to fetch connection requests", {
-            autoClose: 4000,
-            closeOnClick: true,
-          });
         }
       } catch (error) {
         console.log(error);

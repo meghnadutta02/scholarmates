@@ -3,12 +3,13 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req, res) {
-    const adminRoutes = ["/dashboard", "/api/admin/:path*"];
+    const adminRoutes = ["/dashboard", "/api/admin"];
 
     if (
       adminRoutes.some((route) => req.nextUrl.pathname.startsWith(route)) &&
-      req.nextauth.token.role !== "admin"
+      !req.nextauth.token.isAdmin
     ) {
+      console.log("inside admin check block");
       return NextResponse.rewrite(new URL("/denied", req.url));
     }
 
@@ -31,5 +32,6 @@ export const config = {
     "/notification",
     "/profile/:path*",
     "/requests",
+    "/dashboard",
   ],
 };

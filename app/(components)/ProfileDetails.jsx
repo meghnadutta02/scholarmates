@@ -62,9 +62,9 @@ const ProfileDetails = ({ user, setUser, open, setOpen }) => {
                         About
                       </DropdownMenuItem>
                     </Link>
-                    <DropdownMenuSeparator />
                     {session.isAdmin && (
                       <Link href={`/dashboard`}>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem className="md:text-md">
                           Admin Panel
                         </DropdownMenuItem>
