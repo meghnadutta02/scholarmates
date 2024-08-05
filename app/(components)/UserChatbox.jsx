@@ -381,7 +381,7 @@ const UserChatbox = ({
                     )}
                   </div>
                 </PopoverTrigger>
-                {selectedUser.email !== "user-does-not-exist" && (
+                {!selectedUser.email.startsWith("user-does-not-exist") && (
                   <PopoverContent className="max-w-[132px]">
                     <Link
                       href={`/profile/${userID}`}
@@ -613,7 +613,7 @@ const UserChatbox = ({
                 <VscSend height={50} />
               </Button>
             </form>
-          ) : selectedUser.email !== "user-does-not-exist" ? (
+          ) : !selectedUser.email.startsWith("user-does-not-exist") ? (
             <div className="p-2 text-center mb-2 mt-[-4px] rounded-b-lg bg-red-100">
               <p>You are not connected with this user anymore</p>
               <p className="text-sm">

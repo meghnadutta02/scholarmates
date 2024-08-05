@@ -2,15 +2,14 @@ import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import connect from "@/app/config/db";
+
 import User from "@/app/(models)/userModel";
 
 export const options = {
   providers: [
     GitHubProvider({
       profile(profile) {
-        return {
-          ...profile,
-        };
+        return { ...profile };
       },
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -37,11 +36,11 @@ export const options = {
         currentUser = await User.create({
           name: name || login,
           email,
-
           profilePic: picture,
         });
       }
 
+      // Add user details to the user object to be used in JWT callback
       user.db_id = currentUser._id;
       user.collegeName = currentUser.collegeName;
       user.isAdmin = currentUser.isAdmin;
@@ -49,17 +48,19 @@ export const options = {
       user.interestCategories = currentUser.interestCategories;
       user.name = currentUser.name;
       user.interestSubcategories = currentUser.interestSubcategories;
-      user.requestPending = currentUser.requestPending;
-      user.connection = currentUser.connection;
+
       user.degree = currentUser.degree;
       user.yearInCollege = currentUser.yearInCollege;
       user.bio = currentUser.bio;
       user.dob = currentUser.dob;
+      user.updatedAt = currentUser.updatedAt;
+
       return user;
     },
 
     async jwt({ token, user, trigger, session }) {
       if (user) {
+        // Add user details to the token
         token.isAdmin = user.isAdmin;
         token.interestCategories = user.interestCategories;
         token.interestSubcategories = user.interestSubcategories;
@@ -67,33 +68,57 @@ export const options = {
         token.name = user.name;
         token.collegeName = user.collegeName;
         token.db_id = user.db_id;
-        token.requestPending = user.requestPending;
-        token.connection = user.connection;
+
         token.degree = user.degree;
         token.yearInCollege = user.yearInCollege;
         token.bio = user.bio;
         token.dob = user.dob;
+        token.updatedAt = user.updatedAt;
       }
 
       if (trigger === "update" && session) {
-        if (session.name) token.name = session.name;
-        if (session.collegeName) token.collegeName = session.collegeName;
-        if (session.profilePic) token.profilePic = session.profilePic;
-        if (session.interestCategories)
-          token.interestCategories = session.interestCategories;
-        if (session.interestSubcategories)
-          token.interestSubcategories = session.interestSubcategories;
-        if (session.requestPending)
-          token.requestPending = session.requestPending;
-        if (session.connection) token.connection = session.connection;
-        if (session.degree) token.degree = session.degree;
-        if (session.bio !== undefined) token.bio = session.bio;
+        Object.assign(token, {
+          name: session.name || token.name,
+          collegeName: session.collegeName || token.collegeName,
+          profilePic: session.profilePic || token.profilePic,
+          interestCategories:
+            session.interestCategories || token.interestCategories,
+          interestSubcategories:
+            session.interestSubcategories || token.interestSubcategories,
+          degree: session.degree || token.degree,
+          bio: session.bio !== undefined ? session.bio : token.bio,
+          dob: session.dob !== undefined ? session.dob : token.dob,
+          yearInCollege:
+            session.yearInCollege !== undefined
+              ? session.yearInCollege
+              : token.yearInCollege,
+        });
+      }
 
-        if (session.dob !== undefined) {
-          token.dob = session.dob;
-        }
-        if (session.yearInCollege !== undefined) {
-          token.yearInCollege = session.yearInCollege;
+      if (token.db_id) {
+        const currentUser = await User.findById(token.db_id);
+        if (currentUser) {
+          const updatedAt = new Date(currentUser.updatedAt).getTime();
+          const tokenUpdatedAt = token.updatedAt
+            ? new Date(token.updatedAt).getTime()
+            : 0;
+
+          if (updatedAt > tokenUpdatedAt) {
+            Object.assign(token, {
+              isAdmin: currentUser.isAdmin,
+              interestCategories: currentUser.interestCategories,
+              interestSubcategories: currentUser.interestSubcategories,
+              profilePic: currentUser.profilePic,
+              name: currentUser.name,
+              collegeName: currentUser.collegeName,
+
+              degree: currentUser.degree,
+              yearInCollege: currentUser.yearInCollege,
+              bio: currentUser.bio,
+              dob: currentUser.dob,
+              updatedAt: currentUser.updatedAt,
+            });
+          }
         }
       }
 
@@ -102,24 +127,24 @@ export const options = {
 
     async session({ session, token }) {
       if (session?.user) {
-        session.user.isAdmin = token.isAdmin;
-        session.user.db_id = token.db_id;
-        session.user.interestCategories = token.interestCategories;
-        session.user.interestSubcategories = token.interestSubcategories;
-        session.user.collegeName = token.collegeName;
-        session.user.profilePic = token.profilePic;
-        session.user.name = token.name;
-        session.user.requestPending = token.requestPending;
-        session.user.connection = token.connection;
-        session.user.degree = token.degree;
-        session.user.yearInCollege = token.yearInCollege;
-        session.user.bio = token.bio;
-        session.user.dob = token.dob;
+        Object.assign(session.user, {
+          isAdmin: token.isAdmin,
+          db_id: token.db_id,
+          interestCategories: token.interestCategories,
+          interestSubcategories: token.interestSubcategories,
+          collegeName: token.collegeName,
+          profilePic: token.profilePic,
+          name: token.name,
+
+          degree: token.degree,
+          yearInCollege: token.yearInCollege,
+          bio: token.bio,
+          dob: token.dob,
+        });
       }
       return session;
     },
   },
-
   theme: {
     colorScheme: "light",
     logo: "/logo.png",

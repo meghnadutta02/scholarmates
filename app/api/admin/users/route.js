@@ -12,7 +12,7 @@ export async function GET(req) {
     const skip = (page - 1) * limit;
 
     let query = {
-      email: { $ne: "user-does-not-exist" },
+      email: { $not: { $regex: "^user-does-not-exist" } },
       name: { $ne: "[deleted]" },
     };
 

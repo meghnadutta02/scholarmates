@@ -264,7 +264,7 @@ const DiscussionDetails = ({ params }) => {
   return (
     <>
       <div
-        className={`w-full lg:w-[80%] p-4 ${
+        className={`w-full lg:w-[80%] p-4 sm:mt-5 mt-3 ${
           showConfirmDelete ? "blur-md" : ""
         }`}
       >

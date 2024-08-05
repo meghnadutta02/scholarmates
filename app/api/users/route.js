@@ -25,7 +25,7 @@ export async function GET(req) {
         $match: {
           _id: { $ne: new ObjectId(id) },
           $and: [
-            { email: { $ne: "user-does-not-exist" } },
+            { email: { $not: { $regex: "^user-does-not-exist" } } },
             { name: { $ne: "[deleted]" } },
           ],
         },

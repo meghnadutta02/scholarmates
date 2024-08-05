@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 import Discussion from "./discussionModel";
 import GroupRequest from "./groupRequestModel";
 import Notification from "./notificationModel";
+import Request from "./requestModel";
 import Group from "./groupModel";
+import { v4 as uuidv4 } from "uuid";
 
 import SupportRequest from "./supportRequestModel";
 
@@ -47,13 +49,14 @@ userSchema.statics.clearUserDocument = async function (userId) {
     if (!user) {
       throw new Error("User not found.");
     }
-
+    const randomUUID = uuidv4();
+    const updatedEmail = `user-does-not-exist-${randomUUID}`;
     await this.findByIdAndUpdate(userId, {
       $set: {
         name: "[deleted]",
         bio: "",
         profilePic: "/pfp.png",
-        email: "user-does-not-exist",
+        email: updatedEmail,
         isAdmin: false,
         connection: [],
         requestPending: [],
@@ -88,6 +91,24 @@ userSchema.statics.clearUserDocument = async function (userId) {
       { participants: userId },
       { $pull: { participants: userId } }
     ).session(session);
+
+    await Discussion.updateMany(
+      { likedBy: userId },
+      {
+        $pull: { likedBy: userId },
+        $inc: { likes: -1 },
+      }
+    ).session(session);
+    await Discussion.updateMany(
+      { dislikedBy: userId },
+      {
+        $pull: { dislikedBy: userId },
+        $inc: { dislikes: -1 },
+      }
+    ).session(session);
+    await Request.deleteMany({
+      $or: [{ requestTo: userId }, { participants: userId }, { user: userId }],
+    }).session(session);
 
     await session.commitTransaction();
     session.endSession();
