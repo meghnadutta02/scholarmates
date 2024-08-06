@@ -489,7 +489,7 @@ const DiscussionActions = ({
       </Button>
 
       {discussion.isMember ? (
-        <Link href={`/chats?discussionId=${discussion._id}`}>
+        <Link href={`/chats?groupId=${discussion.groupId}`}>
           <Button variant="icon" className="flex md:ml-4">
             <IoChatboxOutline className="h-6 w-6" />
           </Button>
