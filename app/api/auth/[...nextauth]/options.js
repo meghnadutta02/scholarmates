@@ -96,6 +96,7 @@ export const options = {
       }
 
       if (token.db_id) {
+        await connect();
         const currentUser = await User.findById(token.db_id);
         if (currentUser) {
           const updatedAt = new Date(currentUser.updatedAt).getTime();
