@@ -17,7 +17,7 @@ export async function GET(req) {
 
     const connections = await User.find(
       { _id: { $in: user.connection } },
-      { name: 1, id: 1, profilePic: 1, connection: 1 }
+      { name: 1, id: 1, profilePic: 1, email: 1, connection: 1 }
     );
 
     return NextResponse.json({ connections }, { status: 200 });
