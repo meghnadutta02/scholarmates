@@ -48,7 +48,12 @@ const socketServer = http.createServer(app);
 connection();
 const io = new Server(socketServer, {
   cors: {
-    origin: ["https://scholar-mates.vercel.app", "http://localhost:3000"],
+    origin: [
+      "https://scholar-mates.vercel.app",
+      "http://localhost:3000",
+      "https://scholarmates.me",
+      "https://www.scholarmates.me",
+    ],
     methods: ["GET", "POST", "PUT", "PATCH"],
   },
 });
