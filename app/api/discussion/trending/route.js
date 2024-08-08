@@ -5,7 +5,7 @@ import connect from "@/app/config/db";
 const calculateTrendScore = (discussion) => {
   const likesWeight = 1.5;
   const dislikesWeight = -0.7;
-  const timeWeight = 1.2;
+  const timeWeight = -1.2;
   const groupMemberWeight = 0.8;
 
   const now = Date.now();
