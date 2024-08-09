@@ -36,7 +36,7 @@ export const requestNotificationController = async (req, resp) => {
           data: requestData,
         });
       } else {
-        resp.status(400).send({
+        resp.status(204).send({
           success: false,
           message: "No data found for the user",
         });

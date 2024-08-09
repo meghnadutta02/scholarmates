@@ -39,12 +39,11 @@ const Request = () => {
           }
         );
 
-        if (response.ok) {
+        if (response.ok && response.status === 200) {
           const data = await response.json();
           setRequestData(data.data);
         }
       } catch (error) {
-        console.log(error);
         toast.error("Failed to fetch connection requests", {
           autoClose: 4000,
           closeOnClick: true,
