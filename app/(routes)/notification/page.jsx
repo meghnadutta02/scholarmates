@@ -38,7 +38,7 @@ const Page = () => {
             body: JSON.stringify({ notificationIds }),
           }
         );
-        if (resp.ok) {
+        if (resp.ok && resp.status === 200) {
           clearUnreadCount();
           setNotifications([]);
           toast.success("All notifications cleared successfully", {
@@ -69,7 +69,7 @@ const Page = () => {
               body: JSON.stringify({ notificationIds }),
             }
           );
-          if (resp.ok) {
+          if (resp.ok && resp.status === 200) {
             clearUnreadCount();
             setNotifications((prev) =>
               prev.map((n) => ({ ...n, isSeen: true }))
