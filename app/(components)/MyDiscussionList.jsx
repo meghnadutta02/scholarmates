@@ -31,7 +31,12 @@ const DiscussionList = () => {
   const limit = 10;
   const [totalDiscussions, setTotalDiscussions] = useState(0);
   const observer = useRef(null);
-
+  const linkifyContent = (content) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return content.replace(urlRegex, (url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
+    });
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -217,15 +222,19 @@ const DiscussionList = () => {
                     }`}
                     onClick={() => toggleDiscussion(discussion._id)}
                   >
-                    <p className="cursor-pointer">{discussion.content}</p>
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: linkifyContent(discussion.content),
+                      }}
+                    ></p>
                   </div>
                   <div className="flex flex-col w-full justify-between my-1">
                     <div className="prose  md:block hidden ">
-                      <p className="cursor-pointer pr-2">
-                        <Link href={`/discussions/${discussion._id}`}>
-                          {discussion.content}
-                        </Link>
-                      </p>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: linkifyContent(discussion.content),
+                        }}
+                      ></p>
                     </div>
                     {/* buttons */}
                     <div className="w-full grid grid-cols-3  text-center  place-items-start">

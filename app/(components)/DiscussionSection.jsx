@@ -39,6 +39,12 @@ const DiscussionSection = ({ user }) => {
   const limit = 10;
   const observer = useRef(null);
   const { socket } = useCustomSession();
+  const linkifyContent = (content) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return content.replace(urlRegex, (url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
+    });
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -333,15 +339,18 @@ const DiscussionSection = ({ user }) => {
                   }`}
                   onClick={() => toggleDiscussion(discussion._id)}
                 >
-                  <p className="cursor-pointer">{discussion.content}</p>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: linkifyContent(discussion.content),
+                    }}
+                  ></p>
                 </div>
                 <div className="prose max-w-none  md:block hidden ">
-                  <p className="cursor-pointer">
-                    {" "}
-                    <Link href={`/discussions/${discussion._id}`}>
-                      {discussion.content}
-                    </Link>
-                  </p>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: linkifyContent(discussion.content),
+                    }}
+                  ></p>
                 </div>
                 <div className="grid w-full grid-cols-4  gap-7 text-center md:gap-8 mb-2">
                   <Button className="h-10" size="icon" variant="icon">

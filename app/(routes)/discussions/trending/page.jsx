@@ -70,7 +70,12 @@ const Trending = () => {
       setAnimationState((prev) => ({ ...prev, [id]: null }));
     }, 300);
   };
-
+  const linkifyContent = (content) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return content.replace(urlRegex, (url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
+    });
+  };
   const toggleDislike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
 
@@ -318,15 +323,18 @@ const Trending = () => {
                     }`}
                     onClick={() => toggleDiscussion(discussion._id)}
                   >
-                    <p className="cursor-pointer">{discussion.content}</p>
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: linkifyContent(discussion.content),
+                      }}
+                    ></p>
                   </div>
                   <div className="prose max-w-none  md:block hidden ">
-                    <p className="cursor-pointer">
-                      {" "}
-                      <Link href={`/discussions/${discussion._id}`}>
-                        {discussion.content}
-                      </Link>
-                    </p>
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: linkifyContent(discussion.content),
+                      }}
+                    ></p>
                   </div>
                   {/* buttons here */}
                   <DiscussionActions

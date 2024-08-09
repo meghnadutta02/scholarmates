@@ -24,7 +24,6 @@ const getDiscussions = async (query = "", offset = 0, limit = 10) => {
   );
   return response.json();
 };
-
 const getJoinRequests = async () => {
   const response1 = await fetch(`/api/join-group/status`);
   return response1.json();
@@ -50,6 +49,12 @@ const DiscussionList = ({
   const limit = 10;
   const observer = useRef(null);
 
+  const linkifyContent = (content) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return content.replace(urlRegex, (url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
+    });
+  };
   useEffect(() => {
     const fetchData = async () => {
       // setLoading(true);
@@ -414,14 +419,18 @@ const DiscussionList = ({
                     }`}
                     onClick={() => toggleDiscussion(discussion._id)}
                   >
-                    <p className="cursor-pointer">{discussion.content}</p>
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: linkifyContent(discussion.content),
+                      }}
+                    ></p>
                   </div>
                   <div className="prose max-w-none  md:block hidden ">
-                    <p className="cursor-pointer">
-                      <Link href={`/discussions/${discussion._id}`}>
-                        {discussion.content}
-                      </Link>
-                    </p>
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: linkifyContent(discussion.content),
+                      }}
+                    ></p>
                   </div>
                   <DiscussionActions
                     {...{

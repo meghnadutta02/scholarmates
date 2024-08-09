@@ -46,7 +46,12 @@ const DiscussionDetails = ({ params }) => {
   const [isDislikedByUser, setIsDislikedByUser] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [deleteDiscussionId, setDeleteDiscussionId] = useState("");
-
+  const linkifyContent = (content) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return content.replace(urlRegex, (url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
+    });
+  };
   const handleDelete = async () => {
     try {
       setDisabled(true);
@@ -343,7 +348,11 @@ const DiscussionDetails = ({ params }) => {
               <div className="flex flex-col gap-2 md:gap-4 py-2">
                 <h4 className=" text-md font-semibold">{discussion.title}</h4>
                 <div className="prose max-w-none">
-                  <p>{discussion.content}</p>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: linkifyContent(discussion.content),
+                    }}
+                  ></p>
                 </div>
               </div>
 
