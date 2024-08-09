@@ -13,8 +13,7 @@ const DetailSection = ({ user }) => {
     <>
       {user.interestSubcategories.length === 0 &&
       user.collegeName.length === 0 &&
-      user.department.length === 0 &&
-      user.degree.length === 0 ? (
+      !user.degree ? (
         <div className="flex justify-center md:text-lg text-md font-semibold font-sans mt-3">
           This user has not added any information.
         </div>
@@ -40,13 +39,14 @@ const DetailSection = ({ user }) => {
               </p>
             </div>
           )}
-          {user.department && user.degree && (
+          {user.degree && (
             <div className="my-4">
               <h3 className="text-lg font-semibold">Pursuing</h3>
-
               <p className="text-md font-semibold text-gray-600">
-                {user.degree} in {user.department} (
-                {getYearWithSuffix(user.yearInCollege)} year)
+                {user.degree}{" "}
+                {user.department && `in ${user.department}`}{" "}
+                {user.yearInCollege &&
+                  `(${getYearWithSuffix(user.yearInCollege)} year)`}
               </p>
             </div>
           )}
