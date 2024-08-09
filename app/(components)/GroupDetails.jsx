@@ -37,8 +37,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Loading from "./Loading";
+import linkifyContent from "../utils/Linkify";
 import Link from "next/link";
+import { Textarea } from "@/components/ui/textarea";
 
 const GroupDetails = ({
   groupDetails,
@@ -358,11 +359,12 @@ const GroupDetails = ({
                         Update the group description below:
                       </DialogDescription>
                     </DialogHeader>
-                    <Input
+                    <Textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       className="mt-4"
-                      maxLength={70}
+                      maxLength={150}
+                      rows={3}
                     />
                     <DialogFooter>
                       <Button onClick={handleUpdateDescription}>Save</Button>
@@ -440,9 +442,9 @@ const GroupDetails = ({
                     group?.creator !== participant._id && (
                       <DropdownMenu>
                         <DropdownMenuTrigger>
-                          <Button variant="ghost" size="sm">
-                            •••
-                          </Button>
+                          {/* <Button variant="ghost" size="sm"> */}
+                          •••
+                          {/* </Button> */}
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           {isCurrentUserCreator && (

@@ -400,7 +400,7 @@ const GroupChatbox = ({
                                 matchers={[new UrlMatcher("url")]}
                               />
                             )}
-                            <p className="text-xs flex justify-end font-light">
+                            <span className="text-xs flex justify-end font-light">
                               {msg.sending ? (
                                 <Clock12Icon className="w-4 h-4 text-gray-700" />
                               ) : (
@@ -414,7 +414,7 @@ const GroupChatbox = ({
                                   )}
                                 </p>
                               )}
-                            </p>
+                            </span>
                           </div>
                         </div>
                       </div>
