@@ -9,6 +9,7 @@ import { useSession as useCustomSession } from "@/app/(components)/SessionProvid
 import Link from "next/link";
 import { InfoIcon } from "lucide-react";
 import { RiShareForwardLine } from "react-icons/ri";
+import linkifyContent from "../utils/Linkify";
 
 const getDiscussions = async (id, offset = 0, limit = 10) => {
   const response = await fetch(
@@ -39,12 +40,7 @@ const DiscussionSection = ({ user }) => {
   const limit = 10;
   const observer = useRef(null);
   const { socket } = useCustomSession();
-  const linkifyContent = (content) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return content.replace(urlRegex, (url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
-    });
-  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {

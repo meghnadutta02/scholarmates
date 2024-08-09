@@ -110,9 +110,7 @@ io.on("connection", async (socket) => {
       io.to(data.roomID).emit("receive-message", data.message);
 
       //emit to the active group members as the inbox update
-      console.log(data);
       const activeGroupUsers = io.sockets.adapter.rooms.get(data.roomID);
-      console.log(activeGroupUsers);
 
       for (let member of data.groupMembers) {
         member.socketId = ActiveUsers.getUserSocketId(member._id.toString());
@@ -122,7 +120,6 @@ io.on("connection", async (socket) => {
           ActiveUsers.getActiveUsers().has(member._id.toString()) &&
           !activeGroupUsers.has(member.socketId)
         ) {
-          console.log("Emitting to user", member.name);
           io.to(member.socketId).emit("groupchat-inbox", data);
         }
       }

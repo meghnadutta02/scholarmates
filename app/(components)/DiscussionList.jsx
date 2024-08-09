@@ -10,6 +10,7 @@ import { InfoIcon } from "lucide-react";
 import { useSession as useCustomSession } from "./SessionProvider";
 import { IoChatboxOutline } from "react-icons/io5";
 import { RiShareForwardLine } from "react-icons/ri";
+import linkifyContent from "../utils/Linkify";
 
 const getDiscussions = async (query = "", offset = 0, limit = 10) => {
   const separator = query !== "" ? "&" : "?";
@@ -49,12 +50,6 @@ const DiscussionList = ({
   const limit = 10;
   const observer = useRef(null);
 
-  const linkifyContent = (content) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return content.replace(urlRegex, (url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
-    });
-  };
   useEffect(() => {
     const fetchData = async () => {
       // setLoading(true);

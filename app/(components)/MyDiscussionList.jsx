@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { RiShareForwardLine } from "react-icons/ri";
 import { InfoIcon } from "lucide-react";
+import linkifyContent from "../utils/Linkify";
 
 const getDiscussions = async (offset = 0, limit = 10) => {
   const response = await fetch(
@@ -31,12 +32,7 @@ const DiscussionList = () => {
   const limit = 10;
   const [totalDiscussions, setTotalDiscussions] = useState(0);
   const observer = useRef(null);
-  const linkifyContent = (content) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return content.replace(urlRegex, (url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
-    });
-  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {

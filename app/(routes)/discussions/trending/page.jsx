@@ -10,6 +10,8 @@ import { useSession } from "next-auth/react";
 import { LuTrendingDown } from "react-icons/lu";
 import { IoChatboxOutline } from "react-icons/io5";
 import { useSession as useCustomSession } from "@/app/(components)/SessionProvider";
+import linkifyContent from "@/app/utils/Linkify";
+
 const getDiscussions = async (college, c) => {
   let url = `/api/discussion/trending`;
   if (college) {
@@ -70,12 +72,7 @@ const Trending = () => {
       setAnimationState((prev) => ({ ...prev, [id]: null }));
     }, 300);
   };
-  const linkifyContent = (content) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return content.replace(urlRegex, (url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
-    });
-  };
+
   const toggleDislike = async (id) => {
     setAnimationState((prev) => ({ ...prev, [id]: "dislike" }));
 

@@ -12,6 +12,10 @@ const inter = Inter({ subsets: ["latin"] });
 import { getServerSession } from "next-auth";
 import { options } from "./api/auth/[...nextauth]/options";
 import Header from "./(components)/Header";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+TimeAgo.addDefaultLocale(en);
+
 export const metadata = {
   title: "ScholarMates",
   description: "Checkmate your goals. Together.",

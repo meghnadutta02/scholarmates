@@ -6,12 +6,10 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import en from "javascript-time-ago/locale/en";
 import { toast } from "react-toastify";
-import ru from "javascript-time-ago/locale/ru";
 import { useSession } from "@/app/(components)/SessionProvider";
 import { Button } from "@/components/ui/button";
 
-TimeAgo.addDefaultLocale(en);
-TimeAgo.addLocale(ru);
+TimeAgo.addLocale(en);
 
 const Page = () => {
   const {

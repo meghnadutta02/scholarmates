@@ -25,12 +25,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import en from "javascript-time-ago/locale/en";
-import ru from "javascript-time-ago/locale/ru";
 import ReactTimeAgo from "react-time-ago";
 import { useSession } from "@/app/(components)/SessionProvider";
-import { Separator } from "@/components/ui/separator";
-TimeAgo.addDefaultLocale(en);
-TimeAgo.addLocale(ru);
+import linkifyContent from "@/app/utils/Linkify";
+
+TimeAgo.addLocale(en);
 const DiscussionDetails = ({ params }) => {
   const router = useRouter();
   const { session, socket } = useSession();
@@ -46,12 +45,7 @@ const DiscussionDetails = ({ params }) => {
   const [isDislikedByUser, setIsDislikedByUser] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [deleteDiscussionId, setDeleteDiscussionId] = useState("");
-  const linkifyContent = (content) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return content.replace(urlRegex, (url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e40af; font-weight: 600;">${url}</a>`;
-    });
-  };
+
   const handleDelete = async () => {
     try {
       setDisabled(true);
@@ -339,7 +333,7 @@ const DiscussionDetails = ({ params }) => {
                 alt="Cover"
                 className="w-full h-[270px] md:w-[520px] md:h-[370px] rounded-md mb-4"
                 src={discussion.coverImage}
-                style={{ aspectRatio: "1", objectFit: "cover" }}
+                // style={{ aspectRatio: "1", objectFit: "cover" }}
                 width={280}
                 height={200}
               />

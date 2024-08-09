@@ -27,7 +27,6 @@ const UserChatbox = ({
 }) => {
   const { data: session } = useSession();
   const { socket } = useCustomSession();
-  console.log(selectedUser);
   const [message, setMessage] = useState({
     text: "",
     attachments: [],
