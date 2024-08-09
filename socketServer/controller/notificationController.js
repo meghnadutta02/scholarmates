@@ -36,7 +36,7 @@ export const requestNotificationController = async (req, resp) => {
           data: requestData,
         });
       } else {
-        resp.status(204).send({
+        resp.status(200).send({
           success: false,
           message: "No data found for the user",
         });
@@ -73,7 +73,7 @@ export const userRequestsController = async (req, res) => {
     }).populate("requestTo", "_id name profilePic");
 
     if (!requests.length) {
-      return res.status(204).send({
+      return res.status(404).send({
         success: false,
         message: "No requests found for the user to the recipient",
       });
@@ -120,7 +120,7 @@ export const checkIsSeenController = async (req, resp) => {
         message: "Notifications marked as seen",
       });
     } else {
-      resp.status(204).send({
+      resp.status(200).send({
         success: false,
         message: "No notifications found to update",
       });
@@ -158,7 +158,7 @@ export const deleteBatchNotification = async (req, resp) => {
         message: "Notifications deleted successfully",
       });
     } else {
-      resp.status(204).send({
+      resp.status(200).send({
         success: false,
         message: "No notifications found to delete",
       });
