@@ -262,6 +262,7 @@ const ProfileEdit = ({ user, setUser }) => {
             id="bio"
             name="bio"
             value={userState.bio}
+            maxLength="35"
             onChange={(e) => handleChange("bio", e.target.value)}
           />
         </div>
