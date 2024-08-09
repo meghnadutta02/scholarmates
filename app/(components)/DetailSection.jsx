@@ -43,8 +43,7 @@ const DetailSection = ({ user }) => {
             <div className="my-4">
               <h3 className="text-lg font-semibold">Pursuing</h3>
               <p className="text-md font-semibold text-gray-600">
-                {user.degree}{" "}
-                {user.department && `in ${user.department}`}{" "}
+                {user.degree} {user.department && `in ${user.department}`}{" "}
                 {user.yearInCollege &&
                   `(${getYearWithSuffix(user.yearInCollege)} year)`}
               </p>
