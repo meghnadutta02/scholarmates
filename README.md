@@ -1,7 +1,7 @@
 # ScholarMates
 
 ### A platorm for students to raise issues/topics and engage in discussions and connect with recommended people based on personal preferences 
-🔗 Join at - [scholarmates.me](scholarmates.me)
+🔗 Join at - [scholarmates.me](https://scholar-mates.vercel.app/)
 
 ![Cover](https://github.com/meghnadutta02/scholarmates/blob/main/public/preview.png)
 
